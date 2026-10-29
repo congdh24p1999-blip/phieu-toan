@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Tạo phiếu luyện Toán lớp 1 miễn phí, in khổ A4, kèm đáp án cho bố mẹ chấm.">
+<meta name="description" content="Phiếu luyện Toán lớp 1 miễn phí của Thầy Công: in khổ A4 kèm đáp án, hoặc cho bé làm bài ngay trên điện thoại.">
 <title>Xưởng Phiếu Toán</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap">
 <style>
 /* Layout: bàn làm việc — cột điều khiển bên trái, tờ giấy A4 xem trước bên phải; điện thoại thì xếp chồng. */
 :root {
@@ -56,6 +56,63 @@ body {
 .brand { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
 .brand span { color: var(--accent); }
 .tagline { margin: 0; color: var(--muted); text-wrap: balance; }
+.brand-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.sign { font-family: "Dancing Script", "Segoe Script", cursive; font-weight: 700; font-size: 1.7rem; line-height: 1; color: var(--accent); transform: rotate(-4deg); display: inline-block; }
+.sign small { font-family: var(--font-body); font-weight: 500; font-size: 0.8rem; color: var(--muted); }
+
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.tab { text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.9rem; padding: 6px 14px; border-radius: 999px; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Chế độ làm bài: tờ giấy trắng co giãn theo màn hình */
+.play {
+  --s-ink: #151515; --s-soft: #6b6b6b; --s-rule: #9a9a9a; --s-fill: #ececec; --s-pen: #c9302c;
+  background: #fff; color: #151515; border-radius: var(--radius); border: 1px solid var(--line);
+  padding: 18px 16px; display: grid; gap: 22px; font-family: var(--font-body); font-size: 15px; min-width: 0;
+}
+.play .hello { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin: 0; color: #151515; }
+.play .s-sec { gap: 10px; }
+.play .s-sec h2 { font-size: 1rem; }
+.play .s-grid { gap: 14px 18px; padding-left: 0; }
+.play .cols-3 { grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); }
+.play .cols-2 { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
+.play .cols-1 { grid-template-columns: 1fr; }
+.play .shp-row { flex-wrap: wrap; }
+.play .nl { overflow-x: auto; }
+.play .nl-track { min-width: 340px; }
+.play .msr { overflow-x: auto; }
+.play .wp-calc { flex-wrap: wrap; }
+.play .pbx { cursor: pointer; background: #fff; color: #1b2531; padding: 0; touch-action: manipulation; }
+.play .pbx:focus-visible, .play .pbx.active { outline: 3px solid #5a3ea8; outline-offset: 2px; background: #f1edfb; }
+.play .pbx.ok { border-color: #2e7d4f; background: #e7f5ec; color: #1d6b3f; }
+.play .pbx.no { border-color: #c9302c; background: #fdeceb; color: #c9302c; }
+.play .pbx.shown { color: #c9302c; background: #fff7f6; }
+.play-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; }
+.play-actions .progress { margin-right: auto; color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.result { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 8px; justify-items: start; }
+.result h3 { margin: 0; font-family: var(--font-display); font-size: 1.3rem; }
+.result p { margin: 0; color: var(--muted); }
+.result .big-stars { display: flex; gap: 6px; }
+.result .big-stars svg { width: 34px; height: 34px; }
+.result .big-stars path { stroke: var(--accent); stroke-width: 1.4; stroke-linejoin: round; fill: none; }
+.result .big-stars .on path { fill: var(--accent); }
+.result .sign-off { font-family: "Dancing Script", cursive; font-size: 1.3rem; color: var(--accent); }
+.result .row-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.keypad { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 24px rgba(20,30,50,.15);
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.kp-inner { max-width: 420px; margin: 0 auto; display: grid; gap: 8px; }
+.kp-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--muted); font-size: 0.9rem; }
+.kp-close { font: inherit; font-weight: 600; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 6px 4px; }
+.kp-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.kp-keys button { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; height: 54px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; touch-action: manipulation; }
+.kp-keys button:active { background: var(--accent-soft); }
+.kp-keys .k-next { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-family: var(--font-body); font-size: 1rem; }
+.kp-keys .k-del { font-size: 1.1rem; }
+body.kp-open { padding-bottom: 300px; }
+@media (max-width: 919px) { body.mode-play .stage-wrap { order: -1; } }
 
 .work { display: grid; gap: 20px; grid-template-columns: 1fr; align-items: start; }
 @media (min-width: 920px) { .work { grid-template-columns: 340px minmax(0, 1fr); } .panel { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); } }
@@ -136,7 +193,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 @media print {
   @page { size: A4; margin: 0; }
   body { background: #fff; padding: 0; }
-  .app { display: none; }
+  .app, .keypad { display: none !important; }
   #printArea { display: block; }
   #printArea .sheet { box-shadow: none; margin: 0; break-after: page; }
   .pb { display: none !important; }
@@ -244,7 +301,8 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 .stars svg { width: 6mm; height: 6mm; }
 .stars svg path { fill: none; stroke: var(--s-ink); stroke-width: 1.3; stroke-linejoin: round; }
 .s-line { border-bottom: 0.3mm dotted var(--s-ink); height: 6mm; }
-.s-meta { display: flex; justify-content: space-between; gap: 4mm; font-size: 2.8mm; color: var(--s-soft); letter-spacing: 0.02em; }
+.s-meta .s-sig { font-family: "Dancing Script", cursive; font-weight: 700; font-size: 4.2mm; color: var(--s-ink); letter-spacing: 0; }
+.s-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; font-size: 2.8mm; color: var(--s-soft); letter-spacing: 0.02em; }
 .pb { position: absolute; left: 0; right: 0; top: 297mm; border-top: 0.5mm dashed #c9302c; pointer-events: none; }
 .pb span { position: absolute; right: 4mm; top: 1mm; font-size: 3mm; color: #c9302c; background: #fff; padding: 0 1.5mm; }
 </style>
@@ -253,8 +311,11 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 <body>
 <div class="app">
   <header class="topbar">
-    <h1 class="brand">Xưởng <span>Phiếu Toán</span></h1>
-    <p class="tagline">Tạo phiếu luyện Toán lớp 1 cho bé trong vài giây. Mỗi phiếu kèm đáp án để bố mẹ chấm.</p>
+    <div class="brand-line">
+      <h1 class="brand">Xưởng <span>Phiếu Toán</span></h1>
+      <span class="sign" aria-label="của Thầy Công"><small>của</small> Thầy Công</span>
+    </div>
+    <p class="tagline">Phiếu luyện Toán lớp 1 cho bé: in ra giấy kèm đáp án, hoặc làm bài ngay trên điện thoại.</p>
   </header>
 
   <div class="work">
@@ -307,11 +368,25 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
     <section class="stage-wrap" aria-label="Xem trước phiếu">
       <div class="stage-head">
-        <h2>Xem trước khổ A4</h2>
+        <div class="tabs" role="tablist" aria-label="Cách dùng phiếu">
+          <a href="#in-phieu" role="tab" id="tabPrint" class="tab">Phiếu in</a>
+          <a href="#lam-bai" role="tab" id="tabPlay" class="tab">Làm bài trên máy</a>
+        </div>
         <span class="code-pill">Mã phiếu <b id="codeOut">----</b></span>
       </div>
-      <p class="warn" id="overflowWarn" hidden></p>
-      <div class="stage" id="stage"><div class="scale" id="scale"></div></div>
+      <div id="printView">
+        <p class="warn" id="overflowWarn" hidden></p>
+        <div class="stage" id="stage"><div class="scale" id="scale"></div></div>
+      </div>
+      <div id="playView" hidden>
+        <div class="play" id="playArea"></div>
+        <div class="play-actions">
+          <span class="progress" id="progress"></span>
+          <button type="button" class="btn" id="resetBtn">Xoá bài làm</button>
+          <button type="button" class="btn btn-primary" id="submitBtn">Nộp bài</button>
+        </div>
+        <div class="result" id="result" hidden role="status" aria-live="polite"></div>
+      </div>
 
       <div class="side-notes">
         <div class="card">
@@ -320,6 +395,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
             <li>Chọn dạng bài bé đang học trên lớp.</li>
             <li>Bấm in, hoặc tải file về rồi mở và in trên máy tính.</li>
             <li>Cho bé làm, bố mẹ chấm theo trang đáp án.</li>
+            <li>Không có máy in? Chọn <b>Làm bài trên máy</b>, bé bấm số trên màn hình và được chấm ngay.</li>
           </ol>
         </div>
         <div class="card">
@@ -329,6 +405,13 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
         </div>
       </div>
     </section>
+  </div>
+</div>
+
+<div class="keypad" id="keypad" hidden>
+  <div class="kp-inner">
+    <div class="kp-head"><span id="kpLabel">Chọn số</span><button type="button" class="kp-close" id="kpClose" aria-label="Đóng bàn phím">Xong</button></div>
+    <div class="kp-keys" id="kpKeys"></div>
   </div>
 </div>
 
@@ -648,7 +731,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     return '<svg viewBox="0 0 100 100" aria-hidden="true">' + s + "</svg>";
   }
 
+  var PLAY = false; // true khi đang dựng phần làm bài trên máy
   function boxHTML(ans, showKey, wide) {
+    if (PLAY) {
+      var kind = typeof ans === "number" ? "num" : (ans === "+" || ans === "−") ? "op" : "cmp";
+      return '<button type="button" class="bx pbx' + (wide ? " wide" : "") + '" data-ans="' + esc(ans) + '" data-kind="' + kind + '" aria-label="Ô trống"></button>';
+    }
     return '<span class="bx' + (wide ? " wide" : "") + '">' + (showKey ? esc(ans) : "") + "</span>";
   }
 
@@ -717,15 +805,19 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     return "Ôn tập tổng hợp";
   }
 
-  function sheetHTML(sections, opts) {
-    var key = !!opts.key;
-    var rangeText = "Phạm vi " + opts.range + (opts.range === 100 ? " (không nhớ)" : "");
-    var secs = sections.map(function (s, i) {
+  function sectionsHTML(sections, key, range) {
+    return sections.map(function (s, i) {
       var t = TYPE_BY_ID[s.type];
-      var items = s.items.map(function (it, j) { return itemHTML(it, j, key, opts.range); }).join("");
+      var items = s.items.map(function (it, j) { return itemHTML(it, j, key, range); }).join("");
       return '<section class="s-sec"><h2><span class="s-num">Bài ' + (i + 1) + "</span><span>" + esc(t.instr) + "</span></h2>" +
         '<div class="s-grid cols-' + t.cols + '">' + items + "</div></section>";
     }).join("");
+  }
+
+  function sheetHTML(sections, opts) {
+    var key = !!opts.key;
+    var rangeText = "Phạm vi " + opts.range + (opts.range === 100 ? " (không nhớ)" : "");
+    var secs = sectionsHTML(sections, key, opts.range);
     return '<article class="sheet' + (key ? " s-key" : "") + '">' +
       '<header class="s-head">' +
         '<div class="s-top"><span>Phiếu luyện tập · Toán 1</span><span>' + esc(rangeText) + "</span></div>" +
@@ -738,15 +830,19 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       '<footer class="s-foot">' +
         '<div class="s-eval"><span>Bé tự đánh giá (tô sao):</span>' + STARS +
         "<span>Lời nhắn của bố mẹ:</span><div class=\"s-line\"></div></div>" +
-        '<div class="s-meta"><span>Xưởng Phiếu Toán</span><span>Mã phiếu ' + esc(opts.code) + (key ? " · trang đáp án" : "") + "</span></div>" +
+        '<div class="s-meta"><span><span class="s-sig">Thầy Công</span> · Xưởng Phiếu Toán</span><span>Mã phiếu ' + esc(opts.code) + (key ? " · trang đáp án" : "") + "</span></div>" +
       "</footer>" +
       '<div class="pb" hidden><span>Hết trang A4</span></div>' +
     "</article>";
   }
 
-  function buildSheets() {
+  function currentSections() {
     var types = TYPES.map(function (t) { return t.id; }).filter(function (id) { return state.types.indexOf(id) >= 0; });
-    var sections = types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code) }; });
+    return { types: types, sections: types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code) }; }) };
+  }
+
+  function buildSheets() {
+    var cs = currentSections(), types = cs.types, sections = cs.sections;
     var opts = { name: state.name, range: state.range, code: state.code, types: types };
     var pages = [{ label: "Phiếu cho bé", html: sheetHTML(sections, opts) }];
     if (state.key) pages.push({ label: "Trang đáp án", html: sheetHTML(sections, Object.assign({}, opts, { key: true })) });
@@ -759,7 +855,10 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     name: $("childName"), chips: $("typeChips"), r10: $("range10"), r100: $("range100"), rangeNote: $("rangeNote"),
     perOut: $("perOut"), perMinus: $("perMinus"), perPlus: $("perPlus"), key: $("withKey"),
     printBtn: $("printBtn"), printLabel: $("printLabel"), newBtn: $("newBtn"), status: $("status"),
-    code: $("codeOut"), stage: $("stage"), scale: $("scale"), warn: $("overflowWarn"), printArea: $("printArea")
+    code: $("codeOut"), stage: $("stage"), scale: $("scale"), warn: $("overflowWarn"), printArea: $("printArea"),
+    tabPrint: $("tabPrint"), tabPlay: $("tabPlay"), printView: $("printView"), playView: $("playView"), play: $("playArea"),
+    progress: $("progress"), submit: $("submitBtn"), reset: $("resetBtn"), result: $("result"),
+    kp: $("keypad"), kpKeys: $("kpKeys"), kpLabel: $("kpLabel"), kpClose: $("kpClose")
   };
 
   function load() {
@@ -813,8 +912,17 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   }
   var SHEET_W = 0;
 
+  function isPlay() { return location.hash === "#lam-bai"; }
+
   function render() {
     syncControls();
+    var play = isPlay();
+    els.tabPrint.setAttribute("aria-selected", String(!play));
+    els.tabPlay.setAttribute("aria-selected", String(play));
+    els.printView.hidden = play; els.playView.hidden = !play;
+    document.body.classList.toggle("mode-play", play);
+    if (play) { renderPlay(); save(); return; }
+    closeKeypad();
     if (!state.types.length) {
       els.scale.innerHTML = '<p class="page-label" style="margin:0">Hãy chọn ít nhất một dạng bài.</p>';
       els.warn.hidden = true; fit(); return;
@@ -840,6 +948,136 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   function setStatus(msg) { els.status.textContent = msg; }
 
+  // ---------- Làm bài trên máy ----------
+  var lastPlaySig = "", active = null;
+
+  function renderPlay() {
+    var sig = [state.code, state.types.join(","), state.range, state.per, state.name].join("|");
+    if (sig === lastPlaySig && els.play.childElementCount) return; // giữ nguyên bài bé đang làm
+    lastPlaySig = sig;
+    closeKeypad();
+    els.result.hidden = true;
+    if (!state.types.length) { els.play.innerHTML = '<p class="hello">Hãy chọn ít nhất một dạng bài.</p>'; updateProgress(); return; }
+    var cs = currentSections();
+    PLAY = true;
+    var body = sectionsHTML(cs.sections, false, state.range);
+    PLAY = false;
+    var hello = state.name ? "Cố lên, " + esc(state.name) + "!" : "Bé ơi, mình cùng làm bài nhé!";
+    els.play.innerHTML = '<p class="hello">' + hello + "</p>" + body;
+    updateProgress();
+  }
+
+  function boxes() { return Array.prototype.slice.call(els.play.querySelectorAll(".pbx")); }
+
+  function updateProgress() {
+    var all = boxes(), filled = all.filter(function (b) { return b.dataset.val; }).length;
+    els.progress.textContent = all.length ? "Đã điền " + filled + "/" + all.length + " ô" : "";
+    els.submit.disabled = !all.length;
+  }
+
+  var KEYSETS = {
+    num: { label: "Chọn số", keys: ["1", "2", "3", "del", "4", "5", "6", "0", "7", "8", "9", "next"] },
+    cmp: { label: "Chọn dấu", keys: ["<", ">", "=", "next"] },
+    op:  { label: "Chọn phép tính", keys: ["+", "−", "", "next"] }
+  };
+
+  function openKeypad(btn) {
+    if (active) active.classList.remove("active");
+    active = btn; btn.classList.add("active");
+    var set = KEYSETS[btn.dataset.kind];
+    els.kpLabel.textContent = set.label;
+    els.kpKeys.innerHTML = set.keys.map(function (k) {
+      if (k === "") return "<span></span>";
+      if (k === "del") return '<button type="button" class="k-del" data-k="del" aria-label="Xoá">⌫ Xoá</button>';
+      if (k === "next") return '<button type="button" class="k-next" data-k="next">Ô tiếp →</button>';
+      return '<button type="button" data-k="' + esc(k) + '">' + esc(k) + "</button>";
+    }).join("");
+    els.kp.hidden = false;
+    document.body.classList.add("kp-open");
+    btn.scrollIntoView({ block: "center", behavior: "smooth" });
+  }
+
+  function closeKeypad() {
+    if (active) active.classList.remove("active");
+    active = null;
+    els.kp.hidden = true;
+    document.body.classList.remove("kp-open");
+  }
+
+  function setVal(btn, v) {
+    btn.dataset.val = v; btn.textContent = v;
+    btn.classList.remove("ok", "no", "shown");
+    updateProgress();
+  }
+
+  function nextBox() {
+    var all = boxes(), i = all.indexOf(active);
+    for (var j = i + 1; j < all.length; j++) if (!all[j].dataset.val || all[j].classList.contains("no")) { openKeypad(all[j]); return; }
+    closeKeypad();
+    els.submit.focus();
+  }
+
+  function pressKey(k) {
+    if (!active) return;
+    var kind = active.dataset.kind, cur = active.dataset.val || "";
+    if (k === "next") { nextBox(); return; }
+    if (k === "del") { setVal(active, cur.slice(0, -1)); return; }
+    if (kind === "num") {
+      if (!/^[0-9]$/.test(k)) return;
+      var v = cur.length >= 2 ? k : cur + k;   // lớp 1: số tối đa 2 chữ số (100 được nhập là 3 chữ số)
+      if (cur === "10" && k === "0") v = "100";
+      if (v.length > 1 && v[0] === "0") v = v.slice(1);
+      setVal(active, v);
+    } else {
+      setVal(active, k);
+      nextBox();
+    }
+  }
+
+  function starsHTML(n) {
+    var s = "";
+    for (var i = 0; i < 5; i++) s += '<svg viewBox="0 0 24 24" class="' + (i < n ? "on" : "") + '" aria-hidden="true"><path d="' + STAR_D + '"/></svg>';
+    return s;
+  }
+
+  function submit() {
+    closeKeypad();
+    var all = boxes(), ok = 0, empty = 0;
+    all.forEach(function (b) {
+      var v = b.dataset.val || "";
+      b.classList.remove("ok", "no", "shown");
+      if (!v) empty++;
+      if (v === b.dataset.ans) { ok++; b.classList.add("ok"); } else b.classList.add("no");
+    });
+    var pct = all.length ? ok / all.length : 0;
+    var stars = pct >= 0.95 ? 5 : pct >= 0.8 ? 4 : pct >= 0.6 ? 3 : pct >= 0.4 ? 2 : 1;
+    var title = stars === 5 ? "Giỏi quá!" : stars >= 4 ? "Làm tốt lắm!" : stars >= 3 ? "Khá lắm, cố thêm chút nữa nhé!" : "Không sao, mình làm lại nhé!";
+    var who = state.name ? esc(state.name) : "Bé";
+    els.result.innerHTML =
+      '<div class="big-stars" aria-label="' + stars + ' sao">' + starsHTML(stars) + "</div>" +
+      "<h3>" + title + "</h3>" +
+      "<p>" + who + " làm đúng <b>" + ok + "/" + all.length + "</b> ô." + (empty ? " Còn " + empty + " ô chưa điền." : "") +
+      (ok < all.length ? " Ô viền đỏ là ô chưa đúng, bé bấm vào để sửa rồi nộp lại." : "") + "</p>" +
+      '<span class="sign-off">Thầy Công tặng ' + (state.name ? esc(state.name) : "bé") + " " + stars + " sao</span>" +
+      '<div class="row-btns">' + (ok < all.length ? '<button type="button" class="btn" id="showAns">Xem đáp án</button>' : "") +
+      '<button type="button" class="btn btn-primary" id="againBtn">Làm đề khác</button></div>';
+    els.result.hidden = false;
+    els.result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function showAnswers() {
+    boxes().forEach(function (b) {
+      if (b.classList.contains("no")) { b.textContent = b.dataset.ans; b.classList.add("shown"); }
+    });
+  }
+
+  function resetPlay() {
+    closeKeypad();
+    boxes().forEach(function (b) { delete b.dataset.val; b.textContent = ""; b.classList.remove("ok", "no", "shown"); });
+    els.result.hidden = true;
+    updateProgress();
+  }
+
   // ---------- In / tải file ----------
   var downloads = null;
 
@@ -849,7 +1087,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     return "<!doctype html><html lang=\"vi\"><head><meta charset=\"utf-8\">" +
       "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
       "<title>Phiếu Toán 1 · " + state.code + "</title>" +
-      "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap\">" +
+      "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap\">" +
       "<style>" + css +
       "body{margin:0;background:#e7ebf0;font-family:'Be Vietnam Pro',Arial,sans-serif}" +
       ".bar{position:sticky;top:0;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 16px;background:#5a3ea8;color:#fff;font-size:15px}" +
@@ -901,6 +1139,31 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       render();
     });
     els.printBtn.addEventListener("click", onPrint);
+    window.addEventListener("hashchange", render);
+    els.play.addEventListener("click", function (e) {
+      var b = e.target.closest(".pbx");
+      if (b) openKeypad(b);
+    });
+    els.kpKeys.addEventListener("click", function (e) {
+      var k = e.target.closest("button");
+      if (k) pressKey(k.dataset.k);
+    });
+    els.kpClose.addEventListener("click", closeKeypad);
+    document.addEventListener("keydown", function (e) {
+      if (!active || els.kp.hidden) return;
+      var k = e.key;
+      if (k === "-") k = "−";
+      if (k === "Backspace") k = "del";
+      if (k === "Enter" || k === "Tab" || k === "ArrowRight") k = "next";
+      if (k === "Escape") { closeKeypad(); return; }
+      if (/^[0-9]$/.test(k) || ["del", "next", "<", ">", "=", "+", "−"].indexOf(k) >= 0) { e.preventDefault(); pressKey(k); }
+    });
+    els.submit.addEventListener("click", submit);
+    els.reset.addEventListener("click", resetPlay);
+    els.result.addEventListener("click", function (e) {
+      if (e.target.id === "showAns") showAnswers();
+      if (e.target.id === "againBtn") { els.newBtn.click(); window.scrollTo({ top: els.playView.offsetTop - 80, behavior: "smooth" }); }
+    });
     document.getElementById("panel").addEventListener("submit", function (e) { e.preventDefault(); });
     if ("ResizeObserver" in window) new ResizeObserver(fit).observe(els.stage);
     else window.addEventListener("resize", fit);
