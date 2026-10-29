@@ -141,6 +141,15 @@ input[type="text"] {
 }
 input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 36px 9px 12px; width: 100%; min-width: 0; appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%; background-size: 5px 5px; background-repeat: no-repeat;
+}
+select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.lesson-field { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.lesson-field select.picked { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background-color: var(--accent-soft); }
 .type-groups { display: grid; gap: 12px; }
 .type-group { display: grid; gap: 6px; }
 .group-name { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
@@ -352,6 +361,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   <div class="work">
     <form class="panel" id="panel" autocomplete="off">
+      <div class="field lesson-field">
+        <label class="label" for="lessonSel">Con đang học bài nào?</label>
+        <select id="lessonSel"></select>
+        <p class="note" id="lessonNote">Theo sách Toán 1 Kết nối tri thức với cuộc sống. Chọn bài, app tự chọn dạng bài phù hợp.</p>
+      </div>
+
       <div class="field">
         <label class="label" for="childName">Tên của bé (không bắt buộc)</label>
         <input type="text" id="childName" maxlength="40" placeholder="Ví dụ: Minh Anh">
@@ -425,7 +440,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
         <div class="card">
           <h3>Cách dùng</h3>
           <ol>
-            <li>Chọn dạng bài bé đang học trên lớp.</li>
+            <li>Chọn bài con đang học trên lớp, hoặc tự chọn dạng bài.</li>
             <li>Bấm in, hoặc tải file về rồi mở và in trên máy tính.</li>
             <li>Cho bé làm, bố mẹ chấm theo trang đáp án.</li>
             <li>Không có máy in? Chọn <b>Làm bài trên máy</b>, bé bấm số trên màn hình và được chấm ngay.</li>
@@ -434,7 +449,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
         <div class="card">
           <span class="tag">Sắp ra mắt</span>
           <h3>Bộ phiếu theo tuần</h3>
-          <p>Phiếu soạn sẵn theo từng tuần học lớp 1, có trò chơi và đề ôn cuối kỳ, bám yêu cầu cần đạt của Chương trình GDPT 2018.</p>
+          <p>Phiếu soạn sẵn theo từng tuần học lớp 1, có trò chơi và đề ôn cuối kỳ, bám sát chương trình hiện hành và tiến độ sách Kết nối tri thức với cuộc sống.</p>
         </div>
       </div>
     </section>
@@ -479,6 +494,64 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     { id: "clock", group: "geo", fixed10: true, name: "Xem đồng hồ", hint: "Đọc giờ đúng", instr: "Đồng hồ chỉ mấy giờ? Viết số vào ô trống.", cols: 3 },
     { id: "word",  group: "word", name: "Bài toán có lời văn", hint: "Viết phép tính thích hợp", instr: "Đọc bài toán rồi viết phép tính thích hợp vào ô trống.", cols: 1 }
   ];
+  // Danh sách bài theo sách Toán 1 "Kết nối tri thức với cuộc sống". Bài tập do app tự sinh, không lấy nội dung sách.
+  // t: dạng bài, r: phạm vi, o: tuỳ chọn; bài chưa có dạng phù hợp thì không có t (hiện "chưa có").
+  var LESSONS = [
+    { hk: 1, topic: "Chủ đề 1. Các số từ 0 đến 10", items: [
+      { n: 1, name: "Các số 0, 1, 2, 3, 4, 5", t: ["count", "seq", "cmp"], r: 10, o: { max: 5 } },
+      { n: 2, name: "Các số 6, 7, 8, 9, 10", t: ["count", "seq", "adj"], r: 10 },
+      { n: 3, name: "Nhiều hơn, ít hơn, bằng nhau", t: ["count", "cmp"], r: 10 },
+      { n: 4, name: "So sánh số", t: ["cmp", "order", "count"], r: 10 },
+      { n: 5, name: "Mấy và mấy", t: ["dec", "count"], r: 10 },
+      { n: 6, name: "Luyện tập chung", t: ["count", "cmp", "dec", "seq"], r: 10 } ] },
+    { hk: 1, topic: "Chủ đề 2. Làm quen với một số hình phẳng", items: [
+      { n: 7, name: "Hình vuông, hình tròn, hình tam giác, hình chữ nhật", t: ["shape"], r: 10 },
+      { n: 8, name: "Thực hành lắp ghép, xếp hình", t: ["shape"], r: 10 },
+      { n: 9, name: "Luyện tập chung", t: ["shape", "count"], r: 10 } ] },
+    { hk: 1, topic: "Chủ đề 3. Phép cộng, phép trừ trong phạm vi 10", items: [
+      { n: 10, name: "Phép cộng trong phạm vi 10", t: ["add", "dec"], r: 10 },
+      { n: 11, name: "Phép trừ trong phạm vi 10", t: ["sub"], r: 10 },
+      { n: 12, name: "Bảng cộng, bảng trừ trong phạm vi 10", t: ["add", "sub", "mix"], r: 10 },
+      { n: 13, name: "Luyện tập chung", t: ["mix", "three", "word"], r: 10 } ] },
+    { hk: 1, topic: "Chủ đề 4. Làm quen với một số hình khối", items: [
+      { n: 14, name: "Khối lập phương, khối hộp chữ nhật" },
+      { n: 15, name: "Vị trí, định hướng trong không gian" },
+      { n: 16, name: "Luyện tập chung" } ] },
+    { hk: 1, topic: "Chủ đề 5. Ôn tập học kì 1", items: [
+      { n: 17, name: "Ôn tập các số trong phạm vi 10", t: ["count", "seq", "cmp", "order"], r: 10 },
+      { n: 18, name: "Ôn tập phép cộng, phép trừ trong phạm vi 10", t: ["add", "sub", "three", "word"], r: 10 },
+      { n: 19, name: "Ôn tập hình học", t: ["shape"], r: 10 },
+      { n: 20, name: "Ôn tập chung", t: ["count", "mix", "cmp", "shape", "word"], r: 10 } ] },
+    { hk: 2, topic: "Chủ đề 6. Các số đến 100", items: [
+      { n: 21, name: "Số có hai chữ số", t: ["seq", "adj", "line"], r: 100 },
+      { n: 22, name: "So sánh số có hai chữ số", t: ["cmp", "order"], r: 100 },
+      { n: 23, name: "Bảng các số từ 1 đến 100", t: ["seq", "line", "adj"], r: 100 },
+      { n: 24, name: "Luyện tập chung", t: ["cmp", "order", "adj", "line"], r: 100 } ] },
+    { hk: 2, topic: "Chủ đề 7. Độ dài và đo độ dài", items: [
+      { n: 25, name: "Dài hơn, ngắn hơn" },
+      { n: 26, name: "Đơn vị đo độ dài", t: ["measure"], r: 10 },
+      { n: 27, name: "Thực hành ước lượng và đo độ dài", t: ["measure"], r: 10 },
+      { n: 28, name: "Luyện tập chung", t: ["measure"], r: 10 } ] },
+    { hk: 2, topic: "Chủ đề 8. Phép cộng, phép trừ (không nhớ) trong phạm vi 100", items: [
+      { n: 29, name: "Phép cộng số có hai chữ số với số có một chữ số", t: ["add"], r: 100, o: { form: "21" } },
+      { n: 30, name: "Phép cộng số có hai chữ số với số có hai chữ số", t: ["add"], r: 100, o: { form: "22" } },
+      { n: 31, name: "Phép trừ số có hai chữ số cho số có một chữ số", t: ["sub"], r: 100, o: { form: "21" } },
+      { n: 32, name: "Phép trừ số có hai chữ số cho số có hai chữ số", t: ["sub"], r: 100, o: { form: "22" } },
+      { n: 33, name: "Luyện tập chung", t: ["mix", "word"], r: 100 } ] },
+    { hk: 2, topic: "Chủ đề 9. Thời gian, giờ và lịch", items: [
+      { n: 34, name: "Xem giờ đúng trên đồng hồ", t: ["clock"], r: 10 },
+      { n: 35, name: "Các ngày trong tuần" },
+      { n: 36, name: "Thực hành xem lịch và giờ", t: ["clock"], r: 10 },
+      { n: 37, name: "Luyện tập chung", t: ["clock"], r: 10 } ] },
+    { hk: 2, topic: "Chủ đề 10. Ôn tập cuối năm", items: [
+      { n: 38, name: "Ôn tập các số và phép tính trong phạm vi 10", t: ["count", "mix", "three", "dec"], r: 10 },
+      { n: 39, name: "Ôn tập các số và phép tính trong phạm vi 100", t: ["cmp", "order", "mix", "word"], r: 100 },
+      { n: 40, name: "Ôn tập hình học và đo lường", t: ["shape", "measure", "clock"], r: 10 },
+      { n: 41, name: "Ôn tập chung", t: ["cmp", "mix", "shape", "measure", "clock", "word"], r: 100 } ] }
+  ];
+  var LESSON_BY_ID = {};
+  LESSONS.forEach(function (tp) { tp.items.forEach(function (l) { l.id = "b" + l.n; l.topic = tp.topic; LESSON_BY_ID[l.id] = l; }); });
+
   var TYPE_BY_ID = {};
   TYPES.forEach(function (t) { TYPE_BY_ID[t.id] = t; });
 
@@ -492,7 +565,8 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     range: 10,
     per: 6,
     key: true,
-    code: newCode()
+    code: newCode(),
+    lesson: ""
   };
 
   // ---------- Bộ sinh số ngẫu nhiên có hạt giống (để mã phiếu ra đúng đề) ----------
@@ -530,6 +604,14 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       return [a, "+", b, "=", { ans: a + b }];
     }
     // Phạm vi 100, cộng không nhớ: hàng đơn vị và hàng chục đều không vượt 9.
+    if (LOPTS.form === "21") { // số có hai chữ số + số có một chữ số
+      var x1 = g.ri(1, 9) * 10 + g.ri(0, 8), y1 = g.ri(1, 9 - x1 % 10);
+      return [x1, "+", y1, "=", { ans: x1 + y1 }];
+    }
+    if (LOPTS.form === "22") { // số có hai chữ số + số có hai chữ số
+      var t1 = g.ri(1, 8), u1 = g.ri(0, 9), t2 = g.ri(1, 9 - t1), u2 = g.ri(0, 9 - u1);
+      return [t1 * 10 + u1, "+", t2 * 10 + u2, "=", { ans: (t1 + t2) * 10 + u1 + u2 }];
+    }
     var ta = g.ri(1, 8), ua = g.ri(0, 9);
     var tb = g.rng() < 0.35 ? 0 : g.ri(0, 9 - ta), ub = g.ri(0, 9 - ua);
     var x = ta * 10 + ua, y = tb * 10 + ub;
@@ -543,6 +625,14 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       return [a, "−", b, "=", { ans: a - b }];
     }
     // Phạm vi 100, trừ không nhớ.
+    if (LOPTS.form === "21") { // số có hai chữ số − số có một chữ số
+      var x1 = g.ri(1, 9) * 10 + g.ri(3, 9), y1 = g.ri(1, x1 % 10);
+      return [x1, "−", y1, "=", { ans: x1 - y1 }];
+    }
+    if (LOPTS.form === "22") { // số có hai chữ số − số có hai chữ số
+      var t1 = g.ri(2, 9), u1 = g.ri(0, 9), t2 = g.ri(1, t1 - 1), u2 = g.ri(0, u1);
+      return [t1 * 10 + u1, "−", t2 * 10 + u2, "=", { ans: (t1 - t2) * 10 + u1 - u2 }];
+    }
     var ta = g.ri(1, 9), ua = g.ri(0, 9);
     var tb = g.rng() < 0.35 ? 0 : g.ri(0, ta), ub = g.ri(0, ua);
     var x = ta * 10 + ua, y = tb * 10 + ub;
@@ -552,7 +642,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   }
   function genCmp(g, range) {
     var a, b;
-    if (range === 10) { a = g.ri(0, 10); b = g.rng() < 0.18 ? a : g.ri(0, 10); }
+    if (range === 10) { var mx = LOPTS.max || 10; a = g.ri(0, mx); b = g.rng() < 0.18 ? a : g.ri(0, mx); }
     else {
       a = g.ri(10, 99);
       var r = g.rng();
@@ -569,7 +659,9 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   }
   function genSeq(g, range) {
     var len = 6, step = 1, start, desc = g.rng() < 0.3, vals = [];
-    if (range === 10) {
+    if (range === 10 && LOPTS.max === 5) {
+      start = desc ? 5 : 0;
+    } else if (range === 10) {
       start = desc ? g.ri(5, 10) : g.ri(0, 4);
     } else {
       if (g.rng() < 0.3) { step = 10; start = desc ? g.ri(5, 10) * 10 : g.ri(0, 4) * 10; }
@@ -664,16 +756,17 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   var SHAPES = ["circle", "star", "heart", "tri", "square"];
 
-  function genSection(type, range, per, code) {
-    var g = makeGen(mulberry32(hashStr(code + "|" + type + "|" + range + "|" + per)));
+  var LOPTS = {}; // tuỳ chọn riêng của bài học đang chọn (max, form)
+  function genSection(type, range, per, code, lessonId) {
+    var g = makeGen(mulberry32(hashStr(code + "|" + type + "|" + range + "|" + per + "|" + (lessonId || ""))));
     var items = [], seen = {}, tries = 0;
     while (items.length < per && tries++ < 400) {
       var it;
       if (type === "count") {
-        var n = g.ri(1, 10);
+        var n = g.ri(1, LOPTS.max || 10);
         it = { kind: "count", n: n, shape: g.pick(SHAPES) };
-        var k = per <= 10 ? "n" + n : "n" + n + it.shape;
-        if (seen[k]) continue; seen[k] = 1;
+        var k = per <= (LOPTS.max || 10) ? "n" + n : "n" + n + it.shape;
+        if (seen[k] && tries < 300) continue; seen[k] = 1;
       } else if (type === "order" || type === "line" || type === "shape" || type === "measure" || type === "clock" || type === "word") {
         it = type === "order" ? genOrder(g, range) : type === "line" ? genLine(g, range) : type === "shape" ? genShape(g)
           : type === "measure" ? genMeasure(g) : type === "clock" ? genClock(g) : genWord(g, range);
@@ -853,8 +946,8 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     var secs = sectionsHTML(sections, key, opts.range);
     return '<article class="sheet' + (key ? " s-key" : "") + '">' +
       '<header class="s-head">' +
-        '<div class="s-top"><span>Phiếu luyện tập · Toán 1</span><span>' + esc(rangeText) + "</span></div>" +
-        '<h1 class="s-title">' + (key ? "Đáp án · dành cho bố mẹ" : esc(sheetTitle(opts.types))) + "</h1>" +
+        '<div class="s-top"><span>Phiếu luyện tập · Toán 1' + (opts.lesson ? " · Theo bài " + opts.lesson.n + " (Kết nối tri thức)" : "") + "</span><span>" + esc(rangeText) + "</span></div>" +
+        '<h1 class="s-title">' + (key ? "Đáp án · dành cho bố mẹ" : opts.lesson ? esc(opts.lesson.name) : esc(sheetTitle(opts.types))) + "</h1>" +
         '<div class="s-fields">' +
           '<div class="s-field"><i>Họ và tên:</i><u>' + esc(opts.name || "") + "</u></div>" +
           '<div class="s-field"><i>Ngày:</i><u></u></div>' +
@@ -871,12 +964,17 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   function currentSections() {
     var types = TYPES.map(function (t) { return t.id; }).filter(function (id) { return state.types.indexOf(id) >= 0; });
-    return { types: types, sections: types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code) }; }) };
+    var les = LESSON_BY_ID[state.lesson];
+    if (les) types = les.t.slice(); // giữ đúng thứ tự dạng bài như bài học
+    LOPTS = (les && les.o) || {};
+    var out = { types: types, lesson: les, sections: types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code, state.lesson) }; }) };
+    LOPTS = {};
+    return out;
   }
 
   function buildSheets() {
     var cs = currentSections(), types = cs.types, sections = cs.sections;
-    var opts = { name: state.name, range: state.range, code: state.code, types: types };
+    var opts = { name: state.name, range: state.range, code: state.code, types: types, lesson: cs.lesson };
     var pages = [{ label: "Phiếu cho bé", html: sheetHTML(sections, opts) }];
     if (state.key) pages.push({ label: "Trang đáp án", html: sheetHTML(sections, Object.assign({}, opts, { key: true })) });
     return pages;
@@ -891,6 +989,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     code: $("codeOut"), stage: $("stage"), scale: $("scale"), warn: $("overflowWarn"), printArea: $("printArea"),
     tabPrint: $("tabPrint"), tabPlay: $("tabPlay"), printView: $("printView"), playView: $("playView"), play: $("playArea"),
     progress: $("progress"), submit: $("submitBtn"), reset: $("resetBtn"), result: $("result"),
+    lesson: $("lessonSel"), lessonNote: $("lessonNote"),
     kp: $("keypad"), kpKeys: $("kpKeys"), kpLabel: $("kpLabel"), kpClose: $("kpClose")
   };
 
@@ -905,10 +1004,23 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       if (typeof s.per === "number") state.per = Math.min(PER_MAX, Math.max(PER_MIN, s.per | 0));
       if (typeof s.key === "boolean") state.key = s.key;
       if (typeof s.code === "string" && /^[A-Z0-9]{4}$/.test(s.code)) state.code = s.code;
+      if (typeof s.lesson === "string" && LESSON_BY_ID[s.lesson] && LESSON_BY_ID[s.lesson].t) state.lesson = s.lesson;
     } catch (e) { /* bỏ qua khi trình duyệt chặn lưu trữ */ }
   }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* không sao */ }
+  }
+
+  function buildLessonSelect() {
+    var html = '<option value="">Tự chọn dạng bài</option>';
+    [1, 2].forEach(function (hk) {
+      LESSONS.filter(function (tp) { return tp.hk === hk; }).forEach(function (tp) {
+        html += '<optgroup label="Học kỳ ' + hk + " · " + esc(tp.topic) + '">' + tp.items.map(function (l) {
+          return '<option value="' + l.id + '"' + (l.t ? "" : " disabled") + ">Bài " + l.n + ". " + esc(l.name) + (l.t ? "" : " (chưa có)") + "</option>";
+        }).join("") + "</optgroup>";
+      });
+    });
+    els.lesson.innerHTML = html;
   }
 
   function buildControls() {
@@ -922,6 +1034,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   function syncControls() {
     els.name.value = state.name;
+    els.lesson.value = state.lesson;
+    els.lesson.classList.toggle("picked", !!state.lesson);
+    var les = LESSON_BY_ID[state.lesson];
+    els.lessonNote.textContent = les
+      ? "Đã chọn " + les.t.length + " dạng bài phù hợp bài " + les.n + ". Đổi dạng bài hoặc phạm vi bên dưới sẽ chuyển về Tự chọn."
+      : "Theo sách Toán 1 Kết nối tri thức với cuộc sống. Chọn bài, app tự chọn dạng bài phù hợp.";
     TYPES.forEach(function (t) { $("type-" + t.id).checked = state.types.indexOf(t.id) >= 0; });
     els.r10.checked = state.range === 10; els.r100.checked = state.range === 100;
     els.rangeNote.textContent = state.range === 100
@@ -985,7 +1103,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   var lastPlaySig = "", active = null;
 
   function renderPlay() {
-    var sig = [state.code, state.types.join(","), state.range, state.per, state.name].join("|");
+    var sig = [state.code, state.types.join(","), state.range, state.per, state.name, state.lesson].join("|");
     if (sig === lastPlaySig && els.play.childElementCount) return; // giữ nguyên bài bé đang làm
     lastPlaySig = sig;
     closeKeypad();
@@ -1156,13 +1274,20 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   // ---------- Sự kiện ----------
   function wire() {
     els.name.addEventListener("input", function () { state.name = els.name.value; render(); });
+    els.lesson.addEventListener("change", function () {
+      var les = LESSON_BY_ID[els.lesson.value];
+      state.lesson = les && les.t ? les.id : "";
+      if (les && les.t) { state.types = les.t.slice(); state.range = les.r; }
+      render();
+    });
     els.chips.addEventListener("change", function (e) {
+      state.lesson = "";
       var id = e.target.value, on = e.target.checked;
       state.types = state.types.filter(function (t) { return t !== id; });
       if (on) state.types.push(id);
       render();
     });
-    [els.r10, els.r100].forEach(function (r) { r.addEventListener("change", function () { state.range = +r.value; render(); }); });
+    [els.r10, els.r100].forEach(function (r) { r.addEventListener("change", function () { state.lesson = ""; state.range = +r.value; render(); }); });
     els.perMinus.addEventListener("click", function () { if (state.per > PER_MIN) { state.per--; render(); } });
     els.perPlus.addEventListener("click", function () { if (state.per < PER_MAX) { state.per++; render(); } });
     els.key.addEventListener("change", function () { state.key = els.key.checked; render(); });
@@ -1210,6 +1335,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   // ---------- Khởi động ----------
   load();
   buildControls();
+  buildLessonSelect();
   SHEET_W = measureA4();
   wire();
   render();
