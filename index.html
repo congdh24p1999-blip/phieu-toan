@@ -70,7 +70,11 @@ input[type="text"] {
 }
 input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+.type-groups { display: grid; gap: 12px; }
+.type-group { display: grid; gap: 6px; }
+.group-name { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
 .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sel-count { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--muted); }
 .chip { position: relative; display: block; cursor: pointer; }
 .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .chip span { display: grid; gap: 1px; height: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); transition: border-color .15s, background .15s; }
@@ -183,6 +187,56 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 .seq .cell { display: inline-flex; align-items: center; justify-content: center; width: 10.5mm; height: 10.5mm; border: 0.25mm solid var(--s-rule); border-radius: 1.2mm; font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 5.6mm; line-height: 1; }
 .seq .bx { font-size: 5.6mm; }
 .seq .arr { color: var(--s-soft); font-size: 3mm; }
+.seq .lbl { font-size: 3.2mm; color: var(--s-soft); }
+
+/* Xếp thứ tự */
+.ord { display: grid; gap: 2mm; }
+.ord-src { display: flex; align-items: center; gap: 2mm; font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 6mm; line-height: 1; }
+.ord-src b { font-weight: 600; border: 0.25mm dashed var(--s-rule); border-radius: 50%; min-width: 10mm; height: 10mm; display: inline-flex; align-items: center; justify-content: center; padding: 0 1mm; }
+.ord-ans { display: flex; align-items: center; gap: 1.2mm; padding-left: 7mm; font-size: 3.4mm; color: var(--s-soft); }
+
+/* Tia số */
+.nl { display: grid; grid-template-columns: 5mm 1fr; align-items: start; gap: 1mm; }
+.nl-track { position: relative; display: grid; padding-top: 3.5mm; padding-right: 4mm; }
+.nl-track::before { content: ""; position: absolute; left: 0; right: 0; top: 3.5mm; border-top: 0.4mm solid var(--s-ink); }
+.nl-track::after { content: ""; position: absolute; right: 0; top: calc(3.5mm - 1.3mm); border-left: 2.4mm solid var(--s-ink); border-top: 1.3mm solid transparent; border-bottom: 1.3mm solid transparent; }
+.nt { position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2.2mm; }
+.nt::before { content: ""; position: absolute; top: -1.6mm; left: 50%; height: 3.2mm; border-left: 0.4mm solid var(--s-ink); }
+.nt span { font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 4.8mm; line-height: 9mm; height: 9mm; }
+.nt .bx { width: 9mm; height: 9mm; font-size: 4.8mm; }
+
+/* Hình học */
+.shp { display: grid; gap: 2mm; border: 0.3mm solid var(--s-rule); border-radius: 2mm; padding: 2.5mm 3mm; }
+.shp-row { display: flex; align-items: center; gap: 2mm; min-height: 11mm; }
+.shp-row svg { display: block; }
+.shp-row svg * { fill: var(--s-fill); stroke: var(--s-ink); stroke-width: 1.3; stroke-linejoin: round; }
+.shp-q { display: flex; align-items: center; gap: 1.5mm; font-size: 3.8mm; }
+
+/* Đo độ dài: vẽ theo milimét thật để in 100% là đúng xăng-ti-mét */
+.msr { display: grid; gap: 1.5mm; }
+.msr svg { display: block; overflow: visible; }
+.msr .r-body { fill: #fff; stroke: var(--s-ink); stroke-width: 0.3; }
+.msr .r-tick { stroke: var(--s-ink); stroke-width: 0.2; }
+.msr .r-num { font-family: "Be Vietnam Pro", sans-serif; font-size: 2.6px; fill: var(--s-ink); text-anchor: middle; }
+.msr .obj { fill: var(--s-fill); stroke: var(--s-ink); stroke-width: 0.35; stroke-linejoin: round; }
+.msr-a { display: flex; align-items: center; gap: 1.5mm; font-size: 3.8mm; }
+
+/* Đồng hồ */
+.clk { display: flex; flex-direction: column; align-items: center; gap: 2mm; }
+.clk svg { width: 27mm; height: 27mm; display: block; }
+.clk .face { fill: #fff; stroke: var(--s-ink); stroke-width: 2.4; }
+.clk .tick { stroke: var(--s-ink); stroke-width: 1.4; }
+.clk .num { font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 10px; fill: var(--s-ink); text-anchor: middle; dominant-baseline: central; }
+.clk .hh { stroke: var(--s-ink); stroke-width: 4; stroke-linecap: round; }
+.clk .mh { stroke: var(--s-ink); stroke-width: 2.4; stroke-linecap: round; }
+.clk .pin { fill: var(--s-ink); }
+.clk-a { display: flex; align-items: center; gap: 1.5mm; font-size: 3.8mm; }
+
+/* Bài toán có lời văn */
+.wp { display: grid; gap: 2.2mm; }
+.wp p { margin: 0; font-size: 4mm; line-height: 1.45; display: flex; gap: 1mm; }
+.wp-calc { display: flex; align-items: center; gap: 1.5mm; padding-left: 6mm; font-size: 3.6mm; color: var(--s-soft); }
+.wp-calc .eq { font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 6mm; color: var(--s-ink); }
 
 .s-foot { margin-top: auto; display: grid; gap: 3mm; border-top: 0.3mm solid var(--s-rule); padding-top: 3.5mm; font-size: 3.6mm; }
 .s-eval { display: grid; grid-template-columns: auto 1fr; gap: 2.5mm 4mm; align-items: center; }
@@ -211,8 +265,8 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       </div>
 
       <fieldset class="field" style="border:0;padding:0;margin:0">
-        <legend class="label" style="margin-bottom:8px">Dạng bài</legend>
-        <div class="chips" id="typeChips"></div>
+        <legend class="label" style="margin-bottom:8px">Dạng bài <span class="sel-count" id="selCount"></span></legend>
+        <div class="type-groups" id="typeChips"></div>
       </fieldset>
 
       <fieldset class="field" style="border:0;padding:0;margin:0">
@@ -285,14 +339,29 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   "use strict";
 
   // ---------- Dữ liệu dạng bài ----------
+  // group: nhóm hiển thị trong bảng chọn; fixed10: luôn trong phạm vi 10.
+  var GROUPS = [
+    { id: "num",  name: "Các số" },
+    { id: "calc", name: "Phép tính" },
+    { id: "geo",  name: "Hình học và đo lường" },
+    { id: "word", name: "Giải toán" }
+  ];
   var TYPES = [
-    { id: "count", name: "Đếm hình", hint: "Đếm đồ vật, viết số (đến 10)", instr: "Đếm và viết số thích hợp vào ô trống.", cols: 3 },
-    { id: "add",   name: "Phép cộng", hint: "Tính nhẩm phép cộng", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
-    { id: "sub",   name: "Phép trừ", hint: "Tính nhẩm phép trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
-    { id: "mix",   name: "Cộng trừ xen kẽ", hint: "Trộn cộng và trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
-    { id: "cmp",   name: "So sánh số", hint: "Điền dấu >, <, =", instr: "Điền dấu >, <, = vào ô trống.", cols: 3 },
-    { id: "seq",   name: "Dãy số", hint: "Viết số còn thiếu", instr: "Viết số còn thiếu vào ô trống.", cols: 2 },
-    { id: "dec",   name: "Mấy và mấy", hint: "Tách số trong phạm vi 10", instr: "Viết số thích hợp vào ô trống.", cols: 3 }
+    { id: "count", group: "num", fixed10: true, name: "Đếm hình", hint: "Đếm đồ vật, viết số (đến 10)", instr: "Đếm và viết số thích hợp vào ô trống.", cols: 3 },
+    { id: "seq",   group: "num", name: "Dãy số", hint: "Viết số còn thiếu", instr: "Viết số còn thiếu vào ô trống.", cols: 2 },
+    { id: "adj",   group: "num", name: "Liền trước, liền sau", hint: "Số đứng trước, đứng sau", instr: "Viết số liền trước, số liền sau vào ô trống.", cols: 3 },
+    { id: "order", group: "num", name: "Xếp thứ tự", hint: "Từ bé đến lớn", instr: "Viết các số theo thứ tự từ bé đến lớn.", cols: 2 },
+    { id: "line",  group: "num", name: "Tia số", hint: "Điền số vào vạch", instr: "Viết số thích hợp vào ô trống dưới tia số.", cols: 1 },
+    { id: "cmp",   group: "num", name: "So sánh số", hint: "Điền dấu >, <, =", instr: "Điền dấu >, <, = vào ô trống.", cols: 3 },
+    { id: "add",   group: "calc", name: "Phép cộng", hint: "Tính nhẩm phép cộng", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "sub",   group: "calc", name: "Phép trừ", hint: "Tính nhẩm phép trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "mix",   group: "calc", name: "Cộng trừ xen kẽ", hint: "Trộn cộng và trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "three", group: "calc", fixed10: true, name: "Tính có 3 số", hint: "Ví dụ 3 + 2 + 1", instr: "Tính từ trái sang phải rồi viết kết quả.", cols: 2 },
+    { id: "dec",   group: "calc", fixed10: true, name: "Mấy và mấy", hint: "Tách số trong phạm vi 10", instr: "Viết số thích hợp vào ô trống.", cols: 3 },
+    { id: "shape", group: "geo", fixed10: true, name: "Nhận dạng hình", hint: "Vuông, tròn, tam giác, chữ nhật", instr: "Đếm số hình theo yêu cầu rồi viết vào ô trống.", cols: 2 },
+    { id: "measure", group: "geo", fixed10: true, name: "Đo độ dài", hint: "Đọc số đo trên thước cm", instr: "Đọc số đo trên thước rồi viết vào ô trống.", cols: 2 },
+    { id: "clock", group: "geo", fixed10: true, name: "Xem đồng hồ", hint: "Đọc giờ đúng", instr: "Đồng hồ chỉ mấy giờ? Viết số vào ô trống.", cols: 3 },
+    { id: "word",  group: "word", name: "Bài toán có lời văn", hint: "Viết phép tính thích hợp", instr: "Đọc bài toán rồi viết phép tính thích hợp vào ô trống.", cols: 1 }
   ];
   var TYPE_BY_ID = {};
   TYPES.forEach(function (t) { TYPE_BY_ID[t.id] = t; });
@@ -395,6 +464,88 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     while (Object.keys(blanks).length < nb && guard++ < 50) { var p = g.ri(1, len - 1); blanks[p] = true; }
     return vals.map(function (v, i) { return blanks[i] ? { ans: v } : v; });
   }
+  function genAdj(g, range) {
+    var n = range === 10 ? g.ri(1, 9) : g.ri(11, 98), r = g.rng();
+    if (r < 0.5) return [{ ans: n - 1 }, n, { ans: n + 1 }];
+    if (r < 0.75) return [{ ans: n - 1 }, n];
+    return [n, { ans: n + 1 }];
+  }
+  function distinct(g, k, lo, hi) {
+    var out = [], guard = 0;
+    while (out.length < k && guard++ < 200) { var v = g.ri(lo, hi); if (out.indexOf(v) < 0) out.push(v); }
+    return out;
+  }
+  function genOrder(g, range) {
+    var nums = range === 10 ? distinct(g, 4, 0, 10) : distinct(g, 4, 10, 99);
+    return { kind: "order", nums: nums, ans: nums.slice().sort(function (a, b) { return a - b; }) };
+  }
+  function genLine(g, range) {
+    var start = 0, step = 1;
+    if (range === 100) {
+      if (g.rng() < 0.35) step = 10; else start = g.ri(1, 8) * 10;
+    }
+    var ticks = [], blanks = {}, nb = g.ri(3, 4), guard = 0;
+    while (Object.keys(blanks).length < nb && guard++ < 50) blanks[g.ri(1, 10)] = true;
+    for (var i = 0; i <= 10; i++) { var v = start + i * step; ticks.push(blanks[i] ? { ans: v } : v); }
+    return { kind: "line", ticks: ticks };
+  }
+  function genThree(g) {
+    // Giữ mọi kết quả trung gian trong 0..10, tránh số 0 cho tự nhiên.
+    for (var t = 0; t < 50; t++) {
+      var a = g.ri(1, 9), op1 = g.rng() < 0.6 ? "+" : "−";
+      var b = op1 === "+" ? g.ri(1, Math.max(1, 10 - a)) : g.ri(1, a);
+      var r1 = op1 === "+" ? a + b : a - b;
+      if (r1 > 10 || r1 === 0) continue;
+      var op2 = r1 === 10 ? "−" : (g.rng() < 0.5 ? "+" : "−");
+      var c = op2 === "+" ? g.ri(1, Math.max(1, 10 - r1)) : g.ri(1, r1);
+      var r2 = op2 === "+" ? r1 + c : r1 - c;
+      if (r2 < 0 || r2 > 10) continue;
+      return [a, op1, b, op2, c, "=", { ans: r2 }];
+    }
+    return [2, "+", 3, "+", 1, "=", { ans: 6 }];
+  }
+  var GEO = { sq: "hình vuông", ci: "hình tròn", tr: "hình tam giác", re: "hình chữ nhật" };
+  function genShape(g) {
+    var kinds = Object.keys(GEO), target = g.pick(kinds), total = g.ri(5, 7), cnt = g.ri(1, Math.min(4, total - 1));
+    var list = [];
+    for (var i = 0; i < total; i++) {
+      var k = i < cnt ? target : g.pick(kinds.filter(function (x) { return x !== target; }));
+      list.push({ k: k, s: [0.72, 0.86, 1][g.ri(0, 2)], rot: k === "tr" && g.rng() < 0.3 ? 180 : 0 });
+    }
+    for (var j = list.length - 1; j > 0; j--) { var m = Math.floor(g.rng() * (j + 1)), tmp = list[j]; list[j] = list[m]; list[m] = tmp; }
+    return { kind: "shape", target: target, list: list, ans: cnt };
+  }
+  function genMeasure(g) {
+    return { kind: "measure", len: g.ri(2, 7), obj: g.pick(["pencil", "ribbon", "crayon"]) };
+  }
+  function genClock(g) { return { kind: "clock", h: g.ri(1, 12) }; }
+
+  // Bài toán có lời văn: mẫu tự soạn, không lấy từ sách giáo khoa.
+  var NAMES = ["Lan", "Minh", "Hoa", "Nam", "An", "Bình", "Mai", "Tú"];
+  var THINGS = ["quả cam", "cái kẹo", "bông hoa", "quyển vở", "viên bi", "quả bóng", "cái bút chì"];
+  var WORD_ADD = [
+    "{A} có {a} {o}. {B} cho {A} thêm {b} {o}. Hỏi {A} có tất cả mấy {o}?",
+    "Trên cây có {a} con chim, có thêm {b} con chim bay đến. Hỏi trên cây có tất cả mấy con chim?",
+    "Đĩa thứ nhất có {a} quả táo, đĩa thứ hai có {b} quả táo. Hỏi cả hai đĩa có mấy quả táo?",
+    "Ở sân trường có {a} bạn trai và {b} bạn gái đang chơi. Hỏi có tất cả mấy bạn?"
+  ];
+  var WORD_SUB = [
+    "{A} có {a} {o}. {A} cho {B} {b} {o}. Hỏi {A} còn lại mấy {o}?",
+    "Trên cành có {a} con chim, {b} con chim bay đi. Hỏi trên cành còn lại mấy con chim?",
+    "Trong rổ có {a} quả trứng, mẹ lấy ra {b} quả để nấu ăn. Hỏi trong rổ còn lại mấy quả trứng?",
+    "Bến xe có {a} chiếc ô tô, {b} chiếc ô tô rời bến. Hỏi bến xe còn lại mấy chiếc ô tô?"
+  ];
+  function genWord(g, range) {
+    var isAdd = g.rng() < 0.5, p;
+    do { p = isAdd ? genAdd(g, range) : genSub(g, range); } while (p[2] === 0 || p[0] === 0 || p[4].ans === 0);
+    var A = g.pick(NAMES), B; do { B = g.pick(NAMES); } while (B === A);
+    var list = isAdd ? WORD_ADD : WORD_SUB, ti = g.ri(0, list.length - 1);
+    var text = list[ti]
+      .replace(/\{A\}/g, A).replace(/\{B\}/g, B).replace(/\{o\}/g, g.pick(THINGS))
+      .replace(/\{a\}/g, p[0]).replace(/\{b\}/g, p[2]);
+    return { kind: "word", tpl: (isAdd ? "a" : "s") + ti, text: text, calc: [p[0], p[1], p[2], p[4].ans] };
+  }
+
   var SHAPES = ["circle", "star", "heart", "tri", "square"];
 
   function genSection(type, range, per, code) {
@@ -407,15 +558,25 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
         it = { kind: "count", n: n, shape: g.pick(SHAPES) };
         var k = per <= 10 ? "n" + n : "n" + n + it.shape;
         if (seen[k]) continue; seen[k] = 1;
+      } else if (type === "order" || type === "line" || type === "shape" || type === "measure" || type === "clock" || type === "word") {
+        it = type === "order" ? genOrder(g, range) : type === "line" ? genLine(g, range) : type === "shape" ? genShape(g)
+          : type === "measure" ? genMeasure(g) : type === "clock" ? genClock(g) : genWord(g, range);
+        var sig = type === "measure" ? "m" + it.len : type === "clock" ? "c" + it.h : type === "shape" ? "s" + it.target + it.ans
+          : type === "word" ? it.tpl : JSON.stringify(it.nums || it.ticks);
+        // Đo độ dài và đồng hồ có ít đáp án khác nhau: chỉ chặn trùng khi còn đủ lựa chọn.
+        var limit = type === "measure" ? 6 : type === "clock" ? 12 : type === "word" ? 8 : 99;
+        if (seen[sig] && items.length < limit) continue; seen[sig] = 1;
       } else {
         var parts;
-        if (type === "add") parts = genAdd(g, range);
+        if (type === "adj") parts = genAdj(g, range);
+        else if (type === "three") parts = genThree(g);
+        else if (type === "add") parts = genAdd(g, range);
         else if (type === "sub") parts = genSub(g, range);
         else if (type === "mix") parts = g.rng() < 0.5 ? genAdd(g, range) : genSub(g, range);
         else if (type === "cmp") parts = genCmp(g, range);
         else if (type === "dec") parts = genDec(g);
         else parts = genSeq(g, range);
-        it = { kind: type === "seq" ? "seq" : "expr", parts: parts };
+        it = { kind: type === "seq" || type === "adj" ? "seq" : "expr", parts: parts };
         var key = JSON.stringify(parts);
         if (seen[key]) continue; seen[key] = 1;
       }
@@ -444,6 +605,49 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     heart: '<path d="M12 20.5s-7.6-4.5-9.3-9.1C1.4 8 3.5 4.6 6.9 4.6c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.4 0 5.5 3.4 4.2 6.8-1.7 4.6-9.3 9.1-9.3 9.1Z"/>'
   };
 
+  var GEO_SVG = {
+    sq: '<rect x="4" y="4" width="16" height="16"/>',
+    ci: '<circle cx="12" cy="12" r="8.5"/>',
+    tr: '<path d="M12 3.5 21 19.5H3Z"/>',
+    re: '<rect x="1" y="7" width="22" height="10"/>'
+  };
+
+  // Thước 0–7 cm vẽ theo milimét thật (1 đơn vị viewBox = 1 mm).
+  function measureHTML(it, qn, showKey) {
+    var x0 = 3, maxCm = 7, W = x0 + maxCm * 10 + 4, x1 = x0 + it.len * 10, s = "";
+    if (it.obj === "pencil") {
+      s += '<rect class="obj" x="' + x0 + '" y="1.5" width="' + (x1 - x0 - 5) + '" height="4" rx="0.6"/>';
+      s += '<path class="obj" d="M' + (x1 - 5) + ' 1.5 L' + x1 + ' 3.5 L' + (x1 - 5) + ' 5.5Z"/>';
+    } else if (it.obj === "crayon") {
+      s += '<rect class="obj" x="' + x0 + '" y="1.5" width="' + (x1 - x0 - 4) + '" height="4" rx="1"/>';
+      s += '<path class="obj" d="M' + (x1 - 4) + ' 2.1 L' + x1 + ' 3.5 L' + (x1 - 4) + ' 4.9Z"/>';
+    } else {
+      s += '<rect class="obj" x="' + x0 + '" y="2" width="' + (x1 - x0) + '" height="3" rx="0.4"/>';
+    }
+    s += '<rect class="r-body" x="1" y="8" width="' + (W - 2) + '" height="8.5" rx="0.6"/>';
+    for (var mm = 0; mm <= maxCm * 10; mm++) {
+      var x = x0 + mm, h = mm % 10 === 0 ? 3.6 : mm % 5 === 0 ? 2.4 : 1.4;
+      s += '<line class="r-tick" x1="' + x + '" y1="8" x2="' + x + '" y2="' + (8 + h) + '"/>';
+      if (mm % 10 === 0) s += '<text class="r-num" x="' + x + '" y="15.4">' + (mm / 10) + "</text>";
+    }
+    return '<div class="msr"><svg viewBox="0 0 ' + W + ' 17" style="width:' + W + 'mm;height:17mm" aria-hidden="true">' + s + "</svg>" +
+      '<div class="msr-a">' + qn + "Dài " + boxHTML(it.len, showKey) + " cm</div></div>";
+  }
+
+  function clockSVG(h) {
+    var s = '<circle class="face" cx="50" cy="50" r="46"/>';
+    for (var i = 1; i <= 12; i++) {
+      var a = (i * 30 - 90) * Math.PI / 180;
+      s += '<line class="tick" x1="' + (50 + 42 * Math.cos(a)).toFixed(1) + '" y1="' + (50 + 42 * Math.sin(a)).toFixed(1) +
+        '" x2="' + (50 + 46 * Math.cos(a)).toFixed(1) + '" y2="' + (50 + 46 * Math.sin(a)).toFixed(1) + '"/>';
+      s += '<text class="num" x="' + (50 + 34 * Math.cos(a)).toFixed(1) + '" y="' + (50 + 34 * Math.sin(a)).toFixed(1) + '">' + i + "</text>";
+    }
+    var ha = (h % 12 * 30 - 90) * Math.PI / 180;
+    s += '<line class="hh" x1="50" y1="50" x2="' + (50 + 20 * Math.cos(ha)).toFixed(1) + '" y2="' + (50 + 20 * Math.sin(ha)).toFixed(1) + '"/>';
+    s += '<line class="mh" x1="50" y1="50" x2="50" y2="25"/><circle class="pin" cx="50" cy="50" r="3"/>';
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">' + s + "</svg>";
+  }
+
   function boxHTML(ans, showKey, wide) {
     return '<span class="bx' + (wide ? " wide" : "") + '">' + (showKey ? esc(ans) : "") + "</span>";
   }
@@ -454,6 +658,33 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
       var art = "";
       for (var i = 0; i < it.n; i++) art += '<svg viewBox="0 0 24 24" aria-hidden="true">' + SHAPE_SVG[it.shape] + "</svg>";
       return '<div class="cnt"><div class="cnt-art">' + art + "</div>" + boxHTML(it.n, showKey) + "</div>";
+    }
+    if (it.kind === "order") {
+      var src = it.nums.map(function (n) { return "<b>" + n + "</b>"; }).join("");
+      var ans = it.ans.map(function (n) { return boxHTML(n, showKey, n > 9); }).join('<span>&lt;</span>');
+      return '<div class="ord"><div class="ord-src">' + qn + src + '</div><div class="ord-ans">' + ans + "</div></div>";
+    }
+    if (it.kind === "line") {
+      var cols = it.ticks.length;
+      var ticks = it.ticks.map(function (t) {
+        return '<div class="nt">' + (typeof t === "object" ? boxHTML(t.ans, showKey) : "<span>" + t + "</span>") + "</div>";
+      }).join("");
+      return '<div class="nl">' + qn + '<div class="nl-track" style="grid-template-columns:repeat(' + cols + ',1fr)">' + ticks + "</div></div>";
+    }
+    if (it.kind === "shape") {
+      var row = it.list.map(function (s) {
+        var w = (11 * s.s).toFixed(1);
+        return '<svg viewBox="0 0 24 24" style="width:' + w + "mm;height:" + w + 'mm" aria-hidden="true"><g transform="rotate(' + s.rot + ' 12 12)">' + GEO_SVG[s.k] + "</g></svg>";
+      }).join("");
+      return '<div class="shp"><div class="shp-row">' + row + '</div><div class="shp-q">' + qn + "Có " + boxHTML(it.ans, showKey) + " " + GEO[it.target] + ".</div></div>";
+    }
+    if (it.kind === "measure") return measureHTML(it, qn, showKey);
+    if (it.kind === "clock") return '<div class="clk">' + clockSVG(it.h) + '<div class="clk-a">' + qn + boxHTML(it.h, showKey, it.h > 9) + " giờ</div></div>";
+    if (it.kind === "word") {
+      var c = it.calc;
+      return '<div class="wp"><p>' + qn + "<span>" + esc(it.text) + '</span></p><div class="wp-calc">Phép tính: ' +
+        boxHTML(c[0], showKey, c[0] > 9) + boxHTML(c[1], showKey) + boxHTML(c[2], showKey, c[2] > 9) +
+        '<span class="eq">=</span>' + boxHTML(c[3], showKey, c[3] > 9) + "</div></div>";
     }
     if (it.kind === "seq") {
       var cells = it.parts.map(function (p) {
@@ -478,10 +709,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
 
   function sheetTitle(types) {
     if (types.length === 1) return "Luyện tập: " + TYPE_BY_ID[types[0]].name.toLowerCase();
-    var hasCalc = types.some(function (t) { return t === "add" || t === "sub" || t === "mix" || t === "dec"; });
-    var hasNum = types.some(function (t) { return t === "count" || t === "cmp" || t === "seq"; });
-    if (hasCalc && hasNum) return "Ôn tập số và phép tính";
-    return hasCalc ? "Luyện tập phép tính" : "Luyện tập các số";
+    var groups = {};
+    types.forEach(function (t) { groups[TYPE_BY_ID[t].group] = 1; });
+    var g = Object.keys(groups);
+    if (g.length === 1) return { num: "Luyện tập các số", calc: "Luyện tập phép tính", geo: "Hình học và đo lường", word: "Giải toán có lời văn" }[g[0]];
+    if (g.length === 2 && groups.num && groups.calc) return "Ôn tập số và phép tính";
+    return "Ôn tập tổng hợp";
   }
 
   function sheetHTML(sections, opts) {
@@ -547,8 +780,11 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
   }
 
   function buildControls() {
-    els.chips.innerHTML = TYPES.map(function (t) {
-      return '<label class="chip"><input type="checkbox" id="type-' + t.id + '" value="' + t.id + '"><span><b>' + esc(t.name) + "</b><small>" + esc(t.hint) + "</small></span></label>";
+    els.chips.innerHTML = GROUPS.map(function (gr) {
+      var chips = TYPES.filter(function (t) { return t.group === gr.id; }).map(function (t) {
+        return '<label class="chip"><input type="checkbox" id="type-' + t.id + '" value="' + t.id + '"><span><b>' + esc(t.name) + "</b><small>" + esc(t.hint) + "</small></span></label>";
+      }).join("");
+      return '<div class="type-group"><span class="group-name">' + esc(gr.name) + '</span><div class="chips">' + chips + "</div></div>";
     }).join("");
   }
 
@@ -557,8 +793,9 @@ input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-off
     TYPES.forEach(function (t) { $("type-" + t.id).checked = state.types.indexOf(t.id) >= 0; });
     els.r10.checked = state.range === 10; els.r100.checked = state.range === 100;
     els.rangeNote.textContent = state.range === 100
-      ? "Cộng, trừ không nhớ đến 100. Dạng Đếm hình và Mấy và mấy vẫn trong phạm vi 10."
+      ? "Cộng, trừ không nhớ đến 100. Các dạng đếm hình, tính có 3 số, mấy và mấy, hình học, đo độ dài, đồng hồ vẫn giữ mức lớp 1."
       : "Phù hợp học kỳ 1 lớp 1.";
+    $("selCount").textContent = state.types.length ? "· đã chọn " + state.types.length : "";
     els.perOut.textContent = state.per;
     els.perMinus.disabled = state.per <= PER_MIN; els.perPlus.disabled = state.per >= PER_MAX;
     els.key.checked = state.key;
