@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Tạo phiếu luyện Toán lớp 1 miễn phí, in khổ A4, kèm đáp án cho bố mẹ chấm.">
+<title>Xưởng Phiếu Toán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: bàn làm việc — cột điều khiển bên trái, tờ giấy A4 xem trước bên phải; điện thoại thì xếp chồng. */
+:root {
+  --bg: #e7ebf0;          /* mặt bàn xanh xám */
+  --surface: #f8fafc;     /* bảng điều khiển */
+  --ink: #1b2531;
+  --muted: #586677;
+  --line: #ccd5df;
+  --accent: #5a3ea8;      /* mực tím học trò */
+  --accent-soft: #ece7fa;
+  --on-accent: #ffffff;
+  --pen: #c9302c;         /* bút đỏ chấm bài */
+  --warn-bg: #fbefd9;
+  --warn-ink: #7a4a05;
+  --font-display: "Baloo 2", "Be Vietnam Pro", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171e; --surface: #1b222b; --ink: #e5eaf0; --muted: #9ba7b5; --line: #2d3743;
+    --accent: #a891f2; --accent-soft: #2a2442; --on-accent: #16112a; --pen: #ff7a70;
+    --warn-bg: #3a2c12; --warn-ink: #f3c779; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171e; --surface: #1b222b; --ink: #e5eaf0; --muted: #9ba7b5; --line: #2d3743;
+  --accent: #a891f2; --accent-soft: #2a2442; --on-accent: #16112a; --pen: #ff7a70;
+  --warn-bg: #3a2c12; --warn-ink: #f3c779; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.app { max-width: 1240px; margin: 0 auto; display: grid; gap: 20px; }
+.topbar { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+.brand span { color: var(--accent); }
+.tagline { margin: 0; color: var(--muted); text-wrap: balance; }
+
+.work { display: grid; gap: 20px; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 920px) { .work { grid-template-columns: 340px minmax(0, 1fr); } .panel { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 18px; min-width: 0; }
+.field { display: grid; gap: 8px; }
+.label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.note { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+input[type="text"] {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; width: 100%;
+}
+input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chip { position: relative; display: block; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span { display: grid; gap: 1px; height: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); transition: border-color .15s, background .15s; }
+.chip b { font-weight: 600; font-size: 0.9rem; }
+.chip small { font-size: 0.72rem; color: var(--muted); line-height: 1.3; }
+.chip input:checked + span { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg label { position: relative; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; text-align: center; padding: 8px 6px; font-weight: 600; font-size: 0.9rem; background: var(--bg); }
+.seg label + label span { border-left: 1px solid var(--line); }
+.seg input:checked + span { background: var(--accent); color: var(--on-accent); }
+.seg input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: -3px; }
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.stepper button { font: inherit; font-size: 1.1rem; width: 38px; height: 36px; border: 0; background: var(--bg); color: var(--ink); cursor: pointer; }
+.stepper button:hover { background: var(--accent-soft); }
+.stepper output { min-width: 44px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.switch { position: relative; display: inline-flex; width: 44px; height: 26px; flex: none; }
+.switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch span { position: absolute; inset: 0; border-radius: 99px; background: var(--line); transition: background .15s; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.switch input:checked + span { background: var(--accent); }
+.switch input:checked + span::after { transform: translateX(18px); }
+.switch input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.actions { display: grid; gap: 10px; }
+.btn { font: inherit; font-weight: 600; border-radius: 8px; padding: 11px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn:hover { border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn svg { width: 18px; height: 18px; }
+.status { min-height: 1.3em; font-size: 0.85rem; color: var(--muted); margin: 0; }
+
+.stage-wrap { display: grid; gap: 12px; min-width: 0; }
+.stage-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; justify-content: space-between; }
+.stage-head h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin: 0; }
+.code-pill { font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.code-pill b { color: var(--ink); letter-spacing: 0.08em; }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; margin: 0; }
+.stage { width: 100%; overflow: hidden; }
+.scale { width: 210mm; transform-origin: top left; display: grid; gap: 10mm; }
+.page-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 -6mm; font-size: 4.2mm; }
+
+.side-notes { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .side-notes { grid-template-columns: 1fr 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
+.card h3 { margin: 0 0 6px; font-size: 0.95rem; }
+.card ol { margin: 0; padding-left: 1.2em; color: var(--muted); font-size: 0.88rem; display: grid; gap: 3px; }
+.card p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); background: var(--accent-soft); border-radius: 99px; padding: 2px 8px; margin-bottom: 6px; }
+
+#printArea { display: none; }
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff; padding: 0; }
+  .app { display: none; }
+  #printArea { display: block; }
+  #printArea .sheet { box-shadow: none; margin: 0; break-after: page; }
+  .pb { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<style id="sheetCss">
+/* Tờ phiếu luôn là giấy trắng mực đen (in đen trắng được), không đổi theo giao diện tối. */
+.sheet {
+  --s-ink: #151515; --s-soft: #6b6b6b; --s-rule: #9a9a9a; --s-fill: #ececec; --s-pen: #c9302c;
+  position: relative; width: 210mm; min-height: 297mm; padding: 13mm 14mm 11mm;
+  background: #ffffff; color: var(--s-ink);
+  font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif; font-size: 4mm; line-height: 1.35;
+  display: flex; flex-direction: column; gap: 6mm;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 8px 24px rgba(20,30,50,.12);
+}
+.sheet * { box-sizing: border-box; }
+.s-head { display: grid; gap: 3mm; border-bottom: 0.5mm solid var(--s-ink); padding-bottom: 4mm; }
+.s-top { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; font-size: 3.1mm; letter-spacing: 0.08em; text-transform: uppercase; color: var(--s-soft); font-weight: 600; }
+.s-title { font-family: "Baloo 2", "Be Vietnam Pro", sans-serif; font-weight: 800; font-size: 8.5mm; line-height: 1.05; margin: 0; }
+.s-key .s-title { color: var(--s-pen); }
+.s-fields { display: grid; grid-template-columns: 1fr 52mm; gap: 3mm 6mm; font-size: 3.8mm; }
+.s-field { display: flex; align-items: flex-end; gap: 2mm; min-width: 0; }
+.s-field i { font-style: normal; white-space: nowrap; }
+.s-field u { flex: 1; text-decoration: none; border-bottom: 0.3mm dotted var(--s-ink); min-height: 6mm; font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 5mm; line-height: 1; padding-left: 1mm; }
+
+.s-sec { display: grid; gap: 3mm; break-inside: avoid; }
+.s-sec h2 { margin: 0; font-size: 4.1mm; font-weight: 600; display: flex; gap: 2.5mm; align-items: baseline; }
+.s-num { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 4.6mm; border: 0.35mm solid var(--s-ink); border-radius: 1.5mm; padding: 0 2mm; line-height: 1.35; white-space: nowrap; }
+.s-grid { display: grid; gap: 3.5mm 5mm; padding-left: 2mm; }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.expr { display: flex; align-items: center; gap: 1.8mm; font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 6.4mm; line-height: 1; font-variant-numeric: tabular-nums; }
+.expr .tk { min-width: 4mm; text-align: center; }
+.expr .op { color: var(--s-ink); }
+.qn { font-family: "Be Vietnam Pro", sans-serif; font-size: 3.2mm; color: var(--s-soft); font-weight: 500; width: 5mm; }
+.bx { display: inline-flex; align-items: center; justify-content: center; width: 10.5mm; height: 10.5mm; border: 0.4mm solid var(--s-ink); border-radius: 1.2mm; font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 6.2mm; line-height: 1; color: var(--s-pen); flex: none; }
+.bx.wide { width: 13mm; }
+
+.cnt { display: flex; align-items: center; gap: 3mm; border: 0.3mm solid var(--s-rule); border-radius: 2mm; padding: 2.5mm 3mm; }
+.cnt-art { display: grid; grid-template-columns: repeat(5, 6.6mm); gap: 1mm; flex: 1; }
+.cnt-art svg { width: 6.6mm; height: 6.6mm; display: block; }
+.cnt-art svg * { fill: var(--s-fill); stroke: var(--s-ink); stroke-width: 1.4; stroke-linejoin: round; }
+
+.seq { display: flex; align-items: center; gap: 1.5mm; flex-wrap: nowrap; }
+.seq .cell { display: inline-flex; align-items: center; justify-content: center; width: 10.5mm; height: 10.5mm; border: 0.25mm solid var(--s-rule); border-radius: 1.2mm; font-family: "Baloo 2", sans-serif; font-weight: 600; font-size: 5.6mm; line-height: 1; }
+.seq .bx { font-size: 5.6mm; }
+.seq .arr { color: var(--s-soft); font-size: 3mm; }
+
+.s-foot { margin-top: auto; display: grid; gap: 3mm; border-top: 0.3mm solid var(--s-rule); padding-top: 3.5mm; font-size: 3.6mm; }
+.s-eval { display: grid; grid-template-columns: auto 1fr; gap: 2.5mm 4mm; align-items: center; }
+.stars { display: flex; gap: 1.5mm; }
+.stars svg { width: 6mm; height: 6mm; }
+.stars svg path { fill: none; stroke: var(--s-ink); stroke-width: 1.3; stroke-linejoin: round; }
+.s-line { border-bottom: 0.3mm dotted var(--s-ink); height: 6mm; }
+.s-meta { display: flex; justify-content: space-between; gap: 4mm; font-size: 2.8mm; color: var(--s-soft); letter-spacing: 0.02em; }
+.pb { position: absolute; left: 0; right: 0; top: 297mm; border-top: 0.5mm dashed #c9302c; pointer-events: none; }
+.pb span { position: absolute; right: 4mm; top: 1mm; font-size: 3mm; color: #c9302c; background: #fff; padding: 0 1.5mm; }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <h1 class="brand">Xưởng <span>Phiếu Toán</span></h1>
+    <p class="tagline">Tạo phiếu luyện Toán lớp 1 cho bé trong vài giây. Mỗi phiếu kèm đáp án để bố mẹ chấm.</p>
+  </header>
+
+  <div class="work">
+    <form class="panel" id="panel" autocomplete="off">
+      <div class="field">
+        <label class="label" for="childName">Tên của bé (không bắt buộc)</label>
+        <input type="text" id="childName" maxlength="40" placeholder="Ví dụ: Minh Anh">
+      </div>
+
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label" style="margin-bottom:8px">Dạng bài</legend>
+        <div class="chips" id="typeChips"></div>
+      </fieldset>
+
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label" style="margin-bottom:8px">Phạm vi số</legend>
+        <div class="seg">
+          <label><input type="radio" name="range" id="range10" value="10"><span>Trong phạm vi 10</span></label>
+          <label><input type="radio" name="range" id="range100" value="100"><span>Trong phạm vi 100</span></label>
+        </div>
+        <p class="note" id="rangeNote"></p>
+      </fieldset>
+
+      <div class="row">
+        <span class="label" id="perLabel">Số câu mỗi bài</span>
+        <div class="stepper" role="group" aria-labelledby="perLabel">
+          <button type="button" id="perMinus" aria-label="Bớt 1 câu">−</button>
+          <output id="perOut" aria-live="polite">6</output>
+          <button type="button" id="perPlus" aria-label="Thêm 1 câu">+</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label" for="withKey">Kèm trang đáp án</label>
+        <span class="switch"><input type="checkbox" id="withKey" role="switch"><span></span></span>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="printBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>
+          <span id="printLabel">In phiếu</span>
+        </button>
+        <button type="button" class="btn" id="newBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+          Đổi đề khác
+        </button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+
+    <section class="stage-wrap" aria-label="Xem trước phiếu">
+      <div class="stage-head">
+        <h2>Xem trước khổ A4</h2>
+        <span class="code-pill">Mã phiếu <b id="codeOut">----</b></span>
+      </div>
+      <p class="warn" id="overflowWarn" hidden></p>
+      <div class="stage" id="stage"><div class="scale" id="scale"></div></div>
+
+      <div class="side-notes">
+        <div class="card">
+          <h3>Cách dùng</h3>
+          <ol>
+            <li>Chọn dạng bài bé đang học trên lớp.</li>
+            <li>Bấm in, hoặc tải file về rồi mở và in trên máy tính.</li>
+            <li>Cho bé làm, bố mẹ chấm theo trang đáp án.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <span class="tag">Sắp ra mắt</span>
+          <h3>Bộ phiếu theo tuần</h3>
+          <p>Phiếu soạn sẵn theo từng tuần học lớp 1, có trò chơi và đề ôn cuối kỳ, bám yêu cầu cần đạt của Chương trình GDPT 2018.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="printArea" aria-hidden="true"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Dữ liệu dạng bài ----------
+  var TYPES = [
+    { id: "count", name: "Đếm hình", hint: "Đếm đồ vật, viết số (đến 10)", instr: "Đếm và viết số thích hợp vào ô trống.", cols: 3 },
+    { id: "add",   name: "Phép cộng", hint: "Tính nhẩm phép cộng", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "sub",   name: "Phép trừ", hint: "Tính nhẩm phép trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "mix",   name: "Cộng trừ xen kẽ", hint: "Trộn cộng và trừ", instr: "Tính rồi viết kết quả vào ô trống.", cols: 3 },
+    { id: "cmp",   name: "So sánh số", hint: "Điền dấu >, <, =", instr: "Điền dấu >, <, = vào ô trống.", cols: 3 },
+    { id: "seq",   name: "Dãy số", hint: "Viết số còn thiếu", instr: "Viết số còn thiếu vào ô trống.", cols: 2 },
+    { id: "dec",   name: "Mấy và mấy", hint: "Tách số trong phạm vi 10", instr: "Viết số thích hợp vào ô trống.", cols: 3 }
+  ];
+  var TYPE_BY_ID = {};
+  TYPES.forEach(function (t) { TYPE_BY_ID[t.id] = t; });
+
+  var PER_MIN = 3, PER_MAX = 12;
+  var STORE_KEY = "xuong-phieu-toan-v1";
+  var CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  var state = {
+    name: "",
+    types: ["count", "add", "cmp", "seq"],
+    range: 10,
+    per: 6,
+    key: true,
+    code: newCode()
+  };
+
+  // ---------- Bộ sinh số ngẫu nhiên có hạt giống (để mã phiếu ra đúng đề) ----------
+  function hashStr(s) {
+    var h = 2166136261 >>> 0;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function newCode() {
+    var s = "";
+    for (var i = 0; i < 4; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+    return s;
+  }
+
+  // ---------- Sinh câu hỏi ----------
+  // Một "câu" là { kind, ... }; ô trống là { ans: giá_trị }.
+  function makeGen(rng) {
+    var ri = function (a, b) { return a + Math.floor(rng() * (b - a + 1)); };
+    var pick = function (arr) { return arr[Math.floor(rng() * arr.length)]; };
+    return { ri: ri, pick: pick, rng: rng };
+  }
+
+  function genAdd(g, range) {
+    if (range === 10) {
+      var a = g.ri(1, 9), b = g.ri(1, 10 - a);
+      if (g.rng() < 0.12) b = 0;
+      return [a, "+", b, "=", { ans: a + b }];
+    }
+    // Phạm vi 100, cộng không nhớ: hàng đơn vị và hàng chục đều không vượt 9.
+    var ta = g.ri(1, 8), ua = g.ri(0, 9);
+    var tb = g.rng() < 0.35 ? 0 : g.ri(0, 9 - ta), ub = g.ri(0, 9 - ua);
+    var x = ta * 10 + ua, y = tb * 10 + ub;
+    if (y === 0) y = ua < 9 ? 1 : 10; // ta ≤ 8 nên cộng thêm 10 vẫn không nhớ
+    return [x, "+", y, "=", { ans: x + y }];
+  }
+  function genSub(g, range) {
+    if (range === 10) {
+      var a = g.ri(2, 10), b = g.ri(1, a);
+      if (g.rng() < 0.1) b = 0;
+      return [a, "−", b, "=", { ans: a - b }];
+    }
+    // Phạm vi 100, trừ không nhớ.
+    var ta = g.ri(1, 9), ua = g.ri(0, 9);
+    var tb = g.rng() < 0.35 ? 0 : g.ri(0, ta), ub = g.ri(0, ua);
+    var x = ta * 10 + ua, y = tb * 10 + ub;
+    if (y === 0) { y = ua > 0 ? 1 : 10; }
+    if (y > x) y = x;
+    return [x, "−", y, "=", { ans: x - y }];
+  }
+  function genCmp(g, range) {
+    var a, b;
+    if (range === 10) { a = g.ri(0, 10); b = g.rng() < 0.18 ? a : g.ri(0, 10); }
+    else {
+      a = g.ri(10, 99);
+      var r = g.rng();
+      if (r < 0.15) b = a;
+      else if (r < 0.55) b = Math.floor(a / 10) * 10 + g.ri(0, 9); // cùng hàng chục: phải so hàng đơn vị
+      else b = g.ri(10, 99);
+    }
+    var s = a > b ? ">" : a < b ? "<" : "=";
+    return [a, { ans: s }, b];
+  }
+  function genDec(g) {
+    var t = g.ri(2, 10), x = g.ri(1, t - 1);
+    return g.rng() < 0.5 ? [t, "=", x, "+", { ans: t - x }] : [t, "=", { ans: t - x }, "+", x];
+  }
+  function genSeq(g, range) {
+    var len = 6, step = 1, start, desc = g.rng() < 0.3, vals = [];
+    if (range === 10) {
+      start = desc ? g.ri(5, 10) : g.ri(0, 4);
+    } else {
+      if (g.rng() < 0.3) { step = 10; start = desc ? g.ri(5, 10) * 10 : g.ri(0, 4) * 10; }
+      else start = desc ? g.ri(15, 99) : g.ri(10, 94);
+    }
+    for (var i = 0; i < len; i++) vals.push(desc ? start - i * step : start + i * step);
+    var blanks = {}, nb = g.ri(2, 3), guard = 0;
+    while (Object.keys(blanks).length < nb && guard++ < 50) { var p = g.ri(1, len - 1); blanks[p] = true; }
+    return vals.map(function (v, i) { return blanks[i] ? { ans: v } : v; });
+  }
+  var SHAPES = ["circle", "star", "heart", "tri", "square"];
+
+  function genSection(type, range, per, code) {
+    var g = makeGen(mulberry32(hashStr(code + "|" + type + "|" + range + "|" + per)));
+    var items = [], seen = {}, tries = 0;
+    while (items.length < per && tries++ < 400) {
+      var it;
+      if (type === "count") {
+        var n = g.ri(1, 10);
+        it = { kind: "count", n: n, shape: g.pick(SHAPES) };
+        var k = per <= 10 ? "n" + n : "n" + n + it.shape;
+        if (seen[k]) continue; seen[k] = 1;
+      } else {
+        var parts;
+        if (type === "add") parts = genAdd(g, range);
+        else if (type === "sub") parts = genSub(g, range);
+        else if (type === "mix") parts = g.rng() < 0.5 ? genAdd(g, range) : genSub(g, range);
+        else if (type === "cmp") parts = genCmp(g, range);
+        else if (type === "dec") parts = genDec(g);
+        else parts = genSeq(g, range);
+        it = { kind: type === "seq" ? "seq" : "expr", parts: parts };
+        var key = JSON.stringify(parts);
+        if (seen[key]) continue; seen[key] = 1;
+      }
+      items.push(it);
+    }
+    return items;
+  }
+
+  // ---------- Vẽ tờ phiếu ----------
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function starPath(cx, cy, R, r) {
+    var d = "";
+    for (var i = 0; i < 10; i++) {
+      var ang = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r : R;
+      d += (i ? "L" : "M") + (cx + rad * Math.cos(ang)).toFixed(2) + " " + (cy + rad * Math.sin(ang)).toFixed(2);
+    }
+    return d + "Z";
+  }
+  var STAR_D = starPath(12, 12.6, 10, 4.2);
+  var SHAPE_SVG = {
+    circle: '<circle cx="12" cy="12" r="8.6"/>',
+    square: '<rect x="4" y="4" width="16" height="16" rx="2"/>',
+    tri: '<path d="M12 3.2 21 19.8H3Z"/>',
+    star: '<path d="' + STAR_D + '"/>',
+    heart: '<path d="M12 20.5s-7.6-4.5-9.3-9.1C1.4 8 3.5 4.6 6.9 4.6c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.4 0 5.5 3.4 4.2 6.8-1.7 4.6-9.3 9.1-9.3 9.1Z"/>'
+  };
+
+  function boxHTML(ans, showKey, wide) {
+    return '<span class="bx' + (wide ? " wide" : "") + '">' + (showKey ? esc(ans) : "") + "</span>";
+  }
+
+  function itemHTML(it, idx, showKey, range) {
+    var qn = '<span class="qn">' + String.fromCharCode(97 + idx) + ")</span>";
+    if (it.kind === "count") {
+      var art = "";
+      for (var i = 0; i < it.n; i++) art += '<svg viewBox="0 0 24 24" aria-hidden="true">' + SHAPE_SVG[it.shape] + "</svg>";
+      return '<div class="cnt"><div class="cnt-art">' + art + "</div>" + boxHTML(it.n, showKey) + "</div>";
+    }
+    if (it.kind === "seq") {
+      var cells = it.parts.map(function (p) {
+        return typeof p === "object" ? boxHTML(p.ans, showKey) : '<span class="cell">' + p + "</span>";
+      }).join("");
+      return '<div class="seq">' + qn + cells + "</div>";
+    }
+    var wide = range === 100;
+    var html = it.parts.map(function (p) {
+      if (typeof p === "object") return boxHTML(p.ans, showKey, wide && typeof p.ans === "number" && p.ans > 9);
+      if (typeof p === "number") return '<span class="tk">' + p + "</span>";
+      return '<span class="op">' + esc(p) + "</span>";
+    }).join("");
+    return '<div class="expr">' + qn + html + "</div>";
+  }
+
+  var STARS = (function () {
+    var s = "";
+    for (var i = 0; i < 5; i++) s += '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_D + '"/></svg>';
+    return '<span class="stars">' + s + "</span>";
+  })();
+
+  function sheetTitle(types) {
+    if (types.length === 1) return "Luyện tập: " + TYPE_BY_ID[types[0]].name.toLowerCase();
+    var hasCalc = types.some(function (t) { return t === "add" || t === "sub" || t === "mix" || t === "dec"; });
+    var hasNum = types.some(function (t) { return t === "count" || t === "cmp" || t === "seq"; });
+    if (hasCalc && hasNum) return "Ôn tập số và phép tính";
+    return hasCalc ? "Luyện tập phép tính" : "Luyện tập các số";
+  }
+
+  function sheetHTML(sections, opts) {
+    var key = !!opts.key;
+    var rangeText = "Phạm vi " + opts.range + (opts.range === 100 ? " (không nhớ)" : "");
+    var secs = sections.map(function (s, i) {
+      var t = TYPE_BY_ID[s.type];
+      var items = s.items.map(function (it, j) { return itemHTML(it, j, key, opts.range); }).join("");
+      return '<section class="s-sec"><h2><span class="s-num">Bài ' + (i + 1) + "</span><span>" + esc(t.instr) + "</span></h2>" +
+        '<div class="s-grid cols-' + t.cols + '">' + items + "</div></section>";
+    }).join("");
+    return '<article class="sheet' + (key ? " s-key" : "") + '">' +
+      '<header class="s-head">' +
+        '<div class="s-top"><span>Phiếu luyện tập · Toán 1</span><span>' + esc(rangeText) + "</span></div>" +
+        '<h1 class="s-title">' + (key ? "Đáp án · dành cho bố mẹ" : esc(sheetTitle(opts.types))) + "</h1>" +
+        '<div class="s-fields">' +
+          '<div class="s-field"><i>Họ và tên:</i><u>' + esc(opts.name || "") + "</u></div>" +
+          '<div class="s-field"><i>Ngày:</i><u></u></div>' +
+        "</div>" +
+      "</header>" + secs +
+      '<footer class="s-foot">' +
+        '<div class="s-eval"><span>Bé tự đánh giá (tô sao):</span>' + STARS +
+        "<span>Lời nhắn của bố mẹ:</span><div class=\"s-line\"></div></div>" +
+        '<div class="s-meta"><span>Xưởng Phiếu Toán</span><span>Mã phiếu ' + esc(opts.code) + (key ? " · trang đáp án" : "") + "</span></div>" +
+      "</footer>" +
+      '<div class="pb" hidden><span>Hết trang A4</span></div>' +
+    "</article>";
+  }
+
+  function buildSheets() {
+    var types = TYPES.map(function (t) { return t.id; }).filter(function (id) { return state.types.indexOf(id) >= 0; });
+    var sections = types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code) }; });
+    var opts = { name: state.name, range: state.range, code: state.code, types: types };
+    var pages = [{ label: "Phiếu cho bé", html: sheetHTML(sections, opts) }];
+    if (state.key) pages.push({ label: "Trang đáp án", html: sheetHTML(sections, Object.assign({}, opts, { key: true })) });
+    return pages;
+  }
+
+  // ---------- Giao diện ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var els = {
+    name: $("childName"), chips: $("typeChips"), r10: $("range10"), r100: $("range100"), rangeNote: $("rangeNote"),
+    perOut: $("perOut"), perMinus: $("perMinus"), perPlus: $("perPlus"), key: $("withKey"),
+    printBtn: $("printBtn"), printLabel: $("printLabel"), newBtn: $("newBtn"), status: $("status"),
+    code: $("codeOut"), stage: $("stage"), scale: $("scale"), warn: $("overflowWarn"), printArea: $("printArea")
+  };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (typeof s.name === "string") state.name = s.name.slice(0, 40);
+      if (Array.isArray(s.types)) state.types = s.types.filter(function (t) { return TYPE_BY_ID[t]; });
+      if (s.range === 10 || s.range === 100) state.range = s.range;
+      if (typeof s.per === "number") state.per = Math.min(PER_MAX, Math.max(PER_MIN, s.per | 0));
+      if (typeof s.key === "boolean") state.key = s.key;
+      if (typeof s.code === "string" && /^[A-Z0-9]{4}$/.test(s.code)) state.code = s.code;
+    } catch (e) { /* bỏ qua khi trình duyệt chặn lưu trữ */ }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* không sao */ }
+  }
+
+  function buildControls() {
+    els.chips.innerHTML = TYPES.map(function (t) {
+      return '<label class="chip"><input type="checkbox" id="type-' + t.id + '" value="' + t.id + '"><span><b>' + esc(t.name) + "</b><small>" + esc(t.hint) + "</small></span></label>";
+    }).join("");
+  }
+
+  function syncControls() {
+    els.name.value = state.name;
+    TYPES.forEach(function (t) { $("type-" + t.id).checked = state.types.indexOf(t.id) >= 0; });
+    els.r10.checked = state.range === 10; els.r100.checked = state.range === 100;
+    els.rangeNote.textContent = state.range === 100
+      ? "Cộng, trừ không nhớ đến 100. Dạng Đếm hình và Mấy và mấy vẫn trong phạm vi 10."
+      : "Phù hợp học kỳ 1 lớp 1.";
+    els.perOut.textContent = state.per;
+    els.perMinus.disabled = state.per <= PER_MIN; els.perPlus.disabled = state.per >= PER_MAX;
+    els.key.checked = state.key;
+    els.code.textContent = state.code;
+  }
+
+  var A4_PX = 0;
+  function measureA4() {
+    var probe = document.createElement("div");
+    probe.style.cssText = "position:absolute;visibility:hidden;height:297mm;width:210mm";
+    document.body.appendChild(probe);
+    A4_PX = probe.offsetHeight; var w = probe.offsetWidth;
+    document.body.removeChild(probe);
+    return w;
+  }
+  var SHEET_W = 0;
+
+  function render() {
+    syncControls();
+    if (!state.types.length) {
+      els.scale.innerHTML = '<p class="page-label" style="margin:0">Hãy chọn ít nhất một dạng bài.</p>';
+      els.warn.hidden = true; fit(); return;
+    }
+    var pages = buildSheets();
+    els.scale.innerHTML = pages.map(function (p) { return '<p class="page-label">' + esc(p.label) + "</p>" + p.html; }).join("");
+    var long = false;
+    els.scale.querySelectorAll(".sheet").forEach(function (sh) {
+      if (sh.scrollHeight > A4_PX + 4) { long = true; sh.querySelector(".pb").hidden = false; }
+    });
+    els.warn.hidden = !long;
+    if (long) els.warn.textContent = "Phiếu đang dài hơn một trang A4 và sẽ in thành 2 trang. Bớt số câu hoặc bỏ bớt dạng bài để vừa 1 trang.";
+    fit();
+    save();
+  }
+
+  function fit() {
+    var w = els.stage.clientWidth || SHEET_W;
+    var s = Math.min(1, w / SHEET_W);
+    els.scale.style.transform = "scale(" + s + ")";
+    els.stage.style.height = Math.ceil(els.scale.offsetHeight * s) + "px";
+  }
+
+  function setStatus(msg) { els.status.textContent = msg; }
+
+  // ---------- In / tải file ----------
+  var downloads = null;
+
+  function standaloneDoc() {
+    var pages = buildSheets();
+    var css = document.getElementById("sheetCss").textContent;
+    return "<!doctype html><html lang=\"vi\"><head><meta charset=\"utf-8\">" +
+      "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
+      "<title>Phiếu Toán 1 · " + state.code + "</title>" +
+      "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap\">" +
+      "<style>" + css +
+      "body{margin:0;background:#e7ebf0;font-family:'Be Vietnam Pro',Arial,sans-serif}" +
+      ".bar{position:sticky;top:0;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 16px;background:#5a3ea8;color:#fff;font-size:15px}" +
+      ".bar button{font:inherit;font-weight:600;padding:8px 16px;border:0;border-radius:8px;background:#fff;color:#5a3ea8;cursor:pointer}" +
+      ".pages{display:grid;gap:10mm;justify-content:center;padding:10mm 0}.pb{display:none}" +
+      "@page{size:A4;margin:0}@media print{body{background:#fff}.bar{display:none}.pages{display:block;padding:0}.sheet{box-shadow:none;break-after:page}}" +
+      "</style></head><body>" +
+      "<div class=\"bar\"><span>Phiếu sẵn sàng. Chọn khổ giấy A4, tỉ lệ 100%.</span><button onclick=\"window.print()\">In phiếu</button></div>" +
+      "<div class=\"pages\">" + pages.map(function (p) { return p.html; }).join("") + "</div>" +
+      "</body></html>";
+  }
+
+  function printHere() {
+    els.printArea.innerHTML = buildSheets().map(function (p) { return p.html; }).join("");
+    window.print();
+    setStatus("Nếu không thấy hộp thoại in, hãy mở trang này trực tiếp trên trình duyệt máy tính.");
+  }
+
+  function onPrint() {
+    if (!state.types.length) { setStatus("Hãy chọn ít nhất một dạng bài trước khi in."); return; }
+    if (!downloads) { printHere(); return; }
+    setStatus("Đang chuẩn bị file…");
+    downloads.save({ filename: "phieu-toan-lop-1-" + state.code + ".html", data: standaloneDoc() })
+      .then(function () { setStatus("Đã tải file. Mở file bằng trình duyệt rồi bấm In phiếu."); })
+      .catch(function (err) {
+        var code = err && err.code;
+        if (code === "declined") setStatus("Bạn đã huỷ tải file.");
+        else if (code === "rate_limited") setStatus("Đang có một yêu cầu tải khác, thử lại sau giây lát.");
+        else { downloads = null; els.printLabel.textContent = "In phiếu"; setStatus("Không tải được file ở đây. Bấm In phiếu để thử in trực tiếp."); }
+      });
+  }
+
+  // ---------- Sự kiện ----------
+  function wire() {
+    els.name.addEventListener("input", function () { state.name = els.name.value; render(); });
+    els.chips.addEventListener("change", function (e) {
+      var id = e.target.value, on = e.target.checked;
+      state.types = state.types.filter(function (t) { return t !== id; });
+      if (on) state.types.push(id);
+      render();
+    });
+    [els.r10, els.r100].forEach(function (r) { r.addEventListener("change", function () { state.range = +r.value; render(); }); });
+    els.perMinus.addEventListener("click", function () { if (state.per > PER_MIN) { state.per--; render(); } });
+    els.perPlus.addEventListener("click", function () { if (state.per < PER_MAX) { state.per++; render(); } });
+    els.key.addEventListener("change", function () { state.key = els.key.checked; render(); });
+    els.newBtn.addEventListener("click", function () {
+      var old = state.code; do { state.code = newCode(); } while (state.code === old);
+      setStatus("Đã tạo đề mới, mã " + state.code + ".");
+      render();
+    });
+    els.printBtn.addEventListener("click", onPrint);
+    document.getElementById("panel").addEventListener("submit", function (e) { e.preventDefault(); });
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(els.stage);
+    else window.addEventListener("resize", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  }
+
+  // ---------- Khởi động ----------
+  load();
+  buildControls();
+  SHEET_W = measureA4();
+  wire();
+  render();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("downloads").then(function (d) {
+      if (d) { downloads = d; els.printLabel.textContent = "Tải phiếu để in"; }
+    }).catch(function () {});
+  }
+})();
+</script>
+
+</body>
+</html>
