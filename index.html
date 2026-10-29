@@ -140,15 +140,34 @@ input[type="text"] {
 }
 input[type="text"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-select {
-  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
-  padding: 9px 36px 9px 12px; width: 100%; min-width: 0; appearance: none; cursor: pointer;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%; background-size: 5px 5px; background-repeat: no-repeat;
-}
-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.lesson-field { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
-.lesson-field select.picked { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background-color: var(--accent-soft); }
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); }
+.mode-tab { font: inherit; font-weight: 600; font-size: 0.9rem; border: 0; border-radius: 7px; padding: 8px 6px; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.mode-tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(20,30,50,.12), inset 0 0 0 1px var(--line); }
+.mode-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pane { display: grid; gap: 14px; }
+.topics { display: grid; gap: 6px; }
+.topic { border: 1px solid var(--line); border-radius: 9px; background: var(--bg); overflow: hidden; }
+.topic summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 9px 10px; font-weight: 600; font-size: 0.88rem; line-height: 1.3; }
+.topic summary::-webkit-details-marker { display: none; }
+.topic summary::before { content: ""; flex: none; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); transition: transform .15s; margin-right: 2px; }
+.topic[open] summary::before { transform: rotate(45deg); }
+.topic summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.topic summary .t-name { flex: 1; min-width: 0; }
+.topic summary .t-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.lessons { display: grid; gap: 2px; padding: 0 6px 6px; }
+.lesson { font: inherit; text-align: left; display: grid; grid-template-columns: 52px 1fr; gap: 2px 8px; align-items: baseline; width: 100%; border: 1px solid transparent; border-radius: 7px; padding: 7px 8px; background: transparent; color: var(--ink); cursor: pointer; }
+.lesson:hover:not(:disabled) { background: var(--surface); }
+.lesson:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.lesson .l-num { font-size: 0.78rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lesson .l-name { font-size: 0.9rem; line-height: 1.35; }
+.lesson .l-sub { grid-column: 2; font-size: 0.75rem; color: var(--muted); }
+.lesson[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.lesson[aria-pressed="true"] .l-num { color: var(--accent); }
+.lesson[aria-pressed="true"] .l-sub { color: var(--ink); }
+.lesson:disabled { cursor: default; color: var(--muted); }
+.lesson .soon { font-size: 0.7rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 0 6px; margin-left: 4px; white-space: nowrap; }
+.common { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.sublabel { font-size: 0.88rem; font-weight: 600; color: var(--ink); }
 .type-groups { display: grid; gap: 12px; }
 .type-group { display: grid; gap: 6px; }
 .group-name { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
@@ -359,45 +378,54 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
   <div class="work">
     <form class="panel" id="panel" autocomplete="off">
-      <div class="field lesson-field">
-        <label class="label" for="lessonSel">Con đang học bài nào?</label>
-        <select id="lessonSel"></select>
-        <p class="note" id="lessonNote">Theo sách Toán 1 Kết nối tri thức với cuộc sống. Chọn bài, app tự chọn dạng bài phù hợp.</p>
+      <div class="mode-tabs" role="tablist" aria-label="Cách chọn nội dung phiếu">
+        <button type="button" role="tab" id="modeLesson" class="mode-tab">Theo bài học</button>
+        <button type="button" role="tab" id="modeCustom" class="mode-tab">Tự chọn dạng bài</button>
       </div>
 
-      <div class="field">
-        <label class="label" for="childName">Tên của bé (không bắt buộc)</label>
-        <input type="text" id="childName" maxlength="40" placeholder="Ví dụ: Minh Anh">
-      </div>
-
-      <fieldset class="field" style="border:0;padding:0;margin:0">
-        <legend class="label" style="margin-bottom:8px">Dạng bài <span class="sel-count" id="selCount"></span></legend>
-        <div class="type-groups" id="typeChips"></div>
-      </fieldset>
-
-      <fieldset class="field" style="border:0;padding:0;margin:0">
-        <legend class="label" style="margin-bottom:8px">Phạm vi số</legend>
-        <div class="seg">
-          <label><input type="radio" name="range" id="range10" value="10"><span>Đến 10</span></label>
-          <label><input type="radio" name="range" id="range100" value="100"><span>Đến 100</span></label>
+      <div class="pane" id="lessonPane" role="tabpanel" aria-labelledby="modeLesson">
+        <div class="seg" role="radiogroup" aria-label="Học kỳ">
+          <label><input type="radio" name="hk" id="hk1" value="1"><span>Học kỳ 1</span></label>
+          <label><input type="radio" name="hk" id="hk2" value="2"><span>Học kỳ 2</span></label>
         </div>
-        <p class="note" id="rangeNote"></p>
-      </fieldset>
+        <div class="topics" id="topicList"></div>
+        <p class="note">Theo sách Toán 1 Kết nối tri thức với cuộc sống. Bài tập do app tự soạn.</p>
+      </div>
 
-      <div class="row">
-        <span class="label" id="perLabel">Số câu mỗi bài</span>
-        <div class="stepper" role="group" aria-labelledby="perLabel">
-          <button type="button" id="perMinus" aria-label="Bớt 1 câu">−</button>
-          <output id="perOut" aria-live="polite">6</output>
-          <button type="button" id="perPlus" aria-label="Thêm 1 câu">+</button>
+      <div class="pane" id="customPane" role="tabpanel" aria-labelledby="modeCustom" hidden>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="label" style="margin-bottom:8px">Dạng bài <span class="sel-count" id="selCount"></span></legend>
+          <div class="type-groups" id="typeChips"></div>
+        </fieldset>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="label" style="margin-bottom:8px">Phạm vi số</legend>
+          <div class="seg">
+            <label><input type="radio" name="range" id="range10" value="10"><span>Đến 10</span></label>
+            <label><input type="radio" name="range" id="range100" value="100"><span>Đến 100</span></label>
+          </div>
+          <p class="note" id="rangeNote"></p>
+        </fieldset>
+      </div>
+
+      <div class="common">
+        <span class="label">Tuỳ chọn phiếu</span>
+        <div class="field">
+          <label class="sublabel" for="childName">Tên của bé</label>
+          <input type="text" id="childName" maxlength="40" placeholder="Không bắt buộc, ví dụ: Minh Anh">
+        </div>
+        <div class="row">
+          <span class="sublabel" id="perLabel">Số câu mỗi bài</span>
+          <div class="stepper" role="group" aria-labelledby="perLabel">
+            <button type="button" id="perMinus" aria-label="Bớt 1 câu">−</button>
+            <output id="perOut" aria-live="polite">6</output>
+            <button type="button" id="perPlus" aria-label="Thêm 1 câu">+</button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="sublabel" for="withKey">Kèm trang đáp án</label>
+          <span class="switch"><input type="checkbox" id="withKey" role="switch"><span></span></span>
         </div>
       </div>
-
-      <div class="row">
-        <label class="label" for="withKey">Kèm trang đáp án</label>
-        <span class="switch"><input type="checkbox" id="withKey" role="switch"><span></span></span>
-      </div>
-
       <div class="actions">
         <button type="button" class="btn btn-primary" id="printBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>
@@ -564,7 +592,9 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     per: 6,
     key: true,
     code: newCode(),
-    lesson: ""
+    pane: "lesson",
+    hk: 1,
+    lesson: "b1"
   };
 
   // ---------- Bộ sinh số ngẫu nhiên có hạt giống (để mã phiếu ra đúng đề) ----------
@@ -960,19 +990,24 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     "</article>";
   }
 
+  // Nội dung phiếu đang dùng: theo bài học (tab 1) hoặc tự chọn (tab 2).
+  function effective() {
+    var les = state.pane === "lesson" ? LESSON_BY_ID[state.lesson] : null;
+    if (les && les.t) return { lesson: les, types: les.t.slice(), range: les.r };
+    return { lesson: null, range: state.range, types: TYPES.map(function (t) { return t.id; }).filter(function (id) { return state.types.indexOf(id) >= 0; }) };
+  }
+
   function currentSections() {
-    var types = TYPES.map(function (t) { return t.id; }).filter(function (id) { return state.types.indexOf(id) >= 0; });
-    var les = LESSON_BY_ID[state.lesson];
-    if (les) types = les.t.slice(); // giữ đúng thứ tự dạng bài như bài học
+    var ef = effective(), types = ef.types, les = ef.lesson, lid = les ? les.id : "";
     LOPTS = (les && les.o) || {};
-    var out = { types: types, lesson: les, sections: types.map(function (type) { return { type: type, items: genSection(type, state.range, state.per, state.code, state.lesson) }; }) };
+    var out = { types: types, lesson: les, range: ef.range, sections: types.map(function (type) { return { type: type, items: genSection(type, ef.range, state.per, state.code, lid) }; }) };
     LOPTS = {};
     return out;
   }
 
   function buildSheets() {
     var cs = currentSections(), types = cs.types, sections = cs.sections;
-    var opts = { name: state.name, range: state.range, code: state.code, types: types, lesson: cs.lesson };
+    var opts = { name: state.name, range: cs.range, code: state.code, types: types, lesson: cs.lesson };
     var pages = [{ label: "Phiếu cho bé", html: sheetHTML(sections, opts) }];
     if (state.key) pages.push({ label: "Trang đáp án", html: sheetHTML(sections, Object.assign({}, opts, { key: true })) });
     return pages;
@@ -987,7 +1022,8 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     code: $("codeOut"), stage: $("stage"), scale: $("scale"), warn: $("overflowWarn"), printArea: $("printArea"),
     tabPrint: $("tabPrint"), tabPlay: $("tabPlay"), printView: $("printView"), playView: $("playView"), play: $("playArea"),
     progress: $("progress"), submit: $("submitBtn"), reset: $("resetBtn"), result: $("result"),
-    lesson: $("lessonSel"), lessonNote: $("lessonNote"),
+    modeLesson: $("modeLesson"), modeCustom: $("modeCustom"), lessonPane: $("lessonPane"), customPane: $("customPane"),
+    hk1: $("hk1"), hk2: $("hk2"), topics: $("topicList"),
     kp: $("keypad"), kpKeys: $("kpKeys"), kpLabel: $("kpLabel"), kpClose: $("kpClose")
   };
 
@@ -1003,22 +1039,46 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
       if (typeof s.key === "boolean") state.key = s.key;
       if (typeof s.code === "string" && /^[A-Z0-9]{4}$/.test(s.code)) state.code = s.code;
       if (typeof s.lesson === "string" && LESSON_BY_ID[s.lesson] && LESSON_BY_ID[s.lesson].t) state.lesson = s.lesson;
+      if (s.pane === "lesson" || s.pane === "custom") state.pane = s.pane;
+      if (s.hk === 1 || s.hk === 2) state.hk = s.hk;
     } catch (e) { /* bỏ qua khi trình duyệt chặn lưu trữ */ }
   }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* không sao */ }
   }
 
-  function buildLessonSelect() {
-    var html = '<option value="">Tự chọn dạng bài</option>';
-    [1, 2].forEach(function (hk) {
-      LESSONS.filter(function (tp) { return tp.hk === hk; }).forEach(function (tp) {
-        html += '<optgroup label="Học kỳ ' + hk + " · " + esc(tp.topic) + '">' + tp.items.map(function (l) {
-          return '<option value="' + l.id + '"' + (l.t ? "" : " disabled") + ">Bài " + l.n + ". " + esc(l.name) + (l.t ? "" : " (chưa có)") + "</option>";
-        }).join("") + "</optgroup>";
-      });
+  var openTopics = {};
+  function buildTopicList() {
+    var hasSel = LESSON_BY_ID[state.lesson];
+    els.topics.innerHTML = LESSONS.map(function (tp, ti) { return { tp: tp, ti: ti }; })
+      .filter(function (x) { return x.tp.hk === state.hk; })
+      .map(function (x) {
+        var tp = x.tp, holds = tp.items.some(function (l) { return l.id === state.lesson; });
+        var open = openTopics[x.ti] !== undefined ? openTopics[x.ti] : holds;
+        var rows = tp.items.map(function (l) {
+          var sub = l.t ? l.t.map(function (t) { return TYPE_BY_ID[t].name; }).join(" · ") : "";
+          return '<button type="button" class="lesson" data-id="' + l.id + '"' + (l.t ? "" : " disabled") + ' aria-pressed="false">' +
+            '<span class="l-num">Bài ' + l.n + '</span><span class="l-name">' + esc(l.name) + (l.t ? "" : '<span class="soon">chưa có</span>') + "</span>" +
+            (l.t ? '<span class="l-sub" hidden>' + esc(sub) + "</span>" : "") + "</button>";
+        }).join("");
+        var label = tp.topic.replace(/^Chủ đề (\d+)\. /, "Chủ đề $1 · ");
+        return '<details class="topic" data-ti="' + x.ti + '"' + (open ? " open" : "") + '><summary><span class="t-name">' + esc(label) + "</span>" +
+          (holds && hasSel ? '<span class="t-dot" title="Có bài đang chọn"></span>' : "") + '</summary><div class="lessons">' + rows + "</div></details>";
+      }).join("");
+    syncLessons();
+  }
+
+  function syncLessons() {
+    els.topics.querySelectorAll(".lesson").forEach(function (b) {
+      var on = b.dataset.id === state.lesson;
+      b.setAttribute("aria-pressed", String(on));
+      var sub = b.querySelector(".l-sub"); if (sub) sub.hidden = !on;
     });
-    els.lesson.innerHTML = html;
+    els.topics.querySelectorAll(".topic").forEach(function (d) {
+      var holds = !!d.querySelector('.lesson[aria-pressed="true"]'), dot = d.querySelector(".t-dot");
+      if (holds && !dot) d.querySelector("summary").insertAdjacentHTML("beforeend", '<span class="t-dot" title="Có bài đang chọn"></span>');
+      if (!holds && dot) dot.remove();
+    });
   }
 
   function buildControls() {
@@ -1032,12 +1092,11 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
   function syncControls() {
     els.name.value = state.name;
-    els.lesson.value = state.lesson;
-    els.lesson.classList.toggle("picked", !!state.lesson);
-    var les = LESSON_BY_ID[state.lesson];
-    els.lessonNote.textContent = les
-      ? "Đã chọn " + les.t.length + " dạng bài phù hợp bài " + les.n + ". Đổi dạng bài hoặc phạm vi bên dưới sẽ chuyển về Tự chọn."
-      : "Theo sách Toán 1 Kết nối tri thức với cuộc sống. Chọn bài, app tự chọn dạng bài phù hợp.";
+    var lp = state.pane === "lesson";
+    els.modeLesson.setAttribute("aria-selected", String(lp)); els.modeCustom.setAttribute("aria-selected", String(!lp));
+    els.lessonPane.hidden = !lp; els.customPane.hidden = lp;
+    els.hk1.checked = state.hk === 1; els.hk2.checked = state.hk === 2;
+    syncLessons();
     TYPES.forEach(function (t) { $("type-" + t.id).checked = state.types.indexOf(t.id) >= 0; });
     els.r10.checked = state.range === 10; els.r100.checked = state.range === 100;
     els.rangeNote.textContent = state.range === 100
@@ -1072,7 +1131,7 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     document.body.classList.toggle("mode-play", play);
     if (play) { renderPlay(); save(); return; }
     closeKeypad();
-    if (!state.types.length) {
+    if (!effective().types.length) {
       els.scale.innerHTML = '<p class="page-label" style="margin:0">Hãy chọn ít nhất một dạng bài.</p>';
       els.warn.hidden = true; fit(); return;
     }
@@ -1101,15 +1160,16 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   var lastPlaySig = "", active = null;
 
   function renderPlay() {
-    var sig = [state.code, state.types.join(","), state.range, state.per, state.name, state.lesson].join("|");
+    var ef = effective();
+    var sig = [state.code, ef.types.join(","), ef.range, state.per, state.name, ef.lesson ? ef.lesson.id : ""].join("|");
     if (sig === lastPlaySig && els.play.childElementCount) return; // giữ nguyên bài bé đang làm
     lastPlaySig = sig;
     closeKeypad();
     els.result.hidden = true;
-    if (!state.types.length) { els.play.innerHTML = '<p class="hello">Hãy chọn ít nhất một dạng bài.</p>'; updateProgress(); return; }
+    if (!ef.types.length) { els.play.innerHTML = '<p class="hello">Hãy chọn ít nhất một dạng bài.</p>'; updateProgress(); return; }
     var cs = currentSections();
     PLAY = true;
-    var body = sectionsHTML(cs.sections, false, state.range);
+    var body = sectionsHTML(cs.sections, false, cs.range);
     PLAY = false;
     var hello = state.name ? "Cố lên, " + esc(state.name) + "!" : "Bé ơi, mình cùng làm bài nhé!";
     els.play.innerHTML = '<p class="hello">' + hello + "</p>" + body;
@@ -1256,7 +1316,7 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   }
 
   function onPrint() {
-    if (!state.types.length) { setStatus("Hãy chọn ít nhất một dạng bài trước khi in."); return; }
+    if (!effective().types.length) { setStatus(state.pane === "lesson" ? "Hãy chọn một bài học trước khi in." : "Hãy chọn ít nhất một dạng bài trước khi in."); return; }
     if (!downloads) { printHere(); return; }
     setStatus("Đang chuẩn bị file…");
     downloads.save({ filename: "phieu-toan-lop-1-" + state.code + ".html", data: standaloneDoc() })
@@ -1272,20 +1332,25 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   // ---------- Sự kiện ----------
   function wire() {
     els.name.addEventListener("input", function () { state.name = els.name.value; render(); });
-    els.lesson.addEventListener("change", function () {
-      var les = LESSON_BY_ID[els.lesson.value];
-      state.lesson = les && les.t ? les.id : "";
-      if (les && les.t) { state.types = les.t.slice(); state.range = les.r; }
+    els.modeLesson.addEventListener("click", function () { state.pane = "lesson"; render(); });
+    els.modeCustom.addEventListener("click", function () { state.pane = "custom"; render(); });
+    [els.hk1, els.hk2].forEach(function (r) { r.addEventListener("change", function () { state.hk = +r.value; openTopics = {}; buildTopicList(); save(); }); });
+    els.topics.addEventListener("click", function (e) {
+      var b = e.target.closest(".lesson");
+      if (!b || b.disabled) return;
+      state.lesson = b.dataset.id;
       render();
     });
+    els.topics.addEventListener("toggle", function (e) {
+      if (e.target.classList && e.target.classList.contains("topic")) openTopics[e.target.dataset.ti] = e.target.open;
+    }, true);
     els.chips.addEventListener("change", function (e) {
-      state.lesson = "";
       var id = e.target.value, on = e.target.checked;
       state.types = state.types.filter(function (t) { return t !== id; });
       if (on) state.types.push(id);
       render();
     });
-    [els.r10, els.r100].forEach(function (r) { r.addEventListener("change", function () { state.lesson = ""; state.range = +r.value; render(); }); });
+    [els.r10, els.r100].forEach(function (r) { r.addEventListener("change", function () { state.range = +r.value; render(); }); });
     els.perMinus.addEventListener("click", function () { if (state.per > PER_MIN) { state.per--; render(); } });
     els.perPlus.addEventListener("click", function () { if (state.per < PER_MAX) { state.per++; render(); } });
     els.key.addEventListener("change", function () { state.key = els.key.checked; render(); });
@@ -1333,7 +1398,8 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   // ---------- Khởi động ----------
   load();
   buildControls();
-  buildLessonSelect();
+  if (LESSON_BY_ID[state.lesson]) state.hk = LESSON_BY_ID[state.lesson].n <= 20 ? 1 : 2;
+  buildTopicList();
   SHEET_W = measureA4();
   wire();
   render();
