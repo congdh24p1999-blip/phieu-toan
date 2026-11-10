@@ -192,6 +192,15 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
         <p class="hint" id="scopeHint"></p>
       </div>
       <div class="field">
+        <span class="lbl">Độ khó</span>
+        <div class="seg" id="diffSeg">
+          <label><input type="radio" name="diff" value="co_ban">Cơ bản</label>
+          <label><input type="radio" name="diff" value="chuan">Chuẩn</label>
+          <label><input type="radio" name="diff" value="nang_cao">Nâng cao</label>
+        </div>
+        <p class="hint" id="diffHint"></p>
+      </div>
+      <div class="field">
         <span class="lbl">Thông tin đầu đề (không bắt buộc)</span>
         <input type="text" id="dept" placeholder="Phòng/Sở GD&ĐT, ví dụ: Phòng GD&ĐT Quận 1" autocomplete="off">
         <input type="text" id="school" placeholder="Tên trường, ví dụ: Nguyễn Du" autocomplete="off">
@@ -924,7 +933,7 @@ DS('ds-rhombus',3,'TH',r=>{
     chk:()=>al%2===0&&al!==90
   });
 });
-DS('ds-rect',3,'TH',r=>{
+DS('ds-rect',3,'NB',r=>{
   const [a,b,d]=tri(r,true);
   return mkDS(r,{
     stem:`Cho hình chữ nhật ${I('ABCD')} có ${I('AB')} = ${a} cm, ${I('AD')} = ${b} cm, ${I('AC')} = ${d} cm; hai đường chéo ${I('AC')} và ${I('BD')} cắt nhau tại ${I('O')}. Xét tính đúng sai của các khẳng định sau:`,
@@ -964,7 +973,7 @@ DS('ds-thales',4,'TH',r=>{
     chk:()=>AM*NC===MB*AN&&MN*(AM+MB)===BC*AM
   });
 });
-DS('ds-data',5,'TH',r=>{
+DS('ds-data',5,'NB',r=>{
   const set=r.pick(CAT_SETS),pcts=pctSet(r),N=r.pick([40,60,80,100,120,160,200]);
   const cnt=pcts.map(p=>N*p/100),names=set.names;
   const order=[0,1,2,3].sort((a,b)=>cnt[b]-cnt[a]);
@@ -1036,7 +1045,7 @@ TLN('tln-c3-angles',3,'VD',r=>{
   return{kind:'tln',stem:`Cho hình bình hành ${I('ABCD')} có ∠${I('A')} ${MINUS} ∠${I('B')} = ${k}°. Tính số đo ∠${I('A')} (đơn vị: độ).`,ans:A,unit:'°',
     sol:`∠A + ∠B = 180° và ∠A − ∠B = ${k}° nên ∠A = (180° + ${k}°)/2 = ${A}°.`};
 });
-TLN('tln-c3-len',3,'TH',r=>{
+TLN('tln-c3-len',3,'NB',r=>{
   if(r.chance(.5)){
     const s=r.int(15,30),a=r.int(5,s-5);
     return{kind:'tln',stem:`Cho hình bình hành ${I('ABCD')} có chu vi ${2*s} cm và ${I('AB')} = ${a} cm. Tính độ dài cạnh ${I('BC')} (đơn vị: cm).`,ans:s-a,unit:'cm',
@@ -1061,7 +1070,7 @@ TLN('tln-c5-percent',5,'TH',r=>{
   return{kind:'tln',stem:`Kết quả khảo sát ${set.what} của ${N} học sinh được cho trong bảng sau.${tableHTML(set.names,[cnt])}Hỏi số học sinh chọn “${set.names[k]}” chiếm bao nhiêu phần trăm tổng số học sinh? (đơn vị: %)`,ans:pcts[k],unit:'%',
     sol:`${cnt[k]}/${N} = ${pcts[k]}%.`,chk:()=>cnt.reduce((a,b)=>a+b,0)===N};
 });
-TLN('tln-c5-bar',5,'TH',r=>{
+TLN('tln-c5-bar',5,'NB',r=>{
   const vals=distinctInts(r,5,12,48),mx=Math.max(...vals),mn=Math.min(...vals);
   return{kind:'tln',stem:`Biểu đồ cột dưới đây cho biết số học sinh giỏi của năm lớp khối 8.<div class="figure">${barSVG(CLS,vals,{unit:'Số học sinh giỏi'})}</div>Lớp có nhiều học sinh giỏi nhất hơn lớp có ít học sinh giỏi nhất bao nhiêu học sinh?`,ans:mx-mn,unit:'',
     sol:`${mx} − ${mn} = ${mx-mn}.`};
@@ -1187,7 +1196,7 @@ TL('tl-quad-real',3,'VD','real',r=>{
       chk:()=>A+B+C+D===360&&C-D===k};
   }
 });
-TL('tl-geo-rhombus',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+TL('tl-geo-rhombus',3,'VDC','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
   {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}. Gọi ${I('M')} là trung điểm của ${I('BC')}; kẻ ${I('MD')} ⊥ ${I('AB')} tại ${I('D')}, ${I('ME')} ⊥ ${I('AC')} tại ${I('E')}. Chứng minh tứ giác ${I('ADME')} là hình chữ nhật.`},
   {pts:.5,html:`Gọi ${I('N')} là điểm đối xứng với ${I('M')} qua ${I('D')}. Chứng minh tứ giác ${I('AMBN')} là hình thoi.`}],
   sol:[ptxt([[`Tứ giác ADME có ∠DAE = 90°, ∠ADM = 90°, ∠AEM = 90°`,.25],[`Tứ giác có ba góc vuông là hình chữ nhật. Vậy ADME là hình chữ nhật`,.25]]),
@@ -1197,7 +1206,7 @@ TL('tl-geo-para',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,p
   {pts:.5,html:`Gọi ${I('O')} là giao điểm của ${I('AC')} và ${I('BD')}. Chứng minh ba điểm ${I('E')}, ${I('O')}, ${I('F')} thẳng hàng.`}],
   sol:[ptxt([[`AB // CD và AB = CD nên AE // CF`,.25],[`AE = AB/2 = CD/2 = CF. Tứ giác AECF có AE // CF và AE = CF nên là hình bình hành`,.25]]),
         ptxt([[`O là trung điểm của AC (tính chất hình bình hành ABCD)`,.25],[`AECF là hình bình hành nên AC và EF cắt nhau tại trung điểm của mỗi đường, tức O là trung điểm của EF. Vậy E, O, F thẳng hàng`,.25]])]}));
-TL('tl-geo-isos',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+TL('tl-geo-isos',3,'VDC','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
   {pts:.5,html:`Cho tam giác ${I('ABC')} cân tại ${I('A')}, đường cao ${I('AH')}. Gọi ${I('M')} là trung điểm của ${I('AC')}, ${I('N')} là điểm đối xứng với ${I('H')} qua ${I('M')}. Chứng minh tứ giác ${I('AHCN')} là hình chữ nhật.`},
   {pts:.5,html:`Chứng minh tứ giác ${I('ABHN')} là hình bình hành.`}],
   sol:[ptxt([[`M là trung điểm của AC và của HN nên AHCN là hình bình hành`,.25],[`Có ∠AHC = 90° (AH là đường cao) nên AHCN là hình chữ nhật`,.25]]),
@@ -1211,7 +1220,7 @@ TL('tl-geo-thales',4,'VD','geo',r=>{
           ptxt([[`MN // BP (vì MN // BC, P thuộc BC)`,.25],[`NP // MB (vì NP // AB, M thuộc AB). Tứ giác MNPB có hai cặp cạnh đối song song nên là hình bình hành`,.25]])],
     chk:()=>AM*NC===MB*AN};
 });
-TL('tl-geo-rhombus2',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+TL('tl-geo-rhombus2',3,'VDC','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
   {pts:.5,html:`Cho hình bình hành ${I('ABCD')} có ${I('AB')} = 2${I('AD')}. Gọi ${I('E')}, ${I('F')} lần lượt là trung điểm của ${I('AB')} và ${I('CD')}. Chứng minh tứ giác ${I('AEFD')} là hình bình hành.`},
   {pts:.5,html:`Chứng minh tứ giác ${I('AEFD')} là hình thoi.`}],
   sol:[ptxt([[`AE = AB/2 và DF = CD/2, mà AB = CD nên AE = DF`,.25],[`AB // CD nên AE // DF. Tứ giác AEFD có AE // DF, AE = DF nên là hình bình hành`,.25]]),
@@ -1228,32 +1237,54 @@ const BLUEPRINT={
     nlc:[1,1,2,2,2,3,3,3,4,4,5,5],ds:[3,5],tln:[2,3,4,5],
     tl:[{role:'alg'},{role:'real',chs:[3,5]},{role:'geo',chs:[3,4]}]}
 };
-const LV_RANK={NB:0,TH:1,VD:2};
-function buildExam(term,base){
-  const bp=BLUEPRINT[term],used=new Set();
-  const pickT=(kind,pred)=>{
-    const all=Object.values(T[kind]).filter(t=>(!t.hk||t.hk===bp.hk)&&pred(t)),fresh=all.filter(t=>!used.has(t.grp)),pool=fresh.length?fresh:all;
-    if(!pool.length)throw new Error('không có mẫu câu cho '+kind);
-    const rr=new RNG(`pick|${term}|${base}|${kind}|${used.size}`),t=pool[rr.int(0,pool.length-1)];
+const LV_RANK={NB:0,TH:1,VD:2,VDC:3};
+const LV_NAME={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng',VDC:'Vận dụng cao'};
+/* Ba mức độ khó. Mỗi mức quy định mức nhận thức mong muốn cho từng vị trí câu trong đề.
+   Chuẩn ≈ 30/40/20/10 (NB/TH/VD/VDC), theo một khung đề cuối kì I Toán 8 đăng trên cổng giáo dục VNPT. */
+const DIFFS={
+  co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH']},tl:['TH','VD','VD']},
+  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB']},tl:['TH','VD','VDC']},
+  nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH']},tl:['TH','VD','VDC']}
+};
+/* Gán mức cho 12 câu phần I: nb câu nhận biết, còn lại thông hiểu; câu thông hiểu ưu tiên cuối mỗi nhóm chương. */
+function nlcLevels(chs,nb){
+  const size={},idx=[];
+  chs.forEach(c=>size[c]=(size[c]||0)+1);
+  const seen={};
+  chs.forEach((c,i)=>{seen[c]=(seen[c]||0)+1;idx.push({i,fromEnd:size[c]-seen[c],size:size[c]})});
+  const order=[...idx].sort((a,b)=>a.fromEnd-b.fromEnd||b.size-a.size||a.i-b.i);
+  const th=new Set(order.slice(0,chs.length-nb).map(o=>o.i));
+  return chs.map((c,i)=>th.has(i)?'TH':'NB');
+}
+function buildExam(term,base,diff){
+  diff=DIFFS[diff]?diff:'chuan';
+  const bp=BLUEPRINT[term],used=new Set(),D=DIFFS[diff];
+  const pickT=(kind,pred,want)=>{
+    const all=Object.values(T[kind]).filter(t=>(!t.hk||t.hk===bp.hk)&&pred(t));
+    if(!all.length)throw new Error('không có mẫu câu cho '+kind);
+    const w=LV_RANK[want],dist=t=>Math.abs(LV_RANK[t.lv]-w),best=Math.min(...all.map(dist));
+    const near=all.filter(t=>dist(t)===best),fresh=near.filter(t=>!used.has(t.grp)),pool=fresh.length?fresh:near;
+    const rr=new RNG(`pick|${term}|${base}|${diff}|${kind}|${used.size}`),t=pool[rr.int(0,pool.length-1)];
     used.add(t.grp);return t;
   };
   let seq=0;
   const make=(kind,t)=>{
-    const q=t.gen(new RNG(`gen|${term}|${base}|${kind}|${seq++}|${t.id}`));
+    const q=t.gen(new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}`));
     q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;return q;
   };
-  const nlc=bp.nlc.map(ch=>make('nlc',pickT('nlc',t=>t.ch===ch)));
+  const nl=nlcLevels(bp.nlc,D.nb);
+  const nlc=bp.nlc.map((ch,i)=>make('nlc',pickT('nlc',t=>t.ch===ch,nl[i])));
   const order=bp.chapters;
   nlc.sort((a,b)=>order.indexOf(a.ch)-order.indexOf(b.ch)||LV_RANK[a.lv]-LV_RANK[b.lv]);
-  const ds=bp.ds.map(ch=>make('ds',pickT('ds',t=>t.ch===ch)));
-  const tln=bp.tln.map(ch=>make('tln',pickT('tln',t=>t.ch===ch)));
-  const tl=bp.tl.map(sl=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)))));
-  return{term,base,nlc,ds,tln,tl};
+  const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,D.ds[term][i])));
+  const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,D.tln[term][i])));
+  const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),D.tl[i])));
+  return{term,base,diff,nlc,ds,tln,tl};
 }
 /* Hoán vị mã đề: đảo thứ tự câu và đáp án phần I, đảo thứ tự ý phần II. */
 function makeVariant(exam,v){
   if(v===0)return{...exam,code:exam.base};
-  const r=new RNG(`var|${exam.term}|${exam.base}|${v}`);
+  const r=new RNG(`var|${exam.term}|${exam.base}|${exam.diff}|${v}`);
   const nlc=r.shuffle(exam.nlc).map(q=>{
     if(q.fixed)return{...q};
     const idx=r.shuffle([0,1,2,3]);
@@ -1266,12 +1297,18 @@ function makeVariant(exam,v){
 function matrixOf(exam){
   const bp=BLUEPRINT[exam.term],rows={};
   bp.chapters.forEach(c=>rows[c]={nlc:0,ds:0,tln:0,tl:0,pts:0});
-  const lv={NB:0,TH:0,VD:0};
+  const lv={NB:0,TH:0,VD:0,VDC:0};
   exam.nlc.forEach(q=>{rows[q.ch].nlc++;rows[q.ch].pts+=PTS.nlc;lv[q.lv]++});
   exam.ds.forEach(q=>{rows[q.ch].ds+=4;rows[q.ch].pts+=4*PTS.dsItem;lv[q.lv]+=4});
   exam.tln.forEach(q=>{rows[q.ch].tln++;rows[q.ch].pts+=PTS.tln;lv[q.lv]++});
   exam.tl.forEach(q=>{rows[q.ch].tl++;rows[q.ch].pts+=PTS.tl;lv[q.lv]++});
-  return{rows,lv};
+  return{rows,lv,pt:lvPts(exam)};
+}
+function lvPts(exam){
+  const o={NB:0,TH:0,VD:0,VDC:0};
+  exam.nlc.forEach(q=>o[q.lv]+=PTS.nlc);exam.ds.forEach(q=>o[q.lv]+=4*PTS.dsItem);
+  exam.tln.forEach(q=>o[q.lv]+=PTS.tln);exam.tl.forEach(q=>o[q.lv]+=PTS.tl);
+  return o;
 }
 /*CORE-END*/
 
@@ -1282,8 +1319,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function defYear(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=7?`${y} – ${y+1}`:`${y-1} – ${y}`}
 function loadState(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
 function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
-const state=Object.assign({term:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam'},loadState());
+const state=Object.assign({term:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam',diff:'chuan'},loadState());
 if(!BLUEPRINT[state.term])state.term='gk1';
+if(!DIFFS[state.diff])state.diff='chuan';
 state.code=String(state.code||'').replace(/\D/g,'').slice(0,3)||'101';
 state.nv=Math.min(4,Math.max(1,+state.nv||1));
 state.time=Math.min(180,Math.max(15,+state.time||90));
@@ -1375,11 +1413,11 @@ function keyHTML(base,vs,bp){
     h+='</section>';
   }
   const m=matrixOf(base);
-  const lvT=m.lv.NB+m.lv.TH+m.lv.VD;
   h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">Chương</th><th>Phần I<br>(câu)</th><th>Phần II<br>(ý)</th><th>Phần III<br>(câu)</th><th>Phần IV<br>(câu)</th><th>Điểm</th><th>Tỉ lệ</th></tr>`;
   bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">Chương ${['','I','II','III','IV','V'][c]}. ${CH_NAME[c]}</td><td>${r.nlc}</td><td>${r.ds}</td><td>${r.tln}</td><td>${r.tl}</td><td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
   h+=`<tr class="hi"><td class="l"><b>Tổng</b></td><td>${P.nN}</td><td>${P.nD*4}</td><td>${P.nT}</td><td>${P.nL}</td><td>${pts(tot)}</td><td>100%</td></tr></table>`;
-  h+=`<p class="ksmall">Mức độ nhận thức (tính theo câu/ý): Nhận biết ${m.lv.NB} (${Math.round(100*m.lv.NB/lvT)}%) · Thông hiểu ${m.lv.TH} (${Math.round(100*m.lv.TH/lvT)}%) · Vận dụng ${m.lv.VD} (${Math.round(100*m.lv.VD/lvT)}%). Mức độ do người soạn gán cho từng dạng câu, có thể khác với phân loại của trường.</p></section>`;
+  const lvTxt=['NB','TH','VD','VDC'].map(k=>`${LV_NAME[k]} ${pts(m.pt[k])} đ (${Math.round(m.pt[k]*10)}%)`).join(' · ');
+  h+=`<p class="ksmall">Mức độ nhận thức (độ khó ${DIFFS[base.diff].name}): ${lvTxt}. Mức độ do người soạn gán cho từng dạng câu, có thể khác với phân loại của trường; “vận dụng cao” ở đây là bài hình học có thêm một bước suy luận, không phải bài thi học sinh giỏi.</p></section>`;
   return h+'</article>';
 }
 
@@ -1391,18 +1429,22 @@ function prettyMath(h){
     .replace(/(\s)\/\/(\s)/g,'$1∥$2');
 }
 
+const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 40% thông hiểu, 20% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
+
 function render(){
   const bp=BLUEPRINT[state.term],base=state.code;
-  const ex=buildExam(state.term,base);
+  const ex=buildExam(state.term,base,state.diff);
   const vs=[...Array(state.nv).keys()].map(v=>makeVariant(ex,v));
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#scopeHint').textContent=bp.scope+'.';
-  $('#meta').textContent=`${bp.short} · mã đề ${vs.map(v=>v.code).join(', ')}`;
+  $('#diffHint').textContent=DIFF_HINT[state.diff];
+  $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề Toán 8 ${bp.short} – mã ${vs[0].code}`;
 }
 function syncInputs(){
   document.querySelectorAll('input[name=term]').forEach(i=>i.checked=i.value===state.term);
+  document.querySelectorAll('input[name=diff]').forEach(i=>i.checked=i.value===state.diff);
   document.querySelectorAll('input[name=nv]').forEach(i=>i.checked=+i.value===state.nv);
   $('#dept').value=state.dept;$('#school').value=state.school;$('#year').value=state.year;$('#time').value=state.time;
   $('#code').value=state.code;$('#sol').checked=!!state.sol;
@@ -1414,6 +1456,7 @@ function setTab(t){
 }
 function update(){saveState();render()}
 document.querySelectorAll('input[name=term]').forEach(i=>i.addEventListener('change',()=>{state.term=i.value;update()}));
+document.querySelectorAll('input[name=diff]').forEach(i=>i.addEventListener('change',()=>{state.diff=i.value;update()}));
 document.querySelectorAll('input[name=nv]').forEach(i=>i.addEventListener('change',()=>{state.nv=+i.value;update()}));
 $('#dept').addEventListener('input',e=>{state.dept=e.target.value;update()});
 $('#school').addEventListener('input',e=>{state.school=e.target.value;update()});
