@@ -62,6 +62,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
 .seg.dis label{opacity:.45;cursor:not-allowed}
 .codebox{display:grid;grid-template-columns:1fr auto;gap:8px}
 .btn{font:inherit;font-weight:700;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:10px 14px;cursor:pointer;min-height:42px}
+.linkbtn{font:inherit;font-size:.82rem;background:none;border:0;padding:2px 0;color:var(--muted);text-decoration:underline;cursor:pointer;justify-self:start}
+.linkbtn:hover{color:var(--accent)}
 .btn.alt{background:transparent;color:var(--accent)}
 .btn:hover{filter:brightness(1.07)}
 .switch{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;cursor:pointer}
@@ -217,6 +219,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
           <button class="btn alt" id="newBtn" type="button">Đổi đề khác</button>
         </div>
         <p class="hint">Cùng mã đề thì ra cùng một đề, nên có thể in lại bất cứ lúc nào.</p>
+        <p class="hint" id="histHint"></p>
+        <button type="button" class="linkbtn" id="clearHist">Xoá lịch sử đề đã tạo</button>
       </div>
       <div class="field">
         <span class="lbl">Số mã đề hoán vị</span>
@@ -1015,13 +1019,13 @@ TLN('tln-c1-const',1,'VD',r=>{
 });
 TLN('tln-c2-quick',2,'TH',r=>{
   let x,y;
-  if(r.chance(.5)){const n=r.pick([2025,1000,500,100,2000]);x=n+1;y=n}
-  else{const sum=r.pick([100,100,50,200]),d=r.int(2,Math.min(30,sum/2-5));x=(sum+d)/2;y=(sum-d)/2;if(!Number.isInteger(x))return T.tln['tln-c2-quick'].gen(r)}
+  if(r.chance(.5)){const n=r.pick([2025,1000,500,100,2000,999,1500,300,400,600,750,250]);x=n+1;y=n}
+  else{const sum=r.pick([100,50,200,60,80,120,150,90]),d=r.int(2,Math.min(30,sum/2-5));x=(sum+d)/2;y=(sum-d)/2;if(!Number.isInteger(x))return T.tln['tln-c2-quick'].gen(r)}
   return{kind:'tln',stem:`Tính nhanh giá trị của biểu thức ${x}${sup(2)} ${MINUS} ${y}${sup(2)}.`,ans:x*x-y*y,unit:'',
     sol:`${x}² − ${y}² = (${x} − ${y})(${x} + ${y}) = ${x-y}·${x+y} = ${x*x-y*y}.`};
 });
 TLN('tln-c2-sumprod',2,'VD',r=>{
-  const [a,b]=r.shuffle([1,2,3,4,5,6,7]).slice(0,2),s=a+b,p=a*b;
+  const [a,b]=r.shuffle([1,2,3,4,5,6,7,8,9,10,11,12]).slice(0,2),s=a+b,p=a*b;
   if(r.chance(.5))return{kind:'tln',stem:`Cho ${I('x')} + ${I('y')} = ${s} và ${I('xy')} = ${p}. Tính giá trị của biểu thức ${I('x')}${sup(2)} + ${I('y')}${sup(2)}.`,ans:s*s-2*p,unit:'',
     sol:`x² + y² = (x + y)² − 2xy = ${s}² − 2·${p} = ${s*s-2*p}.`};
   return{kind:'tln',stem:`Cho ${I('x')} + ${I('y')} = ${s} và ${I('xy')} = ${p}. Tính giá trị của biểu thức ${I('x')}${sup(3)} + ${I('y')}${sup(3)}.`,ans:s*s*s-3*p*s,unit:'',
@@ -1041,7 +1045,7 @@ TLN('tln-c3-angles',3,'VD',r=>{
         sol:`∠C + ∠D = 360° − ${A}° − ${B}° = ${360-A-B}°. Mà ∠C = 2∠D nên 3∠D = ${360-A-B}°, suy ra ∠D = ${D}°.`};
     }
   }
-  const k=r.pick([20,30,40,50,60,70]),A=(180+k)/2;
+  const k=r.pick([10,16,20,24,30,36,40,44,50,56,60,64,70,76,80]),A=(180+k)/2;
   return{kind:'tln',stem:`Cho hình bình hành ${I('ABCD')} có ∠${I('A')} ${MINUS} ∠${I('B')} = ${k}°. Tính số đo ∠${I('A')} (đơn vị: độ).`,ans:A,unit:'°',
     sol:`∠A + ∠B = 180° và ∠A − ∠B = ${k}° nên ∠A = (180° + ${k}°)/2 = ${A}°.`};
 });
@@ -1256,6 +1260,22 @@ function nlcLevels(chs,nb){
   const th=new Set(order.slice(0,chs.length-nb).map(o=>o.i));
   return chs.map((c,i)=>th.has(i)?'TH':'NB');
 }
+/* Đổi tên điểm (A,B,C… → chữ khác) cho các câu hình học, để cùng một dạng bài nhìn khác nhau.
+   Dịch vòng tròn trên bảng chữ cái điểm, áp dụng đồng nhất cho đề bài, đáp án và lời giải. */
+const PT_LETTERS='ABCDEFGHKLMNOPQRS';
+const RELABEL_RE=/^(c3-|c4-|ds-rect|ds-rhombus|ds-trap|ds-thales|tln-c3-|tln-c4-|tl-geo-|tl-quad-real)/;
+const RELABEL_SKIP=new Set(['id','kind','role','unit','title','note','lv','ch']);
+function relabelDeep(v,shift){
+  const L=PT_LETTERS,n=L.length;
+  const fix=str=>str.replace(/(?<![\p{L}])[A-Z]{1,4}(?![\p{L}])/gu,m=>[...m].map(ch=>{const i=L.indexOf(ch);return i<0?ch:L[(i+shift)%n]}).join(''));
+  const walk=(x,key)=>{
+    if(typeof x==='string')return RELABEL_SKIP.has(key)?x:fix(x);
+    if(Array.isArray(x))return x.map(e=>walk(e,key));
+    if(x&&typeof x==='object'){const o={};for(const k in x)o[k]=walk(x[k],k);return o}
+    return x;
+  };
+  return walk(v,'');
+}
 function buildExam(term,base,diff){
   diff=DIFFS[diff]?diff:'chuan';
   const bp=BLUEPRINT[term],used=new Set(),D=DIFFS[diff];
@@ -1269,7 +1289,9 @@ function buildExam(term,base,diff){
   };
   let seq=0;
   const make=(kind,t)=>{
-    const q=t.gen(new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}`));
+    const rg=new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}`);
+    let q=t.gen(rg);
+    if(RELABEL_RE.test(t.id)){const sh=rg.int(0,PT_LETTERS.length-1);if(sh)q=relabelDeep(q,sh)}
     q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;return q;
   };
   const nl=nlcLevels(bp.nlc,D.nb);
@@ -1309,6 +1331,45 @@ function lvPts(exam){
   exam.nlc.forEach(q=>o[q.lv]+=PTS.nlc);exam.ds.forEach(q=>o[q.lv]+=4*PTS.dsItem);
   exam.tln.forEach(q=>o[q.lv]+=PTS.tln);exam.tl.forEach(q=>o[q.lv]+=PTS.tl);
   return o;
+}
+/* ---- Tránh trùng câu với các đề đã tạo trước ---- */
+const qText=q=>String(
+  q.kind==='tl'?q.parts.map(p=>p.html).join('|')
+  :(q.stem||'')+(q.opts?'#'+q.opts.slice().sort().join('#'):'')+(q.items?'#'+q.items.map(i=>i.t).sort().join('#'):'')
+).replace(/<[^>]+>/g,'');
+/* Dấu vân tay của đề: mỗi câu = mã dạng + mã băm nội dung (số liệu cụ thể). */
+function examFP(ex){
+  return [...ex.nlc,...ex.ds,...ex.tln,...ex.tl].map(q=>q.id+'|'+hashStr(qText(q)).toString(36));
+}
+/* Đếm số câu trùng nguyên văn / cùng dạng với các đề trong lịch sử (hist: mới nhất trước). */
+function overlapOf(ex,hist){
+  const fp=examFP(ex),exact=new Set(),kind=new Set();
+  hist.forEach(h=>{const set=new Set(h.fp),ids=new Set(h.fp.map(x=>x.split('|')[0]));
+    fp.forEach(x=>{if(set.has(x))exact.add(x);if(ids.has(x.split('|')[0]))kind.add(x)})});
+  return{n:fp.length,exact:exact.size,kind:kind.size};
+}
+/* Điểm trùng: trùng nguyên văn bị phạt nặng; cùng dạng bị phạt nhẹ, đề càng mới phạt càng nặng. */
+function overlapScore(ex,hist){
+  const fp=examFP(ex);let sc=0;
+  hist.forEach((h,i)=>{
+    const set=new Set(h.fp),ids=new Set(h.fp.map(x=>x.split('|')[0])),w=Math.max(.25,1-i*.04);
+    fp.forEach(x=>{if(set.has(x))sc+=12;else if(ids.has(x.split('|')[0]))sc+=w});
+  });
+  return sc;
+}
+/* Chọn mã đề (100–979) ít trùng nhất với lịch sử; mã vẫn tái tạo được đúng đề đó. */
+function pickFreshCode(term,diff,hist,tries,rnd){
+  tries=tries||150;rnd=rnd||Math.random;
+  const usedCodes=new Set(hist.filter(h=>h.t===term&&h.d===diff).map(h=>h.c));
+  const H=hist.filter(h=>h.t===term);
+  let best=null;
+  for(let i=0;i<tries;i++){
+    const c=String(100+Math.floor(rnd()*880));
+    if(usedCodes.has(c))continue;
+    const ex=buildExam(term,c,diff),sc=overlapScore(ex,H);
+    if(!best||sc<best.sc){best={c,sc,ex};if(sc===0)break}
+  }
+  return best;
 }
 /*CORE-END*/
 
@@ -1429,6 +1490,22 @@ function prettyMath(h){
     .replace(/(\s)\/\/(\s)/g,'$1∥$2');
 }
 
+
+/* ---- Lịch sử đề đã tạo (chỉ lưu trong trình duyệt này) ---- */
+const HIST_KEY='xuong-de-thi-hist-v1',HIST_MAX=60;
+function loadHist(){try{const a=JSON.parse(localStorage.getItem(HIST_KEY)||'[]');return Array.isArray(a)?a.filter(h=>h&&Array.isArray(h.fp)):[]}catch(e){return[]}}
+function saveHist(a){try{localStorage.setItem(HIST_KEY,JSON.stringify(a.slice(0,HIST_MAX)))}catch(e){}}
+function recordHist(ex){
+  const a=loadHist().filter(h=>!(h.t===ex.term&&h.d===ex.diff&&h.c===ex.base));
+  a.unshift({t:ex.term,d:ex.diff,c:ex.base,fp:examFP(ex)});saveHist(a);
+}
+function histNote(ex){
+  const all=loadHist().filter(h=>h.t===ex.term&&!(h.d===ex.diff&&h.c===ex.base));
+  if(!all.length)return'Chưa có đề nào được lưu để so sánh. Đề được lưu khi bạn bấm “Đổi đề khác” hoặc in.';
+  const o=overlapOf(ex,all);
+  return `So với ${all.length} đề ${BLUEPRINT[ex.term].short} đã tạo: ${o.exact===0?'không có câu nào trùng nguyên văn':o.exact+'/'+o.n+' câu trùng nguyên văn'}; ${o.kind}/${o.n} câu cùng dạng bài (khác số liệu hoặc tên điểm)${o.kind>=o.n-2?`. Lặp dạng bài là bình thường khi đã tạo nhiều đề, vì ngân hàng hiện có ${Object.values(T).reduce((a,k)=>a+Object.keys(k).length,0)} dạng`:''}.`;
+}
+
 const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 40% thông hiểu, 20% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 
 function render(){
@@ -1439,6 +1516,7 @@ function render(){
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#scopeHint').textContent=bp.scope+'.';
   $('#diffHint').textContent=DIFF_HINT[state.diff];
+  $('#histHint').textContent=histNote(ex);
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề Toán 8 ${bp.short} – mã ${vs[0].code}`;
 }
@@ -1465,10 +1543,17 @@ $('#time').addEventListener('input',e=>{const v=+e.target.value;if(v>=15&&v<=180
 $('#code').addEventListener('input',e=>{const c=e.target.value.replace(/\D/g,'').slice(0,3);e.target.value=c;if(c.length===3){state.code=c;update()}});
 $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.value=state.code});
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
-$('#newBtn').addEventListener('click',()=>{let c;do{c=String(100+Math.floor(Math.random()*880))}while(c===state.code);state.code=c;syncInputs();update()});
+$('#newBtn').addEventListener('click',()=>{
+  const b=pickFreshCode(state.term,state.diff,loadHist());
+  let c=b?b.c:String(100+Math.floor(Math.random()*880));
+  if(c===state.code)c=String(100+(+c-100+1)%880);
+  state.code=c;recordHist(buildExam(state.term,c,state.diff));syncInputs();update();
+});
+$('#clearHist').addEventListener('click',()=>{if(confirm('Xoá lịch sử các đề đã tạo trong trình duyệt này? Các mã đề vẫn tái tạo được.')){saveHist([]);update()}});
 $('#tabExam').addEventListener('click',()=>setTab('exam'));
 $('#tabKey').addEventListener('click',()=>setTab('key'));
 function doPrint(what){
+  try{recordHist(buildExam(state.term,state.code,state.diff))}catch(e){}
   document.body.dataset.print=what;
   const back=()=>{document.body.dataset.print=state.tab;window.removeEventListener('afterprint',back)};
   window.addEventListener('afterprint',back);
