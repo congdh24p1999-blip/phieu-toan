@@ -1,6 +1,6 @@
 # Xưởng đề Toán — Thầy Công
 
-Công cụ miễn phí tạo đề kiểm tra Toán cấp 2, cấp 3 (hiện có lớp 7, 8, 11, sách Kết nối tri thức): chọn lớp, kì kiểm tra, cấu trúc đề, độ khó; mỗi lần bấm là một đề mới kèm đáp án, hướng dẫn chấm, ma trận, nhiều mã đề, in khổ A4.
+Công cụ miễn phí tạo đề kiểm tra Toán cấp 2, cấp 3 (hiện có lớp 7 học kì I và II, lớp 8 và lớp 11 học kì I, sách Kết nối tri thức): chọn lớp, kì kiểm tra, cấu trúc đề, độ khó; mỗi lần bấm là một đề mới kèm đáp án, hướng dẫn chấm, ma trận, nhiều mã đề, in khổ A4.
 
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
