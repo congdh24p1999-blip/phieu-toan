@@ -1,0 +1,7 @@
+# Sinh ra khi chạy src/build.sh hoặc các script kiểm tra
+src/core.js
+src/page.js
+src/core_prev.js
+src/out/
+src/figs.html
+__pycache__/

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Xưởng đề Toán của Thầy Công: tạo đề kiểm tra giữa kì, cuối kì Toán cấp 2, cấp 3 (lớp 7, 8 và 11, học kì I và II, sách Kết nối tri thức) có đáp án và hướng dẫn chấm, in khổ A4. Miễn phí.">
+<title>Xưởng đề Toán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap">
+<style>
+:root {
+  --bg:#e7ebf0; --surface:#f8fafc; --ink:#1b2531; --muted:#586677; --line:#ccd5df;
+  --accent:#1f6f5c; --accent-soft:#dff1ec; --on-accent:#fff; --pen:#c9302c;
+  --warn-bg:#fbefd9; --warn-ink:#7a4a05;
+  --font-display:"Baloo 2","Be Vietnam Pro",system-ui,sans-serif;
+  --font-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#12171e; --surface:#1b222b; --ink:#e5eaf0; --muted:#9ba7b5; --line:#2d3743;
+    --accent:#59c2a5; --accent-soft:#183a31; --on-accent:#08241c; --pen:#ff7a70;
+    --warn-bg:#3a2c12; --warn-ink:#f3c779; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#12171e; --surface:#1b222b; --ink:#e5eaf0; --muted:#9ba7b5; --line:#2d3743;
+  --accent:#59c2a5; --accent-soft:#183a31; --on-accent:#08241c; --pen:#ff7a70;
+  --warn-bg:#3a2c12; --warn-ink:#f3c779; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;
+  padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.app{max-width:1240px;margin:0 auto;display:grid;gap:18px}
+.topbar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.brand{font-family:var(--font-display);font-weight:800;font-size:1.9rem;line-height:1.1;margin:0;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.sign{font-family:"Dancing Script","Segoe Script",cursive;font-weight:700;font-size:1.7rem;line-height:1;color:var(--accent);transform:rotate(-4deg);display:inline-block}
+.tagline{margin:0;color:var(--muted);flex-basis:100%}
+.toplink{margin-left:auto;color:var(--accent);font-weight:600;font-size:.9rem;text-decoration:none}
+.toplink:hover{text-decoration:underline}
+
+.layout{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:960px){
+  .layout{grid-template-columns:340px minmax(0,1fr);align-items:start}
+  .panel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:grid;gap:16px}
+.field{display:grid;gap:6px;min-width:0}
+.field>label,.field>.lbl{font-weight:600;font-size:.88rem}
+.hint{color:var(--muted);font-size:.82rem;margin:0}
+input[type=text],input[type=number],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.sbox{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sbox[hidden]{display:none}
+.sbox label{display:grid;align-content:end;gap:3px;font-size:.8rem;color:var(--muted);font-weight:600}
+.hint.warn{color:#a05a00}
+.hint.warn:empty{display:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--bg)}
+.seg label{flex:1;text-align:center;padding:6px 8px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted);white-space:nowrap}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--accent);color:var(--on-accent)}
+.seg.dis label,.seg label.off{opacity:.4;cursor:not-allowed}
+#termSeg{display:grid;grid-template-columns:1fr 1fr;border-radius:20px;gap:2px}
+#gradeSeg label{padding:6px 0}
+.codebox{display:grid;grid-template-columns:1fr auto;gap:8px}
+.btn{font:inherit;font-weight:700;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:10px 14px;cursor:pointer;min-height:42px}
+.linkbtn{font:inherit;font-size:.82rem;background:none;border:0;padding:2px 0;color:var(--muted);text-decoration:underline;cursor:pointer;justify-self:start}
+.linkbtn:hover{color:var(--accent)}
+.btn.alt{background:transparent;color:var(--accent)}
+.btn:hover{filter:brightness(1.07)}
+.switch{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.switch input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:sticky;bottom:0;background:var(--surface);padding-top:6px}
+.note{background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:9px 11px;font-size:.84rem;margin:0}
+
+.stage{min-width:0;display:grid;gap:12px}
+.foot{margin-top:18px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--muted);font-size:.88rem;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.foot a{color:var(--accent);font-weight:600;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.stagehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;position:sticky;top:0;z-index:5;background:var(--bg);padding:4px 0}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.tab{font:inherit;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 16px;border-radius:999px;cursor:pointer}
+.tab[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
+.meta{color:var(--muted);font-size:.85rem}
+[data-tab=exam] #keyOut{display:none}
+[data-tab=key] #examOut{display:none}
+
+/* ===== Tờ giấy đề thi (luôn trắng/đen) ===== */
+.sheet{background:#fff;color:#000;max-width:210mm;margin:0 auto 18px;padding:14mm 15mm 12mm;border:1px solid #bbb;box-shadow:0 2px 10px rgba(0,0,0,.12);
+  font-family:"Times New Roman","Liberation Serif","Noto Serif",serif;font-size:12pt;line-height:1.38;width:100%}
+@media (max-width:640px){.sheet{padding:10mm 5mm;font-size:11.5pt}.eh{grid-template-columns:1fr}}
+.sheet i{font-style:italic}
+.sheet sup{font-size:.7em;line-height:0}
+.sheet sub{font-size:.7em;line-height:0}
+.rt{white-space:nowrap}.rt>.ov{border-top:1px solid currentColor;padding:0 1px;margin-left:1px}
+.lm{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin-right:3px}
+.lm>small{font-size:.68em;margin-top:1px}
+.cs{display:inline-flex;align-items:center;vertical-align:middle;margin:0 2px}
+.cs>.br{font-size:2.4em;font-weight:200;line-height:1;margin-right:3px;transform:scaleX(.8)}
+.cs>.rows{display:flex;flex-direction:column;gap:2px;text-align:left}
+
+.eh{display:grid;grid-template-columns:1fr 1.25fr;gap:8px 14px;align-items:start;text-align:center}
+.eh .l div,.eh .r div{margin:0;overflow-wrap:anywhere}
+.eh .l .school{font-weight:700;text-transform:uppercase}
+.eh .l .rule{width:60%;border-top:1px solid #000;margin:3px auto}
+.eh .code{display:inline-block;border:1.5px solid #000;padding:2px 12px;margin-top:6px;font-weight:700}
+.eh .r .title{font-weight:700;text-transform:uppercase;font-size:1.04em}
+.eh .r .sub{font-weight:700}
+.nameline{margin:10px 0 4px;display:flex;flex-wrap:wrap;gap:2px 22px}
+.nameline span{overflow-wrap:anywhere}
+.part{margin:11px 0 5px;font-weight:700;break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid}
+.part small{font-weight:400;font-style:italic;display:block}
+.q{margin:6px 0 9px;break-inside:avoid;page-break-inside:avoid}
+.q .qs b:first-child{white-space:nowrap}
+.opts{display:grid;gap:2px 10px;margin-top:3px;padding-left:2px}
+.opts.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.opts.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opts.c1{grid-template-columns:1fr}
+@media (max-width:640px){.opts.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opts div{min-width:0}
+.ys{list-style:none;margin:3px 0 0;padding:0 0 0 14px}
+.ys li{margin:2px 0}
+.tl-part{margin:3px 0 3px 14px}
+.figure{text-align:center;margin:5px 0}
+.chart{max-width:100%;height:auto;font-family:"Times New Roman","Liberation Serif",serif}
+.dt{border-collapse:collapse;margin:5px auto;font-size:.95em}
+.dt th,.dt td{border:1px solid #000;padding:2px 10px;text-align:center}
+.hw{position:relative;display:inline-block;white-space:nowrap;padding-top:.12em;line-height:1.15}
+.hw::before,.hw::after{content:"";position:absolute;top:.08em;width:50%;border-top:.07em solid currentColor;box-sizing:border-box}
+.hw::before{left:0;transform-origin:100% 0;transform:rotate(calc(var(--hr)*-1))}
+.hw::after{right:0;transform-origin:0 0;transform:rotate(var(--hr))}
+.hw.h1{--hr:36deg;margin:0 .03em;padding-top:.2em}
+.hw.h1::before,.hw.h1::after{width:38%;top:.1em}
+.hw.h1::before{left:14%}.hw.h1::after{right:6%}
+.hw.hn{--hr:9deg}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;font-size:.95em}
+.fr>span:first-child{border-bottom:1px solid #000;padding:0 3px}
+.fr>span:last-child{padding:0 3px}
+.endmark{text-align:center;font-weight:700;margin:12px 0 2px}
+.endnote{text-align:center;font-style:italic;font-size:.92em;margin:0}
+.brandline{text-align:right;font-size:9pt;color:#555;margin-top:8px}
+
+/* ===== Đáp án ===== */
+.kh{text-align:center;margin:0 0 8px}
+.kh h2{margin:0;font-size:1.15em;text-transform:uppercase}
+.kh p{margin:2px 0}
+.kblock{margin:10px 0;break-inside:avoid}
+.kblock h3,.ksec h3{font-size:1.02em;margin:10px 0 4px;break-after:avoid;page-break-after:avoid}
+.kt{border-collapse:collapse;width:100%;font-size:.95em;margin:3px 0}
+.kt th,.kt td{border:1px solid #000;padding:2px 5px;text-align:center}
+.kt td.l,.kt th.l{text-align:left}
+.kt tr.hi td,.kt tr.hi th{background:#eee}
+.st{margin:2px 0 4px;padding-left:18px}
+.st li{margin:1px 0}
+.pt{font-weight:700;white-space:nowrap}
+.lg{margin:6px 0;break-inside:avoid;font-size:.95em}
+.lg .qs{margin-bottom:1px}
+.lg .why{color:#222;padding-left:12px}
+.lg .why.small{font-size:.94em}
+.ksmall{font-size:.9em;margin:2px 0}
+.mx td,.mx th{font-size:.92em}
+
+/* ===== In ===== */
+@page{size:A4;margin:13mm 14mm}
+@media print{
+  html,body{background:#fff!important}
+  body{padding:0!important}
+  .topbar,.panel,.stagehead,.foot,.noprint{display:none!important}
+  .layout{display:block}
+  .app{max-width:none;display:block}
+  .sheet{max-width:none;width:auto;margin:0;padding:0;border:0;box-shadow:none;font-size:12pt}
+  .sheet.pb{break-before:page;page-break-before:always}
+  .sheet.pb:first-child{break-before:auto;page-break-before:auto}
+  body[data-print=exam] #keyOut{display:none!important}
+  body[data-print=key] #examOut{display:none!important}
+  body[data-print=exam] #examOut,body[data-print=key] #keyOut{display:block!important}
+  #examOut .sheet.pb:first-child,#keyOut .sheet.pb:first-child{break-before:auto}
+}
+</style>
+</head>
+<body data-tab="exam" data-print="exam">
+<div class="app">
+  <header class="topbar">
+    <h1 class="brand">Xưởng <span>đề</span> Toán</h1>
+    <span class="sign">Thầy Công</span>
+    <a class="toplink" href="phieu-lop-1.html">Phiếu luyện Toán lớp 1 →</a>
+    <p class="tagline" id="tagline">Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.</p>
+  </header>
+  <div class="layout">
+    <aside class="panel" aria-label="Thiết lập đề">
+      <div class="field">
+        <span class="lbl">Lớp</span>
+        <div class="seg" id="gradeSeg" aria-label="Chọn lớp">
+          <label class="off"><input type="radio" name="grade" value="6" disabled>6</label>
+          <label><input type="radio" name="grade" value="7">7</label>
+          <label><input type="radio" name="grade" value="8">8</label>
+          <label class="off"><input type="radio" name="grade" value="9" disabled>9</label>
+          <label class="off"><input type="radio" name="grade" value="10" disabled>10</label>
+          <label><input type="radio" name="grade" value="11">11</label>
+          <label class="off"><input type="radio" name="grade" value="12" disabled>12</label>
+        </div>
+        <p class="hint" id="gradeHint"></p>
+      </div>
+      <div class="field">
+        <span class="lbl">Kì kiểm tra</span>
+        <div class="seg" id="termSeg">
+          <label><input type="radio" name="term" value="gk1">Giữa kì I</label>
+          <label><input type="radio" name="term" value="ck1">Cuối kì I</label>
+          <label><input type="radio" name="term" value="gk2">Giữa kì II</label>
+          <label><input type="radio" name="term" value="ck2">Cuối kì II</label>
+        </div>
+        <p class="hint" id="scopeHint"></p>
+      </div>
+      <div class="field" id="structField">
+        <label for="struct">Cấu trúc đề</label>
+        <select id="struct"></select>
+        <div class="sbox" id="csBox" hidden>
+          <label>Nhiều lựa chọn: số câu<input type="number" id="cs_n1" min="0" max="40" step="1"></label>
+          <label>Điểm mỗi câu<select id="cs_p1"><option value="0.25">0,25</option><option value="0.5">0,5</option></select></label>
+          <label>Đúng/sai: số câu (1 đ/câu)<input type="number" id="cs_n2" min="0" max="8" step="1"></label>
+          <label>Trả lời ngắn: số câu<input type="number" id="cs_n3" min="0" max="16" step="1"></label>
+          <label>Điểm mỗi câu<select id="cs_p3"><option value="0.25">0,25</option><option value="0.5">0,5</option><option value="1">1</option></select></label>
+          <label>Tự luận: số câu (1 đ/câu)<input type="number" id="cs_n4" min="0" max="10" step="1"></label>
+        </div>
+        <p class="hint" id="structHint"></p>
+        <p class="hint warn" id="structWarn"></p>
+      </div>
+      <div class="field">
+        <span class="lbl">Độ khó</span>
+        <div class="seg" id="diffSeg">
+          <label><input type="radio" name="diff" value="co_ban">Cơ bản</label>
+          <label><input type="radio" name="diff" value="chuan">Chuẩn</label>
+          <label><input type="radio" name="diff" value="nang_cao">Nâng cao</label>
+        </div>
+        <p class="hint" id="diffHint"></p>
+        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng (ngoài SGK của khối lớp)</span></label>
+        <p class="hint">Ở mức Nâng cao luôn được phép. Trang đáp án ghi rõ câu nào là câu mở rộng.</p>
+      </div>
+      <div class="field">
+        <span class="lbl">Thông tin đầu đề (không bắt buộc)</span>
+        <input type="text" id="dept" placeholder="Phòng/Sở GD&ĐT, ví dụ: Phòng GD&ĐT Quận 1" autocomplete="off">
+        <input type="text" id="school" placeholder="Tên trường, ví dụ: Nguyễn Du" autocomplete="off">
+        <div class="row2">
+          <input type="text" id="year" placeholder="Năm học" aria-label="Năm học" autocomplete="off">
+          <input type="number" id="time" min="15" max="180" step="5" aria-label="Thời gian làm bài (phút)">
+        </div>
+        <p class="hint">Ô bên phải: thời gian làm bài (phút).</p>
+      </div>
+      <div class="field">
+        <label for="code">Mã đề</label>
+        <div class="codebox">
+          <input type="text" id="code" inputmode="numeric" maxlength="3" autocomplete="off">
+          <button class="btn alt" id="newBtn" type="button">Đổi đề khác</button>
+        </div>
+        <p class="hint">Cùng mã đề thì ra cùng một đề, nên có thể in lại bất cứ lúc nào.</p>
+        <p class="hint" id="histHint"></p>
+        <button type="button" class="linkbtn" id="clearHist">Xoá lịch sử đề đã tạo</button>
+      </div>
+      <div class="field">
+        <span class="lbl">Số mã đề hoán vị</span>
+        <div class="seg" id="nvSeg">
+          <label><input type="radio" name="nv" value="1">1</label>
+          <label><input type="radio" name="nv" value="2">2</label>
+          <label><input type="radio" name="nv" value="3">3</label>
+          <label><input type="radio" name="nv" value="4">4</label>
+        </div>
+        <p class="hint">Các mã đề cùng nội dung, đảo thứ tự câu và đáp án phần I, đảo ý phần II để hạn chế chép bài.</p>
+      </div>
+      <label class="switch"><input type="checkbox" id="sol"><span>Kèm lời giải chi tiết ở trang đáp án</span></label>
+      <p class="note" id="noteTxt"></p>
+      <div class="actions">
+        <button class="btn" id="printExam" type="button">In đề thi</button>
+        <button class="btn alt" id="printKey" type="button">In đáp án</button>
+      </div>
+    </aside>
+    <main class="stage">
+      <div class="stagehead">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tabExam" aria-selected="true">Đề thi</button>
+          <button class="tab" role="tab" id="tabKey" aria-selected="false">Đáp án</button>
+        </div>
+        <span class="meta" id="meta"></span>
+      </div>
+      <div id="examOut"></div>
+      <div id="keyOut"></div>
+    </main>
+  </div>
+  <footer class="foot"><span>Dành cho phụ huynh có con học tiểu học:</span><a href="phieu-lop-1.html">Phiếu luyện Toán lớp 1 cho bé, in kèm đáp án →</a></footer>
+</div>
+<script>

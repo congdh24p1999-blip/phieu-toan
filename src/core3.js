@@ -1,0 +1,291 @@
+
+/* ================= Khung đề (theo mẫu 12 + 2 + 4 + 3) ================= */
+const CH_NAME={1:'Đa thức nhiều biến',2:'Hằng đẳng thức đáng nhớ',3:'Tứ giác',4:'Định lí Thalès',5:'Dữ liệu và biểu đồ',6:'Phân thức đại số',7:'Phương trình bậc nhất và hàm số bậc nhất',8:'Mở đầu về tính xác suất của biến cố',9:'Tam giác đồng dạng',10:'Một số hình khối trong thực tiễn'};
+const PTS={nlc:0.25,dsItem:0.25,tln:0.5,tl:1};
+const G8={grade:8,school:'THCS',mon:'Toán 8',chName:CH_NAME,tlQ:[1,1,1],
+  note:'Cấu trúc theo một mẫu tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ).'};
+const CH11={1:'Hàm số lượng giác và phương trình lượng giác',2:'Dãy số. Cấp số cộng và cấp số nhân',3:'Mẫu số liệu ghép nhóm',4:'Quan hệ song song trong không gian',5:'Giới hạn. Hàm số liên tục',6:'Hàm số mũ và hàm số lôgarit',7:'Quan hệ vuông góc trong không gian',8:'Các quy tắc tính xác suất',9:'Đạo hàm'};
+const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
+  note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
+const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
+const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
+const BLUEPRINT={
+  '7gk1':{...G7,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
+    nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,1,2,3],
+    tl:[{role:'alg',chs:[1,2]},{role:'real',chs:[1,2]},{role:'geo',chs:[3]}]},
+  '7ck1':{...G7,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
+    nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[1,4],tln:[2,3,4,5],
+    tl:[{role:'alg',chs:[1,2]},{role:'real',chs:[1,5]},{role:'geo',chs:[4]}]},
+  '7gk2':{...G7,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương VI – VII (Kết nối tri thức, tập 2)',chapters:[6,7],
+    nlc:[6,6,6,6,6,6,7,7,7,7,7,7],ds:[6,7],tln:[6,6,7,7],
+    tl:[{role:'alg',chs:[6,7]},{role:'real',chs:[6,7]},{role:'alg',chs:[7]}]},
+  '7ck2':{...G7,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – X (Kết nối tri thức, tập 2)',chapters:[6,7,8,9,10],
+    nlc:[6,6,7,7,7,8,8,9,9,9,10,10],ds:[7,9],tln:[6,8,9,10],
+    tl:[{role:'alg',chs:[6,7]},{role:'real',chs:[6,8,10]},{role:'geo',chs:[9]}]},
+  gk1:{...G8,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – IV (Kết nối tri thức)',chapters:[1,2,3,4],
+    nlc:[1,1,1,1,2,2,2,3,3,3,3,4],ds:[2,3],tln:[1,2,3,4],
+    tl:[{role:'alg'},{role:'real',chs:[1,3,4]},{role:'geo',chs:[3,4]}]},
+  ck1:{...G8,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
+    nlc:[1,1,2,2,2,3,3,3,4,4,5,5],ds:[3,5],tln:[2,3,4,5],
+    tl:[{role:'alg'},{role:'real',chs:[3,5]},{role:'geo',chs:[3,4]}]},
+  gk2:{...G8,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương VI – VII (Kết nối tri thức, tập 2)',chapters:[6,7],
+    nlc:[6,6,6,6,6,6,7,7,7,7,7,7],ds:[6,7],tln:[6,6,7,7],
+    tl:[{role:'alg',chs:[6]},{role:'real',chs:[7]},{role:'alg',chs:[6,7]}]},
+  ck2:{...G8,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – X (Kết nối tri thức, tập 2)',chapters:[6,7,8,9,10],
+    nlc:[6,6,7,7,7,8,8,9,9,9,10,10],ds:[7,9],tln:[6,8,9,10],
+    tl:[{role:'alg',chs:[6]},{role:'real',chs:[7,8,9]},{role:'geo',chs:[9,10]}]},
+  '11gk1':{...G11,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I, II (đến cấp số cộng), IV (Kết nối tri thức)',chapters:[1,2,4],excl:['csn'],
+    nlc:[1,1,1,1,1,2,2,2,4,4,4,4],ds:[1,4],tln:[1,1,2,2],
+    tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[4]}]},
+  '11gk2':{...G11,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương VI – VII (Kết nối tri thức, tập 2)',chapters:[6,7],excl:['kc','tt'],
+    nlc:[6,6,6,6,6,7,7,7,7,7,7,7],ds:[6,7],tln:[6,6,7,7],
+    tl:[{role:'a',chs:[6]},{role:'c',chs:[7]},{role:'a',chs:[6]}]},
+  '11ck2':{...G11,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – IX (Kết nối tri thức, tập 2)',chapters:[6,7,8,9],
+    nlc:[6,6,7,7,7,8,8,8,9,9,9,9],ds:[7,9],tln:[6,7,8,9],
+    tl:[{role:'a',chs:[6]},{role:'c',chs:[7]},{role:'b',chs:[8,9]}]},
+  '11ck1':{...G11,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
+    nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[4,5],tln:[1,2,3,5],
+    tl:[{role:'a',chs:[1,2]},{role:'b',chs:[5]},{role:'c',chs:[4]}]}
+};
+
+/* ===== Cấu trúc đề: khung có sẵn và tuỳ chỉnh =====
+   Mỗi câu đúng/sai có 4 ý, tổng 1 đ; mỗi câu tự luận 1 đ (các ý và bước điểm đã gắn trong từng dạng câu). */
+Object.values(BLUEPRINT).forEach(b=>{b.pn=PTS.nlc;b.pt=PTS.tln;b.sk=''});
+const STRUCTS={
+  chuan:{name:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận',n1:12,p1:.25,n2:2,n3:4,p3:.5,n4:3},
+  tn:{name:'Kiểu thi tốt nghiệp THPT: 12 + 4 đúng/sai + 6 trả lời ngắn',n1:12,p1:.25,n2:4,n3:6,p3:.5,n4:0},
+  tn46:{name:'Trắc nghiệm 4 đ + tự luận 6 đ (16 câu + 6 câu)',n1:16,p1:.25,n2:0,n3:0,p3:.5,n4:6},
+  tn55:{name:'Trắc nghiệm 5 đ + tự luận 5 đ (20 câu + 5 câu)',n1:20,p1:.25,n2:0,n3:0,p3:.5,n4:5},
+  tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7}
+};
+const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37'];
+const structKey=s=>[s.n1,s.p1,s.n2,s.n3,s.p3,s.n4].join('-');
+const structTotal=s=>Math.round((s.n1*s.p1+s.n2*4*PTS.dsItem+s.n3*s.p3+s.n4)*1000)/1000;
+const DEF_SK=structKey(STRUCTS.chuan);
+const fmtP=x=>String(Math.round(x*100)/100).replace('.',',');
+function structCheck(s){
+  if(![s.n1,s.n2,s.n3,s.n4].every(x=>Number.isInteger(x)&&x>=0))return'Số câu phải là số nguyên không âm.';
+  if(s.n1>40||s.n2>8||s.n3>16||s.n4>10)return'Số câu quá lớn (tối đa 40, 8, 16 và 10 câu theo từng phần).';
+  if(![.25,.5].includes(s.p1))return'Điểm mỗi câu nhiều lựa chọn chỉ nhận 0,25 hoặc 0,5.';
+  if(![.25,.5,1].includes(s.p3))return'Điểm mỗi câu trả lời ngắn chỉ nhận 0,25; 0,5 hoặc 1.';
+  if(s.n1+s.n2+s.n3+s.n4===0)return'Đề cần có ít nhất một câu.';
+  const t=structTotal(s);
+  if(Math.abs(t-10)>1e-9)return`Tổng điểm đang là ${fmtP(t)}, cần đúng 10.`;
+  return'';
+}
+function structNote(s){
+  const a=[];
+  if(s.n1)a.push(`${s.n1} câu nhiều lựa chọn (${fmtP(s.n1*s.p1)} đ)`);
+  if(s.n2)a.push(`${s.n2} câu đúng/sai (${fmtP(s.n2)} đ)`);
+  if(s.n3)a.push(`${s.n3} câu trả lời ngắn (${fmtP(s.n3*s.p3)} đ)`);
+  if(s.n4)a.push(`${s.n4} câu tự luận (${fmtP(s.n4)} đ)`);
+  return`Cấu trúc do thầy cô chọn: ${a.join(', ')}. Đây là khung tham khảo, chưa phải khung chính thức của Bộ hay của trường.`;
+}
+/* Câu mở rộng (t.ext): chỉ dùng khi bật ALLOW_EXT hoặc đang tạo đề mức Nâng cao (CUR_DIFF). */
+let ALLOW_EXT=false,CUR_DIFF='chuan';
+const extOK=()=>ALLOW_EXT||CUR_DIFF==='nang_cao';
+const poolOf=(bp,kind)=>Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
+/* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
+function apportion(n,w,cap){
+  const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};
+  chs.forEach(c=>out[c]=0);
+  if(n<=0)return{out,over:0};
+  if(!chs.length)return{out,over:n};
+  const W=chs.reduce((a,c)=>a+(w[c]||1),0);
+  const ex=chs.map(c=>({c,x:n*(w[c]||1)/W}));
+  ex.forEach(e=>{out[e.c]=Math.floor(e.x)});
+  let left=n-chs.reduce((a,c)=>a+out[c],0);
+  ex.sort((a,b)=>(b.x-Math.floor(b.x))-(a.x-Math.floor(a.x))||a.c-b.c);
+  for(let i=0;left>0;i++,left--)out[ex[i%ex.length].c]++;
+  for(;;){
+    const o=chs.filter(c=>out[c]>cap[c]).sort((a,b)=>(out[b]-cap[b])-(out[a]-cap[a]))[0];
+    const r=chs.filter(c=>out[c]<cap[c]).sort((a,b)=>(cap[b]-out[b])-(cap[a]-out[a]))[0];
+    if(o==null||r==null)break;out[o]--;out[r]++;
+  }
+  return{out,over:chs.reduce((a,c)=>a+Math.max(0,out[c]-cap[c]),0)};
+}
+const KIND_VI={nlc:'câu nhiều lựa chọn',ds:'câu đúng/sai',tln:'câu trả lời ngắn',tl:'câu tự luận'};
+const BP_CACHE={};
+/* Bản thiết kế đề theo cấu trúc đã chọn. Cấu trúc mặc định trả về đúng bản gốc, nên đề cũ không đổi. */
+function bpOf(term,st){
+  const base=BLUEPRINT[term],s=st||STRUCTS.chuan,sk=structKey(s);
+  if(sk===DEF_SK)return base;
+  const ck=term+'|'+sk;if(BP_CACHE[ck])return BP_CACHE[ck];
+  const w={};base.nlc.forEach(c=>w[c]=(w[c]||0)+1);
+  const warn=[],lists={};
+  [['nlc',s.n1],['ds',s.n2],['tln',s.n3]].forEach(([k,n])=>{
+    const pool=poolOf(base,k),cap={};
+    base.chapters.forEach(c=>cap[c]=new Set(pool.filter(t=>t.ch===c).map(t=>t.grp)).size);
+    const r=apportion(n,w,cap);
+    lists[k]=base.chapters.flatMap(c=>Array(r.out[c]||0).fill(c));
+    if(lists[k].length!==n)throw new Error('Không có dạng câu '+KIND_VI[k]+' cho phạm vi này');
+    if(r.over>0)warn.push(`${r.over} ${KIND_VI[k]} sẽ lặp lại dạng đã dùng trong cùng đề (ngân hàng chưa đủ dạng khác nhau; số liệu vẫn khác)`);
+  });
+  const sl=base.tl,n4=s.n4;
+  const tl=n4===sl.length?sl:n4===0?[]:n4<sl.length?Array.from({length:n4},(_,i)=>sl[n4===1?0:Math.round(i*(sl.length-1)/(n4-1))]):Array.from({length:n4},(_,i)=>sl[i%sl.length]);
+  const dem={};tl.forEach(x=>{const k=x.role+'|'+(x.chs||[]).join(',');(dem[k]=dem[k]||{x,n:0}).n++});
+  const tp=poolOf(base,'tl');let tover=0;
+  Object.values(dem).forEach(d=>{const g=new Set(tp.filter(t=>t.role===d.x.role&&(!d.x.chs||d.x.chs.includes(t.ch))).map(t=>t.grp)).size;tover+=Math.max(0,d.n-g)});
+  if(tover>0)warn.push(`${tover} ${KIND_VI.tl} sẽ lặp lại dạng đã dùng trong cùng đề (ngân hàng chưa đủ dạng khác nhau; số liệu vẫn khác)`);
+  return BP_CACHE[ck]={...base,nlc:lists.nlc,ds:lists.ds,tln:lists.tln,tl,tlQ:Array(n4).fill(1),pn:s.p1,pt:s.p3,sk,struct:s,warn,note:structNote(s)};
+}
+/* Mức nhận thức theo vị trí khi số câu khác khung gốc: ds, tln giữ tỉ lệ; tl giữ câu cuối là câu khó nhất. */
+const lvProp=(a,n)=>a.length===n?a:Array.from({length:n},(_,i)=>a[Math.floor(i*a.length/n)]);
+const lvTL=(a,n)=>{
+  if(a.length===n||n===0)return n===0?[]:a;
+  const rest=a.slice(0,-1);
+  return Array.from({length:n-1},(_,i)=>rest[Math.floor(i*rest.length/(n-1))]).concat(a[a.length-1]);
+};
+/* Hai khối điểm tự luận theo lớp: tổng điểm phần IV */
+const tlTotal=bp=>bp.tlQ.reduce((a,b)=>a+b,0);
+const LV_RANK={NB:0,TH:1,VD:2,VDC:3};
+const LV_NAME={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng',VDC:'Vận dụng cao'};
+/* Ba mức độ khó. Mỗi mức quy định mức nhận thức mong muốn cho từng vị trí câu trong đề.
+   Chuẩn ≈ 30/40/20/10 (NB/TH/VD/VDC), theo một khung đề cuối kì I Toán 8 đăng trên cổng giáo dục VNPT. */
+const DIFFS={
+  co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH'],gk2:['NB','TH','TH','TH'],ck2:['TH','NB','TH','TH']},tl:['TH','VD','VD']},
+  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
+  nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH'],gk2:['TH','VD','VD','VD'],ck2:['VD','TH','VD','VD']},tl:['TH','VD','VDC']}
+};
+/* Độ khó cho lớp 11 (cấu trúc 12 + 3 + 4 + 3 tự luận 0,5 / 0,5 / 1,0). */
+const DIFFS11={
+  co_ban:{name:'Cơ bản',nb:10,ds:['NB','TH'],tln:['TH','TH','TH','VD'],tl:['TH','TH','VD']},
+  chuan:{name:'Chuẩn',nb:8,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
+  nang_cao:{name:'Nâng cao',nb:6,ds:['TH','VD'],tln:['VD','VD','VD','VD'],tl:['VD','VD','VDC']}
+};
+const dOf=(term,diff)=>{const g=BLUEPRINT[term].grade;return g===8?DIFFS[diff]:DIFFS11[diff]};
+/* Gán mức cho 12 câu phần I: nb câu nhận biết, còn lại thông hiểu; câu thông hiểu ưu tiên cuối mỗi nhóm chương. */
+function nlcLevels(chs,nb){
+  const size={},idx=[];
+  chs.forEach(c=>size[c]=(size[c]||0)+1);
+  const seen={};
+  chs.forEach((c,i)=>{seen[c]=(seen[c]||0)+1;idx.push({i,fromEnd:size[c]-seen[c],size:size[c]})});
+  const order=[...idx].sort((a,b)=>a.fromEnd-b.fromEnd||b.size-a.size||a.i-b.i);
+  const th=new Set(order.slice(0,Math.max(0,chs.length-nb)).map(o=>o.i));
+  return chs.map((c,i)=>th.has(i)?'TH':'NB');
+}
+/* Đổi tên điểm (A,B,C… → chữ khác) cho các câu hình học, để cùng một dạng bài nhìn khác nhau.
+   Dịch vòng tròn trên bảng chữ cái điểm, áp dụng đồng nhất cho đề bài, đáp án và lời giải. */
+const PT_LETTERS='ABCDEFGHKLMNOPQRS';
+const RELABEL_RE=/^(c3-|c4-|ds-rect|ds-rhombus|ds-trap|ds-thales|tln-c3-|tln-c4-|tl-geo-|tl-quad-real|k4-)/;
+const PT_LETTERS11='ABCDEFGHKLMNOPQR'; /* lớp 11: giữ nguyên đỉnh chóp S */
+const RELABEL_SKIP=new Set(['id','kind','role','unit','title','note','lv','ch']);
+function relabelDeep(v,shift,L){
+  L=L||PT_LETTERS;const n=L.length;
+  const fix=str=>str.replace(/(?<![\p{L}])[A-Z]{1,4}(?![\p{L}])/gu,m=>[...m].map(ch=>{const i=L.indexOf(ch);return i<0?ch:L[(i+shift)%n]}).join(''));
+  const walk=(x,key)=>{
+    if(typeof x==='string')return RELABEL_SKIP.has(key)?x:fix(x);
+    if(Array.isArray(x))return x.map(e=>walk(e,key));
+    if(x&&typeof x==='object'){const o={};for(const k in x)o[k]=walk(x[k],k);return o}
+    return x;
+  };
+  return walk(v,'');
+}
+function buildExam(term,base,diff,st){
+  diff=DIFFS[diff]?diff:'chuan';CUR_DIFF=diff;
+  const bp=bpOf(term,st),used=new Set(),usedId=new Set(),D=dOf(term,diff),G=bp.grade,S=bp.sk?'|'+bp.sk:'';
+  const pickT=(kind,pred,want)=>{
+    const all=poolOf(bp,kind).filter(pred);
+    if(!all.length)throw new Error('không có mẫu câu cho '+kind);
+    /* Chọn như cũ (đúng mức, ưu tiên chủ đề chưa dùng). Nếu trúng một dạng đã dùng trong đề thì chọn lại: đúng mức mà chưa dùng dạng, rồi khác mức mà chưa dùng dạng. */
+    const w=LV_RANK[want],dist=t=>Math.abs(LV_RANK[t.lv]-w),best=Math.min(...all.map(dist));
+    const near=all.filter(t=>dist(t)===best),fresh=near.filter(t=>!used.has(t.grp)),pool=fresh.length?fresh:near;
+    const rr=new RNG(`pick|${term}|${base}|${diff}|${kind}|${used.size}${S}`);
+    let t=pool[rr.int(0,pool.length-1)];
+    if(usedId.has(t.id)){
+      let p2=near.filter(x=>!usedId.has(x.id));
+      if(!p2.length){const rest=all.filter(x=>!usedId.has(x.id));if(rest.length){const b=Math.min(...rest.map(dist));p2=rest.filter(x=>dist(x)===b)}}
+      if(p2.length){const r2=new RNG(`pick2|${term}|${base}|${diff}|${kind}|${used.size}${S}`);t=p2[r2.int(0,p2.length-1)]}
+    }
+    used.add(t.grp);usedId.add(t.id);return t;
+  };
+  let seq=0;
+  const make=(kind,t)=>{
+    const rg=new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}${S}`);
+    let q=t.gen(rg);
+    if(RELABEL_RE.test(t.id)){const L=G===11?PT_LETTERS11:PT_LETTERS,sh=rg.int(0,L.length-1);if(sh)q=relabelDeep(q,sh,L)}
+    q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.ext)q.ext=t.ext;if(t.les)q.les=t.les;return q;
+  };
+  const nb=Math.min(bp.nlc.length,Math.round(D.nb*bp.nlc.length/12)),nl=nlcLevels(bp.nlc,nb);
+  const byT=x=>Array.isArray(x)?x:x[term];
+  const nlc=bp.nlc.map((ch,i)=>make('nlc',pickT('nlc',t=>t.ch===ch,nl[i])));
+  const order=bp.chapters;
+  nlc.sort((a,b)=>order.indexOf(a.ch)-order.indexOf(b.ch)||LV_RANK[a.lv]-LV_RANK[b.lv]);
+  const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,lvProp(byT(D.ds),bp.ds.length)[i])));
+  const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,lvProp(byT(D.tln),bp.tln.length)[i])));
+  const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),lvTL(byT(D.tl),bp.tl.length)[i])));
+  return{term,base,diff,grade:G,nlc,ds,tln,tl,bp,sk:bp.sk};
+}
+/* Hoán vị mã đề: đảo thứ tự câu và đáp án phần I, đảo thứ tự ý phần II. */
+function makeVariant(exam,v){
+  if(v===0)return{...exam,code:exam.base};
+  const r=new RNG(`var|${exam.term}|${exam.base}|${exam.diff}|${v}`);
+  const nlc=r.shuffle(exam.nlc).map(q=>{
+    if(q.fixed)return{...q};
+    const idx=r.shuffle([0,1,2,3]);
+    return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+  });
+  const ds=exam.ds.map(q=>({...q,items:r.shuffle(q.items)}));
+  return{...exam,code:String(+exam.base+v),nlc,ds};
+}
+/* Ma trận đặc tả: số câu và điểm theo chương, theo mức độ. */
+const qPts=q=>q.parts.reduce((a,p)=>a+p.pts,0);
+function matrixOf(exam){
+  const bp=exam.bp||BLUEPRINT[exam.term],rows={};
+  bp.chapters.forEach(c=>rows[c]={nlc:0,ds:0,tln:0,tl:0,pts:0});
+  const lv={NB:0,TH:0,VD:0,VDC:0};
+  exam.nlc.forEach(q=>{rows[q.ch].nlc++;rows[q.ch].pts+=bp.pn;lv[q.lv]++});
+  exam.ds.forEach(q=>{rows[q.ch].ds+=4;rows[q.ch].pts+=4*PTS.dsItem;lv[q.lv]+=4});
+  exam.tln.forEach(q=>{rows[q.ch].tln++;rows[q.ch].pts+=bp.pt;lv[q.lv]++});
+  exam.tl.forEach(q=>{rows[q.ch].tl++;rows[q.ch].pts+=qPts(q);lv[q.lv]++});
+  return{rows,lv,pt:lvPts(exam)};
+}
+function lvPts(exam){
+  const o={NB:0,TH:0,VD:0,VDC:0};
+  const bp=exam.bp||BLUEPRINT[exam.term];
+  exam.nlc.forEach(q=>o[q.lv]+=bp.pn);exam.ds.forEach(q=>o[q.lv]+=4*PTS.dsItem);
+  exam.tln.forEach(q=>o[q.lv]+=bp.pt);exam.tl.forEach(q=>o[q.lv]+=qPts(q));
+  return o;
+}
+/* ---- Tránh trùng câu với các đề đã tạo trước ---- */
+const qText=q=>String(
+  q.kind==='tl'?q.parts.map(p=>p.html).join('|')
+  :(q.stem||'')+(q.opts?'#'+q.opts.slice().sort().join('#'):'')+(q.items?'#'+q.items.map(i=>i.t).sort().join('#'):'')
+).replace(/<[^>]+>/g,'');
+/* Dấu vân tay của đề: mỗi câu = mã dạng + mã băm nội dung (số liệu cụ thể). */
+function examFP(ex){
+  return [...ex.nlc,...ex.ds,...ex.tln,...ex.tl].map(q=>q.id+'|'+hashStr(qText(q)).toString(36));
+}
+/* Đếm số câu trùng nguyên văn / cùng dạng với các đề trong lịch sử (hist: mới nhất trước). */
+function overlapOf(ex,hist){
+  const fp=examFP(ex),exact=new Set(),kind=new Set();
+  hist.forEach(h=>{const set=new Set(h.fp),ids=new Set(h.fp.map(x=>x.split('|')[0]));
+    fp.forEach(x=>{if(set.has(x))exact.add(x);if(ids.has(x.split('|')[0]))kind.add(x)})});
+  return{n:fp.length,exact:exact.size,kind:kind.size};
+}
+/* Điểm trùng: trùng nguyên văn bị phạt nặng; cùng dạng bị phạt nhẹ, đề càng mới phạt càng nặng. */
+function overlapScore(ex,hist){
+  const fp=examFP(ex);let sc=0;
+  hist.forEach((h,i)=>{
+    const set=new Set(h.fp),ids=new Set(h.fp.map(x=>x.split('|')[0])),w=Math.max(.25,1-i*.04);
+    fp.forEach(x=>{if(set.has(x))sc+=12;else if(ids.has(x.split('|')[0]))sc+=w});
+  });
+  return sc;
+}
+/* Chọn mã đề (100–979) ít trùng nhất với lịch sử; mã vẫn tái tạo được đúng đề đó. */
+const histKey=ex=>ex.term+(ex.sk?'~'+ex.sk:'');
+function pickFreshCode(term,diff,hist,tries,rnd,st){
+  tries=tries||150;rnd=rnd||Math.random;
+  const sk=bpOf(term,st).sk,hk=term+(sk?'~'+sk:'');
+  const usedCodes=new Set(hist.filter(h=>h.t===hk&&h.d===diff).map(h=>h.c));
+  const H=hist.filter(h=>h.t===hk);
+  let best=null;
+  for(let i=0;i<tries;i++){
+    const c=String(100+Math.floor(rnd()*880));
+    if(usedCodes.has(c))continue;
+    const ex=buildExam(term,c,diff,st),sc=overlapScore(ex,H);
+    if(!best||sc<best.sc){best={c,sc,ex};if(sc===0)break}
+  }
+  return best;
+}
+/*CORE-END*/
