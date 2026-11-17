@@ -3494,6 +3494,72 @@ TL11c('tl11-7-vd2',7,'VD','c',r=>{
       ptxt([[`${I('BC')} ⊥ ${I('AB')} và ${I('BC')} ⊥ ${I('SA')} nên ${I('BC')} ⊥ ${PL7('SAB')}; hình chiếu của ${I('SC')} lên ${PL7('SAB')} là ${I('SB')}, nên góc cần tìm là ${AG('CSB')}.`,.25],[`${I('SB')} = ${rt(`${I('SA')}${sup(2)} + ${I('AB')}${sup(2)}`)} = ${n}${a}; tan${AG('CSB')} = ${fr(I('BC'),I('SB'))} = ${fr(a,`${n}${a}`)} = ${fr(1,n)}.`,.25]])],
     chk:()=>{const S=[0,0,Math.sqrt(m)],C=[1,1,0],v=[C[0]-S[0],C[1]-S[1],C[2]-S[2]],sn=Math.abs(v[1])/Math.hypot(...v);return Gp.pp(F.g,'SAC','SBD')&&Math.abs(sn/Math.sqrt(1-sn*sn)-1/n)<1e-9&&Number.isInteger(n)}};
 });
+/* ===== Bổ sung lớp 11 học kì II: câu nhận biết chương IX (đạo hàm) và vận dụng cao chương VI ===== */
+N11e('m11-9-basic',9,'NB',r=>{
+  const f=r.int(0,3),y=I('y');let fn,ok,wr;
+  if(f===0){const n=r.int(3,9);fn=`${X9}${sup(n)}`;ok=`${n}${X9}${sup(n-1)}`;wr=[`${X9}${sup(n-1)}`,`${n}${X9}${sup(n)}`,`${n-1}${X9}${sup(n)}`,`${n}${X9}${sup(n+1)}`]}
+  else if(f===1){fn=rt(X9);ok=fr(1,`2${rt(X9)}`);wr=[fr(1,rt(X9)),`2${rt(X9)}`,MINUS+fr(1,`2${rt(X9)}`),fr(rt(X9),2)]}
+  else if(f===2){fn=fr(1,X9);ok=MINUS+fr(1,`${X9}${sup(2)}`);wr=[fr(1,`${X9}${sup(2)}`),MINUS+fr(1,X9),fr(1,`2${X9}`),`${X9}${sup(2)}`]}
+  else{const c=r.int(2,9);fn=String(c);ok='0';wr=[String(c),'1',`${c}${X9}`,String(c-1)]}
+  return mkTxt(r,{stem:`Đạo hàm của hàm số ${y} = ${fn} là`,correct:`${YP} = ${ok}`,wrongs:wr.map(w=>`${YP} = ${w}`),
+    sol:`Theo công thức đạo hàm của các hàm số thường gặp: ${YP} = ${ok}.`,chk:()=>true});
+},'hh');
+N11e('m11-9-tfun',9,'NB',r=>{
+  const L=[
+    [`sin ${X9}`,`cos ${X9}`,[`${MINUS}cos ${X9}`,`${MINUS}sin ${X9}`,`sin ${X9}`]],
+    [`cos ${X9}`,`${MINUS}sin ${X9}`,[`sin ${X9}`,`cos ${X9}`,`${MINUS}cos ${X9}`]],
+    [`tan ${X9}`,fr(1,`cos${sup(2)} ${X9}`),[MINUS+fr(1,`cos${sup(2)} ${X9}`),fr(1,`sin${sup(2)} ${X9}`),`cot ${X9}`]],
+    [`cot ${X9}`,MINUS+fr(1,`sin${sup(2)} ${X9}`),[fr(1,`sin${sup(2)} ${X9}`),MINUS+fr(1,`cos${sup(2)} ${X9}`),`${MINUS}tan ${X9}`]],
+    [`e${sup(X9)}`,`e${sup(X9)}`,[`${X9}e${sup(`${X9} ${MINUS} 1`)}`,`e${sup(`${X9} ${MINUS} 1`)}`,fr(`e${sup(X9)}`,X9)]],
+    [`ln ${X9}`,fr(1,X9),[`${MINUS}${fr(1,X9)}`,fr(1,`${X9}${sup(2)}`),`e${sup(X9)}`]]];
+  const [fn,ok,wr]=r.pick(L);
+  return mkTxt(r,{stem:`Đạo hàm của hàm số ${I('y')} = ${fn} là`,correct:`${YP} = ${ok}`,wrongs:wr.map(w=>`${YP} = ${w}`).concat([`${YP} = ${fn}`].filter(z=>z!==`${YP} = ${ok}`)),
+    sol:`Theo bảng đạo hàm của các hàm số sơ cấp cơ bản: (${fn})′ = ${ok}.`,chk:()=>true});
+},'hh');
+N11e('m11-9-mean',9,'NB',r=>{
+  const t0=I('t')+sub(0),x0=X9+sub(0),s=`${I('s')} = ${I('f')}(${I('t')})`;
+  const q=r.pick([
+    {st:`Một vật chuyển động thẳng có phương trình ${s} (${I('s')} tính bằng mét, ${I('t')} tính bằng giây). Vận tốc tức thời của vật tại thời điểm ${t0} là`,ok:fp(t0),wr:[`${I('f')}(${t0})`,fpp(t0),fr(`${I('f')}(${t0})`,t0)]},
+    {st:`Một vật chuyển động thẳng có phương trình ${s}. Gia tốc tức thời của vật tại thời điểm ${t0} là`,ok:fpp(t0),wr:[fp(t0),`${I('f')}(${t0})`,fr(fp(t0),t0)]},
+    {st:`Cho hàm số ${I('y')} = ${FX} có đạo hàm tại ${x0}. Hệ số góc của tiếp tuyến của đồ thị hàm số tại điểm ${I('M')}(${x0}; ${I('f')}(${x0})) là`,ok:fp(x0),wr:[`${I('f')}(${x0})`,`${MINUS}${fp(x0)}`,fr(1,fp(x0))]}]);
+  return mkTxt(r,{stem:q.st,correct:q.ok,wrongs:q.wr,sol:`Theo ý nghĩa vật lí và ý nghĩa hình học của đạo hàm, đáp án là ${q.ok}.`,chk:()=>true});
+},'dn');
+DS11e('ds11-9-basic',9,'NB',r=>{
+  const n=r.int(3,8),c=r.int(2,9);
+  const pool=[
+    {t:`(${X9}${sup(n)})′ = ${n}${X9}${sup(n-1)}.`,f:`(${X9}${sup(n)})′ = ${n}${X9}${sup(n)}.`,why:`(${X9}${sup('n')})′ = ${I('n')}${X9}${sup(`${I('n')} ${MINUS} 1`)}.`},
+    {t:`(${c})′ = 0.`,f:`(${c})′ = ${c}.`,why:`Đạo hàm của hằng số bằng 0.`},
+    {t:`(${rt(X9)})′ = ${fr(1,`2${rt(X9)}`)} với ${X9} > 0.`,f:`(${rt(X9)})′ = ${fr(1,rt(X9))} với ${X9} > 0.`,why:`(${rt(X9)})′ = ${fr(1,`2${rt(X9)}`)}.`},
+    {t:`(sin ${X9})′ = cos ${X9}.`,f:`(sin ${X9})′ = ${MINUS}cos ${X9}.`,why:`(sin ${X9})′ = cos ${X9}.`},
+    {t:`(cos ${X9})′ = ${MINUS}sin ${X9}.`,f:`(cos ${X9})′ = sin ${X9}.`,why:`(cos ${X9})′ = ${MINUS}sin ${X9}.`},
+    {t:`(e${sup(X9)})′ = e${sup(X9)}.`,f:`(e${sup(X9)})′ = ${X9}e${sup(`${X9} ${MINUS} 1`)}.`,why:`(e${sup(X9)})′ = e${sup(X9)}.`},
+    {t:`(ln ${X9})′ = ${fr(1,X9)} với ${X9} > 0.`,f:`(ln ${X9})′ = e${sup(X9)} với ${X9} > 0.`,why:`(ln ${X9})′ = ${fr(1,X9)}.`}];
+  return mkDS(r,{stem:'Xét tính đúng sai của các khẳng định sau:',items:r.shuffle(pool).slice(0,4)});
+},'hh');
+TL11b('tl11-6-vdc2',6,'VDC','a',r=>{
+  const A=r.pick([50,100,200,300,500]),rp=r.pick([5,6,7,8]),n=r.pick([3,4,5]),k=r.pick([1.5,2]);
+  const q=1+rp/100,T1=A*q**n,N=Math.ceil(Math.log(k)/Math.log(q)-1e-12),lg=Math.log(k)/Math.log(q);
+  const R2=v=>fmt(Math.round(v*100)/100);
+  return{kind:'tl',title:'Bài toán lãi kép',parts:[
+    {pts:.5,html:`Bác An gửi ${A} triệu đồng vào ngân hàng theo thể thức lãi kép, kì hạn 1 năm, lãi suất ${rp}%/năm (tiền lãi mỗi năm được nhập vào gốc, không rút tiền trong thời gian gửi). Tính số tiền bác An nhận được sau ${n} năm (làm tròn đến hàng phần trăm của triệu đồng).`},
+    {pts:.5,html:`Sau ít nhất bao nhiêu năm thì số tiền bác An nhận được (cả gốc và lãi) không ít hơn ${k===2?'gấp đôi':fmt(k)+' lần'} số tiền gửi ban đầu?`}],
+    sol:[ptxt([[`Sau ${I('n')} năm số tiền là ${I('T')} = ${A}(1 + ${fmt(rp/100)})${sup(I('n'))} = ${A}·${fmt(q)}${sup(I('n'))} (triệu đồng).`,.25],[`Với ${I('n')} = ${n}: ${I('T')} = ${A}·${fmt(q)}${sup(n)} ≈ ${R2(T1)} triệu đồng.`,.25]]),
+      ptxt([[`Cần ${A}·${fmt(q)}${sup(I('n'))} ≥ ${fmt(k)}·${A} ⟺ ${fmt(q)}${sup(I('n'))} ≥ ${fmt(k)} ⟺ ${I('n')} ≥ log${sub(fmt(q))} ${fmt(k)} ≈ ${R2(lg)}.`,.25],[`${I('n')} là số tự nhiên nhỏ nhất thỏa mãn nên ${I('n')} = ${N}. Vậy sau ít nhất ${N} năm.`,.25]])],
+    chk:()=>q**N>=k-1e-12&&q**(N-1)<k};
+});
+TL11('tl4-third',4,'VDC','c',r=>{
+  const F=chopHBH(),P0=F.P,[U,V]=r.pick([['A','C'],['B','D']]),[X,Y]=r.shuffle(U==='A'?['B','D']:['A','C']);
+  const [m,n]=r.pick([['M','N'],['E','F']]);
+  const P={...P0};P.O=V3.mid(P0.A,P0.C);P[m]=V3.mid(P0.S,P0[U]);P[n]=V3.mid(P0.S,P0[V]);P.I=V3.mid(P0.S,P.O);P.P=V3.lerp(P0.S,P0[Y],1/3);
+  const fig=fig3D(P,F.solid,F.dashed.concat([[m,n],['S','O'],[X,'P']]),['S','A','B','C','D','O',m,n,'I','P']);
+  const pl=PLN(X+m+n);
+  return{kind:'tl',title:'Giao điểm và tỉ số đoạn thẳng',parts:[
+    {pts:.5,html:`Cho hình chóp ${I('S.ABCD')} có đáy ${I('ABCD')} là hình bình hành tâm ${I('O')}. Gọi ${I(m)}, ${I(n)} lần lượt là trung điểm của ${I('S'+U)}, ${I('S'+V)}.${fig}Chứng minh ${I(m+n)} ∥ ${PLN('ABCD')} và ${I(m+n)} cắt ${I('SO')} tại trung điểm ${I('I')} của ${I('SO')}.`},
+    {pts:.5,html:`Tìm giao điểm ${I('P')} của đường thẳng ${I('S'+Y)} với mặt phẳng ${pl}. Tính tỉ số ${fr('SP','S'+Y)}.`}],
+    sol:[ptxt([[`${I(m+n)} là đường trung bình của tam giác ${I('S'+U+V)} nên ${I(m+n)} ∥ ${I(U+V)}; mà ${I(U+V)} ⊂ ${PLN('ABCD')}, ${I(m+n)} ⊄ ${PLN('ABCD')} nên ${I(m+n)} ∥ ${PLN('ABCD')}.`,.25],[`Trong tam giác ${I('S'+U+'O')}, đường thẳng qua trung điểm ${I(m)} của ${I('S'+U)} và song song với ${I(U+'O')} cắt ${I('SO')} tại trung điểm ${I('I')} của ${I('SO')}; vậy ${I(m+n)} cắt ${I('SO')} tại ${I('I')}.`,.25]]),
+      ptxt([[`Trong ${PLN('S'+X+Y)}, gọi ${I('P')} = ${I(X+'I')} ∩ ${I('S'+Y)}. Vì ${I('P')} ∈ ${I(X+'I')} ⊂ ${pl} nên ${I('P')} là giao điểm của ${I('S'+Y)} và ${pl}.`,.25],[`Kẻ ${I('OK')} ∥ ${I(X+'P')} (${I('K')} ∈ ${I('S'+Y)}): ${I('OK')} là đường trung bình của tam giác ${I(Y+X+'P')} nên ${I('K')} là trung điểm ${I('P'+Y)}; ${I('IP')} ∥ ${I('OK')} và ${I('I')} là trung điểm ${I('SO')} nên ${I('P')} là trung điểm ${I('SK')}. Do đó ${I('SP')} = ${I('PK')} = ${I('K'+Y)}, ${fr('SP','S'+Y)} = ${fr(1,3)}.`,.25]])],
+    chk:()=>{const a=V3.sub(P.I,P0[X]),b=V3.sub(P.P,P0[X]);return V3.len(V3.cross(a,b))<1e-9}};
+});
 
 /* ================================================================
    LỚP 7 – Toán 7 Kết nối tri thức, học kì I
@@ -4852,6 +4918,65 @@ DS7b('ds7-8-event',8,'NB',r=>{
 });
 DS7b('ds7-9-stat',9,'NB',r=>dsStmt(r,[...PERP_T,...CONC_T,...DEF9_T],[...PERP_F,...CONC_F,...DEF9_F]));
 DS7b('ds7-10-stat',10,'NB',r=>dsStmt(r,SOL10_T,SOL10_F));
+/* ===== Bổ sung tự luận vận dụng cao lớp 7 ===== */
+TL7('tl7-3-bis',3,'VDC','geo',r=>{
+  const al=r.int(5,30)*4,be=180-al;
+  return{kind:'tl',title:'Hai đường thẳng song song',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho hai đường thẳng song song ${I('a')} và ${I('b')}. Một đường thẳng ${I('c')} cắt ${I('a')} tại ${I('A')}, cắt ${I('b')} tại ${I('B')}. Trên ${I('a')} lấy tia ${I('Ax')}, trên ${I('b')} lấy tia ${I('By')} nằm cùng phía đối với đường thẳng ${I('c')}, biết ${ANG('xAB')} = ${al}°. Tính số đo ${ANG('yBA')}.`},
+    {pts:.5,html:`Tia phân giác của ${ANG('xAB')} và tia phân giác của ${ANG('yBA')} cắt nhau tại ${I('C')}. Qua ${I('C')} kẻ đường thẳng ${I('d')} song song với ${I('a')}. Tính số đo ${ANG('ACB')}.`}],
+    sol:[ptxt([[`${ANG('xAB')} và ${ANG('yBA')} là hai góc trong cùng phía tạo bởi đường thẳng ${I('c')} cắt hai đường thẳng song song nên ${ANG('xAB')} + ${ANG('yBA')} = 180°.`,.25],[`${ANG('yBA')} = 180° ${MINUS} ${al}° = ${be}°.`,.25]]),
+      ptxt([[`${I('d')} // ${I('a')} và ${I('a')} // ${I('b')} nên ${I('d')} // ${I('b')}. Theo tính chất so le trong: góc giữa ${I('CA')} và ${I('d')} bằng ${ANG('xAC')} = ${al/2}°, góc giữa ${I('CB')} và ${I('d')} bằng ${ANG('yBC')} = ${be/2}°.`,.25],[`${ANG('ACB')} = ${al/2}° + ${be/2}° = 90°.`,.25]])],
+    chk:()=>al+be===180&&al/2+be/2===90};
+});
+TL7('tl7-3-conv',3,'VDC','geo',r=>{
+  const al=r.int(5,14)*5,be=r.int(5,14)*5;
+  return{kind:'tl',title:'Dấu hiệu nhận biết hai đường thẳng song song',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho hình vẽ, biết ${ANG('xAO')} = ${al}°, ${ANG('yBO')} = ${be}° và ${ANG('AOB')} = ${al+be}°.${zigFig()}Vẽ tia ${I('Oz')} nằm trong ${ANG('AOB')} sao cho ${ANG('AOz')} = ${al}°. Chứng minh ${I('Oz')} // ${I('Ax')}.`},
+    {pts:.5,html:`Chứng minh ${I('a')} // ${I('b')}.`}],
+    sol:[ptxt([[`${ANG('AOz')} = ${ANG('xAO')} = ${al}°, hai góc này ở vị trí so le trong.`,.25],[`Do đó ${I('Oz')} // ${I('Ax')}, tức ${I('Oz')} // ${I('a')}.`,.25]]),
+      ptxt([[`${ANG('zOB')} = ${ANG('AOB')} ${MINUS} ${ANG('AOz')} = ${al+be}° ${MINUS} ${al}° = ${be}° = ${ANG('yBO')}, hai góc so le trong nên ${I('Oz')} // ${I('b')}.`,.25],[`${I('a')} và ${I('b')} cùng song song với ${I('Oz')} nên ${I('a')} // ${I('b')}.`,.25]])],
+    chk:()=>true};
+});
+TL7('tl7-4-bis',4,'VDC','geo',r=>{
+  const c=r.int(3,9),b=c+r.int(1,6);
+  return{kind:'tl',title:'Tam giác bằng nhau',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} có ${I('AB')} = ${c} cm, ${I('AC')} = ${b} cm. Tia phân giác của ${ANG('BAC')} cắt ${I('BC')} tại ${I('D')}. Trên cạnh ${I('AC')} lấy điểm ${I('E')} sao cho ${I('AE')} = ${I('AB')}. Chứng minh ${I('ΔABD')} = ${I('ΔAED')} và tính độ dài ${I('EC')}.`},
+    {pts:.5,html:`Gọi ${I('K')} là giao điểm của ${I('AD')} và ${I('BE')}. Chứng minh ${I('AD')} ⊥ ${I('BE')}.`}],
+    sol:[ptxt([[`Xét ${I('ΔABD')} và ${I('ΔAED')}: ${I('AB')} = ${I('AE')}, ${ANG('BAD')} = ${ANG('EAD')} (${I('AD')} là phân giác), ${I('AD')} chung. Do đó ${I('ΔABD')} = ${I('ΔAED')} (c.g.c).`,.25],[`${I('EC')} = ${I('AC')} ${MINUS} ${I('AE')} = ${b} ${MINUS} ${c} = ${b-c} cm.`,.25]]),
+      ptxt([[`Xét ${I('ΔABK')} và ${I('ΔAEK')}: ${I('AB')} = ${I('AE')}, ${ANG('BAK')} = ${ANG('EAK')}, ${I('AK')} chung nên ${I('ΔABK')} = ${I('ΔAEK')} (c.g.c), suy ra ${ANG('AKB')} = ${ANG('AKE')}.`,.25],[`Hai góc này kề bù và bằng nhau nên bằng 90°. Vậy ${I('AD')} ⊥ ${I('BE')}.`,.25]])],
+    chk:()=>b>c};
+});
+TL7('tl7-4-isos',4,'VDC','geo',r=>{
+  const B=r.int(10,17)*5;
+  return{kind:'tl',title:'Tam giác bằng nhau',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} cân tại ${I('A')} có ${ANG('ABC')} = ${B}°. Trên tia đối của tia ${I('BC')} lấy điểm ${I('D')}, trên tia đối của tia ${I('CB')} lấy điểm ${I('E')} sao cho ${I('BD')} = ${I('CE')}. Tính ${ANG('ABD')} và chứng minh ${I('ΔABD')} = ${I('ΔACE')}.`},
+    {pts:.5,html:`Kẻ ${I('BH')} ⊥ ${I('AD')} (${I('H')} thuộc ${I('AD')}), ${I('CK')} ⊥ ${I('AE')} (${I('K')} thuộc ${I('AE')}). Chứng minh ${I('BH')} = ${I('CK')}.`}],
+    sol:[ptxt([[`${ANG('ABD')} = 180° ${MINUS} ${B}° = ${180-B}° (kề bù); tương tự ${ANG('ACE')} = ${180-B}°.`,.25],[`Xét ${I('ΔABD')} và ${I('ΔACE')}: ${I('AB')} = ${I('AC')}, ${ANG('ABD')} = ${ANG('ACE')}, ${I('BD')} = ${I('CE')}. Do đó ${I('ΔABD')} = ${I('ΔACE')} (c.g.c).`,.25]]),
+      ptxt([[`Từ câu a) có ${ANG('ADB')} = ${ANG('AEC')}.`,.25],[`Hai tam giác vuông ${I('HBD')} và ${I('KCE')} có cạnh huyền ${I('BD')} = ${I('CE')} và góc nhọn ${ANG('HDB')} = ${ANG('KEC')} nên bằng nhau (cạnh huyền – góc nhọn). Suy ra ${I('BH')} = ${I('CK')}.`,.25]])],
+    chk:()=>B<90};
+});
+TL7b('tl7-7-div',7,'VDC','alg',r=>{
+  const s=r.int(-4,4),p=r.int(-6,6),k=r.nz(-3,3),A=[1,-s,p,0];
+  const qt=[1,k-s,k*k-s*k+p],R=k*k*k-s*k*k+p*k;
+  const xx=I('x'),mm=I('m');
+  const Ah=`${polyH([1,-s,p])}${''}`;/* x³ − s x² + p x */
+  const A0=polyH([1,-s,p,0]);
+  return{kind:'tl',title:'Phép chia đa thức một biến',parts:[
+    {pts:.5,html:`Cho đa thức ${I('A')}(${xx}) = ${A0}. Thực hiện phép chia ${I('A')}(${xx}) cho ${xlin(1,-k)}, tìm thương và dư.`},
+    {pts:.5,html:`Tìm giá trị của ${mm} để đa thức ${A0} + ${mm} chia hết cho ${xlin(1,-k)}.`}],
+    sol:[ptxt([[`Đặt tính chia, ta được thương ${polyH(qt)}.`,.25],[`Số dư là ${sg(R)}, tức ${I('A')}(${xx}) = (${xlin(1,-k)})(${polyH(qt)}) ${R<0?MINUS:'+'} ${Math.abs(R)}.`,.25]]),
+      ptxt([[`${A0} + ${mm} = (${xlin(1,-k)})(${polyH(qt)}) + ${R===0?'':`${sg(R)} + `}${mm}.`.replace('+ −','− '),.25],[`Đa thức chia hết cho ${xlin(1,-k)} khi số dư bằng 0: ${R===0?'':`${sg(R)} + `}${mm} = 0 ⟺ ${mm} = ${sg(-R)}.`,.25]])],
+    chk:()=>[-2,0,1,3,5].every(x=>pe(A,x)===(x-k)*pe(qt,x)+R)};
+});
+TL7b('tl7-7-sum',7,'VDC','alg',r=>{
+  const c=r.pick([-6,-5,-4,-3,-2,2,3,4,5,6,7]),b=-1-c,P=[1,b,c],xx=I('x');
+  return{kind:'tl',title:'Nghiệm của đa thức một biến',parts:[
+    {pts:.5,html:`Cho đa thức ${I('P')}(${xx}) = ${polyH(P)}. Chứng tỏ ${xx} = 1 là một nghiệm của ${I('P')}(${xx}).`},
+    {pts:.5,html:`Chứng minh ${I('P')}(${xx}) = (${xx} ${MINUS} 1)(${xlin(1,-c)}) và tìm tất cả các nghiệm của ${I('P')}(${xx}).`}],
+    sol:[ptxt([[`${I('P')}(1) = 1 ${b<0?MINUS:'+'} ${Math.abs(b)} ${c<0?MINUS:'+'} ${Math.abs(c)}`,.25],[`= 0, nên ${xx} = 1 là một nghiệm của ${I('P')}(${xx}).`,.25]]),
+      ptxt([[`(${xx} ${MINUS} 1)(${xlin(1,-c)}) = ${xx}${sup(2)} ${MINUS} ${xx} ${c<0?'+':MINUS} ${Math.abs(c)}${xx} ${c<0?MINUS:'+'} ${Math.abs(c)} = ${polyH(P)} = ${I('P')}(${xx}).`,.25],[`${I('P')}(${xx}) = 0 ⟺ ${xx} = 1 hoặc ${xx} = ${sg(c)}. Vậy ${I('P')}(${xx}) có hai nghiệm 1 và ${sg(c)}.`,.25]])],
+    chk:()=>pe(P,1)===0&&pe(P,c)===0&&c!==1};
+});
 /* ================================================================
    MỞ RỘNG NGÂN HÀNG CÂU ĐÚNG/SAI (phần II)
    Mỗi câu có 4 ý; mỗi ý có bản đúng và bản sai, bản sai luôn khác bản đúng về giá trị.
@@ -6158,7 +6283,9 @@ function fig2D(P,segs,o={}){
 }
 const PYT8=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],[15,20,25],[10,24,26],[20,21,29]];
 const pyt=r=>{const t=r.pick(PYT8);return r.chance(.5)?t:[t[1],t[0],t[2]]};
-const HRT=[[15,20,25],[30,40,50],[45,60,75],[60,80,100]];
+/* (3k; 4k; 5k): đường cao và hình chiếu là số thập phân hữu hạn (một chữ số sau dấu phẩy) */
+const HRT=[1,2,3,4,5,6,8,10].map(k=>[3*k,4*k,5*k]);
+const dec1=v=>Math.abs(v*10-Math.round(v*10))<1e-9;
 const hrt=r=>{const t=r.pick(HRT);return r.chance(.5)?t:[t[1],t[0],t[2]]};
 const TRI8=s=>`Δ${I(s)}`;
 const cm=n=>`${fmt(n)} cm`;
@@ -6252,10 +6379,10 @@ N8('m8-9-par',9,'TH',r=>{
     sol:`${I('DE')} // ${I('BC')} nên ${TRI8('ADE')} ${SIM} ${TRI8('ABC')}, suy ra ${fr('DE','BC')} = ${fr('AD','AB')}. Do đó ${I('DE')} = ${I('BC')}·${fr(a1,b1)} = ${bc}·${a1}/${b1} = ${x[0]} cm.`,chk:()=>a1*bc%b1===0});
 });
 N8('m8-9-hrt',9,'TH',r=>{
-  const [a,b,c]=hrt(r),AH=a*b/c,BH=a*a/c,CH=b*b/c,ask=r.pick(['AH','BH','CH']);
-  const val={AH,BH,CH},ex={AH:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${AH} cm`,BH:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${BH} cm`,CH:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${CH} cm`};
-  return mkNum(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, ${I('BC')} = ${c} cm. Độ dài ${I(ask)} là`,correct:val[ask],cands:[AH,BH,CH,a+b-c,val[ask]+1,val[ask]-1,c-val[ask]].filter(z=>z!==val[ask]),f:z=>`${fmt(z)} cm`,
-    sol:`Áp dụng hệ thức lượng trong tam giác vuông (hoặc dùng các cặp tam giác đồng dạng): ${ex[ask]}.`,chk:()=>Number.isInteger(AH)&&Number.isInteger(BH)&&Number.isInteger(CH)&&BH+CH===c});
+  const [a,b,c]=hrt(r),AH=Math.round(a*b/c*10)/10,BH=Math.round(a*a/c*10)/10,CH=Math.round(b*b/c*10)/10,ask=r.pick(['AH','BH','CH']);
+  const val={AH,BH,CH},ex={AH:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${fmt(AH)} cm`,BH:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${fmt(BH)} cm`,CH:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${fmt(CH)} cm`};
+  return mkNum(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, ${I('BC')} = ${c} cm. Độ dài ${I(ask)} là`,correct:val[ask],cands:[AH,BH,CH,a+b-c,val[ask]+1,val[ask]-1,c-val[ask]].map(z=>Math.round(z*10)/10).filter(z=>z!==Math.round(val[ask]*10)/10),f:z=>`${fmt(z)} cm`,
+    sol:`Áp dụng hệ thức lượng trong tam giác vuông (hoặc dùng các cặp tam giác đồng dạng): ${ex[ask]}.`,chk:()=>dec1(AH)&&dec1(BH)&&dec1(CH)&&Math.abs(BH+CH-c)<1e-9});
 });
 N8('m8-9-shadow',9,'TH',r=>{
   const p=r.pick([1,2,3]),q=r.pick([2,3,4].filter(z=>z!==p)),k=r.int(3,8);
@@ -6288,8 +6415,8 @@ DS8('ds8-9-pyth',9,'TH',r=>{
   const items=[
     {t:`${I('BC')} = ${c} cm.`,f:`${I('BC')} = ${c+1} cm.`,why:`${I('BC')}${sup(2)} = ${a}${sup(2)} + ${b}${sup(2)} = ${c*c}.`},
     {t:`${TRI8('HBA')} ${SIM} ${TRI8('ABC')}.`,f:`${TRI8('HBA')} ${SIM} ${TRI8('ACB')}.`,why:`Hai tam giác vuông ${TRI8('HBA')} và ${TRI8('ABC')} có chung góc nhọn ${I('B')} nên đồng dạng, với ${I('H')}↔${I('A')}, ${I('B')}↔${I('B')}, ${I('A')}↔${I('C')}.`},
-    {t:`${I('AH')} = ${AH} cm.`,f:`${I('AH')} = ${AH+r.pick([2,3])} cm.`,why:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${AH} cm.`},
-    {t:`${I('BH')} = ${BH} cm.`,f:`${I('BH')} = ${CH} cm.`,why:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${BH} cm.`}
+    {t:`${I('AH')} = ${fmt(AH)} cm.`,f:`${I('AH')} = ${AH+r.pick([2,3])} cm.`,why:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${fmt(AH)} cm.`},
+    {t:`${I('BH')} = ${fmt(BH)} cm.`,f:`${I('BH')} = ${fmt(CH)} cm.`,why:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${fmt(BH)} cm.`}
   ];
   return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm.${fig2D(P,[['A','B'],['B','C'],['C','A'],['A','H']],{right:[['B','A','C'],['A','H','B']],off:{H:[0,15]}})} Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>BH!==CH&&a*a+b*b===c*c});
 });
@@ -6309,7 +6436,7 @@ TLN8('t8-9-sim',9,'TH',r=>{
 TLN8('t8-9-height',9,'TH',r=>{
   const [a,b,c]=hrt(r),ask=r.pick(['AH','BH','CH']),v={AH:a*b/c,BH:a*a/c,CH:b*b/c}[ask];
   return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Tính độ dài ${I(ask)} (đơn vị cm).`,ans:v,unit:'',
-    sol:`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm. ${ask==='AH'?`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${v}`:ask==='BH'?`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${v}`:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${v}`} cm.`,chk:()=>Number.isInteger(v)};
+    sol:`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm. ${ask==='AH'?`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${fmt(v)}`:ask==='BH'?`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${fmt(v)}`:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${fmt(v)}`} cm.`,chk:()=>dec1(v)};
 });
 TLN8('t8-9-shadow',9,'VD',r=>{
   const p=r.pick([1.5,2,3]),q=r.pick([2,3,4].filter(z=>z!==p)),k=r.int(4,9);
@@ -6333,7 +6460,7 @@ TLN8('t8-9-bis',9,'VD',r=>{
 TLN8('t8-9-vdc',9,'VDC',r=>{
   const [a,b,c]=hrt(r),AH=a*b/c;
   return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Kẻ đường cao ${I('AH')}; gọi ${I('M')}, ${I('N')} lần lượt là hình chiếu của ${I('H')} trên ${I('AB')} và ${I('AC')}. Tính độ dài ${I('MN')} (đơn vị cm).`,ans:AH,unit:'',
-    sol:`Tứ giác ${I('AMHN')} có ba góc vuông (∠${I('A')} = ∠${I('M')} = ∠${I('N')} = 90°) nên là hình chữ nhật, suy ra ${I('MN')} = ${I('AH')}. Ta có ${I('BC')} = ${c} cm nên ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm. Vậy ${I('MN')} = ${AH} cm.`,chk:()=>Number.isInteger(AH)};
+    sol:`Tứ giác ${I('AMHN')} có ba góc vuông (∠${I('A')} = ∠${I('M')} = ∠${I('N')} = 90°) nên là hình chữ nhật, suy ra ${I('MN')} = ${I('AH')}. Ta có ${I('BC')} = ${c} cm nên ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${fmt(AH)} cm. Vậy ${I('MN')} = ${fmt(AH)} cm.`,chk:()=>dec1(AH)};
 });
 
 /* ----- Tự luận chương IX ----- */
@@ -6344,8 +6471,8 @@ TL8('tl8-9-hrt',9,'TH','geo',r=>{
     {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}.${fig} Chứng minh ${TRI8('HBA')} ${SIM} ${TRI8('ABC')}.`},
     {pts:.5,html:`Cho ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Tính độ dài ${I('BC')} và ${I('AH')}.`}],
     sol:[ptxt([[`Xét ${TRI8('HBA')} và ${TRI8('ABC')} có ∠${I('BHA')} = ∠${I('BAC')} = 90° và ∠${I('B')} chung.`,.25],[`Do đó ${TRI8('HBA')} ${SIM} ${TRI8('ABC')} (g.g).`,.25]]),
-      ptxt([[`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm (định lí Pythagore).`,.25],[`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm.`,.25]])],
-    chk:()=>Number.isInteger(AH)&&a*a+b*b===c*c};
+      ptxt([[`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm (định lí Pythagore).`,.25],[`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${fmt(AH)} cm.`,.25]])],
+    chk:()=>dec1(AH)&&a*a+b*b===c*c};
 });
 TL8('tl8-9-alt',9,'VD','geo',r=>{
   /* ΔABC nhọn, BD ⊥ AC, CE ⊥ AB; cos A = u/v, AB = v·m, AC = v·n, AD = u·m, AE = u·n */
@@ -6384,12 +6511,12 @@ TL8('tl8-9-vdc',9,'VDC','geo',r=>{
     {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}. Gọi ${I('M')}, ${I('N')} lần lượt là hình chiếu của ${I('H')} trên ${I('AB')} và ${I('AC')}.${fig} Chứng minh ${I('AM')}·${I('AB')} = ${I('AH')}${sup(2)} và ${I('AN')}·${I('AC')} = ${I('AH')}${sup(2)}.`},
     {pts:.5,html:`Chứng minh ${TRI8('AMN')} ${SIM} ${TRI8('ACB')}. Biết ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, tính độ dài ${I('MN')}.`}],
     sol:[ptxt([[`${TRI8('AMH')} ${SIM} ${TRI8('AHB')} (g.g: ∠${I('AMH')} = ∠${I('AHB')} = 90°, ∠${I('A')}${sub(1)} chung) nên ${fr('AM','AH')} = ${fr('AH','AB')}, tức ${I('AM')}·${I('AB')} = ${I('AH')}${sup(2)}.`,.25],[`Tương tự ${TRI8('ANH')} ${SIM} ${TRI8('AHC')} nên ${I('AN')}·${I('AC')} = ${I('AH')}${sup(2)}.`,.25]]),
-      ptxt([[`Từ hai hệ thức trên có ${I('AM')}·${I('AB')} = ${I('AN')}·${I('AC')}, suy ra ${fr('AM','AC')} = ${fr('AN','AB')}; cùng ∠${I('A')} = 90° nên ${TRI8('AMN')} ${SIM} ${TRI8('ACB')} (c.g.c).`,.25],[`${I('AMHN')} là hình chữ nhật nên ${I('MN')} = ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm (với ${I('BC')} = ${c} cm).`,.25]])],
-    chk:()=>Number.isInteger(AH)&&Math.abs(Math.hypot(Mp[0]-Np[0],Mp[1]-Np[1])-AH)<1e-6};
+      ptxt([[`Từ hai hệ thức trên có ${I('AM')}·${I('AB')} = ${I('AN')}·${I('AC')}, suy ra ${fr('AM','AC')} = ${fr('AN','AB')}; cùng ∠${I('A')} = 90° nên ${TRI8('AMN')} ${SIM} ${TRI8('ACB')} (c.g.c).`,.25],[`${I('AMHN')} là hình chữ nhật nên ${I('MN')} = ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${fmt(AH)} cm (với ${I('BC')} = ${c} cm).`,.25]])],
+    chk:()=>dec1(AH)&&Math.abs(Math.hypot(Mp[0]-Np[0],Mp[1]-Np[1])-AH)<1e-6};
 });
 /* ================= CHƯƠNG X: MỘT SỐ HÌNH KHỐI TRONG THỰC TIỄN (hình chóp tam giác đều, hình chóp tứ giác đều) ================= */
 /* Bộ (a/2; h; d): nửa cạnh đáy, chiều cao, trung đoạn của hình chóp tứ giác đều */
-const PYR4=[[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10],[8,6,10],[9,12,15],[12,9,15]];
+const PYR4=[[3,4,5],[4,3,5],[6,8,10],[8,6,10],[9,12,15],[12,9,15],[12,16,20],[16,12,20],[5,12,13],[12,5,13],[8,15,17],[15,8,17],[7,24,25]];
 const pyr4=r=>{const [m,h,d]=r.pick(PYR4);return{a:2*m,h,d}};
 const SABCD=`${I('S.ABCD')}`,SABC=`${I('S.ABC')}`;
 /* Hình vẽ hình chóp tứ giác đều (O tâm đáy, M trung điểm AB) */
@@ -6421,9 +6548,9 @@ N8('m8-10-sxq',10,'TH',r=>{
   if(r.chance(.5)){const {a,d}=pyr4(r),S=2*a*d;
     return mkNum(r,{stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và trung đoạn ${d} cm. Diện tích xung quanh của hình chóp là`,correct:S,cands:[a*d,4*a*d,S+a*a,a*a,2*a+d],f:z=>`${z} cm²`,
       sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} với nửa chu vi đáy ${I('p')} = ${fr(`4·${a}`,2)} = ${2*a} cm. Vậy ${I('S')}${sub('xq')} = ${2*a}·${d} = ${S} cm².`,chk:()=>true})}
-  const a=r.int(3,12)*2,d=r.int(4,15),S=3*a*d/2;
+  const a=r.int(3,12)*2,d=r.int(Math.ceil(a/(2*Math.sqrt(3)))+1,Math.ceil(a/(2*Math.sqrt(3)))+10),S=3*a*d/2; /* trung đoạn phải lớn hơn bán kính đường tròn nội tiếp đáy a/(2√3) */
   return mkNum(r,{stem:`Một hình chóp tam giác đều có cạnh đáy ${a} cm và trung đoạn ${d} cm. Diện tích xung quanh của hình chóp là`,correct:S,cands:[3*a*d,a*d,S/3,S+a,a*d/2],f:z=>`${fmt(z)} cm²`,
-    sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} với nửa chu vi đáy ${I('p')} = ${fr(`3·${a}`,2)} = ${3*a/2} cm. Vậy ${I('S')}${sub('xq')} = ${3*a/2}·${d} = ${S} cm².`,chk:()=>Number.isInteger(S)});
+    sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} với nửa chu vi đáy ${I('p')} = ${fr(`3·${a}`,2)} = ${3*a/2} cm. Vậy ${I('S')}${sub('xq')} = ${3*a/2}·${d} = ${S} cm².`,chk:()=>Number.isInteger(S)&&d>a/(2*Math.sqrt(3))});
 });
 N8('m8-10-vol',10,'TH',r=>{
   if(r.chance(.5)){const {a,h}=pyr4(r),V=a*a*h/3;
@@ -6492,13 +6619,13 @@ TLN8('t8-10-vdc',10,'VDC',r=>{
 });
 
 TL8('tl8-10-pyr3',10,'TH','real',r=>{
-  const a=r.int(3,10)*2,d=r.int(5,14),k=r.pick([2,3]),Sxq=3*a*d/2;
+  const a=r.int(3,10)*2,d=r.int(Math.ceil(a/(2*Math.sqrt(3)))+1,Math.ceil(a/(2*Math.sqrt(3)))+9),k=r.pick([2,3]),Sxq=3*a*d/2;
   return{kind:'tl',title:'Hình chóp tam giác đều',parts:[
     {pts:.5,html:`Một hộp quà có dạng hình chóp tam giác đều ${SABC} với cạnh đáy ${a} cm, trung đoạn ${d} cm.${figPyr3({o:1})} Tính diện tích giấy cần dùng để dán kín các mặt bên của hộp (không kể mép dán).`},
     {pts:.5,html:`Người ta làm một hộp quà thứ hai cũng có dạng hình chóp tam giác đều, có cạnh đáy và trung đoạn đều gấp ${k} lần hộp thứ nhất. Diện tích giấy dán các mặt bên của hộp thứ hai gấp bao nhiêu lần hộp thứ nhất? Tính diện tích đó.`}],
     sol:[ptxt([[`Nửa chu vi đáy ${I('p')} = ${fr(`3·${a}`,2)} = ${3*a/2} cm.`,.25],[`Diện tích giấy = ${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${3*a/2}·${d} = ${Sxq} cm².`,.25]]),
       ptxt([[`Hộp thứ hai có nửa chu vi đáy ${k*3*a/2} cm và trung đoạn ${k*d} cm nên ${I('S')}${sub('xq')} = ${k*3*a/2}·${k*d} = ${k*k*Sxq} cm².`,.25],[`Vậy diện tích giấy gấp ${k}·${k} = ${k*k} lần hộp thứ nhất.`,.25]])],
-    chk:()=>Number.isInteger(Sxq)};
+    chk:()=>Number.isInteger(Sxq)&&d>a/(2*Math.sqrt(3))};
 });
 TL8('tl8-10-pyr4',10,'VD','geo',r=>{
   const {a,h,d}=pyr4(r),Sxq=2*a*d,V=a*a*h/3;
@@ -6517,6 +6644,82 @@ TL8('tl8-10-vdc',10,'VDC','geo',r=>{
     sol:[ptxt([[`${I('S')}${sub('xq')} = ${Stp} ${MINUS} ${a*a} = ${2*a*d} cm² = ${2*a}·${I('d')} ⟹ ${I('d')} = ${d} cm.`,.25],[`${I('h')} = ${rt(`${d}${sup(2)} ${MINUS} ${a/2}${sup(2)}`)} = ${h} cm.`,.25]]),
       ptxt([[`${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,.25],[`Cạnh đáy tăng ${k} lần thì diện tích đáy tăng ${k*k} lần, chiều cao không đổi nên thể tích tăng ${k*k} lần.`,.25]])],
     chk:()=>h*h+(a/2)**2===d*d&&Number.isInteger(V)};
+});
+/* ===== Bổ sung tự luận hình học lớp 8 học kì I (tứ giác, đường trung bình) và vận dụng cao chương VII ===== */
+TL('tl-geo-midq',4,'VDC','geo',r=>{
+  const mode=r.pick(['perp','eq']),p=r.int(3,12)*2,q=r.int(3,12)*2;
+  const partB=mode==='perp'?`Biết ${I('AC')} ⊥ ${I('BD')}, ${I('AC')} = ${p} cm, ${I('BD')} = ${q} cm. Chứng minh ${I('MNPQ')} là hình chữ nhật và tính diện tích của nó.`
+    :`Biết ${I('AC')} = ${I('BD')} = ${p} cm. Chứng minh ${I('MNPQ')} là hình thoi và tính chu vi của nó.`;
+  const solB=mode==='perp'?[[`${I('MN')} // ${I('AC')}, ${I('MQ')} // ${I('BD')} mà ${I('AC')} ⊥ ${I('BD')} nên ${I('MN')} ⊥ ${I('MQ')}; hình bình hành ${I('MNPQ')} có một góc vuông nên là hình chữ nhật.`,.25],[`${I('MN')} = ${fr('AC',2)} = ${p/2} cm, ${I('MQ')} = ${fr('BD',2)} = ${q/2} cm. Diện tích = ${p/2}·${q/2} = ${p*q/4} cm².`,.25]]
+    :[[`${I('MN')} = ${fr('AC',2)}, ${I('MQ')} = ${fr('BD',2)} mà ${I('AC')} = ${I('BD')} nên ${I('MN')} = ${I('MQ')}; hình bình hành có hai cạnh kề bằng nhau là hình thoi.`,.25],[`Mỗi cạnh dài ${p/2} cm, chu vi = 4·${p/2} = ${2*p} cm.`,.25]];
+  return{kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tứ giác ${I('ABCD')}. Gọi ${I('M')}, ${I('N')}, ${I('P')}, ${I('Q')} lần lượt là trung điểm của ${I('AB')}, ${I('BC')}, ${I('CD')}, ${I('DA')}. Chứng minh tứ giác ${I('MNPQ')} là hình bình hành.`},
+    {pts:.5,html:partB}],
+    sol:[ptxt([[`${I('MN')} là đường trung bình của tam giác ${I('ABC')} nên ${I('MN')} // ${I('AC')} và ${I('MN')} = ${fr('AC',2)}; tương tự ${I('QP')} // ${I('AC')} và ${I('QP')} = ${fr('AC',2)} (tam giác ${I('ACD')}).`,.25],[`Suy ra ${I('MN')} // ${I('QP')} và ${I('MN')} = ${I('QP')}, nên ${I('MNPQ')} là hình bình hành.`,.25]]),ptxt(solB)],
+    chk:()=>p%2===0&&q%2===0};
+});
+TL('tl-geo-trapmid',4,'VDC','geo',r=>{
+  const a=r.int(2,9)*2,b=a+r.int(1,6)*2;
+  return{kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho hình thang ${I('ABCD')} (${I('AB')} // ${I('CD')}) có ${I('AB')} = ${a} cm, ${I('CD')} = ${b} cm. Gọi ${I('M')}, ${I('I')}, ${I('N')} lần lượt là trung điểm của ${I('AD')}, ${I('BD')}, ${I('BC')}. Chứng minh ${I('MI')} // ${I('AB')} và ${I('IN')} // ${I('CD')}, từ đó suy ra ba điểm ${I('M')}, ${I('I')}, ${I('N')} thẳng hàng.`},
+    {pts:.5,html:`Tính độ dài các đoạn thẳng ${I('MI')}, ${I('IN')} và ${I('MN')}.`}],
+    sol:[ptxt([[`${I('MI')} là đường trung bình của tam giác ${I('ABD')} nên ${I('MI')} // ${I('AB')}; ${I('IN')} là đường trung bình của tam giác ${I('BCD')} nên ${I('IN')} // ${I('CD')}.`,.25],[`Vì ${I('AB')} // ${I('CD')} nên ${I('MI')} và ${I('IN')} cùng song song với ${I('AB')} và cùng đi qua ${I('I')}; theo tiên đề Euclid, ${I('M')}, ${I('I')}, ${I('N')} thẳng hàng.`,.25]]),
+      ptxt([[`${I('MI')} = ${fr('AB',2)} = ${a/2} cm; ${I('IN')} = ${fr('CD',2)} = ${b/2} cm.`,.25],[`${I('MN')} = ${I('MI')} + ${I('IN')} = ${a/2} + ${b/2} = ${(a+b)/2} cm.`,.25]])],
+    chk:()=>a<b};
+});
+TL('tl-geo-pdpar',3,'VDC','geo',r=>{
+  const mode=r.pick(['bis','right']),b=r.int(3,10)*2,c=r.int(3,10)*2;
+  const partB=mode==='bis'?`Biết ${I('AD')} là tia phân giác của góc ${I('BAC')}. Chứng minh tứ giác ${I('AEDF')} là hình thoi.`
+    :`Biết tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('AB')} = ${c} cm, ${I('AC')} = ${b} cm và ${I('D')} là trung điểm của ${I('BC')}. Chứng minh ${I('AEDF')} là hình chữ nhật và tính diện tích của nó.`;
+  const solB=mode==='bis'?[[`${I('DE')} // ${I('AC')} nên ∠${I('ADE')} = ∠${I('DAF')} (so le trong); ${I('AD')} là phân giác nên ∠${I('DAF')} = ∠${I('DAE')}. Suy ra ∠${I('ADE')} = ∠${I('DAE')}, tam giác ${I('AED')} cân tại ${I('E')}: ${I('EA')} = ${I('ED')}.`,.25],[`Hình bình hành ${I('AEDF')} có hai cạnh kề bằng nhau (${I('EA')} = ${I('ED')}) nên là hình thoi.`,.25]]
+    :[[`Hình bình hành ${I('AEDF')} có ∠${I('EAF')} = 90° nên là hình chữ nhật.`,.25],[`${I('D')} là trung điểm ${I('BC')}, ${I('DE')} // ${I('AC')} nên ${I('E')} là trung điểm ${I('AB')}: ${I('AE')} = ${c/2} cm; tương tự ${I('AF')} = ${b/2} cm. Diện tích = ${c/2}·${b/2} = ${b*c/4} cm².`,.25]];
+  return{kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')}, điểm ${I('D')} thuộc cạnh ${I('BC')} (${I('D')} khác ${I('B')} và ${I('C')}). Qua ${I('D')} kẻ đường thẳng song song với ${I('AC')} cắt ${I('AB')} tại ${I('E')}, kẻ đường thẳng song song với ${I('AB')} cắt ${I('AC')} tại ${I('F')}. Chứng minh tứ giác ${I('AEDF')} là hình bình hành.`},
+    {pts:.5,html:partB}],
+    sol:[ptxt([[`${I('DE')} // ${I('AC')} nên ${I('DE')} // ${I('AF')}; ${I('DF')} // ${I('AB')} nên ${I('DF')} // ${I('AE')}.`,.25],[`Tứ giác ${I('AEDF')} có các cặp cạnh đối song song nên là hình bình hành.`,.25]]),ptxt(solB)],
+    chk:()=>true};
+});
+TL('tl-geo-sqperp',3,'VDC','geo',r=>{
+  const a=r.int(4,12),b=r.int(1,a-1),S=a*a-a*b/2;
+  return{kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho hình vuông ${I('ABCD')} cạnh ${a} cm. Lấy điểm ${I('E')} thuộc cạnh ${I('AB')}, điểm ${I('F')} thuộc cạnh ${I('BC')} sao cho ${I('AE')} = ${I('BF')} = ${b} cm. Chứng minh tam giác ${I('DAE')} bằng tam giác ${I('ABF')}.`},
+    {pts:.5,html:`Chứng minh ${I('DE')} ⊥ ${I('AF')}. Tính diện tích tứ giác ${I('EBCD')}.`}],
+    sol:[ptxt([[`Xét tam giác ${I('DAE')} và ${I('ABF')}: ${I('DA')} = ${I('AB')} (cạnh hình vuông), ∠${I('DAE')} = ∠${I('ABF')} = 90°, ${I('AE')} = ${I('BF')}.`,.25],[`Do đó tam giác ${I('DAE')} bằng tam giác ${I('ABF')} (c.g.c).`,.25]]),
+      ptxt([[`Suy ra ∠${I('ADE')} = ∠${I('BAF')}. Gọi ${I('H')} là giao điểm của ${I('DE')} và ${I('AF')}: ∠${I('HAD')} + ∠${I('HDA')} = ∠${I('HAD')} + ∠${I('BAF')} = 90°, nên ∠${I('AHD')} = 90°, tức ${I('DE')} ⊥ ${I('AF')}.`,.25],[`Diện tích ${I('EBCD')} = diện tích ${I('ABCD')} ${MINUS} diện tích tam giác ${I('DAE')} = ${a*a} ${MINUS} ${fr(`${a}·${b}`,2)} = ${fmt(S)} cm².`,.25]])],
+    chk:()=>b<a};
+});
+TL('tl-geo-midline',4,'VD','geo',r=>{
+  const a=r.int(3,12)*2,c=r.int(3,12)*2;
+  return{kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} có ${I('AB')} = ${c} cm, ${I('BC')} = ${a} cm. Gọi ${I('M')}, ${I('N')} lần lượt là trung điểm của ${I('AB')} và ${I('AC')}. Chứng minh ${I('MN')} // ${I('BC')} và tính độ dài ${I('MN')}.`},
+    {pts:.5,html:`Gọi ${I('P')} là trung điểm của ${I('BC')}. Chứng minh tứ giác ${I('BMNP')} là hình bình hành và tính chu vi của nó.`}],
+    sol:[ptxt([[`${I('MN')} là đường trung bình của tam giác ${I('ABC')} nên ${I('MN')} // ${I('BC')}.`,.25],[`${I('MN')} = ${fr('BC',2)} = ${a/2} cm.`,.25]]),
+      ptxt([[`${I('MN')} // ${I('BP')} và ${I('MN')} = ${I('BP')} = ${a/2} cm nên ${I('BMNP')} là hình bình hành.`,.25],[`Chu vi = 2(${I('BM')} + ${I('BP')}) = 2(${c/2} + ${a/2}) = ${a+c} cm.`,.25]])],
+    chk:()=>true};
+});
+
+/* ----- Lớp 8, chương VII: vận dụng cao (phương trình chứa tham số) ----- */
+TL8('tl8-7-vdc2',7,'VDC','alg',r=>{
+  const k=r.int(1,4),m0=r.pick([...Array(13).keys()].map(i=>i-6).filter(v=>Math.abs(v)!==k&&v+k!==0));
+  const mm=I('m'),eq=`(${mm}${sup(2)} ${MINUS} ${k*k})${X8} = ${mm} ${MINUS} ${k}`;
+  return{kind:'tl',title:'Phương trình bậc nhất chứa tham số',parts:[
+    {pts:.5,html:`Cho phương trình ${eq} (${mm} là tham số). Giải phương trình khi ${mm} = ${sg(m0)}.`},
+    {pts:.5,html:`Tìm ${mm} để phương trình có nghiệm duy nhất; vô nghiệm; có vô số nghiệm.`}],
+    sol:[ptxt([[`Với ${mm} = ${sg(m0)}: ${sg(m0*m0-k*k)}${X8} = ${sg(m0-k)}.`,.25],[`${Fx(Q(m0-k,m0*m0-k*k))}.`,.25]]),
+      ptxt([[`(${mm} ${MINUS} ${k})(${mm} + ${k})${X8} = ${mm} ${MINUS} ${k}. Nếu ${mm} ≠ ±${k}: nghiệm duy nhất ${X8} = ${fr(1,`${mm} + ${k}`)}.`,.25],[`Nếu ${mm} = ${k}: 0${X8} = 0, vô số nghiệm. Nếu ${mm} = ${MINUS}${k}: 0${X8} = ${MINUS}${2*k}, vô nghiệm.`,.25]])],
+    chk:()=>qv(Q(m0-k,m0*m0-k*k))===1/(m0+k)};
+});
+TL8('tl8-7-vdc3',7,'VDC','alg',r=>{
+  const p=r.nz(-3,3),q=r.nz(-4,6),s=p+q;if(s===0||Math.abs(s)===1)return T.tl['tl8-7-vdc3'].gen(r);
+  const mm=I('m'),m0=p+r.pick([2,3,-2,-3]),ds=[];for(let d=1;d<=Math.abs(s);d++)if(s%d===0)ds.push(d,-d);
+  const ms=ds.map(d=>d+p).sort((u,v)=>u-v);
+  const eq=`(${mm} ${sT(-p)})${X8} = ${mm} ${sT(q)}`;
+  return{kind:'tl',title:'Phương trình chứa tham số, nghiệm nguyên',parts:[
+    {pts:.5,html:`Cho phương trình ${eq} (${mm} là tham số). Giải phương trình khi ${mm} = ${sg(m0)}.`},
+    {pts:.5,html:`Tìm tất cả các giá trị nguyên của ${mm} để phương trình có nghiệm duy nhất và nghiệm đó là số nguyên.`}],
+    sol:[ptxt([[`Với ${mm} = ${sg(m0)}: ${sg(m0-p)}${X8} = ${sg(m0+q)}.`,.25],[`${Fx(Q(m0+q,m0-p))}.`,.25]]),
+      ptxt([[`Phương trình có nghiệm duy nhất khi ${mm} ≠ ${sg(p)}, khi đó ${X8} = ${fr(`${mm} ${sT(q)}`,`${mm} ${sT(-p)}`)} = 1 + ${fr(sg(s),`${mm} ${sT(-p)}`)}.`,.25],[`${X8} nguyên ⟺ ${mm} ${sT(-p)} là ước của ${sg(s)} ⟺ ${mm} ∈ {${SETS(ms)}}.`,.25]])],
+    chk:()=>ms.every(m=>m!==p&&Number.isInteger((m+q)/(m-p)))&&m0!==p};
 });
 
 /* ================= Khung đề (theo mẫu 12 + 2 + 4 + 3) ================= */
