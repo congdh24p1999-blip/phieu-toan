@@ -80,8 +80,8 @@ TL11b('tl11-7-tri',7,'VD','c',r=>{
   const P={A:[0,0,0],B:[4.2,0,0],C:[4.2,3.2,0],S:[0,0,4.6]};P.H=V3.lerp(P.S,P.B,(4.6*4.6)/(4.6*4.6+4.2*4.2));
   const E=autoEdges({A:P.A,B:P.B,C:P.C,S:P.S},[['A','B','C'],['S','A','B'],['S','B','C'],['S','C','A']]);
   const fig=fig3D(P,E.solid,E.dashed.concat([['A','H']]),['S','A','B','C','H']);
-  const L=v=>{const m={1:'',2:'2',3:'3',4:'4'};if(closeN(v,Math.sqrt(3)))return`${I('a')}√3`;if(closeN(v,Math.sqrt(2)))return`${I('a')}√2`;if(closeN(v,Math.sqrt(5)))return`${I('a')}√5`;if(Number.isInteger(v))return`${m[v]??v}${I('a')}`;return null};
-  const ahTxt={'3,4':fr(`12${I('a')}`,5),'4,3':fr(`12${I('a')}`,5),[`${Math.sqrt(3)},1`]:fr(`${I('a')}√3`,2),[`1,${Math.sqrt(3)}`]:fr(`${I('a')}√3`,2),'1,1':fr(`${I('a')}√2`,2),'2,1':fr(`2${I('a')}√5`,5)}[`${s},${t}`];
+  const L=v=>{const m={1:'',2:'2',3:'3',4:'4'};if(closeN(v,Math.sqrt(3)))return`${I('a')}${rt(3)}`;if(closeN(v,Math.sqrt(2)))return`${I('a')}${rt(2)}`;if(closeN(v,Math.sqrt(5)))return`${I('a')}${rt(5)}`;if(Number.isInteger(v))return`${m[v]??v}${I('a')}`;return null};
+  const ahTxt={'3,4':fr(`12${I('a')}`,5),'4,3':fr(`12${I('a')}`,5),[`${Math.sqrt(3)},1`]:fr(`${I('a')}${rt(3)}`,2),[`1,${Math.sqrt(3)}`]:fr(`${I('a')}${rt(3)}`,2),'1,1':fr(`${I('a')}${rt(2)}`,2),'2,1':fr(`2${I('a')}${rt(5)}`,5)}[`${s},${t}`];
   return{kind:'tl',title:'Hai mặt phẳng vuông góc, khoảng cách',parts:[
     {pts:.5,html:`Cho hình chóp ${I('S.ABC')} có đáy ${I('ABC')} là tam giác vuông tại ${I('B')}, ${I('SA')} ⊥ ${PLN('ABC')}, ${I('SA')} = ${L(s)}, ${I('AB')} = ${L(t)}.${fig}Chứng minh ${I('BC')} ⊥ ${PLN('SAB')} và ${PLN('SBC')} ⊥ ${PLN('SAB')}.`},
     {pts:.5,html:`Gọi ${I('H')} là hình chiếu vuông góc của ${I('A')} trên ${I('SB')}. Chứng minh ${I('AH')} ⊥ ${PLN('SBC')} và tính khoảng cách từ ${I('A')} đến mặt phẳng ${PLN('SBC')}.`}],

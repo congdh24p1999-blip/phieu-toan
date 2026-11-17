@@ -67,7 +67,7 @@ TL8('tl8-9-perp',9,'VDC','geo',r=>{
     {pts:.5,html:`Chứng minh ${TRI8('HNA')} ${SIM} ${TRI8('HMC')}, từ đó suy ra ${I('AN')} ⊥ ${I('CM')}.`}],
     sol:[ptxt([[`${TRI8('HBA')} và ${TRI8('HAC')} có ∠${I('AHB')} = ∠${I('CHA')} = 90°, ∠${I('HBA')} = ∠${I('HAC')} (cùng phụ với ∠${I('HAB')}), nên đồng dạng (g.g).`,.25],
       [`Suy ra ${fr('HB','HA')} = ${fr('HA','HC')}, tức ${I('AH')}${sup(2)} = ${I('HB')}·${I('HC')} = ${p*q}, ${I('AH')} = ${fmt(h)} cm.`,.25]]),
-      ptxt([[`Từ ${fr('HB','HA')} = ${fr('HA','HC')} có ${fr('HN','HA')} = ${fr(`${I('HB')}/2`,'HA')} = ${fr(`${I('HA')}/2`,'HC')} = ${fr('HM','HC')}; lại có ∠${I('NHA')} = ∠${I('MHC')} = 90°, nên ${TRI8('HNA')} ${SIM} ${TRI8('HMC')} (c.g.c), suy ra ∠${I('HAN')} = ∠${I('HCM')}.`,.25],
+      ptxt([[`Từ ${fr('HB','HA')} = ${fr('HA','HC')} có ${fr('HN','HA')} = ${fr(I('HB'),`2${I('HA')}`)} = ${fr(I('HA'),`2${I('HC')}`)} = ${fr('HM','HC')}; lại có ∠${I('NHA')} = ∠${I('MHC')} = 90°, nên ${TRI8('HNA')} ${SIM} ${TRI8('HMC')} (c.g.c), suy ra ∠${I('HAN')} = ∠${I('HCM')}.`,.25],
       [`Gọi ${I('K')} là giao điểm của ${I('AN')} và đường thẳng ${I('CM')}. Ta có ∠${I('KAM')} + ∠${I('AMK')} = ∠${I('HCM')} + ∠${I('HMC')} = 90° (∠${I('AMK')} = ∠${I('HMC')} đối đỉnh), nên ∠${I('AKM')} = 90°, tức ${I('AN')} ⊥ ${I('CM')}.`,.25]])],
     chk:()=>{const an=[P.N[0]-P.A[0],P.N[1]-P.A[1]],cm=[P.M[0]-P.C[0],P.M[1]-P.C[1]];return Math.abs(an[0]*cm[0]+an[1]*cm[1])<1e-9&&Number.isInteger(h)}};
 });

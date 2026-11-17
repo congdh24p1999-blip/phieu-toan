@@ -35,6 +35,7 @@ node sweep.js '.'                 # sinh 3000 lần mỗi dạng, kiểm tra đ�
 node sweep.js 'tl8-9'             # chỉ các dạng có id khớp
 node test.js 300 chuan gk2,ck2    # sinh đề theo cấu trúc, kiểm tra ma trận, mức độ
 node exttest.js                   # câu mở rộng bật/tắt
+node rep.js 'gk1|ck1'             # vị trí câu nào chỉ có 1 dạng (đề nào cũng giống)
 node show.js tl:tl8-9-perp        # xem nhanh một câu (kind:id)
 node lst.js '^m7-'                # liệt kê các dạng
 python3 ui3.py && python3 uiext.py   # thử giao diện bằng Playwright (ảnh lưu ở out/)
