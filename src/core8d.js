@@ -20,7 +20,7 @@ function fig2D(P,segs,o={}){
     s+=`<text x="${f(mx+nx*9)}" y="${f(my+ny*9+3.5)}" font-size="10" text-anchor="middle">${t}</text>`});
   (o.show||names).forEach(n=>{const p=pts[n],off=(o.off||{})[n];let lx,ly;
     if(off){lx=p[0]+off[0];ly=p[1]+off[1]}else{const dx=p[0]-cx,dy=p[1]-cy,l=Math.hypot(dx,dy)||1;lx=p[0]+dx/l*11;ly=p[1]+dy/l*11+4}
-    s+=`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="1.7" fill="#000"/><text x="${f(lx)}" y="${f(ly)}" font-size="11" font-style="italic" text-anchor="middle">${n}</text>`});
+    s+=`${(o.nodot||[]).includes(n)?'':`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="1.7" fill="#000"/>`}<text x="${f(lx)}" y="${f(ly)}" font-size="11" font-style="italic" text-anchor="middle">${n}</text>`});
   return `<div class="figure">${s}</svg></div>`;
 }
 const PYT8=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],[15,20,25],[10,24,26],[20,21,29]];
