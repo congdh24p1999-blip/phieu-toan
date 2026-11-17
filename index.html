@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Xưởng đề Toán của Thầy Công: tạo đề kiểm tra giữa kì, cuối kì Toán cấp 2, cấp 3 (lớp 7 và 11 HK I–II, lớp 8 HK I, sách Kết nối tri thức) có đáp án và hướng dẫn chấm, in khổ A4. Miễn phí.">
+<meta name="description" content="Xưởng đề Toán của Thầy Công: tạo đề kiểm tra giữa kì, cuối kì Toán cấp 2, cấp 3 (lớp 7, 8 và 11, học kì I và II, sách Kết nối tri thức) có đáp án và hướng dẫn chấm, in khổ A4. Miễn phí.">
 <title>Xưởng đề Toán</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5207,9 +5207,1320 @@ DS11('ds5-xlim',5,'TH',r=>{
     {t:`${lim(I('x'),PINF)} ${fr(xlin(p,q),xlin(s,t))} = ${qh(Q(p,s))}.`,f:`${lim(I('x'),PINF)} ${fr(xlin(p,q),xlin(s,t))} = ${qh(Q(q,t))}.`,why:`Chia cả tử và mẫu cho x: giới hạn bằng ${fr(sg(p),s)} = ${qh(Q(p,s))}.`}
   ],chk:()=>{const e=1e-7,x=a+(side==='+'?e:-e),X=1e8;return Math.abs((a*a*pa+a*qa+ra)-V)===0&&Math.abs(((a+e)**2-a*a)/e-2*a)<1e-3&&(1/(x-a))*(side==='+'?1:-1)>0&&Math.abs((p*X+q)/(s*X+t)-p/s)<1e-6}});
 });
+/* ======================= TOÁN 8, HỌC KÌ II (Kết nối tri thức, tập 2) =======================
+   Chương VI: Phân thức đại số. Chương VII: Phương trình bậc nhất và hàm số bậc nhất.
+   Chương VIII: Mở đầu về tính xác suất của biến cố. Chương IX: Tam giác đồng dạng.
+   Chương X: Một số hình khối trong thực tiễn. */
+const N8=(id,ch,lv,gen,sec)=>reg('nlc',id,ch,lv,gen,{hk:2,sec});
+const DS8=(id,ch,lv,gen,sec)=>reg('ds',id,ch,lv,gen,{hk:2,sec});
+const TLN8=(id,ch,lv,gen,sec)=>reg('tln',id,ch,lv,gen,{hk:2,sec});
+const TL8=(id,ch,lv,role,gen,sec)=>reg('tl',id,ch,lv,gen,{role,hk:2,sec});
+const X8=I('x'),Y8=I('y');
+/* Đa thức theo x (hệ số giảm dần): nhân, cộng, hiển thị */
+const pmul=(a,b)=>{const o=Array(a.length+b.length-1).fill(0);a.forEach((p,i)=>b.forEach((q,j)=>{o[i+j]+=p*q}));return o};
+const padd=(a,b)=>{const n=Math.max(a.length,b.length),o=Array(n).fill(0);a.forEach((p,i)=>{o[n-a.length+i]+=p});b.forEach((p,i)=>{o[n-b.length+i]+=p});return o};
+const pscale=(a,k)=>a.map(c=>c*k);
+const PH=cs=>polyH(cs);
+/* (x + a) và dạng có ngoặc */
+const LFc=a=>[1,a],LFh=a=>a===0?X8:`(${xlin(1,a)})`;
+const FR8=(n,d)=>fr(n,d);
+/* Phân thức: giá trị tại x (để kiểm tra bằng số) */
+const pv=(cs,x)=>pe(cs,x);
+const closeN=(a,b)=>Math.abs(a-b)<1e-9*Math.max(1,Math.abs(a),Math.abs(b));
+/* Đếm ước dương */
+const nDiv=k=>{let c=0;for(let d=1;d<=k;d++)if(k%d===0)c++;return c};
+/* Điều kiện x ≠ v */
+/* hệ số đứng trước ngoặc: 1 → '', −1 → '−' */
+const cfl=n=>n===1?'':n===-1?MINUS:sg(n);
+const SETS=a=>a.map(sg).join('; ');
+const NEQ=v=>`${X8} ≠ ${sg(v)}`;
+
+/* ================= CHƯƠNG VI: PHÂN THỨC ĐẠI SỐ ================= */
+N8('m8-6-def',6,'NB',r=>{
+  const a=r.int(1,5),b=r.int(2,6),want=r.chance(.5);
+  const good=[FR8(`${X8} + ${a}`,`${X8}${sup(2)} ${MINUS} ${b}`),FR8(`2${X8}`,`${X8} ${MINUS} ${a}`),FR8(`${a}`,`${X8}${sup(2)} + 1`),FR8(`${X8}${sup(2)} ${MINUS} ${a}`,`${X8} + ${b}`)];
+  const bad=[FR8(rt(X8),`${X8} + ${a}`),FR8(`${X8} + ${a}`,rt(`${X8} ${MINUS} ${b}`)),FR8(`${X8} + ${a}`,'0'),FR8(`${a}`,rt(X8))];
+  const ok=want?r.pick(good):r.pick(bad);
+  return mkTxt(r,{stem:`Biểu thức nào sau đây ${want?'là':'<b>không</b> là'} phân thức đại số?`,correct:ok,wrongs:r.shuffle(want?bad:good),
+    sol:`Phân thức đại số có dạng ${fr('A','B')} với A, B là các đa thức và B khác đa thức 0. Biểu thức chứa căn của biến hoặc có mẫu bằng 0 không phải là phân thức; ${ok} ${want?'thỏa mãn điều kiện đó':'không thỏa mãn điều kiện đó'}.`,
+    chk:()=>true});
+});
+N8('m8-6-cond',6,'TH',r=>{
+  const f=r.int(0,4),a=r.int(2,6),b=r.int(1,5),k=r.pick([2,3]),t=r.nz(-5,5),m=r.nz(-6,6);
+  let den,ok,wr,roots,fn;
+  if(f===0){den=xlin(1,m);ok=NEQ(-m);wr=[NEQ(m),NEQ(0),`${X8} ≠ ${sg(-m+1)}`,`${X8} ≠ ${sg(m*m)}`];roots=[-m];fn=x=>x+m}
+  else if(f===1){den=xlin(k,-k*t);ok=NEQ(t);wr=[NEQ(-t),NEQ(k*t),NEQ(-k*t),NEQ(t+1)];roots=[t];fn=x=>k*x-k*t}
+  else if(f===2){den=xquad(1,0,-a*a);ok=`${X8} ≠ ${a} và ${X8} ≠ ${MINUS}${a}`;wr=[NEQ(a),NEQ(-a),NEQ(a*a),`${X8} ≠ ${a} và ${X8} ≠ ${a*a}`];roots=[a,-a];fn=x=>x*x-a*a}
+  else if(f===3){den=`${LFh(-a)}${LFh(b)}`;ok=`${X8} ≠ ${a} và ${X8} ≠ ${MINUS}${b}`;wr=[`${X8} ≠ ${MINUS}${a} và ${X8} ≠ ${b}`,NEQ(a),`${X8} ≠ ${a} và ${X8} ≠ ${b}`,`${X8} ≠ ${MINUS}${a} và ${X8} ≠ ${MINUS}${b}`];roots=[a,-b];fn=x=>(x-a)*(x+b)}
+  else{den=`${X8}${LFh(-a)}`;ok=`${X8} ≠ 0 và ${X8} ≠ ${a}`;wr=[NEQ(a),NEQ(0),`${X8} ≠ 0 và ${X8} ≠ ${MINUS}${a}`,`${X8} ≠ ${MINUS}${a}`];roots=[0,a];fn=x=>x*(x-a)}
+  if(f===3&&a===-b)return T.nlc['m8-6-cond'].gen(r);
+  wr.push(`${X8} ≠ ${sg(-t+2)}`,`${X8} ≠ ${sg(m+3)}`,`${X8} ≠ ${sg(a+b)}`,`${X8} ≠ ${sg(-t*2)}`);
+  const num=r.pick([`${X8} + 1`,'3','2'+X8]);
+  return mkTxt(r,{stem:`Điều kiện xác định của phân thức ${FR8(num,den)} là`,correct:ok,wrongs:wr,
+    sol:`Phân thức xác định khi mẫu thức khác 0: ${den} ≠ 0 ⟺ ${ok}.`,
+    chk:()=>roots.every(z=>fn(z)===0)&&fn(roots.reduce((s,z)=>s+Math.abs(z),0)+7.5)!==0});
+});
+N8('m8-6-eq',6,'NB',r=>{
+  const a=r.nz(-5,5),b=r.nz(-5,5),k=r.int(2,4),c=r.nz(-5,5),useK=r.chance(.5);if(a===b)return T.nlc['m8-6-eq'].gen(r);
+  const M=useK?[k]:[1,c],NUM=u=>useK?`${k}${LFh(u)}`:`${LFh(c)}${LFh(u)}`;
+  const A0=xlin(1,a),B0=xlin(1,b),ok=FR8(NUM(a),NUM(b));
+  const wr=[FR8(xlin(1,a+k),xlin(1,b+k)),FR8(NUM(a),B0),FR8(A0,NUM(b)),FR8(NUM(b),NUM(a))];
+  const mtxt=useK?String(k):LFh(c);
+  return mkTxt(r,{stem:`Phân thức nào sau đây bằng phân thức ${FR8(A0,B0)}?`,correct:ok,wrongs:wr,
+    sol:`Nhân cả tử và mẫu của ${FR8(A0,B0)} với ${mtxt} (khác 0) ta được ${ok}; các phân thức còn lại không thu được từ ${FR8(A0,B0)} bằng cách nhân cả tử và mẫu với cùng một đa thức khác 0.`,
+    chk:()=>{const x=3.7;return closeN(pv(pmul(M,[1,a]),x)/pv(pmul(M,[1,b]),x),(x+a)/(x+b))&&wr.every(w=>w!==ok)}});
+});
+N8('m8-6-prop',6,'TH',r=>{
+  const a=r.nz(-5,5),b=r.nz(-5,5),c=r.nz(-4,4);if(b===c||a===0)return T.nlc['m8-6-prop'].gen(r);
+  /* (x + a)/(x + b) = P/((x + b)(x + c)) */
+  const ok=pmul([1,a],[1,c]),wr=[pmul([1,a],[1,b]),pmul([1,a],[1,-c]),[1,a+c],pmul([1,b],[1,c]),padd(pmul([1,a],[1,c]),[1]),pmul([1,-a],[1,c])];
+  const H=p=>PH(p),opts=wr.map(H).filter(z=>z!==H(ok));
+  return mkTxt(r,{stem:`Tìm đa thức ${I('P')} sao cho ${FR8(xlin(1,a),xlin(1,b))} = ${FR8(I('P'),`${LFh(b)}${LFh(c)}`)}.`,correct:H(ok),wrongs:opts.map(z=>z),
+    sol:`Nhân cả tử và mẫu của phân thức bên trái với ${LFh(c)} ta được ${FR8(`${LFh(a)}${LFh(c)}`,`${LFh(b)}${LFh(c)}`)}. Do đó ${I('P')} = ${LFh(a)}${LFh(c)} = ${H(ok)}.`,
+    chk:()=>{const x=2.9;return closeN(pv([1,a],x)/pv([1,b],x),pv(ok,x)/(pv([1,b],x)*pv([1,c],x)))}});
+});
+N8('m8-6-simpl',6,'TH',r=>{
+  const f=r.int(0,3);
+  if(f===3){
+    const p=r.pick([2,3,4,6]),q=r.pick([3,4,6,9]),g=(a,b)=>b?g(b,a%b):a,d=g(p,q),a1=p/d,b1=q/d;
+    const ex=r.pick([[3,2,2,1],[2,1,3,1],[3,1,1,2],[2,2,1,2]]);/* x^m y^n : x^u y^v */
+    const [m,n,u,v]=ex,sx=m-u,sy=n-v;
+    const num=`${p}${X8}${m>1?sup(m):''}${Y8}${n>1?sup(n):''}`,den=`${q}${X8}${u>1?sup(u):''}${Y8}${v>1?sup(v):''}`;
+    const xs=sx>0?X8+(sx>1?sup(sx):''):'',ys=sy>0?Y8+(sy>1?sup(sy):''):'',xd=sx<0?X8+(-sx>1?sup(-sx):''):'',yd=sy<0?Y8+(-sy>1?sup(-sy):''):'';
+    const N=`${a1===1&&(xs||ys)?'':a1}${xs}${ys}`||'1',D=`${b1===1&&(xd||yd)?'':b1}${xd}${yd}`||'1';
+    const ok=D==='1'?N:FR8(N,D);
+    const dup=(N2,D2)=>D2==='1'?N2:FR8(N2,D2);
+    const mn=(c,u,v)=>(c===1&&(u||v)?'':String(c))+u+v;
+    const wr=[dup(mn(a1,xs+yd,''),mn(b1,xd+ys,'')),dup(mn(a1+b1,xs,ys),mn(b1,xd,yd)),dup(mn(a1+1,xs,ys),mn(b1,xd,yd)),dup(N,mn(b1+1,xd,yd)),dup(mn(b1,xs,ys),mn(a1,xd,yd)),dup(mn(a1,xs,ys),mn(a1+b1,xd,yd)),dup(mn(2*a1+1,xs,ys),mn(b1,xd,yd))];
+    return mkTxt(r,{stem:`Rút gọn phân thức ${FR8(num,den)} ta được`,correct:ok,wrongs:wr,
+      sol:`Chia cả tử và mẫu cho nhân tử chung ${d===1?'':d}${X8}${Math.min(m,u)>1?sup(Math.min(m,u)):''}${Y8}${Math.min(n,v)>1?sup(Math.min(n,v)):''}: ${ok}.`,
+      chk:()=>p*b1===q*a1&&(sx+sy!==0||true)});
+  }
+  const a=r.int(2,6),b=r.nz(-5,5),c=r.nz(-5,5);
+  if(f===0){ /* (x² − a²)/(x + a) = x − a  hoặc (x − a) → x + a */
+    const s=r.pick([1,-1]),num=xquad(1,0,-a*a),den=xlin(1,s*a),ok=xlin(1,-s*a);
+    return mkTxt(r,{stem:`Rút gọn phân thức ${FR8(num,den)} (với ${NEQ(-s*a)}) ta được`,correct:ok,wrongs:[xlin(1,s*a),xlin(1,a*a),xlin(1,-a*a),`${X8} ${MINUS} ${a}${X8}`.replace(/x/g,'x')],
+      sol:`${num} = ${LFh(a)}${LFh(-a)} nên ${FR8(num,den)} = ${FR8(`${LFh(a)}${LFh(-a)}`,den)} = ${ok}.`,chk:()=>{const x=3.3;return closeN((x*x-a*a)/(x+s*a),x-s*a)}});
+  }
+  if(f===1){ /* (x² + (a+b)x + ab)/(x + a) = x + b */
+    if(a===b)return T.nlc['m8-6-simpl'].gen(r);
+    const num=PH(pmul([1,a],[1,b])),ok=xlin(1,b);
+    return mkTxt(r,{stem:`Rút gọn phân thức ${FR8(num,xlin(1,a))} (với ${NEQ(-a)}) ta được`,correct:ok,wrongs:[xlin(1,a),xlin(1,-b),xlin(1,a+b),xlin(1,a*b)],
+      sol:`${num} = ${LFh(a)}${LFh(b)} nên phân thức bằng ${FR8(`${LFh(a)}${LFh(b)}`,xlin(1,a))} = ${ok}.`,chk:()=>{const x=2.2;return closeN(pv(pmul([1,a],[1,b]),x)/(x+a),x+b)}});
+  }
+  /* f===2: (k x + k b)/(x + b) = k */
+  const k=r.pick([2,3,4,5,-2,-3]),bb=r.nz(-6,6);
+  return mkTxt(r,{stem:`Rút gọn phân thức ${FR8(xlin(k,k*bb),xlin(1,bb))} (với ${NEQ(-bb)}) ta được`,correct:sg(k),wrongs:[sg(k+1),sg(-k),xlin(k,bb),sg(k*bb)],
+    sol:`${xlin(k,k*bb)} = ${sg(k)}${LFh(bb)} nên phân thức bằng ${sg(k)}.`,chk:()=>{const x=4.1;return closeN((k*x+k*bb)/(x+bb),k)}});
+});
+N8('m8-6-add',6,'TH',r=>{
+  const c=r.nz(-5,5),a=r.nz(-4,4),b=r.nz(-5,5),d=r.nz(-4,4),e=r.nz(-5,5);
+  if(r.chance(.5)){ /* tổng bằng hằng số k */
+    const k=r.pick([2,3,4,-2,-3,5]),a2=r.nz(-4,4),d2=k-a2,b2=r.nz(-5,5),e2=k*c-b2;
+    if(d2===0)return T.nlc['m8-6-add'].gen(r);
+    if((a2===1&&b2===c)||(d2===1&&e2===c))return T.nlc['m8-6-add'].gen(r);
+    const N1=xlin(a2,b2),N2=xlin(d2,e2);
+    return mkTxt(r,{stem:`Kết quả của phép tính ${FR8(N1,xlin(1,c))} + ${FR8(N2,xlin(1,c))} (với ${NEQ(-c)}) là`,correct:sg(k),wrongs:[sg(k+1),sg(-k),FR8(sg(k),xlin(1,c)),xlin(k,c)],
+      sol:`Cộng hai phân thức cùng mẫu: ${FR8(`${N1} ${N2.startsWith(MINUS)?MINUS+' '+N2.slice(1):'+ '+N2}`,xlin(1,c))} = ${FR8(xlin(k,k*c),xlin(1,c))} = ${sg(k)}.`,chk:()=>{const x=5.3;return closeN((a2*x+b2)/(x+c)+(d2*x+e2)/(x+c),k)}});
+  }
+  const N1=xlin(a,b),N2=xlin(d,e),s1=padd([a,b],[d,e]),ok=FR8(PH(s1),xlin(1,c));
+  if(s1[0]===0||(a===1&&b===c)||(d===1&&e===c))return T.nlc['m8-6-add'].gen(r);
+  const wr=[FR8(PH(padd([a,b],[-d,-e])),xlin(1,c)),FR8(PH(padd([a,b],[d,-e])),xlin(1,c)),FR8(PH(s1),xlin(2,2*c)),FR8(PH(padd([a,0],[d,e])),xlin(1,c))].filter(z=>z!==ok);
+  return mkTxt(r,{stem:`Kết quả của phép tính ${FR8(N1,xlin(1,c))} + ${FR8(N2,xlin(1,c))} (với ${NEQ(-c)}) là`,correct:ok,wrongs:wr,
+    sol:`Cộng hai phân thức cùng mẫu thức, cộng các tử thức và giữ nguyên mẫu thức: ${FR8(`(${N1}) + (${N2})`,xlin(1,c))} = ${ok}.`,chk:()=>{const x=1.9;return closeN((a*x+b)/(x+c)+(d*x+e)/(x+c),pv(s1,x)/(x+c))}});
+});
+N8('m8-6-sub',6,'TH',r=>{
+  const c=r.nz(-5,5),a=r.nz(-4,4),b=r.nz(-5,5),d=r.nz(-4,4),e=r.nz(-5,5);
+  const diff=padd([a,b],[-d,-e]);if(diff[0]===0&&diff[1]===0||(a===d&&b!==e&&false))return T.nlc['m8-6-sub'].gen(r);
+  const N1=xlin(a,b),N2=xlin(d,e),ok=FR8(PH(diff),xlin(1,c));
+  const wr=[FR8(PH(padd([a,b],[d,-e])),xlin(1,c)),FR8(PH(padd([a,b],[d,e])),xlin(1,c)),FR8(PH(padd([a,b],[-d,e])),xlin(1,c)),FR8(PH(diff),xlin(1,-c))].filter(z=>z!==ok);
+  return mkTxt(r,{stem:`Kết quả của phép tính ${FR8(N1,xlin(1,c))} ${MINUS} ${FR8(N2,xlin(1,c))} (với ${NEQ(-c)}) là`,correct:ok,wrongs:wr,
+    sol:`${FR8(N1,xlin(1,c))} ${MINUS} ${FR8(N2,xlin(1,c))} = ${FR8(`(${N1}) ${MINUS} (${N2})`,xlin(1,c))} = ${ok} (nhớ đổi dấu mọi hạng tử của tử thức thứ hai).`,
+    chk:()=>{const x=2.6;return closeN((a*x+b)/(x+c)-(d*x+e)/(x+c),pv(diff,x)/(x+c))}});
+});
+N8('m8-6-adddiff',6,'TH',r=>{
+  const m=r.int(1,5),a=r.nz(-5,5),b=r.nz(-5,5);if(a+b===0||a===b)return T.nlc['m8-6-adddiff'].gen(r);
+  /* a/(x − m) + b/(x + m) = ((a+b)x + m(a − b))/(x² − m²) */
+  const num=[a+b,m*(a-b)],den=xquad(1,0,-m*m),ok=FR8(PH(num),den);
+  const wr=[FR8(PH([a+b,m*(b-a)]),den),FR8(PH([a+b,0]),den),FR8(sg(a+b),den),FR8(PH([a-b,m*(a+b)]),den),FR8(PH(num),xlin(2,0))].filter(z=>z!==ok);
+  return mkTxt(r,{stem:`Kết quả của phép tính ${FR8(sg(a),xlin(1,-m))} + ${FR8(sg(b),xlin(1,m))} (với ${X8} ≠ ±${m}) là`,correct:ok,wrongs:wr,
+    sol:`Mẫu thức chung là ${LFh(-m)}${LFh(m)} = ${den}. ${FR8(sg(a),xlin(1,-m))} + ${FR8(sg(b),xlin(1,m))} = ${FR8(`${cfl(a)}${LFh(m)} + ${cfl(b)}${LFh(-m)}`.replace('+ −','− '),den)} = ${ok}.`,
+    chk:()=>{const x=4.4;return closeN(a/(x-m)+b/(x+m),pv(num,x)/(x*x-m*m))}});
+});
+N8('m8-6-mul',6,'TH',r=>{
+  const a=r.int(1,5),b=r.nz(-5,5),c=r.nz(-5,5);if(b===c||a===b||a===c||a===-b)return T.nlc['m8-6-mul'].gen(r);
+  if(r.chance(.5)){ /* (x² − a²)/(x + b) · (x + b)/(x + a) = x − a */
+    const ok=xlin(1,-a);
+    return mkTxt(r,{stem:`Kết quả của phép nhân ${FR8(xquad(1,0,-a*a),xlin(1,b))} · ${FR8(xlin(1,b),xlin(1,a))} (với các mẫu thức khác 0) là`,correct:ok,wrongs:[xlin(1,a),xlin(1,-a*a),FR8(xlin(1,-a),xlin(1,b)),xquad(1,0,-a*a)],
+      sol:`${FR8(`${LFh(a)}${LFh(-a)}${LFh(b)}`,`${LFh(b)}${LFh(a)}`)} = ${ok} sau khi rút gọn các nhân tử chung ${LFh(a)} và ${LFh(b)}.`,chk:()=>{const x=3.9;return closeN((x*x-a*a)/(x+b)*(x+b)/(x+a),x-a)}});
+  }
+  const ok=FR8(xlin(1,a),xlin(1,c));
+  return mkTxt(r,{stem:`Kết quả của phép nhân ${FR8(xlin(1,a),xlin(1,b))} · ${FR8(xlin(1,b),xlin(1,c))} (với các mẫu thức khác 0) là`,correct:ok,wrongs:[FR8(xlin(1,a),xlin(1,b)),FR8(xlin(1,c),xlin(1,a)),FR8(xlin(1,b),xlin(1,c)),FR8(xlin(1,a),xlin(1,b+c))],
+    sol:`Nhân tử với tử, mẫu với mẫu rồi rút gọn nhân tử chung ${LFh(b)}: ${ok}.`,chk:()=>{const x=2.3;return closeN((x+a)/(x+b)*(x+b)/(x+c),(x+a)/(x+c))}});
+});
+N8('m8-6-div',6,'TH',r=>{
+  const a=r.nz(-5,5),b=r.nz(-5,5),c=r.nz(-5,5);if(b===c||a===b||a===c)return T.nlc['m8-6-div'].gen(r);
+  /* (x + a)/(x + b) : (x + a)/(x + c) = (x + c)/(x + b) */
+  const ok=FR8(xlin(1,c),xlin(1,b));
+  return mkTxt(r,{stem:`Kết quả của phép chia ${FR8(xlin(1,a),xlin(1,b))} : ${FR8(xlin(1,a),xlin(1,c))} (với các mẫu thức và phân thức chia khác 0) là`,correct:ok,wrongs:[FR8(xlin(1,b),xlin(1,c)),FR8(xlin(1,b),xlin(1,a)),'1',FR8(xlin(1,a),xlin(1,c))],
+    sol:`Nhân với phân thức nghịch đảo: ${FR8(xlin(1,a),xlin(1,b))} · ${FR8(xlin(1,c),xlin(1,a))} = ${ok}.`,chk:()=>{const x=6.1;return closeN((x+a)/(x+b)/((x+a)/(x+c)),(x+c)/(x+b))}});
+});
+N8('m8-6-opp',6,'NB',r=>{
+  const a=r.nz(-6,6),b=r.nz(-6,6),want=r.chance(.5);if(a===b)return T.nlc['m8-6-opp'].gen(r);
+  const A=xlin(1,a),B=xlin(1,b);
+  if(want){ /* phân thức đối */
+    return mkTxt(r,{stem:`Phân thức đối của phân thức ${FR8(A,B)} là`,correct:FR8(`${MINUS}(${A})`,B),wrongs:[FR8(B,A),FR8(A,`${MINUS}(${B})`),FR8(`${MINUS}(${B})`,A),FR8(A,B)].slice(0,4),
+      sol:`Phân thức đối của ${fr('A','B')} là ${fr(`${MINUS}A`,'B')} (còn viết là ${MINUS}${fr('A','B')}). Vậy phân thức đối của ${FR8(A,B)} là ${FR8(`${MINUS}(${A})`,B)}.`,chk:()=>true});
+  }
+  return mkTxt(r,{stem:`Phân thức nghịch đảo của phân thức ${FR8(A,B)} (với ${NEQ(-a)} và ${NEQ(-b)}) là`,correct:FR8(B,A),wrongs:[FR8(`${MINUS}(${A})`,B),FR8(`${MINUS}(${B})`,A),FR8(A,B)].concat([FR8(B,`${MINUS}(${A})`)]),
+    sol:`Phân thức nghịch đảo của ${fr('A','B')} (A khác 0) là ${fr('B','A')}. Vậy phân thức nghịch đảo của ${FR8(A,B)} là ${FR8(B,A)}.`,chk:()=>true});
+});
+N8('m8-6-val',6,'TH',r=>{
+  const a=r.int(2,6),k=r.pick([-4,-3,-2,-1,1,2,3,4,5,6]),s=r.pick([1,-1]);if(k===s*a||k===-s*a)return T.nlc['m8-6-val'].gen(r);
+  const ok=k-s*a;
+  return mkNum(r,{stem:`Giá trị của phân thức ${FR8(xquad(1,0,-a*a),xlin(1,s*a))} tại ${X8} = ${sg(k)} là`,correct:ok,ok:()=>true,cands:[k+s*a,k*k-a*a,ok+1,ok-1,k+a],
+    sol:`${xquad(1,0,-a*a)} = ${LFh(a)}${LFh(-a)} nên phân thức rút gọn thành ${xlin(1,-s*a)}. Tại ${X8} = ${sg(k)}: ${sg(k)} ${s>0?MINUS:'+'} ${a} = ${sg(ok)}.`,chk:()=>closeN((k*k-a*a)/(k+s*a),ok)});
+});
+N8('m8-6-zero',6,'TH',r=>{
+  const a=r.int(2,7),s=r.pick([1,-1]);
+  /* (x² − a²)/(x − s·a) = 0  ⟹  x = s·(−a)... nghiệm phải loại giá trị làm mẫu bằng 0 */
+  const ok=-s*a;
+  return mkNum(r,{stem:`Giá trị của ${X8} để phân thức ${FR8(xquad(1,0,-a*a),xlin(1,-s*a))} bằng 0 là`,correct:ok,ok:()=>true,cands:[s*a,0,a*a,-a*a,s*a+1],
+    sol:`Điều kiện ${NEQ(s*a)}. ${xquad(1,0,-a*a)} = 0 ⟺ ${X8} = ${a} hoặc ${X8} = ${MINUS}${a}; giá trị ${X8} = ${sg(s*a)} làm mẫu bằng 0 nên bị loại. Vậy ${X8} = ${sg(ok)}.`,chk:()=>(ok*ok-a*a===0)&&(ok-s*a!==0)});
+});
+N8('m8-6-int',6,'VD',r=>{
+  const k=r.pick([6,8,10,12,15,18,20]),a=r.nz(-4,4),cnt=2*nDiv(k);
+  return mkNum(r,{stem:`Có bao nhiêu số nguyên ${X8} để phân thức ${FR8(k,xlin(1,a))} nhận giá trị là số nguyên?`,correct:cnt,cands:[nDiv(k),cnt+2,cnt-2,k],
+    sol:`${xlin(1,a)} phải là ước nguyên của ${k}. ${k} có ${nDiv(k)} ước dương nên có ${cnt} ước nguyên, mỗi ước cho đúng một giá trị của ${X8}. Vậy có ${cnt} số nguyên ${X8} thỏa mãn.`,
+    chk:()=>{let c=0;for(let x=-200;x<=200;x++){if(x+a!==0&&k%(x+a)===0)c++}return c===cnt}});
+});
+N8('m8-6-common',6,'TH',r=>{
+  const m=r.int(2,6),f=r.int(0,2);
+  let d1,d2,ok,wr;
+  if(f===0){d1=xlin(1,-m);d2=xlin(1,m);ok=xquad(1,0,-m*m);wr=[`${LFh(-m)}`,`${LFh(m)}`,`${LFh(-m)}${LFh(m)}${X8}`,`2${X8}`]}
+  else if(f===1){d1=xlin(1,-m);d2=xquad(1,0,-m*m);ok=xquad(1,0,-m*m);wr=[xlin(1,-m),`${LFh(-m)}${sup(2)}${LFh(m)}`,xlin(1,m),`${LFh(-m)}${xquad(1,0,-m*m)}`.replace(/^/,'')]}
+  else{const p=r.pick([2,3,4]),q=r.pick([3,5,6]);d1=`${p}${X8}${sup(2)}`;d2=`${q}${X8}`;const l=p*q/(p===q?p:1);const g=(u,v)=>v?g(v,u%v):u;const L=p*q/g(p,q);ok=`${L}${X8}${sup(2)}`;wr=[`${p*q}${X8}${sup(3)}`,`${L}${X8}`,`${L+p}${X8}${sup(2)}`,`${p+q}${X8}${sup(2)}`]}
+  return mkTxt(r,{stem:`Mẫu thức chung của hai phân thức ${FR8('1',d1)} và ${FR8('1',d2)} (chọn mẫu thức chung đơn giản nhất) là`,correct:ok,wrongs:wr,
+    sol:`Phân tích các mẫu thức thành nhân tử rồi lấy tích các nhân tử chung và riêng với số mũ lớn nhất: mẫu thức chung là ${ok}.`,chk:()=>true});
+});
+
+/* ----- Đúng/sai chương VI ----- */
+DS8('ds8-6-theory',6,'NB',r=>{
+  const A=I('A'),B=I('B'),C=I('C'),D=I('D');
+  const pool=[
+    {t:`Mỗi đa thức cũng là một phân thức đại số.`,f:`Mỗi phân thức đại số đều là một đa thức.`,why:`Đa thức A viết được dưới dạng ${fr('A','1')} nên là phân thức; ngược lại ${fr('1',X8)} là phân thức nhưng không phải đa thức.`},
+    {t:`${fr(A,B)} = ${fr(C,D)} khi ${A}·${D} = ${B}·${C}.`,f:`${fr(A,B)} = ${fr(C,D)} khi ${A}·${C} = ${B}·${D}.`,why:`Hai phân thức ${fr('A','B')} và ${fr('C','D')} bằng nhau nếu A·D = B·C.`},
+    {t:`${fr(A,B)} + ${fr(C,B)} = ${fr(`${A} + ${C}`,B)}.`,f:`${fr(A,B)} + ${fr(C,B)} = ${fr(`${A} + ${C}`,`${B} + ${B}`)}.`,why:`Cộng hai phân thức cùng mẫu: cộng các tử thức, giữ nguyên mẫu thức.`},
+    {t:`${fr(A,B)} ${MINUS} ${fr(C,B)} = ${fr(`${A} ${MINUS} ${C}`,B)}.`,f:`${fr(A,B)} ${MINUS} ${fr(C,B)} = ${fr(`${A} ${MINUS} ${C}`,`${B} ${MINUS} ${B}`)}.`,why:`Trừ hai phân thức cùng mẫu: trừ các tử thức, giữ nguyên mẫu thức.`},
+    {t:`${fr(A,B)} · ${fr(C,D)} = ${fr(`${A}${C}`,`${B}${D}`)}.`,f:`${fr(A,B)} · ${fr(C,D)} = ${fr(`${A}${D}`,`${B}${C}`)}.`,why:`Nhân hai phân thức: nhân tử với tử, mẫu với mẫu.`},
+    {t:`${fr(A,B)} : ${fr(C,D)} = ${fr(A,B)} · ${fr(D,C)} (với ${C} khác đa thức 0).`,f:`${fr(A,B)} : ${fr(C,D)} = ${fr(A,B)} · ${fr(C,D)}.`,why:`Chia cho một phân thức khác 0 là nhân với phân thức nghịch đảo của nó.`},
+    {t:`Phân thức đối của ${fr(A,B)} là ${fr(`${MINUS}${A}`,B)}.`,f:`Phân thức đối của ${fr(A,B)} là ${fr(B,A)}.`,why:`${fr(B,A)} là phân thức nghịch đảo, không phải phân thức đối.`},
+    {t:`Phân thức ${fr(A,B)} xác định khi ${B} khác đa thức 0.`,f:`Phân thức ${fr(A,B)} xác định khi ${A} khác đa thức 0.`,why:`Phân thức xác định khi mẫu thức khác 0.`}
+  ];
+  return mkDS(r,{stem:'Xét tính đúng sai của các khẳng định sau:',items:r.shuffle(pool).slice(0,4)});
+});
+DS8('ds8-6-simpl',6,'TH',r=>{
+  const a=r.int(2,6),k=r.pick([a+1,a+2,a+3,2*a,-1,-2].filter(v=>v!==-a&&v!==0)),x0=k;
+  const P=`${FR8(xquad(1,0,-a*a),`${X8}${LFh(a)}`)}`;
+  const V=Q(x0-a,x0);
+  const items=[
+    {t:`Điều kiện xác định của ${I('P')} là ${X8} ≠ 0 và ${X8} ≠ ${MINUS}${a}.`,f:`Điều kiện xác định của ${I('P')} là ${X8} ≠ 0 và ${X8} ≠ ${a}.`,why:`Mẫu ${X8}${LFh(a)} = 0 ⟺ ${X8} = 0 hoặc ${X8} = ${MINUS}${a}.`},
+    {t:`${I('P')} = ${FR8(xlin(1,-a),X8)}.`,f:`${I('P')} = ${FR8(xlin(1,a),X8)}.`,why:`${xquad(1,0,-a*a)} = ${LFh(a)}${LFh(-a)}; rút gọn nhân tử ${LFh(a)} được ${FR8(xlin(1,-a),X8)}.`},
+    {t:`Giá trị của ${I('P')} tại ${X8} = ${sg(x0)} bằng ${qh(V)}.`,f:`Giá trị của ${I('P')} tại ${X8} = ${sg(x0)} bằng ${qh(qadd(V,Q(1,Math.abs(x0))))}.`,why:`Thay ${X8} = ${sg(x0)} vào ${FR8(xlin(1,-a),X8)} được ${qh(V)}.`},
+    {t:`${I('P')} = 0 khi ${X8} = ${a}.`,f:`${I('P')} = 0 khi ${X8} = ${MINUS}${a}.`,why:`${FR8(xlin(1,-a),X8)} = 0 ⟺ ${X8} = ${a}; ${X8} = ${MINUS}${a} không thuộc điều kiện xác định.`}
+  ];
+  return mkDS(r,{stem:`Cho phân thức ${I('P')} = ${P}. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>closeN((x0*x0-a*a)/(x0*(x0+a)),qv(V))&&x0!==0&&x0!==-a});
+});
+DS8('ds8-6-ops',6,'TH',r=>{
+  const m=r.int(1,4),a=r.nz(-4,4),b=r.nz(-4,4);if(a+b===0||a===b||a*b===0)return T.ds['ds8-6-ops'].gen(r);
+  const A=I('A'),B=I('B'),den=xquad(1,0,-m*m);
+  const items=[
+    {t:`Điều kiện xác định chung của ${A} và ${B} là ${X8} ≠ ${m} và ${X8} ≠ ${MINUS}${m}.`,f:`Điều kiện xác định chung của ${A} và ${B} là ${X8} ≠ ${m}.`,why:`${A} xác định khi ${X8} ≠ ${m}; ${B} xác định khi ${X8} ≠ ${MINUS}${m}; điều kiện chung gồm cả hai.`},
+    {t:`Mẫu thức chung của ${A} và ${B} là ${den}.`,f:`Mẫu thức chung của ${A} và ${B} là ${xlin(1,m)}.`,why:`${den} = ${LFh(-m)}${LFh(m)} chia hết cho cả hai mẫu thức.`},
+    {t:`${A} + ${B} = ${FR8(PH([a+b,m*(a-b)]),den)}.`,f:`${A} + ${B} = ${FR8(PH([a+b,m*(b-a)]),den)}.`,why:`${A} + ${B} = ${FR8(`${cfl(a)}${LFh(m)} + ${cfl(b)}${LFh(-m)}`.replace('+ −','− '),den)} = ${FR8(PH([a+b,m*(a-b)]),den)}.`},
+    {t:`${A} · ${B} = ${FR8(sg(a*b),den)}.`,f:`${A} · ${B} = ${FR8(sg(a+b),den)}.`,why:`Nhân tử với tử, mẫu với mẫu: ${FR8(`${sg(a)}·${sg(b)}`,`${LFh(-m)}${LFh(m)}`)} = ${FR8(sg(a*b),den)}.`}
+  ];
+  return mkDS(r,{stem:`Cho hai phân thức ${A} = ${FR8(sg(a),xlin(1,-m))} và ${B} = ${FR8(sg(b),xlin(1,m))}. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>{const x=7.7;return closeN(a/(x-m)+b/(x+m),((a+b)*x+m*(a-b))/(x*x-m*m))&&closeN(a/(x-m)*b/(x+m),a*b/(x*x-m*m))}});
+});
+DS8('ds8-6-int',6,'VD',r=>{
+  const k=r.pick([6,8,10,12]),a=r.nz(-3,3),cnt=2*nDiv(k),x0=r.pick([1,2,3,4,5,6,7].filter(v=>v+a!==0&&k%(v+a)===0)||[1]);
+  const xs=[1,2,3,4,5,-1,-2,-3,0].filter(v=>v+a!==0);
+  const bad=xs.find(v=>k%(v+a)!==0);
+  if(bad===undefined||x0===undefined)return T.ds['ds8-6-int'].gen(r);
+  const good=xs.find(v=>k%(v+a)===0&&(v+a)!==0);
+  if(good===undefined)return T.ds['ds8-6-int'].gen(r);
+  const items=[
+    {t:`Điều kiện xác định của ${I('P')} là ${NEQ(-a)}.`,f:`Điều kiện xác định của ${I('P')} là ${NEQ(a)}.`,why:`Mẫu ${xlin(1,a)} ≠ 0 ⟺ ${NEQ(-a)}.`},
+    {t:`Với ${X8} = ${sg(good)} thì ${I('P')} nhận giá trị nguyên.`,f:`Với ${X8} = ${sg(bad)} thì ${I('P')} nhận giá trị nguyên.`,why:`Với ${X8} = ${sg(good)}: ${xlin(1,a)} = ${sg(good+a)} là ước của ${k}, nên ${I('P')} = ${sg(k/(good+a))}. Với ${X8} = ${sg(bad)}: ${I('P')} = ${fr(k,sg(bad+a))} không nguyên.`},
+    {t:`${I('P')} nguyên khi và chỉ khi ${xlin(1,a)} là ước của ${k}.`,f:`${I('P')} nguyên khi và chỉ khi ${xlin(1,a)} là bội của ${k}.`,why:`${fr(k,xlin(1,a))} nguyên ⟺ ${xlin(1,a)} là ước của ${k}.`},
+    {t:`Có đúng ${cnt} số nguyên ${X8} để ${I('P')} nhận giá trị nguyên.`,f:`Có đúng ${nDiv(k)} số nguyên ${X8} để ${I('P')} nhận giá trị nguyên.`,why:`${k} có ${nDiv(k)} ước dương và ${nDiv(k)} ước âm, tổng cộng ${cnt} ước, mỗi ước cho một giá trị của ${X8}.`}
+  ];
+  return mkDS(r,{stem:`Cho phân thức ${I('P')} = ${FR8(k,xlin(1,a))}. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>k%(good+a)===0&&k%(bad+a)!==0});
+});
+
+/* ----- Trả lời ngắn chương VI ----- */
+TLN8('t8-6-val',6,'NB',r=>{
+  const c=r.nz(-4,5),k=r.int(-3,6),v=r.pick([-3,-2,-1,1,2,3,4]),den=k+c;if(den===0)return T.tln['t8-6-val'].gen(r);
+  const a=r.nz(-3,3),b=v*den-a*k;
+  return{kind:'tln',stem:`Tính giá trị của phân thức ${FR8(xlin(a,b),xlin(1,c))} tại ${X8} = ${sg(k)}.`,ans:v,unit:'',
+    sol:`Thay ${X8} = ${sg(k)}: tử thức = ${sg(a*k+b)}, mẫu thức = ${sg(den)}, giá trị là ${sg(v)}.`,chk:()=>(a*k+b)===v*den};
+});
+TLN8('t8-6-simplval',6,'TH',r=>{
+  const a=r.nz(-5,5),b=r.nz(-5,5),k=r.int(-4,6);if(a===b||k+a===0)return T.tln['t8-6-simplval'].gen(r);
+  const ans=k+b;
+  return{kind:'tln',stem:`Rút gọn rồi tính giá trị của phân thức ${FR8(PH(pmul([1,a],[1,b])),xlin(1,a))} tại ${X8} = ${sg(k)}.`,ans,unit:'',
+    sol:`${PH(pmul([1,a],[1,b]))} = ${LFh(a)}${LFh(b)} nên phân thức bằng ${xlin(1,b)}. Tại ${X8} = ${sg(k)} giá trị là ${sg(ans)}.`,chk:()=>closeN(pv(pmul([1,a],[1,b]),k)/(k+a),ans)};
+});
+TLN8('t8-6-sum',6,'TH',r=>{
+  const m=r.int(1,5),a=r.nz(-5,5),b=r.nz(-5,5);if(a+b===0||a===b)return T.tln['t8-6-sum'].gen(r);
+  const p=a+b,q=m*(a-b);
+  return{kind:'tln',stem:`Biết ${FR8(sg(a),xlin(1,-m))} + ${FR8(sg(b),xlin(1,m))} = ${FR8(`${I('p')}${X8} + ${I('q')}`,xquad(1,0,-m*m))} (với ${X8} ≠ ±${m}). Tính ${I('p')} + ${I('q')}.`,ans:p+q,unit:'',
+    sol:`Quy đồng: ${FR8(`${cfl(a)}${LFh(m)} + ${cfl(b)}${LFh(-m)}`.replace('+ −','− '),xquad(1,0,-m*m))} = ${FR8(PH([p,q]),xquad(1,0,-m*m))}. Vậy p = ${sg(p)}, q = ${sg(q)} và p + q = ${sg(p+q)}.`,chk:()=>{const x=5.5;return closeN(a/(x-m)+b/(x+m),(p*x+q)/(x*x-m*m))}};
+});
+TLN8('t8-6-int',6,'VD',r=>{
+  const f=r.int(0,1);
+  if(f===0){
+    const k=r.pick([7,9,11,14,16,21,24]),a=r.nz(-3,3),cnt=2*nDiv(k);
+    return{kind:'tln',stem:`Có bao nhiêu giá trị nguyên của ${X8} để phân thức ${FR8(k,xlin(1,a))} có giá trị nguyên?`,ans:cnt,unit:'',
+      sol:`${xlin(1,a)} phải là ước nguyên của ${k}. ${k} có ${nDiv(k)} ước dương nên có ${cnt} ước nguyên, tương ứng ${cnt} giá trị của ${X8}.`,chk:()=>{let c=0;for(let x=-300;x<=300;x++)if(x+a!==0&&k%(x+a)===0)c++;return c===cnt}};
+  }
+  const k=r.pick([9,15,21,25,27,35]),odd=[];for(let d=1;d<=k;d+=2)if(k%d===0)odd.push(d);
+  const cnt=2*odd.length;
+  return{kind:'tln',stem:`Có bao nhiêu giá trị nguyên của ${X8} để phân thức ${FR8(k,xlin(2,1))} có giá trị nguyên?`,ans:cnt,unit:'',
+    sol:`2${X8} + 1 là số nguyên lẻ và phải là ước của ${k}. ${k} có ${odd.length} ước dương lẻ (${odd.join('; ')}) nên có ${cnt} ước nguyên lẻ, mỗi ước cho một giá trị nguyên của ${X8}.`,
+    chk:()=>{let c=0;for(let x=-300;x<=300;x++){const d=2*x+1;if(k%d===0)c++}return c===cnt}};
+});
+TLN8('t8-6-expr',6,'VD',r=>{
+  const a=r.int(1,5),b=r.pick([2,3,4,5,6]),m=r.int(1,4);if(a===b)return T.tln['t8-6-expr'].gen(r);
+  /* P = a/(x − m) · (x² − m²)/b = a(x + m)/b; chọn x sao cho a(x+m) chia hết cho b */
+  const xv=r.pick([1,2,3,4,5,6,7,8,9,10,11,12].filter(v=>v!==m&&(a*(v+m))%b===0));
+  if(xv===undefined)return T.tln['t8-6-expr'].gen(r);
+  const ans=a*(xv+m)/b;
+  return{kind:'tln',stem:`Cho ${I('P')} = ${FR8(a,xlin(1,-m))} · ${FR8(xquad(1,0,-m*m),b)}. Tính giá trị của ${I('P')} tại ${X8} = ${xv}.`,ans,unit:'',
+    sol:`${I('P')} = ${FR8(`${cfl(a)}${LFh(-m)}${LFh(m)}`,`${LFh(-m)}·${b}`)} = ${FR8(`${cfl(a)}${LFh(m)}`,b)}. Tại ${X8} = ${xv}: ${fr(`${a}·${xv+m}`,b)} = ${sg(ans)}.`,chk:()=>closeN(a/(xv-m)*(xv*xv-m*m)/b,ans)};
+});
+TLN8('t8-6-max',6,'VDC',r=>{
+  const a=r.int(1,4),d=r.pick([1,2,4,5]),k=r.pick([3,4,5,6,8,10,12]),b=a*a+d;
+  const ans=k/d;
+  return{kind:'tln',stem:`Tìm giá trị lớn nhất của biểu thức ${I('A')} = ${FR8(k,xquad(1,-2*a,b))}.`,ans,unit:'',
+    sol:`${xquad(1,-2*a,b)} = (${X8} ${MINUS} ${a})${sup(2)} + ${d} ≥ ${d} với mọi ${X8}, nên ${I('A')} ≤ ${fr(k,d)} = ${fmt(ans)}. Dấu “=” xảy ra khi ${X8} = ${a}. Vậy giá trị lớn nhất của ${I('A')} là ${fmt(ans)}.`,
+    chk:()=>closeN(k/((a-a)*(a-a)+d),ans)&&b-a*a===d};
+});
+
+/* ----- Tự luận chương VI ----- */
+TL8('tl8-6-simpl',6,'TH','alg',r=>{
+  const [p,q,s]=r.shuffle([-5,-4,-3,-2,-1,1,2,3,4,5]).slice(0,3);
+  const num=pmul([1,p],[1,q]),den=pmul([1,q],[1,s]);
+  return{kind:'tl',title:'Rút gọn phân thức',parts:[
+    {pts:.5,html:`Cho phân thức ${I('P')} = ${FR8(PH(num),PH(den))}. Tìm điều kiện xác định của ${I('P')}.`},
+    {pts:.5,html:`Rút gọn ${I('P')} và tính giá trị của ${I('P')} tại ${X8} = ${q===0?1:(Math.abs(p)+Math.abs(q)+Math.abs(s)+1)}.`}],
+    sol:[ptxt([[`${PH(den)} = ${LFh(q)}${LFh(s)}.`,.25],[`Mẫu khác 0 ⟺ ${X8} ≠ ${sg(-q)} và ${X8} ≠ ${sg(-s)}.`,.25]]),
+      ptxt([[`${PH(num)} = ${LFh(p)}${LFh(q)} nên ${I('P')} = ${FR8(`${LFh(p)}${LFh(q)}`,`${LFh(q)}${LFh(s)}`)} = ${FR8(xlin(1,p),xlin(1,s))}.`,.25],[`Tại ${X8} = ${Math.abs(p)+Math.abs(q)+Math.abs(s)+1}: ${I('P')} = ${qh(Q(Math.abs(p)+Math.abs(q)+Math.abs(s)+1+p,Math.abs(p)+Math.abs(q)+Math.abs(s)+1+s))}.`,.25]])],
+    chk:()=>{const x=Math.abs(p)+Math.abs(q)+Math.abs(s)+1;return closeN(pv(num,x)/pv(den,x),(x+p)/(x+s))&&p!==q&&q!==s&&p!==s}};
+});
+TL8('tl8-6-add',6,'TH','alg',r=>{
+  const m=r.int(1,4),a=r.int(2,3),k=r.pick([2,3,4,-2,-3]),b=k-a;if(b===0)return T.tl['tl8-6-add'].gen(r);
+  const c=-k*m-a*m;
+  const A=`${FR8(a,xlin(1,-m))} + ${FR8(xlin(b,c),xquad(1,0,-m*m))}`;
+  const nb=padd(pscale([1,m],a),[b,c]);
+  return{kind:'tl',title:'Cộng các phân thức',parts:[
+    {pts:.5,html:`Cho ${I('A')} = ${A}. Tìm điều kiện xác định của ${I('A')}.`},
+    {pts:.5,html:`Rút gọn ${I('A')}.`}],
+    sol:[ptxt([[`${xquad(1,0,-m*m)} = ${LFh(-m)}${LFh(m)}.`,.25],[`${I('A')} xác định khi ${X8} ≠ ${m} và ${X8} ≠ ${MINUS}${m}.`,.25]]),
+      ptxt([[`${I('A')} = ${FR8(`${a}${LFh(m)} + (${xlin(b,c)})`,xquad(1,0,-m*m))} = ${FR8(PH(nb),xquad(1,0,-m*m))}.`,.25],[`${PH(nb)} = ${sg(k)}${LFh(-m)} nên ${I('A')} = ${FR8(`${sg(k)}${LFh(-m)}`,`${LFh(-m)}${LFh(m)}`)} = ${FR8(sg(k),xlin(1,m))}.`,.25]])],
+    chk:()=>{const x=6.3;return closeN(a/(x-m)+(b*x+c)/(x*x-m*m),k/(x+m))&&nb[0]===k&&nb[1]===-k*m}};
+});
+TL8('tl8-6-expr',6,'VD','alg',r=>{
+  const a=r.pick([2,3,4]);
+  /* P = [ (x + a)/(x − a) − (x − a)/(x + a) ] : 4/(x − a) = a·x/(x + a) */
+  const sols=[];for(let x=-60;x<=60;x++){if(x===a||x===-a)continue;if((a*x)%(x+a)===0&&x+a!==0)sols.push(x)}
+  return{kind:'tl',title:'Biến đổi biểu thức chứa phân thức',parts:[
+    {pts:.5,html:`Cho ${I('P')} = (${FR8(xlin(1,a),xlin(1,-a))} ${MINUS} ${FR8(xlin(1,-a),xlin(1,a))}) : ${FR8(4,xlin(1,-a))}. Tìm điều kiện xác định và rút gọn ${I('P')}.`},
+    {pts:.5,html:`Tìm tất cả các giá trị nguyên của ${X8} để ${I('P')} có giá trị nguyên.`}],
+    sol:[ptxt([[`Điều kiện: ${X8} ≠ ${a} và ${X8} ≠ ${MINUS}${a}.`,.25],[`Trong ngoặc: ${FR8(`${LFh(a)}${sup(2)} ${MINUS} ${LFh(-a)}${sup(2)}`,xquad(1,0,-a*a))} = ${FR8(`${4*a}${X8}`,xquad(1,0,-a*a))}; chia cho ${FR8(4,xlin(1,-a))} được ${I('P')} = ${FR8(`${a}${X8}`,xlin(1,a))}.`,.25]]),
+      ptxt([[`${I('P')} = ${a} ${MINUS} ${fr(a*a,xlin(1,a))}, nguyên ⟺ ${xlin(1,a)} là ước của ${a*a}.`,.25],[`${xlin(1,a)} ∈ {±${[...Array(a*a+1).keys()].filter(d=>d&&a*a%d===0).join('; ±')}} ⟹ ${X8} ∈ {${SETS(sols)}}${(a*a)%(2*a)===0?` (loại ${X8} = ${a} vì không thỏa điều kiện xác định)`:''}.`,.25]])],
+    chk:()=>{const x=3.7;const P=((x+a)/(x-a)-(x-a)/(x+a))/(4/(x-a));return closeN(P,a*x/(x+a))&&sols.every(v=>Number.isInteger(a*v/(v+a)))}};
+});
+TL8('tl8-6-int',6,'VD','alg',r=>{
+  const a=r.pick([2,3,4]),c=r.nz(-3,3),b=r.nz(-7,7),kk=b-a*c;if(kk===0)return T.tl['tl8-6-int'].gen(r);
+  const divs=[];for(let d=1;d<=Math.abs(kk);d++)if(kk%d===0){divs.push(d,-d)}
+  const xs=divs.map(d=>d-c).sort((u,v)=>u-v);
+  return{kind:'tl',title:'Giá trị nguyên của phân thức',parts:[
+    {pts:.5,html:`Cho ${I('A')} = ${FR8(xlin(a,b),xlin(1,c))}. Viết ${I('A')} dưới dạng tổng của một số nguyên và một phân thức có tử thức là số nguyên.`},
+    {pts:.5,html:`Tìm tất cả các giá trị nguyên của ${X8} để ${I('A')} có giá trị nguyên.`}],
+    sol:[ptxt([[`${xlin(a,b)} = ${a}(${xlin(1,c)}) ${kk<0?MINUS:'+'} ${Math.abs(kk)}.`,.25],[`Do đó ${I('A')} = ${a} ${kk<0?MINUS:'+'} ${fr(Math.abs(kk),xlin(1,c))}.`,.25]]),
+      ptxt([[`${I('A')} nguyên ⟺ ${xlin(1,c)} là ước nguyên của ${Math.abs(kk)}, tức ${xlin(1,c)} ∈ {${SETS(divs.sort((u,v)=>u-v))}}.`,.25],[`Suy ra ${X8} ∈ {${SETS(xs)}}.`,.25]])],
+    chk:()=>xs.every(x=>(a*x+b)%(x+c)===0)&&xs.length===divs.length};
+});
+TL8('tl8-6-vdc',6,'VDC','alg',r=>{
+  const a=r.int(1,3),d=r.pick([1,2,3,4]),k=r.pick([3,4,5,6,8,9,12]),b=a*a+d,ans=Q(k,d);
+  return{kind:'tl',title:'Giá trị lớn nhất của phân thức',parts:[
+    {pts:.5,html:`Chứng minh ${xquad(1,-2*a,b)} > 0 với mọi giá trị của ${X8}.`},
+    {pts:.5,html:`Cho ${I('B')} = ${FR8(k,xquad(1,-2*a,b))}. Tìm giá trị lớn nhất của ${I('B')} và giá trị của ${X8} tại đó.`}],
+    sol:[ptxt([[`${xquad(1,-2*a,b)} = (${X8} ${MINUS} ${a})${sup(2)} + ${d}.`,.25],[`(${X8} ${MINUS} ${a})${sup(2)} ≥ 0 nên ${xquad(1,-2*a,b)} ≥ ${d} > 0 với mọi ${X8}.`,.25]]),
+      ptxt([[`Mẫu thức ≥ ${d} nên ${I('B')} ≤ ${fr(k,d)} = ${qh(ans)}.`,.25],[`Dấu “=” xảy ra khi ${X8} = ${a}. Vậy giá trị lớn nhất của ${I('B')} là ${qh(ans)}, đạt được khi ${X8} = ${a}.`,.25]])],
+    chk:()=>b-a*a===d&&d>0};
+});
+/* ================= CHƯƠNG VII: PHƯƠNG TRÌNH BẬC NHẤT VÀ HÀM SỐ BẬC NHẤT ================= */
+const Fx=q=>`${X8} = ${qh(q)}`;
+const EQ=(a,b,c,d)=>`${xlin(a,b)} = ${xlin(c,d)}`;
+const kx=k=>`${cfl(k)}${X8}`;
+/* Lời giải ax + b = cx + d */
+/* kx = rhs ⟺ x = q (bỏ bước thừa khi hệ số bằng 1) */
+const stp=(k,rhs,q)=>k===1?Fx(q):`${kx(k)} = ${sg(rhs)} ⟺ ${Fx(q)}`;
+const solveEqH=(a,b,c,d)=>`${EQ(a,b,c,d)} ⟺ ${stp(a-c,d-b,Q(d-b,a-c))}`;
+const yLine=(a,b)=>`${I('y')} = ${xlin(a,b)}`;
+const ptS=(x,y)=>`(${sg(x)}; ${sg(y)})`;
+/* số hạng có dấu: sT(-3,'x') → '− 3x'; sT(2) → '+ 2'; hệ số 1 trước biến được lược bỏ */
+const sT=(c,v='')=>`${c<0?MINUS:'+'} ${Math.abs(c)===1&&v?'':Math.abs(c)}${v}`;
+const pr=n=>n<0?`(${sg(n)})`:String(n);
+const dLetter=n=>`(${I('d')}${sub(n)})`;
+const dN=n=>`${I('d')}${sub(n)}`;
+const fF=I('f');
+
+/* Kịch bản bài toán lập phương trình (dùng chung cho NLC, TLN, TL, ĐS) */
+const WPK=['age','meet','roundtrip','plan','rect','shop','pipes','ratio'];
+function WP(r,kind){
+  kind=kind||r.pick(WPK);
+  const x=I('x');
+  if(kind==='age'){
+    let k,b,t,a;
+    for(let i=0;i<200;i++){k=r.pick([2,3,4]);b=r.int(6,15);t=r.int(2,10);a=k*(b+t)-t;if(a>=28&&a<=56&&a>b+14)break}
+    return{kind,stem:`Năm nay bố ${a} tuổi, con ${b} tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi bố gấp ${k} lần tuổi con?`,
+      unk:`Gọi ${x} (năm) là số năm cần tìm (${x} nguyên dương).`,eq:`${a} + ${x} = ${k}(${b} + ${x})`,
+      wrongs:[`${a} + ${x} = ${k*b} + ${x}`,`${a} ${MINUS} ${x} = ${k}(${b} ${MINUS} ${x})`,`${k}(${a} + ${x}) = ${b} + ${x}`,`${a} ${MINUS} ${x} = ${k}(${b} + ${x})`],
+      ans:t,unit:'năm',q:'số năm cần tìm',concl:`Sau ${t} năm nữa thì tuổi bố gấp ${k} lần tuổi con.`,
+      chk:()=>a+t===k*(b+t)&&t>0&&a-k*b===(k-1)*t,
+      solH:`${a} + ${x} = ${k*b} + ${k}${x} ⟺ ${a-k*b} = ${k-1===1?'':k-1}${x} ⟺ ${x} = ${t}`};
+  }
+  if(kind==='meet'){
+    const v1=r.pick([30,35,40,45,50,55]),v2=r.pick([30,35,40,45,50,60].filter(v=>v!==v1)),t=r.int(1,4),d=(v1+v2)*t;
+    return{kind,stem:`Hai xe ô tô xuất phát cùng lúc từ hai địa điểm A và B cách nhau ${d} km, đi ngược chiều để gặp nhau. Vận tốc xe thứ nhất là ${v1} km/h, vận tốc xe thứ hai là ${v2} km/h. Hỏi sau bao lâu hai xe gặp nhau?`,
+      unk:`Gọi ${x} (giờ) là thời gian từ lúc xuất phát đến lúc hai xe gặp nhau (${x} > 0).`,eq:`${v1}${x} + ${v2}${x} = ${d}`,
+      wrongs:[`${v1}${x} ${MINUS} ${v2}${x} = ${d}`,`${v1} + ${v2} = ${d}${x}`,`${fr(x,v1+v2)} = ${d}`,`${v1}${x} + ${v2} = ${d}`],
+      ans:t,unit:'giờ',q:'thời gian hai xe gặp nhau',concl:`Sau ${t} giờ hai xe gặp nhau.`,
+      chk:()=>(v1+v2)*t===d,solH:`${v1+v2}${x} = ${d} ⟺ ${x} = ${t}`};
+  }
+  if(kind==='roundtrip'){
+    const P=r.pick([[30,20],[40,30],[60,40],[45,30],[50,40],[60,45]]),[v1,v2]=P,g=(a,b)=>b?g(b,a%b):a,L=v1*v2/g(v1,v2),j=r.int(1,2),s=L*j,T=s/v1+s/v2;
+    return{kind,stem:`Một người đi xe máy từ A đến B với vận tốc ${v1} km/h, rồi quay về A với vận tốc ${v2} km/h. Tổng thời gian đi và về (không kể thời gian nghỉ) là ${T} giờ. Tính độ dài quãng đường AB.`,
+      unk:`Gọi ${x} (km) là độ dài quãng đường AB (${x} > 0).`,eq:`${fr(x,v1)} + ${fr(x,v2)} = ${T}`,
+      wrongs:[`${fr(x,v1)} ${MINUS} ${fr(x,v2)} = ${T}`,`${v1}${x} + ${v2}${x} = ${T}`,`${fr(x,v1+v2)} = ${T}`,`${fr(x,v1)} + ${fr(x,v2)} = ${T*2}`],
+      ans:s,unit:'km',q:'độ dài quãng đường AB',concl:`Quãng đường AB dài ${s} km.`,
+      chk:()=>s/v1+s/v2===T,solH:`${fr(x,v1)} + ${fr(x,v2)} = ${T} ⟺ ${v2}${x} + ${v1}${x} = ${T*v1*v2} ⟺ ${v1+v2}${x} = ${T*v1*v2} ⟺ ${x} = ${s}`};
+  }
+  if(kind==='plan'){
+    let p,q,t,d;
+    for(let i=0;i<300;i++){p=r.pick([20,30,40,50,60,80]);q=r.pick([5,10]);t=r.int(2,5);if(((p+q)*t)%q===0){d=(p+q)*t/q;if(d>=8&&d<=60)break}}
+    return{kind,stem:`Một xưởng may được giao may một lô hàng với năng suất dự định ${p} bộ quần áo mỗi ngày. Khi thực hiện, mỗi ngày xưởng may thêm ${q} bộ nên đã hoàn thành sớm hơn dự định ${t} ngày. Hỏi theo dự định, xưởng phải may lô hàng đó trong bao nhiêu ngày?`,
+      unk:`Gọi ${x} (ngày) là thời gian dự định may xong lô hàng (${x} > ${t}).`,eq:`${p}${x} = ${p+q}(${x} ${MINUS} ${t})`,
+      wrongs:[`${p}${x} = ${p+q}(${x} + ${t})`,`${p+q}${x} = ${p}(${x} ${MINUS} ${t})`,`${p}(${x} ${MINUS} ${t}) = ${p+q}${x}`,`${p}${x} = ${p+q}${x} ${MINUS} ${t}`],
+      ans:d,unit:'ngày',q:'thời gian dự định',concl:`Theo dự định, xưởng phải may lô hàng trong ${d} ngày.`,
+      chk:()=>p*d===(p+q)*(d-t),solH:`${p}${x} = ${p+q}${x} ${MINUS} ${(p+q)*t} ⟺ ${q}${x} = ${(p+q)*t} ⟺ ${x} = ${d}`};
+  }
+  if(kind==='rect'){
+    const w=r.int(5,18),dd=r.int(2,9),P=2*(2*w+dd);
+    return{kind,stem:`Một mảnh vườn hình chữ nhật có chiều dài lớn hơn chiều rộng ${dd} m và chu vi bằng ${P} m. Tính chiều rộng của mảnh vườn.`,
+      unk:`Gọi ${x} (m) là chiều rộng của mảnh vườn (${x} > 0).`,eq:`2(${x} + ${x} + ${dd}) = ${P}`,
+      wrongs:[`${x} + ${x} + ${dd} = ${P}`,`${x}(${x} + ${dd}) = ${P}`,`2(${x} + ${dd}) = ${P}`,`2(${x} + ${x} ${MINUS} ${dd}) = ${P}`],
+      ans:w,unit:'m',q:'chiều rộng',concl:`Chiều rộng mảnh vườn là ${w} m (chiều dài ${w+dd} m).`,
+      chk:()=>2*(2*w+dd)===P,solH:`2(2${x} + ${dd}) = ${P} ⟺ 4${x} + ${2*dd} = ${P} ⟺ 4${x} = ${P-2*dd} ⟺ ${x} = ${w}`};
+  }
+  if(kind==='shop'){
+    const u=r.pick([6,8,9,12,15,18,25]),v=r.pick([10,12,15,20,24,30,45]),n=r.int(3,12),T=u*n+v;
+    return{kind,stem:`Bạn Lan mua một số quyển vở loại ${u} nghìn đồng một quyển và một hộp bút giá ${v} nghìn đồng. Tổng số tiền bạn Lan phải trả là ${T} nghìn đồng. Hỏi bạn Lan đã mua bao nhiêu quyển vở?`,
+      unk:`Gọi ${x} là số quyển vở bạn Lan đã mua (${x} nguyên dương).`,eq:`${u}${x} + ${v} = ${T}`,
+      wrongs:[`${u}${x} ${MINUS} ${v} = ${T}`,`${u + v}${x} = ${T}`,`${u}${x} = ${T} + ${v}`,`${u}(${x} + ${v}) = ${T}`],
+      ans:n,unit:'quyển',q:'số quyển vở',concl:`Bạn Lan đã mua ${n} quyển vở.`,
+      chk:()=>u*n+v===T,solH:`${u}${x} = ${T} ${MINUS} ${v} ⟺ ${u}${x} = ${T-v} ⟺ ${x} = ${n}`};
+  }
+  if(kind==='pipes'){
+    const P=r.pick([[12,6,4],[10,15,6],[20,30,12],[12,24,8],[30,60,20],[6,3,2],[15,10,6],[40,60,24]]),[a,b,t]=P;
+    return{kind,stem:`Một bể nước có hai vòi chảy vào. Nếu chảy một mình thì vòi thứ nhất đầy bể sau ${a} giờ, vòi thứ hai đầy bể sau ${b} giờ. Hỏi nếu mở cả hai vòi cùng lúc thì sau bao lâu bể đầy (bể ban đầu không có nước)?`,
+      unk:`Gọi ${x} (giờ) là thời gian hai vòi cùng chảy đầy bể (${x} > 0).`,eq:`${fr(x,a)} + ${fr(x,b)} = 1`,
+      wrongs:[`${fr(x,a)} ${MINUS} ${fr(x,b)} = 1`,`${fr(x,a+b)} = 1`,`${a}${x} + ${b}${x} = 1`,`${fr(x,a)} + ${fr(x,b)} = ${x}`],
+      ans:t,unit:'giờ',q:'thời gian hai vòi cùng chảy đầy bể',concl:`Nếu mở cả hai vòi thì sau ${t} giờ bể đầy.`,
+      chk:()=>Math.abs(t/a+t/b-1)<1e-9,solH:`${fr(x,a)} + ${fr(x,b)} = 1 ⟺ ${b}${x} + ${a}${x} = ${a*b} ⟺ ${a+b}${x} = ${a*b} ⟺ ${x} = ${t}`};
+  }
+  /* ratio: hai số */
+  const k=r.pick([2,3,4,5]),n=r.int(6,40),S=n*(k+1);
+  return{kind:'ratio',stem:`Tổng của hai số bằng ${S}. Biết số thứ nhất gấp ${k} lần số thứ hai. Tìm số thứ hai.`,
+    unk:`Gọi ${x} là số thứ hai (số thứ nhất là ${k}${x}).`,eq:`${x} + ${k}${x} = ${S}`,
+    wrongs:[`${x} + ${fr(x,k)} = ${S}`,`${k}${x} = ${S}`,`${k}${x} ${MINUS} ${x} = ${S}`,`${x} + (${x} + ${k}) = ${S}`],
+    ans:n,unit:'',q:'số thứ hai',concl:`Số thứ hai là ${n} (số thứ nhất là ${k*n}).`,
+    chk:()=>n+k*n===S,solH:`${k+1}${x} = ${S} ⟺ ${x} = ${n}`};
+}
+/* Bản sửa cho 'age' (chuỗi solve đã dựng nhầm): dựng lại bằng solH */
+const wpSolve=w=>w.solH;
+
+/* ----------- Trắc nghiệm 4 lựa chọn ----------- */
+N8('m8-7-isl',7,'NB',r=>{
+  const a=r.int(2,6),b=r.nz(-7,7),c=r.nz(-6,6),want=r.chance(.5);
+  const good=[`${xlin(a,b)} = 0`,`${xlin(-a,b)} = 0`,`${xlin(1,c)} = 0`];
+  const bad=[`0${X8} ${sT(b)} = 0`,`${X8}${sup(2)} ${sT(c)} = 0`,`${fr(1,X8)} ${sT(c)} = 0`,`${a}${X8} ${sT(Math.abs(b),Y8)} = 0`];
+  const ok=r.pick(want?good:bad);
+  return mkTxt(r,{stem:`Phương trình nào sau đây ${want?'là':'<b>không</b> là'} phương trình bậc nhất một ẩn?`,correct:ok,wrongs:r.shuffle(want?bad:good),
+    sol:`Phương trình bậc nhất một ẩn ${I('x')} có dạng ${I('a')}${I('x')} + ${I('b')} = 0 với ${I('a')} ≠ 0. ${ok} ${want?'có dạng đó':'không có dạng đó'} (${want?'hệ số của x khác 0':'hệ số của x bằng 0, hoặc có ẩn ở mẫu, ẩn có số mũ 2 hoặc có hai ẩn'}).`,chk:()=>true});
+});
+N8('m8-7-root',7,'NB',r=>{
+  const t=r.nz(-6,6),a=r.int(2,5),b=-a*t,sgn=r.pick([1,-1]);
+  const E=(aa,bb)=>`${xlin(aa,bb)} = 0`,ok=E(sgn*a,sgn*b);
+  return mkTxt(r,{stem:`Phương trình nào sau đây nhận ${I('x')} = ${sg(t)} làm nghiệm?`,correct:ok,wrongs:[E(sgn*a,sgn*(-b)),E(sgn*a,sgn*b+1),E(sgn*a,sgn*b-a),E(sgn*(a+1),sgn*b),E(a,b*2*sgn)],
+    sol:`Thay ${I('x')} = ${sg(t)} vào phương trình ${ok}: ${sg(sgn*a)}·${pr(t)} ${sgn*b<0?MINUS:'+'} ${Math.abs(sgn*b)} = 0 nên ${I('x')} = ${sg(t)} là nghiệm; các phương trình còn lại không thỏa mãn.`,
+    chk:()=>sgn*a*t+sgn*b===0});
+});
+N8('m8-7-solve1',7,'NB',r=>{
+  const a=r.nz(-6,6),b=r.nz(-9,9);if(Math.abs(a)===1)return T.nlc['m8-7-solve1'].gen(r);
+  const q=Q(-b,a);
+  return mkTxt(r,{stem:`Nghiệm của phương trình ${xlin(a,b)} = 0 là`,correct:Fx(q),wrongs:[Fx(Q(b,a)),Fx(Q(-a,b)),Fx(Q(a,b)),Fx(Q(-b+1,a)),Fx(Q(-b,a+1)),Fx(Q(-b-1,a)),Fx(Q(-b+a,a))],
+    sol:`${xlin(a,b)} = 0 ⟺ ${kx(a)} = ${sg(-b)} ⟺ ${Fx(q)}.`,chk:()=>a*qv(q)+b===0&&q[0]!==0});
+});
+N8('m8-7-solve2',7,'TH',r=>{
+  const t=r.nz(-7,7),a=r.nz(-6,6),c=r.nz(-6,6);if(a===c)return T.nlc['m8-7-solve2'].gen(r);
+  const b=r.nz(-9,9),d=(a-c)*t+b;
+  const wrongs=[Fx(Q(b-d,a-c)),Fx(Q(d+b,a-c)),Fx(Q(d-b,a+c)),Fx(Q(d-b,c-a)),Fx(Q(d-b+1,a-c))];
+  return mkTxt(r,{stem:`Nghiệm của phương trình ${EQ(a,b,c,d)} là`,correct:Fx(Q(t)),wrongs,
+    sol:`${solveEqH(a,b,c,d)}.`,chk:()=>a*t+b===c*t+d&&t!==0});
+});
+N8('m8-7-solve3',7,'TH',r=>{
+  const t=r.nz(-6,6),a=r.pick([2,3,4,-2,-3]),b=r.nz(-5,5),c=r.nz(-4,4);if(a===c)return T.nlc['m8-7-solve3'].gen(r);
+  const d=a*(t+b)-c*t;
+  const lhs=`${sg(a)}(${xlin(1,b)})`,rhs=xlin(c,d);
+  return mkTxt(r,{stem:`Nghiệm của phương trình ${lhs} = ${rhs} là`,correct:Fx(Q(t)),wrongs:[Fx(Q(t+1)),Fx(Q(-t)),Fx(Q(d-a*b,a+c)),Fx(Q(d+a*b,a-c)),Fx(Q(t-2))],
+    sol:`${lhs} = ${rhs} ⟺ ${kx(a)} ${a*b<0?MINUS:'+'} ${Math.abs(a*b)} = ${rhs} ⟺ ${stp(a-c,d-a*b,Q(t))}.`,chk:()=>a*(t+b)===c*t+d&&t!==0});
+});
+N8('m8-7-solve4',7,'TH',r=>{
+  const p=r.pick([2,3,4,5]),q=r.pick([2,3,4,5,6].filter(v=>v!==p)),u=r.nz(-5,5),v=r.nz(-5,5);
+  /* (x+u)/p = (x+v)/q  ⟹ q(x+u)=p(x+v) ⟹ (q−p)x = pv − qu */
+  const num=p*v-q*u,den=q-p,ans=Q(num,den);if(ans[0]===0)return T.nlc['m8-7-solve4'].gen(r);
+  return mkTxt(r,{stem:`Nghiệm của phương trình ${fr(xlin(1,u),p)} = ${fr(xlin(1,v),q)} là`,correct:Fx(ans),wrongs:[Fx(Q(-num,den)),Fx(Q(p*u-q*v,den)),Fx(Q(num,-den)),Fx(Q(num+1,den)),Fx(Q(p*v+q*u,den))],
+    sol:`Nhân hai vế với ${p*q} để khử mẫu: ${q}(${xlin(1,u)}) = ${p}(${xlin(1,v)}) ⟺ ${stp(q-p,num,ans)}.`,
+    chk:()=>{const x=qv(ans);return closeN((x+u)/p,(x+v)/q)}});
+});
+N8('m8-7-nsol',7,'TH',r=>{
+  const a=r.nz(-5,5),b=r.nz(-6,6),mode=r.int(0,2);let eq,ok,why;
+  if(mode===0){const c=b+r.pick([-3,-2,-1,1,2,3]);eq=`${xlin(a,b)} = ${xlin(a,c)}`;ok='Vô nghiệm';why=`Hai vế có cùng hệ số của ${X8} nhưng hằng số khác nhau; chuyển vế được 0 = ${sg(c-b)}, vô lí. Phương trình vô nghiệm.`}
+  else if(mode===1){const k=r.nz(-4,4);eq=`${sg(a)}(${xlin(1,k)}) = ${xlin(a,a*k)}`;ok='Vô số nghiệm';why=`${sg(a)}(${xlin(1,k)}) = ${xlin(a,a*k)} nên hai vế bằng nhau với mọi giá trị của ${X8}. Phương trình có vô số nghiệm.`}
+  else{const c=a+r.pick([-3,-2,-1,1,2,3]);eq=`${xlin(a,b)} = ${xlin(c,b+r.pick([-2,0,2]))}`;ok='Có đúng một nghiệm';why=`Hệ số của ${X8} ở hai vế khác nhau nên chuyển vế được ${I('a')}${X8} = ${I('b')} với ${I('a')} ≠ 0, có đúng một nghiệm.`}
+  return mkTxt(r,{stem:`Phương trình ${eq} có bao nhiêu nghiệm?`,correct:ok,wrongs:['Vô nghiệm','Vô số nghiệm','Có đúng một nghiệm','Có đúng hai nghiệm'].filter(z=>z!==ok),
+    sol:why,chk:()=>true});
+});
+N8('m8-7-param',7,'TH',r=>{
+  const m=r.nz(-5,5),p=r.nz(-4,4),q=r.nz(-6,6),t=r.nz(-4,4),rr=(m+p)*t-q-t;if(rr===0)return T.nlc['m8-7-param'].gen(r);
+  /* (m + p)x − q = x + rr nhận x = t làm nghiệm */
+  const E=`(${I('m')} ${sT(p)})${X8} ${sT(-q)} = ${X8} ${sT(rr)}`;
+  return mkTxt(r,{stem:`Tìm giá trị của ${I('m')} để phương trình ${E} nhận ${X8} = ${sg(t)} làm nghiệm.`,correct:`${I('m')} = ${sg(m)}`,wrongs:[`${I('m')} = ${sg(-m)}`,`${I('m')} = ${sg(m+1)}`,`${I('m')} = ${sg(m-1)}`,`${I('m')} = ${sg(m+p)}`,`${I('m')} = ${sg(m-p)}`],
+    sol:`Thay ${X8} = ${sg(t)} vào phương trình: (${I('m')} ${sT(p)})·${pr(t)} ${sT(-q)} = ${sg(t)} ${sT(rr)}, suy ra (${I('m')} ${sT(p)})·${pr(t)} = ${sg((m+p)*t)}, do đó ${I('m')} ${sT(p)} = ${sg(m+p)} và ${I('m')} = ${sg(m)}.`,chk:()=>(m+p)*t-q===t+rr});
+});
+N8('m8-7-wp',7,'TH',r=>{
+  const w=WP(r);
+  return mkTxt(r,{stem:`${w.stem} Nếu gọi ${I('x')} là ${w.q}, phương trình nào sau đây biểu thị đúng bài toán?`,correct:w.eq,wrongs:w.wrongs,
+    sol:`${w.unk} Từ đề bài ta lập được phương trình ${w.eq}.`,chk:w.chk});
+});
+N8('m8-7-wpans',7,'TH',r=>{
+  const w=WP(r);
+  return mkNum(r,{stem:w.stem.replace(/\?$/,'?').replace(/\.$/,'.'),correct:w.ans,cands:[w.ans+1,w.ans-1,w.ans*2,w.ans+2,Math.round(w.ans/2)],f:z=>`${z}${w.unit?' '+w.unit:''}`,
+    sol:`${w.unk} Phương trình: ${w.eq}. Giải: ${wpSolve(w)}. ${w.concl}`,chk:w.chk});
+});
+N8('m8-7-fnrule',7,'NB',r=>{
+  const n=r.int(3,4),xs=r.shuffle([-3,-2,-1,0,1,2,3,4]).slice(0,n),ys=xs.map(()=>r.int(-6,9));
+  const pairs=(X,Y)=>X.map((x,i)=>`(${sg(x)}; ${sg(Y[i])})`).join(', ');
+  const good=pairs(xs,ys),bad1=pairs([xs[0],...xs],[ys[0],ys[0]+r.pick([1,2,3]),...ys.slice(1)]),
+        mk=()=>{const X2=r.shuffle([-3,-2,-1,0,1,2,3,4]).slice(0,n),Y2=X2.map(()=>r.int(-6,9));const k=r.int(0,n-2);X2.splice(k+1,0,X2[k]);Y2.splice(k+1,0,Y2[k]+r.pick([1,2,3,-1,-2]));return pairs(X2,Y2)};
+  return mkTxt(r,{stem:`Trong các bảng giá trị (cặp ${I('x')}; ${I('y')}) sau, bảng nào cho biết ${I('y')} là hàm số của ${I('x')}?`,correct:`{${good}}`,wrongs:[`{${mk()}}`,`{${mk()}}`,`{${bad1}}`],
+    sol:`${I('y')} là hàm số của ${I('x')} khi mỗi giá trị của ${I('x')} có đúng một giá trị tương ứng của ${I('y')}. Chỉ bảng {${good}} thỏa mãn; các bảng còn lại có cùng một giá trị ${I('x')} ứng với hai giá trị ${I('y')} khác nhau.`,chk:()=>new Set(xs).size===xs.length});
+});
+N8('m8-7-fnval',7,'NB',r=>{
+  const a=r.nz(-5,5),b=r.nz(-7,7),t=r.nz(-4,4),v=a*t+b;
+  return mkNum(r,{stem:`Cho hàm số ${I('y')} = ${fF}(${X8}) = ${xlin(a,b)}. Giá trị ${fF}(${sg(t)}) bằng`,correct:v,ok:()=>true,cands:[a*t-b,-a*t+b,a+t+b,a*b+t,v+a],
+    sol:`${fF}(${sg(t)}) = ${sg(a)}·${pr(t)} ${b<0?MINUS:'+'} ${Math.abs(b)} = ${sg(v)}.`,chk:()=>a*t+b===v});
+});
+N8('m8-7-isfn',7,'NB',r=>{
+  const a=r.nz(-5,5),b=r.nz(-6,6),c=r.int(2,5),want=r.chance(.5);
+  const good=[yLine(a,b),yLine(a,0),`${I('y')} = ${sg(b)} ${a<0?MINUS:'+'} ${Math.abs(a)===1?'':Math.abs(a)}${X8}`],
+        bad=[`${I('y')} = ${sg(b)}`,`${I('y')} = ${X8}${sup(2)} ${b<0?MINUS:'+'} ${Math.abs(b)}`,`${I('y')} = ${fr(c,X8)} ${b<0?MINUS:'+'} ${Math.abs(b)}`,`${I('y')} = 0${X8} ${b<0?MINUS:'+'} ${Math.abs(b)}`];
+  const ok=r.pick(want?good:bad);
+  return mkTxt(r,{stem:`Hàm số nào sau đây ${want?'là':'<b>không</b> là'} hàm số bậc nhất?`,correct:ok,wrongs:r.shuffle(want?bad:good),
+    sol:`Hàm số bậc nhất có dạng ${I('y')} = ${I('a')}${X8} + ${I('b')} với ${I('a')} ≠ 0. ${ok} ${want?'có dạng đó':'không có dạng đó (hệ số của x bằng 0, hoặc x có số mũ khác 1 hoặc ở mẫu)'}.`,chk:()=>true});
+});
+N8('m8-7-coefs',7,'NB',r=>{
+  const a=r.nz(-6,6),b=r.nz(-8,8);if(Math.abs(a)===1)return T.nlc['m8-7-coefs'].gen(r);
+  const form=r.int(0,1),f=form===0?`${I('y')} = ${xlin(a,b)}`:`${I('y')} = ${sg(b)} ${a<0?MINUS:'+'} ${Math.abs(a)}${X8}`,ab=(p,q)=>`${I('a')} = ${sg(p)}; ${I('b')} = ${sg(q)}`;
+  return mkTxt(r,{stem:`Hàm số ${f} có các hệ số ${I('a')}, ${I('b')} (theo dạng ${I('y')} = ${I('a')}${X8} + ${I('b')}) là`,correct:ab(a,b),wrongs:[ab(b,a),ab(-a,b),ab(a,-b),ab(-a,-b)],
+    sol:`Viết ${f} về dạng ${I('y')} = ${I('a')}${X8} + ${I('b')} ta được ${I('a')} = ${sg(a)}, ${I('b')} = ${sg(b)}.`,chk:()=>true});
+});
+N8('m8-7-incdec',7,'NB',r=>{
+  const a=r.nz(-6,6),b=r.nz(-6,6);if(a===b)return T.nlc['m8-7-incdec'].gen(r);
+  const inc=a>0,ok=inc?'Hàm số đồng biến trên ℝ':'Hàm số nghịch biến trên ℝ',op=inc?'Hàm số nghịch biến trên ℝ':'Hàm số đồng biến trên ℝ';
+  return mkTxt(r,{stem:`Cho hàm số ${yLine(a,b)}. Khẳng định nào sau đây đúng?`,correct:ok,wrongs:[op,`Hàm số có hệ số góc bằng ${sg(b)}`,`Đồ thị hàm số đi qua gốc tọa độ`,`Hàm số luôn nhận giá trị dương`],
+    sol:`Hệ số ${I('a')} = ${sg(a)} ${inc?'&gt; 0':'&lt; 0'} nên hàm số ${inc?'đồng biến':'nghịch biến'} trên ℝ. Hệ số góc là ${I('a')} = ${sg(a)} (không phải ${sg(b)}); đồ thị cắt trục tung tại (0; ${sg(b)}) nên không đi qua gốc tọa độ.`,chk:()=>b!==0});
+});
+N8('m8-7-cross',7,'NB',r=>{
+  const mode=r.int(0,2),a1=r.nz(-4,4),b1=r.nz(-5,5);let a2,b2,ok,why;const y2=(a,b)=>mode===1?`${I('y')} = ${sg(b)} ${sT(a,X8)}`:yLine(a,b);
+  if(mode===0){a2=a1;b2=b1+r.pick([-3,-2,-1,1,2,3]);ok='Song song với nhau';why=`Hai đường thẳng có cùng hệ số góc ${sg(a1)} và tung độ gốc khác nhau (${sg(b1)} ≠ ${sg(b2)}).`}
+  else if(mode===1){a2=a1;b2=b1;ok='Trùng nhau';why=`Hai đường thẳng có cùng hệ số góc và cùng tung độ gốc.`}
+  else{do{a2=r.nz(-4,4)}while(a2===a1||a1*a2===-1);b2=r.nz(-5,5);ok='Cắt nhau tại một điểm';why=`Hai đường thẳng có hệ số góc khác nhau (${sg(a1)} ≠ ${sg(a2)}).`}
+  if(mode===2&&b1===0&&b2===0)return T.nlc['m8-7-cross'].gen(r);
+  return mkTxt(r,{stem:`Cho hai đường thẳng ${dLetter(1)}: ${yLine(a1,b1)} và ${dLetter(2)}: ${y2(a2,b2)}. Vị trí tương đối của hai đường thẳng này là`,correct:ok,wrongs:['Song song với nhau','Trùng nhau','Cắt nhau tại một điểm','Cắt nhau tại gốc tọa độ'].filter(z=>z!==ok),
+    sol:`${why} Vậy hai đường thẳng ${ok.toLowerCase()}.`,chk:()=>true});
+});
+N8('m8-7-slope',7,'NB',r=>{
+  const a=r.nz(-6,6),b=r.nz(-8,8),f=r.int(0,1);
+  const line=f===0?`${I('y')} = ${xlin(a,b)}`:`${I('y')} = ${sg(b)} ${a<0?MINUS:'+'} ${Math.abs(a)===1?'':Math.abs(a)}${X8}`;
+  return mkNum(r,{stem:`Hệ số góc của đường thẳng ${line} là`,correct:a,ok:()=>true,cands:[b,-a,-b,a+b,a*b],
+    sol:`Đường thẳng ${I('y')} = ${I('a')}${X8} + ${I('b')} có hệ số góc là ${I('a')}. Ở đây ${I('a')} = ${sg(a)}.`,chk:()=>true});
+});
+N8('m8-7-point',7,'TH',r=>{
+  const a=r.nz(-4,4),b=r.nz(-6,6),x0=r.nz(-4,4),y0=a*x0+b;
+  const ok=ptS(x0,y0),wr=[[x0,y0+1],[x0,-y0],[-x0,y0],[y0,x0],[x0,y0-a],[x0+1,y0],[0,y0]].filter(([u,v])=>a*u+b!==v).map(([u,v])=>ptS(u,v));
+  return mkTxt(r,{stem:`Điểm nào sau đây thuộc đồ thị hàm số ${yLine(a,b)}?`,correct:ok,wrongs:wr,
+    sol:`Thay ${I('x')} = ${sg(x0)} vào hàm số: ${I('y')} = ${sg(a)}·${pr(x0)} ${b<0?MINUS:'+'} ${Math.abs(b)} = ${sg(y0)}. Vậy điểm ${ok} thuộc đồ thị.`,chk:()=>a*x0+b===y0&&wr.every(w=>w!==ok)});
+});
+N8('m8-7-par',7,'TH',r=>{
+  const p=r.nz(-4,4),m=r.nz(-5,5),k=m+p,q=r.nz(-5,5),rr=q+r.pick([-3,-2,-1,1,2,3]);
+  return mkTxt(r,{stem:`Tìm ${I('m')} để đường thẳng ${I('y')} = (${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)})${X8} ${q<0?MINUS:'+'} ${Math.abs(q)} song song với đường thẳng ${yLine(k,rr)}.`,correct:`${I('m')} = ${sg(m)}`,wrongs:[`${I('m')} = ${sg(k+p)}`,`${I('m')} = ${sg(-m)}`,`${I('m')} = ${sg(k)}`,`${I('m')} = ${sg(m+1)}`,`${I('m')} = ${sg(m-1)}`,`${I('m')} = ${sg(m+2)}`],
+    sol:`Hai đường thẳng song song khi có cùng hệ số góc và tung độ gốc khác nhau: ${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)} = ${sg(k)} ⟹ ${I('m')} = ${sg(m)}; khi đó tung độ gốc ${sg(q)} ≠ ${sg(rr)} nên thỏa mãn.`,chk:()=>q!==rr});
+});
+N8('m8-7-axis',7,'TH',r=>{
+  const a=r.nz(-4,4),t=r.nz(-5,5),b=-a*t,ox=r.chance(.5);
+  const ok=ox?ptS(t,0):ptS(0,b),wr=ox?[ptS(-t,0),ptS(0,t),ptS(0,b),ptS(b,0),ptS(-b,0),ptS(0,-t)]:[ptS(b,0),ptS(0,t),ptS(0,-b),ptS(t,0),ptS(-b,0),ptS(0,t+1)];
+  return mkTxt(r,{stem:`Đồ thị hàm số ${yLine(a,b)} cắt trục ${ox?'hoành':'tung'} tại điểm`,correct:ok,wrongs:wr,
+    sol:ox?`Cho ${I('y')} = 0: ${xlin(a,b)} = 0 ⟹ ${I('x')} = ${sg(t)}. Giao điểm với trục hoành là ${ok}.`:`Cho ${I('x')} = 0: ${I('y')} = ${sg(b)}. Giao điểm với trục tung là ${ok}.`,chk:()=>a*t+b===0});
+});
+N8('m8-7-line2pts',7,'TH',r=>{
+  const a=r.nz(-4,4),b=r.nz(-6,6),x1=r.nz(-3,3);let x2=r.nz(-3,3);if(x2===x1)x2=x1+1;if(x2===0)x2=4;
+  const y1=a*x1+b,y2=a*x2+b,ok=yLine(a,b);
+  return mkTxt(r,{stem:`Đường thẳng đi qua hai điểm ${I('A')}${ptS(x1,y1)} và ${I('B')}${ptS(x2,y2)} có phương trình là`,correct:ok,wrongs:[yLine(-a,b),yLine(a,-b),yLine(b,a),yLine(a,b+a)],
+    sol:`Gọi đường thẳng cần tìm là ${I('y')} = ${I('a')}${X8} + ${I('b')}. Hệ số góc ${I('a')} = ${fr(`${sg(y2)} ${MINUS} ${y1<0?`(${sg(y1)})`:y1}`,`${sg(x2)} ${MINUS} ${x1<0?`(${sg(x1)})`:x1}`)} = ${sg(a)}. Thay tọa độ ${I('A')} vào: ${sg(y1)} = ${sg(a)}·${x1<0?`(${sg(x1)})`:x1} + ${I('b')} ⟹ ${I('b')} = ${sg(b)}. Vậy ${ok}.`,chk:()=>(y2-y1)===a*(x2-x1)});
+});
+N8('m8-7-cut',7,'TH',r=>{
+  const a1=r.nz(-4,4),a2=r.nz(-4,4);if(a1===a2)return T.nlc['m8-7-cut'].gen(r);
+  const x0=r.nz(-5,5),b1=r.nz(-6,6),b2=b1+(a1-a2)*x0;
+  return mkNum(r,{stem:`Hoành độ giao điểm của hai đường thẳng ${yLine(a1,b1)} và ${yLine(a2,b2)} là`,correct:x0,ok:()=>true,cands:[-x0,x0+1,x0-1,b2-b1,2*x0],
+    sol:`Hoành độ giao điểm là nghiệm của phương trình ${EQ(a1,b1,a2,b2)}. ${solveEqH(a1,b1,a2,b2)}. Vậy hoành độ giao điểm là ${sg(x0)}.`,chk:()=>a1*x0+b1===a2*x0+b2});
+});
+N8('m8-7-area',7,'TH',r=>{
+  const a=r.pick([1,2,3,4,-1,-2,-3,-4]),u=r.pick([1,2,3]),b=r.pick([1,-1])*2*Math.abs(a)*u,S=Math.abs(b)*Math.abs(b/a)/2;
+  return mkNum(r,{stem:`Đồ thị hàm số ${yLine(a,b)} cắt hai trục tọa độ ${I('Ox')}, ${I('Oy')} lần lượt tại ${I('A')} và ${I('B')}. Diện tích tam giác ${I('OAB')} (đơn vị diện tích) bằng`,correct:S,ok:c=>c>0&&Number.isInteger(c),cands:[S*2,S/2,Math.abs(b),Math.abs(b/a),S+1,S-1],
+    sol:`Cho ${I('y')} = 0: ${I('x')} = ${sg(-b/a)} nên ${I('A')}${ptS(-b/a,0)}; cho ${I('x')} = 0: ${I('y')} = ${sg(b)} nên ${I('B')}${ptS(0,b)}. Tam giác ${I('OAB')} vuông tại ${I('O')} có ${I('OA')} = ${Math.abs(b/a)}, ${I('OB')} = ${Math.abs(b)} nên diện tích bằng ½·${Math.abs(b/a)}·${Math.abs(b)} = ${fmt(S)}.`,chk:()=>closeN(S,Math.abs(b)*Math.abs(b/a)/2)&&Number.isInteger(b/a)});
+});
+N8('m8-7-mono',7,'TH',r=>{
+  const p=r.nz(-5,5),c=r.nz(-5,5),inc=r.chance(.5);
+  const sym=inc?'&gt;':'&lt;',ok=`${I('m')} ${sym} ${sg(p)}`,wr=[`${I('m')} ${inc?'&lt;':'&gt;'} ${sg(p)}`,`${I('m')} ${sym} ${sg(-p)}`,`${I('m')} ${inc?'≥':'≤'} ${sg(p)}`,`${I('m')} ${inc?'&lt;':'&gt;'} ${sg(-p)}`];
+  return mkTxt(r,{stem:`Hàm số ${I('y')} = (${I('m')} ${p<0?'+':MINUS} ${Math.abs(p)})${X8} ${c<0?MINUS:'+'} ${Math.abs(c)} ${inc?'đồng biến':'nghịch biến'} trên ℝ khi`,correct:ok,wrongs:wr,
+    sol:`Hàm số ${inc?'đồng biến':'nghịch biến'} khi hệ số của ${I('x')} ${inc?'dương':'âm'}: ${I('m')} ${p<0?'+':MINUS} ${Math.abs(p)} ${sym} 0 ⟺ ${ok}.`,chk:()=>p!==0});
+});
+N8('m8-7-par2',7,'TH',r=>{
+  const p=r.nz(-3,3),m=r.nz(-4,4),n=r.nz(-5,5),k=m+p,rr=n+r.pick([-2,-1,1,2]),xa=r.nz(-3,3),ya=k*xa+n;
+  const ans=m+n;
+  return mkNum(r,{stem:`Biết đường thẳng ${I('y')} = (${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)})${X8} + ${I('n')} song song với đường thẳng ${yLine(k,rr)} và đi qua điểm ${I('A')}${ptS(xa,ya)}. Giá trị của ${I('m')} + ${I('n')} bằng`,correct:ans,ok:()=>true,cands:[m,n,m-n,ans+1,ans-1,-ans],
+    sol:`Song song: ${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)} = ${sg(k)} ⟹ ${I('m')} = ${sg(m)}. Đi qua ${I('A')}: ${sg(ya)} = ${sg(k)}·${xa<0?`(${sg(xa)})`:xa} + ${I('n')} ⟹ ${I('n')} = ${sg(n)}. Vậy ${I('m')} + ${I('n')} = ${sg(ans)}.`,chk:()=>k*xa+n===ya&&n!==rr});
+});
+
+/* ----------- Đúng/sai chương VII ----------- */
+DS8('ds8-7-eq',7,'TH',r=>{
+  const t=r.nz(-6,6),a=r.nz(-5,5),c=r.nz(-5,5);if(a===c)return T.ds['ds8-7-eq'].gen(r);
+  const b=r.nz(-7,7),d=(a-c)*t+b;if(b===d)return T.ds['ds8-7-eq'].gen(r);
+  const items=[
+    {t:`${X8} = ${sg(t)} là nghiệm của phương trình.`,f:`${X8} = ${sg(t+1)} là nghiệm của phương trình.`,why:`${solveEqH(a,b,c,d)}; nghiệm là ${sg(t)}.`},
+    {t:`Phương trình đã cho tương đương với phương trình ${kx(a-c)} = ${sg(d-b)}.`,f:`Phương trình đã cho tương đương với phương trình ${kx(a-c)} = ${sg(b-d)}.`,why:`Chuyển các số hạng chứa ${X8} sang một vế, số hạng tự do sang vế kia: ${kx(a-c)} = ${sg(d-b)}.`},
+    {t:`Phương trình đã cho có đúng một nghiệm.`,f:`Phương trình đã cho vô nghiệm.`,why:`Sau khi chuyển vế, hệ số của ${X8} là ${sg(a-c)} ≠ 0 nên phương trình có đúng một nghiệm.`},
+    {t:`Nếu thay ${xlin(a,0)} ở vế trái bằng ${xlin(c,0)} (giữ nguyên các số hạng khác) thì phương trình mới vô nghiệm.`,f:`Nếu thay ${xlin(a,0)} ở vế trái bằng ${xlin(c,0)} (giữ nguyên các số hạng khác) thì phương trình mới có vô số nghiệm.`,why:`Phương trình mới là ${EQ(c,b,c,d)}, rút gọn được ${sg(b)} = ${sg(d)}, vô lí vì ${sg(b)} ≠ ${sg(d)}.`}
+  ];
+  return mkDS(r,{stem:`Cho phương trình ${EQ(a,b,c,d)}. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>a*t+b===c*t+d&&(d-b)===(a-c)*t});
+});
+DS8('ds8-7-fn',7,'TH',r=>{
+  const a=r.nz(-5,5),b=r.nz(-6,6);if(a===b)return T.ds['ds8-7-fn'].gen(r);
+  const x1=r.nz(-3,3),y1=a*x1+b,inc=a>0;
+  const items=[
+    {t:`Hệ số góc của đường thẳng ${yLine(a,b)} là ${sg(a)}.`,f:`Hệ số góc của đường thẳng ${yLine(a,b)} là ${sg(b)}.`,why:`Hệ số góc là hệ số ${I('a')} của ${I('x')}, tức ${sg(a)}.`},
+    {t:`Hàm số ${inc?'đồng biến':'nghịch biến'} trên ℝ.`,f:`Hàm số ${inc?'nghịch biến':'đồng biến'} trên ℝ.`,why:`${I('a')} = ${sg(a)} ${inc?'&gt; 0':'&lt; 0'} nên hàm số ${inc?'đồng biến':'nghịch biến'}.`},
+    {t:`Đồ thị hàm số cắt trục tung tại điểm ${ptS(0,b)}.`,f:`Đồ thị hàm số cắt trục tung tại điểm ${ptS(b,0)}.`,why:`Cho ${I('x')} = 0 được ${I('y')} = ${sg(b)}.`},
+    {t:`Điểm ${I('M')}${ptS(x1,y1)} thuộc đồ thị hàm số.`,f:`Điểm ${I('M')}${ptS(x1,y1+1)} thuộc đồ thị hàm số.`,why:`Thay ${I('x')} = ${sg(x1)}: ${I('y')} = ${sg(a)}·${x1<0?`(${sg(x1)})`:x1} ${b<0?MINUS:'+'} ${Math.abs(b)} = ${sg(y1)}.`}
+  ];
+  return mkDS(r,{stem:`Cho hàm số ${I('y')} = ${fF}(${X8}) = ${xlin(a,b)}. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>b!==0&&a*x1+b===y1});
+});
+DS8('ds8-7-lines',7,'VD',r=>{
+  const p=r.nz(-3,3),m1=r.nz(-3,3),a1=r.nz(-4,4),x0=r.nz(-4,4),k1=m1+p;if(a1===k1)return T.ds['ds8-7-lines'].gen(r);
+  const b1=r.nz(-5,5),q=b1+(a1-k1)*x0;if(q===b1||q===0)return T.ds['ds8-7-lines'].gen(r);
+  /* d1: y = a1 x + b1;  d2: y = (m + p) x + q */
+  const par=a1-p,items=[
+    {t:`Hai đường thẳng ${dN(1)} và ${dN(2)} song song với nhau khi ${I('m')} = ${sg(par)}.`,f:`Hai đường thẳng ${dN(1)} và ${dN(2)} song song với nhau khi ${I('m')} = ${sg(a1+p)}.`,why:`Song song khi ${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)} = ${sg(a1)}, tức ${I('m')} = ${sg(par)} (và ${sg(q)} ≠ ${sg(b1)}).`},
+    {t:`Khi ${I('m')} = ${sg(m1)}, hoành độ giao điểm của ${dN(1)} và ${dN(2)} bằng ${sg(x0)}.`,f:`Khi ${I('m')} = ${sg(m1)}, hoành độ giao điểm của ${dN(1)} và ${dN(2)} bằng ${sg(-x0)}.`,why:`Với ${I('m')} = ${sg(m1)}: ${dN(2)}: ${yLine(k1,q)}. Giải ${EQ(a1,b1,k1,q)} ta được ${I('x')} = ${sg(x0)}.`},
+    {t:`${dN(2)} luôn cắt trục tung tại điểm ${ptS(0,q)}.`,f:`${dN(2)} luôn cắt trục tung tại điểm ${ptS(0,b1)}.`,why:`Cho ${I('x')} = 0 được ${I('y')} = ${sg(q)} với mọi ${I('m')}.`},
+    {t:`Với ${I('m')} = ${sg(par)}, hai đường thẳng ${dN(1)} và ${dN(2)} không có điểm chung.`,f:`Với ${I('m')} = ${sg(par)}, hai đường thẳng ${dN(1)} và ${dN(2)} cắt nhau tại một điểm.`,why:`Khi ${I('m')} = ${sg(par)} hai đường thẳng có cùng hệ số góc nhưng tung độ gốc khác nhau (${sg(b1)} ≠ ${sg(q)}) nên song song.`}
+  ];
+  return mkDS(r,{stem:`Cho hai đường thẳng ${dN(1)}: ${yLine(a1,b1)} và ${dN(2)}: ${I('y')} = (${I('m')} ${p<0?MINUS:'+'} ${Math.abs(p)})${X8} ${q<0?MINUS:'+'} ${Math.abs(q)} (${I('m')} là tham số). Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>closeN(((a1-k1)*x0),q-b1)&&par+p===a1&&a1+p!==par});
+});
+DS8('ds8-7-word',7,'VD',r=>{
+  const w=WP(r,r.pick(WPK.filter(k=>k!=='ratio')));const bad=w.wrongs[0],wrongAns=w.ans+(w.ans>3?-1:1)*r.pick([1,2]);
+  const items=[
+    {t:`${w.unk.replace(/\.$/,'')}.`,f:`Ẩn ${I('x')} có thể nhận giá trị âm.`,why:`${w.unk}`},
+    {t:`Phương trình biểu thị bài toán là ${w.eq}.`,f:`Phương trình biểu thị bài toán là ${bad}.`,why:`Từ đề bài lập được phương trình ${w.eq}.`},
+    {t:`${X8} = ${w.ans} là nghiệm của phương trình lập được.`,f:`${X8} = ${wrongAns} là nghiệm của phương trình lập được.`,why:`Giải: ${wpSolve(w)}.`},
+    {t:`${w.concl}`,f:`${w.concl.replace(String(w.ans),String(wrongAns))}`,why:`Nghiệm ${X8} = ${w.ans} thỏa mãn điều kiện của ẩn nên ${w.concl.charAt(0).toLowerCase()+w.concl.slice(1)}`}
+  ];
+  if(items[3].t===items[3].f)return T.ds['ds8-7-word'].gen(r);
+  return mkDS(r,{stem:`Xét bài toán: “${w.stem}” Xét tính đúng sai của các khẳng định sau:`,items,chk:w.chk});
+});
+
+/* ----------- Trả lời ngắn chương VII ----------- */
+TLN8('t8-7-sol',7,'NB',r=>{
+  const t=r.nz(-8,8),a=r.pick([2,3,4,5,-2,-3]),b=r.nz(-6,6),c=r.nz(-4,4);if(a===c)return T.tln['t8-7-sol'].gen(r);
+  const d=a*(t+b)-c*t;
+  return{kind:'tln',stem:`Giải phương trình ${sg(a)}(${xlin(1,b)}) = ${xlin(c,d)}. Nghiệm của phương trình là ${I('x')} = ?`,ans:t,unit:'',
+    sol:`${sg(a)}(${xlin(1,b)}) = ${xlin(c,d)} ⟺ ${kx(a)} ${a*b<0?MINUS:'+'} ${Math.abs(a*b)} = ${xlin(c,d)} ⟺ ${stp(a-c,d-a*b,Q(t))}.`,chk:()=>a*(t+b)===c*t+d};
+});
+TLN8('t8-7-frac',7,'TH',r=>{
+  const p=r.pick([2,3,4,6]),q=r.pick([3,4,5,6].filter(v=>v!==p)),t=r.nz(-6,6),u=r.nz(-4,4),v=r.nz(-4,4);
+  /* (x+u)/p − (x+v)/q = s, đáp số x = t */
+  const sp=(t+u)*q-(t+v)*p,s=Q(sp,p*q);
+  return{kind:'tln',stem:`Giải phương trình ${fr(xlin(1,u),p)} ${MINUS} ${fr(xlin(1,v),q)} = ${qh(s)}. Nghiệm của phương trình là ${I('x')} = ?`,ans:t,unit:'',
+    sol:`Nhân hai vế với ${p*q}: ${q}(${xlin(1,u)}) ${MINUS} ${p}(${xlin(1,v)}) = ${sg(sp)} ⟺ ${stp(q-p,sp-q*u+p*v,Q(t))}.`,
+    chk:()=>closeN((t+u)/p-(t+v)/q,qv(s))&&q!==p&&(q-p)*t===sp-q*u+p*v};
+});
+TLN8('t8-7-wp',7,'VD',r=>{
+  const w=WP(r);
+  return{kind:'tln',stem:w.stem+(w.unit?` (Đáp số tính theo đơn vị ${w.unit}.)`:''),ans:w.ans,unit:'',
+    sol:`${w.unk} Phương trình: ${w.eq}. Giải: ${wpSolve(w)}. ${w.concl}`,chk:w.chk};
+});
+TLN8('t8-7-param',7,'VD',r=>{
+  const m=r.nz(-5,5),p=r.nz(-4,4),q=r.nz(-6,6),t=r.nz(-4,4),rr=(m+p)*t-q-t;if(rr===0)return T.tln['t8-7-param'].gen(r);
+  return{kind:'tln',stem:`Biết phương trình (${I('m')} ${sT(p)})${X8} ${sT(-q)} = ${X8} ${sT(rr)} có nghiệm ${X8} = ${sg(t)}. Tìm giá trị của ${I('m')}.`,ans:m,unit:'',
+    sol:`Thay ${X8} = ${sg(t)}: (${I('m')} ${sT(p)})·${pr(t)} ${sT(-q)} = ${sg(t)} ${sT(rr)}, suy ra (${I('m')} ${sT(p)})·${pr(t)} = ${sg((m+p)*t)}, do đó ${I('m')} ${sT(p)} = ${sg(m+p)} và ${I('m')} = ${sg(m)}.`,chk:()=>(m+p)*t-q===t+rr};
+});
+TLN8('t8-7-area',7,'VD',r=>{
+  const a=r.pick([1,2,3,4,-1,-2,-3,-4]),u=r.pick([1,2,3]),b=r.pick([1,-1])*2*Math.abs(a)*u,S=2*Math.abs(a)*u*u;
+  return{kind:'tln',stem:`Đường thẳng ${yLine(a,b)} cắt trục ${I('Ox')} tại ${I('A')}, cắt trục ${I('Oy')} tại ${I('B')}. Tính diện tích tam giác ${I('OAB')} (đơn vị diện tích).`,ans:S,unit:'',
+    sol:`${I('A')}${ptS(-b/a,0)}, ${I('B')}${ptS(0,b)}. Tam giác ${I('OAB')} vuông tại ${I('O')} nên diện tích = ½·${Math.abs(b/a)}·${Math.abs(b)} = ${S}.`,chk:()=>Number.isInteger(b/a)&&Math.abs(b/a)*Math.abs(b)/2===S};
+});
+TLN8('t8-7-fixed',7,'VDC',r=>{
+  const be=r.nz(-4,4),p=r.nz(-4,4),q=r.nz(-6,6),x0=-be,y0=p*x0+q;
+  return{kind:'tln',stem:`Đường thẳng ${I('y')} = (${I('m')} ${sT(p)})${X8} ${sT(be,I('m'))} ${sT(q)} (${I('m')} là tham số) luôn đi qua một điểm cố định ${I('M')}(${X8}${sub(0)}; ${Y8}${sub(0)}). Tính ${X8}${sub(0)} + ${Y8}${sub(0)}.`,ans:x0+y0,unit:'',
+    sol:`Viết lại: ${I('y')} = ${I('m')}(${X8} ${sT(be)}) ${sT(p,X8)} ${sT(q)}. Đường thẳng đi qua điểm cố định với mọi ${I('m')} khi ${X8} ${sT(be)} = 0, tức ${X8}${sub(0)} = ${sg(x0)}. Khi đó ${Y8}${sub(0)} = ${sg(p)}·${x0<0?`(${sg(x0)})`:x0} ${sT(q)} = ${sg(y0)}. Vậy ${X8}${sub(0)} + ${Y8}${sub(0)} = ${sg(x0+y0)}.`,chk:()=>[-3,0,2,5].every(mm=>(mm+p)*x0+be*mm+q===y0)};
+});
+TLN8('t8-7-vdc',7,'VDC',r=>{
+  const p=r.nz(-3,3),b=r.pick([2,4,6,-2,-4,-6]),Bb=Math.abs(b);
+  /* y = (m − p)x + b cắt Ox, Oy tạo tam giác diện tích S: S = b²/(2|m − p|) ⟹ |m − p| = b²/(2S) */
+  const S=r.pick([1,2,3,4,6,8,9,12,18].filter(S=>(b*b)%(2*S)===0)),dd=b*b/(2*S),mp=`${I('m')} ${sT(-p)}`;
+  return{kind:'tln',stem:`Cho đường thẳng ${I('(d)')}: ${I('y')} = (${mp})${X8} ${sT(b)} (${I('m')} là tham số, ${I('m')} ≠ ${sg(p)}). Biết ${I('(d)')} cắt hai trục tọa độ tạo thành một tam giác có diện tích bằng ${S}. Tìm giá trị lớn nhất của ${I('m')}.`,ans:p+dd,unit:'',
+    sol:`${I('(d)')} cắt ${I('Oy')} tại ${ptS(0,b)}, cắt ${I('Ox')} tại điểm có hoành độ ${fr(sg(-b),mp)}. Diện tích tam giác bằng ½·${Bb}·${fr(Bb,`|${mp}|`)} = ${S}, suy ra |${mp}| = ${dd}. Do đó ${I('m')} = ${sg(p+dd)} hoặc ${I('m')} = ${sg(p-dd)}; giá trị lớn nhất của ${I('m')} là ${sg(p+dd)}.`,chk:()=>closeN(b*b/(2*dd),S)&&dd>0};
+});
+
+/* ----------- Tự luận chương VII ----------- */
+TL8('tl8-7-eq',7,'TH','alg',r=>{
+  const t=r.nz(-6,6),a=r.nz(-5,5),c=r.nz(-5,5);if(a===c)return T.tl['tl8-7-eq'].gen(r);
+  const b=r.nz(-7,7),d=(a-c)*t+b;
+  const p=r.pick([2,3,4]),q=r.pick([3,4,5,6].filter(v=>v!==p)),t2=r.nz(-5,5),u=r.nz(-3,3),v=r.nz(-3,3),s=Q((t2+u)*q+(t2+v)*p,p*q);
+  const L=p*q;
+  return{kind:'tl',title:'Giải phương trình bậc nhất',parts:[
+    {pts:.5,html:`Giải phương trình ${EQ(a,b,c,d)}.`},
+    {pts:.5,html:`Giải phương trình ${fr(xlin(1,u),p)} + ${fr(xlin(1,v),q)} = ${qh(s)}.`}],
+    sol:[ptxt([[`${EQ(a,b,c,d)} ⟺ ${kx(a-c)} = ${sg(d-b)}.`,.25],[`${Fx(Q(t))}. Vậy nghiệm của phương trình là ${I('x')} = ${sg(t)}.`,.25]]),
+      ptxt([[`Quy đồng, khử mẫu (nhân hai vế với ${L}): ${q}(${xlin(1,u)}) + ${p}(${xlin(1,v)}) = ${sg(s[0]*L/s[1])}.`,.25],[`⟺ ${stp(p+q,s[0]*L/s[1]-q*u-p*v,Q(t2))}.`,.25]])],
+    chk:()=>a*t+b===c*t+d&&closeN((t2+u)/p+(t2+v)/q,qv(s))&&Number.isInteger(s[0]*L/s[1])&&(p+q)*t2===s[0]*L/s[1]-q*u-p*v};
+});
+function wpTL(r,kinds,title){
+  const w=WP(r,r.pick(kinds));
+  return{kind:'tl',title,parts:[
+    {pts:.5,html:`${w.stem} Hãy chọn ẩn, đặt điều kiện cho ẩn và lập phương trình biểu thị bài toán.`},
+    {pts:.5,html:`Giải phương trình vừa lập và trả lời bài toán.`}],
+    sol:[ptxt([[w.unk,.25],[`Từ đề bài ta có phương trình: ${w.eq}.`,.25]]),
+      ptxt([[`Giải: ${wpSolve(w)}.`,.25],[`${w.concl}`,.25]])],chk:w.chk};
+}
+TL8('tl8-7-wp1',7,'VD','real',r=>wpTL(r,['meet','roundtrip','plan','pipes'],'Giải bài toán bằng cách lập phương trình (chuyển động, công việc)'));
+TL8('tl8-7-wp2',7,'VD','real',r=>wpTL(r,['age','rect','shop','ratio'],'Giải bài toán bằng cách lập phương trình'));
+TL8('tl8-7-line',7,'VD','alg',r=>{
+  const a=r.nz(-4,4),b=r.nz(-6,6),x1=r.nz(-3,3);let x2=r.nz(-3,3);if(x2===x1)x2=x1+1;if(x2===0)x2=4;
+  const y1=a*x1+b,y2=a*x2+b,a2=a+r.pick([-2,-1,1,2]);if(a2===0)return T.tl['tl8-7-line'].gen(r);
+  const b2=r.nz(-6,6),dx=Q(b2-b,a-a2);
+  return{kind:'tl',title:'Hàm số bậc nhất và đồ thị',parts:[
+    {pts:.5,html:`Xác định hệ số ${I('a')}, ${I('b')} của đường thẳng ${dN(1)}: ${I('y')} = ${I('a')}${X8} + ${I('b')}, biết ${dN(1)} đi qua hai điểm ${I('A')}${ptS(x1,y1)} và ${I('B')}${ptS(x2,y2)}.`},
+    {pts:.5,html:`Cho đường thẳng ${dN(2)}: ${yLine(a2,b2)}. Chứng tỏ ${dN(1)} cắt ${dN(2)} và tìm hoành độ giao điểm của hai đường thẳng.`}],
+    sol:[ptxt([[`${I('a')} = ${fr(`${sg(y2)} ${MINUS} ${y1<0?`(${sg(y1)})`:y1}`,`${sg(x2)} ${MINUS} ${x1<0?`(${sg(x1)})`:x1}`)} = ${sg(a)}.`,.25],[`Thay tọa độ ${I('A')}: ${sg(y1)} = ${sg(a)}·${x1<0?`(${sg(x1)})`:x1} + ${I('b')} ⟹ ${I('b')} = ${sg(b)}. Vậy ${dN(1)}: ${yLine(a,b)}.`,.25]]),
+      ptxt([[`${dN(1)} và ${dN(2)} có hệ số góc ${sg(a)} ≠ ${sg(a2)} nên cắt nhau.`,.25],[`Hoành độ giao điểm là nghiệm của ${EQ(a,b,a2,b2)}: ${stp(a-a2,b2-b,dx)}.`,.25]])],
+    chk:()=>(y2-y1)===a*(x2-x1)&&a!==a2};
+});
+TL8('tl8-7-vdc',7,'VDC','alg',r=>{
+  const p=r.nz(-3,3),be=r.nz(-3,3),q=r.nz(-5,5),x0=-be,y0=p*x0+q;
+  const b0=r.pick([2,4,6]),S=r.pick([1,2,3,4,6,8,9,12].filter(s=>(b0*b0)%(2*s)===0)),dd=b0*b0/(2*S),mp=`${I('m')} ${sT(-p)}`;
+  return{kind:'tl',title:'Điểm cố định và diện tích tam giác',parts:[
+    {pts:.5,html:`Cho đường thẳng ${I('(d)')}: ${I('y')} = (${I('m')} ${sT(p)})${X8} ${sT(be,I('m'))} ${sT(q)} (${I('m')} là tham số). Chứng minh ${I('(d)')} luôn đi qua một điểm cố định và tìm tọa độ điểm đó.`},
+    {pts:.5,html:`Cho đường thẳng ${I('(d′)')}: ${I('y')} = (${mp})${X8} + ${b0} (${I('m')} ≠ ${sg(p)}). Tìm ${I('m')} để ${I('(d′)')} cùng hai trục tọa độ tạo thành tam giác có diện tích bằng ${S}.`}],
+    sol:[ptxt([[`${I('y')} = ${I('m')}(${X8} ${sT(be)}) ${sT(p,X8)} ${sT(q)}. Điểm ${I('M')}(${X8}${sub(0)}; ${Y8}${sub(0)}) cố định khi tọa độ của nó nghiệm đúng phương trình với mọi ${I('m')}, tức ${X8}${sub(0)} ${sT(be)} = 0.`,.25],[`Suy ra ${X8}${sub(0)} = ${sg(x0)}, ${Y8}${sub(0)} = ${sg(y0)}. Vậy ${I('(d)')} luôn đi qua ${I('M')}${ptS(x0,y0)}.`,.25]]),
+      ptxt([[`${I('(d′)')} cắt ${I('Oy')} tại ${I('B')}(0; ${b0}), cắt ${I('Ox')} tại ${I('A')} có hoành độ ${fr(sg(-b0),mp)}. Diện tích ${I('OAB')} = ½·${b0}·${fr(b0,`|${mp}|`)} = ${S}.`,.25],[`Suy ra |${mp}| = ${dd} ⟹ ${I('m')} = ${sg(p+dd)} hoặc ${I('m')} = ${sg(p-dd)}.`,.25]])],
+    chk:()=>[-2,1,4].every(mm=>(mm+p)*x0+be*mm+q===y0)&&closeN(b0*b0/(2*dd),S)};
+});
+/* ================= CHƯƠNG VIII: MỞ ĐẦU VỀ TÍNH XÁC SUẤT CỦA BIẾN CỐ ================= */
+const PRQ=(f,n)=>qh(Q(f,n));
+const PRo=(f,n)=>`${I('P')}(${I('A')}) = ${PRQ(f,n)}`;
+/* Biến cố trên tập số {1; 2; …; n}: mô tả, đếm số kết quả thuận lợi */
+function numEvents(n){
+  const L=[
+    {d:'số ghi trên thẻ là số chẵn',c:Math.floor(n/2),sd:'chẵn'},
+    {d:'số ghi trên thẻ là số lẻ',c:Math.ceil(n/2)},
+    {d:'số ghi trên thẻ là số nguyên tố',c:[...Array(n).keys()].filter(i=>isPrime(i+1)).length},
+    {d:'số ghi trên thẻ chia hết cho 3',c:Math.floor(n/3)},
+    {d:'số ghi trên thẻ chia hết cho 5',c:Math.floor(n/5)},
+    {d:'số ghi trên thẻ là số chính phương',c:Math.floor(Math.sqrt(n))},
+    {d:`số ghi trên thẻ lớn hơn ${Math.floor(n/2)}`,c:n-Math.floor(n/2)},
+    {d:`số ghi trên thẻ nhỏ hơn ${Math.floor(n/4)+1}`,c:Math.floor(n/4)}
+  ];
+  return L.filter(e=>e.c>0&&e.c<n);
+}
+const nSet=n=>`{1; 2; …; ${n}}`;
+
+N8('m8-8-space',8,'NB',r=>{
+  const f=r.int(0,4);let stem,ans,why;
+  if(f===0){stem=`Gieo một con xúc xắc sáu mặt cân đối. Số kết quả có thể xảy ra của phép thử là`;ans=6;why=`Con xúc xắc có 6 mặt nên có 6 kết quả có thể.`}
+  else if(f===1){const n=r.int(10,40);stem=`Một hộp đựng ${n} tấm thẻ giống nhau, đánh số từ 1 đến ${n}. Rút ngẫu nhiên một tấm thẻ từ hộp. Số kết quả có thể xảy ra của phép thử là`;ans=n;why=`Có ${n} tấm thẻ nên có ${n} kết quả có thể.`}
+  else if(f===2){const a=r.int(2,7),b=r.int(2,7),c=r.int(1,6);stem=`Một túi có ${a} viên bi đỏ, ${b} viên bi xanh và ${c} viên bi vàng, các viên bi có cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ túi. Số kết quả có thể xảy ra của phép thử là`;ans=a+b+c;why=`Mỗi viên bi là một kết quả có thể, tổng số viên bi là ${a} + ${b} + ${c} = ${a+b+c}.`}
+  else if(f===3){const k=r.pick([3,4]);stem=`Tung một đồng xu cân đối ${k} lần liên tiếp. Số kết quả có thể xảy ra của phép thử là`;ans=2**k;why=`Mỗi lần tung có 2 kết quả (sấp, ngửa) nên có 2${sup(k)} = ${2**k} kết quả có thể.`}
+  else{const n=r.pick([8,10,12,16,20]);stem=`Một vòng quay may mắn được chia thành ${n} hình quạt bằng nhau, đánh số từ 1 đến ${n}. Quay vòng quay một lần, mũi tên dừng ở một hình quạt. Số kết quả có thể xảy ra của phép thử là`;ans=n;why=`Có ${n} hình quạt bằng nhau nên có ${n} kết quả có thể.`}
+  return mkNum(r,{stem,correct:ans,cands:[ans+1,ans-1,ans*2,ans+2,Math.round(ans/2)],sol:why,chk:()=>true});
+});
+N8('m8-8-fav',8,'NB',r=>{
+  const n=r.pick([10,12,15,20,24,30,36,40,50]),ev=r.pick(numEvents(n));
+  return mkNum(r,{stem:`Rút ngẫu nhiên một tấm thẻ từ hộp đựng ${n} tấm thẻ đánh số từ 1 đến ${n}. Số kết quả thuận lợi cho biến cố “${ev.d}” là`,correct:ev.c,cands:[ev.c+1,ev.c-1,n-ev.c,ev.c+2,n],
+    sol:`Các số trong tập ${nSet(n)} thỏa mãn “${ev.d.replace('số ghi trên thẻ ','')}” có ${ev.c} số, nên có ${ev.c} kết quả thuận lợi.`,chk:()=>ev.c>0&&ev.c<n});
+});
+N8('m8-8-certain',8,'NB',r=>{
+  const kind=r.pick(['sure','imp','pr']),n=r.pick([6,10,12,20]);
+  const sure=[`Gieo một con xúc xắc sáu mặt, số chấm xuất hiện nhỏ hơn 7`,`Rút một thẻ từ hộp chỉ chứa thẻ đỏ, thẻ rút được có màu đỏ`,`Tung một đồng xu, mặt xuất hiện là mặt sấp hoặc mặt ngửa`];
+  const imp=[`Gieo một con xúc xắc sáu mặt, số chấm xuất hiện lớn hơn 6`,`Rút một thẻ từ hộp chỉ chứa thẻ đỏ, thẻ rút được có màu xanh`,`Lấy một viên bi từ túi chỉ có bi trắng, được viên bi đen`];
+  const rnd=[`Gieo một con xúc xắc sáu mặt, số chấm xuất hiện là số chẵn`,`Tung một đồng xu, được mặt sấp`,`Rút một thẻ từ hộp thẻ đánh số 1 đến ${n}, được thẻ ghi số lớn hơn ${n/2}`];
+  if(kind==='pr'){return mkTxt(r,{stem:`Phát biểu nào sau đây về xác suất của biến cố là <b>đúng</b>?`,correct:`Xác suất của biến cố chắc chắn bằng 1`,wrongs:[`Xác suất của biến cố chắc chắn bằng 0`,`Xác suất của biến cố không thể bằng 1`,`Xác suất của một biến cố có thể lớn hơn 1`,`Xác suất của biến cố ngẫu nhiên luôn bằng ${fr(1,2)}`],sol:`Biến cố chắc chắn có xác suất bằng 1, biến cố không thể có xác suất bằng 0, xác suất của mọi biến cố luôn nằm trong đoạn [0; 1].`,chk:()=>true})}
+  const sel=kind==='sure'?r.pick(sure):r.pick(imp);
+  const rest=kind==='sure'?imp:sure;
+  return mkTxt(r,{stem:`Biến cố nào sau đây là biến cố ${kind==='sure'?'chắc chắn':'không thể'}?`,correct:sel,wrongs:[r.pick(rnd),...r.shuffle(rest).slice(0,2),r.pick(rnd.filter(z=>z!==rnd[0]))],
+    sol:`${sel} là biến cố ${kind==='sure'?'chắc chắn (luôn xảy ra)':'không thể (không bao giờ xảy ra)'}; các biến cố còn lại là biến cố ngẫu nhiên hoặc thuộc loại ngược lại.`,chk:()=>true});
+});
+N8('m8-8-range',8,'NB',r=>{
+  const ok=r.pick([fr(1,3),fr(2,5),'0,35','0,8',fr(3,4),'0','1']),bad=[fr(5,4),'1,2',MINUS+'0,3',fr(7,5),MINUS+fr(1,2),'2'];
+  return mkTxt(r,{stem:`Giá trị nào sau đây có thể là xác suất của một biến cố?`,correct:ok,wrongs:r.shuffle(bad),
+    sol:`Xác suất của một biến cố luôn thỏa mãn 0 ≤ ${I('P')} ≤ 1. Chỉ ${ok} nằm trong đoạn [0; 1].`,chk:()=>true});
+});
+N8('m8-8-prob',8,'TH',r=>{
+  const n=r.pick([10,12,15,18,20,24,25,30,36,40,50]),ev=r.pick(numEvents(n)),ans=Q(ev.c,n);
+  return mkTxt(r,{stem:`Một hộp đựng ${n} tấm thẻ giống nhau, đánh số từ 1 đến ${n}. Rút ngẫu nhiên một tấm thẻ. Xác suất của biến cố “${ev.d}” là`,correct:qh(ans),wrongs:[qh(Q(n-ev.c,n)),qh(Q(ev.c,n-ev.c)),qh(Q(ev.c+1,n)),qh(Q(ev.c,n+1)),qh(Q(ev.c,n-1)),qh(Q(1,ev.c))],
+    sol:`Có ${n} kết quả có thể, đồng khả năng. Có ${ev.c} kết quả thuận lợi. Xác suất cần tìm là ${fr(ev.c,n)}${Q(ev.c,n)[1]===n?'':` = ${qh(ans)}`}.`,chk:()=>ev.c>0});
+});
+N8('m8-8-balls',8,'TH',r=>{
+  const a=r.int(2,9),b=r.int(2,9),c=r.int(1,7),t=a+b+c,col=r.pick([['đỏ',a],['xanh',b],['vàng',c]]);
+  return mkTxt(r,{stem:`Một túi có ${a} viên bi đỏ, ${b} viên bi xanh và ${c} viên bi vàng, cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ túi. Xác suất để lấy được viên bi ${col[0]} là`,correct:qh(Q(col[1],t)),wrongs:[qh(Q(t-col[1],t)),qh(Q(col[1],t-col[1])),qh(Q(col[1]+1,t)),qh(Q(1,t)),qh(Q(col[1],t+1))],
+    sol:`Tổng số viên bi là ${a} + ${b} + ${c} = ${t}, nên có ${t} kết quả có thể đồng khả năng; có ${col[1]} kết quả thuận lợi. Xác suất là ${fr(col[1],t)}${Q(col[1],t)[1]===t?'':` = ${qh(Q(col[1],t))}`}.`,chk:()=>t>col[1]});
+});
+N8('m8-8-compl',8,'TH',r=>{
+  const t=r.pick([5,6,8,10,12,15]),k=r.int(1,t-1),p=Q(k,t),col=r.pick(['đỏ','xanh','vàng','trắng']);
+  if(p[1]===1)return T.nlc['m8-8-compl'].gen(r);
+  return mkTxt(r,{stem:`Lấy ngẫu nhiên một viên bi từ một túi, xác suất để lấy được viên bi màu ${col} là ${qh(p)}. Xác suất để viên bi lấy được <b>không</b> có màu ${col} là`,correct:qh(Q(t-k,t)),wrongs:[qh(Q(k,t)),qh(Q(t-k,k)),qh(Q(k+1,t)),qh(Q(1,t)),qh(Q(t,k)),qh(Q(t-k+1,t))].filter(z=>z!==qh(Q(t-k,t))),
+    sol:`Biến cố “không lấy được bi màu ${col}” là biến cố đối của biến cố “lấy được bi màu ${col}”, nên xác suất bằng 1 ${MINUS} ${qh(p)} = ${qh(Q(t-k,t))}.`,chk:()=>Q(t-k,t)[0]>0&&Q(t-k,t)[0]/Q(t-k,t)[1]+k/t===1});
+});
+N8('m8-8-dice2',8,'TH',r=>{
+  const s=r.int(3,11),cnt=6-Math.abs(s-7);
+  return mkTxt(r,{stem:`Gieo một con xúc xắc sáu mặt cân đối hai lần liên tiếp. Xác suất để tổng số chấm của hai lần gieo bằng ${s} là`,correct:qh(Q(cnt,36)),wrongs:[qh(Q(cnt+1,36)),qh(Q(cnt-1===0?7:cnt-1,36)),qh(Q(cnt,12)),qh(Q(cnt,6)),qh(Q(cnt*2,36)),qh(Q(1,s))],
+    sol:`Có 6 · 6 = 36 kết quả có thể đồng khả năng. Các kết quả có tổng bằng ${s} là ${[...Array(6).keys()].map(i=>i+1).filter(a=>s-a>=1&&s-a<=6).map(a=>`(${a}; ${s-a})`).join(', ')}, gồm ${cnt} kết quả. Xác suất là ${fr(cnt,36)}${Q(cnt,36)[1]===36?'':` = ${qh(Q(cnt,36))}`}.`,chk:()=>cnt>=1&&cnt<=6});
+});
+N8('m8-8-coin',8,'TH',r=>{
+  const k=r.pick([2,3]);let pairs;
+  if(k===2)pairs=[['hai mặt giống nhau',2,4],['đúng một mặt ngửa',2,4],['hai mặt đều là mặt sấp',1,4],['có ít nhất một mặt ngửa',3,4]];
+  else pairs=[['đúng hai mặt ngửa',3,8],['cả ba mặt đều giống nhau',2,8],['có đúng một mặt sấp',3,8],['có ít nhất một mặt ngửa',7,8],['ba mặt đều là mặt ngửa',1,8]];
+  const [d,f,n]=r.pick(pairs);
+  return mkTxt(r,{stem:`Tung một đồng xu cân đối ${k} lần liên tiếp. Xác suất của biến cố “${d}” là`,correct:qh(Q(f,n)),wrongs:[qh(Q(f+1,n)),qh(Q(f,n*2)),qh(Q(n-f,n)===Q(f,n)?Q(1,3):Q(n-f,n)),qh(Q(1,k)),qh(Q(f,n-1)),qh(Q(f-1<=0?5:f-1,n))],
+    sol:`Có 2${sup(k)} = ${n} kết quả có thể đồng khả năng. Số kết quả thuận lợi cho biến cố là ${f}. Xác suất là ${fr(f,n)}${Q(f,n)[1]===n?'':` = ${qh(Q(f,n))}`}.`,chk:()=>f<=n});
+});
+N8('m8-8-wheel',8,'TH',r=>{
+  const n=r.pick([8,10,12,15,16,20]),k=r.int(2,n-2),col=r.pick(['đỏ','xanh','vàng']);
+  return mkTxt(r,{stem:`Một vòng quay được chia thành ${n} hình quạt bằng nhau, trong đó ${k} hình quạt tô màu ${col}, các hình quạt còn lại tô màu khác. Quay vòng quay một lần, mũi tên dừng ngẫu nhiên ở một hình quạt. Xác suất để mũi tên dừng ở hình quạt màu ${col} là`,correct:qh(Q(k,n)),wrongs:[qh(Q(n-k,n)),qh(Q(k,n-k)),qh(Q(1,k)),qh(Q(k+1,n)),qh(Q(k,n+1)),qh(Q(n,k))],
+    sol:`Có ${n} kết quả có thể đồng khả năng, trong đó ${k} kết quả thuận lợi. Xác suất là ${fr(k,n)}${Q(k,n)[1]===n?'':` = ${qh(Q(k,n))}`}.`,chk:()=>k<n});
+});
+N8('m8-8-class',8,'TH',r=>{
+  const a=r.int(12,25),b=r.int(12,25),who=r.pick(['nam','nữ']),f=who==='nam'?a:b;
+  return mkTxt(r,{stem:`Một lớp học có ${a} học sinh nam và ${b} học sinh nữ. Giáo viên chọn ngẫu nhiên một học sinh trong lớp để trả lời câu hỏi. Xác suất để học sinh được chọn là học sinh ${who} là`,correct:qh(Q(f,a+b)),wrongs:[qh(Q(a+b-f,a+b)),qh(Q(a,b)),qh(Q(f,a+b+1)),qh(Q(1,a+b)),qh(Q(f,a+b-1)),qh(Q(f+1,a+b))],
+    sol:`Lớp có ${a} + ${b} = ${a+b} học sinh nên có ${a+b} kết quả có thể đồng khả năng; có ${f} kết quả thuận lợi. Xác suất là ${fr(f,a+b)}${Q(f,a+b)[1]===a+b?'':` = ${qh(Q(f,a+b))}`}.`,chk:()=>a+b>0});
+});
+N8('m8-8-twodig',8,'TH',r=>{
+  const ev=r.pick([['chia hết cho 5',18],['chia hết cho 10',9],['chia hết cho 9',10],['là số chẵn',45],['là số lẻ',45],['có chữ số hàng chục là 7',10],['là bội của 15',6],['là bội của 18',5]]);
+  return mkTxt(r,{stem:`Chọn ngẫu nhiên một số tự nhiên có hai chữ số. Xác suất để số được chọn ${ev[0]} là`,correct:qh(Q(ev[1],90)),wrongs:[qh(Q(ev[1],100)),qh(Q(ev[1]+1,90)),qh(Q(ev[1],99)),qh(Q(ev[1]-1,90)),qh(Q(ev[1],89)),qh(Q(90-ev[1],90))],
+    sol:`Các số tự nhiên có hai chữ số là 10; 11; …; 99, gồm 90 số nên có 90 kết quả có thể đồng khả năng. Có ${ev[1]} số ${ev[0]} nên xác suất là ${fr(ev[1],90)}${Q(ev[1],90)[1]===90?'':` = ${qh(Q(ev[1],90))}`}.`,chk:()=>true});
+});
+N8('m8-8-add',8,'TH',r=>{
+  /* Thêm bi để xác suất đạt giá trị cho trước: a đỏ, b xanh; thêm x bi xanh để P(xanh)=1/2... chọn đủ rộng */
+  const a=r.int(3,9),b=r.int(1,a-1),add=a-b,col=r.pick(['xanh','vàng']);
+  return mkNum(r,{stem:`Một hộp có ${a} viên bi đỏ và ${b} viên bi ${col}. Cần thêm vào hộp ít nhất bao nhiêu viên bi ${col} để xác suất lấy được viên bi ${col} từ hộp bằng ${fr(1,2)}?`,correct:add,cands:[a,b,a+b,add+1,add-1,2*add],
+    sol:`Sau khi thêm ${I('x')} viên bi ${col}, hộp có ${a} + ${b} + ${I('x')} viên bi, trong đó ${b} + ${I('x')} viên bi ${col}. Xác suất bằng ${fr(1,2)} khi 2(${b} + ${I('x')}) = ${a} + ${b} + ${I('x')}, tức ${I('x')} = ${a} ${MINUS} ${b} = ${add}.`,chk:()=>2*(b+add)===a+b+add});
+});
+
+DS8('ds8-8-dice',8,'TH',r=>{
+  const evs=[
+    {d:'số chấm xuất hiện là số chẵn',c:3},{d:'số chấm xuất hiện là số nguyên tố',c:3},{d:'số chấm xuất hiện chia hết cho 3',c:2},{d:'số chấm xuất hiện lớn hơn 4',c:2},{d:'số chấm xuất hiện nhỏ hơn 3',c:2},{d:'số chấm xuất hiện là số lẻ',c:3},{d:'số chấm xuất hiện là ước của 6',c:4}];
+  const [e1,e2]=r.shuffle(evs).slice(0,2);
+  const imp=r.chance(.5);
+  const items=[
+    {t:`Phép thử có 6 kết quả có thể, các kết quả này đồng khả năng.`,f:`Phép thử có 12 kết quả có thể, các kết quả này đồng khả năng.`,why:`Con xúc xắc có 6 mặt nên có 6 kết quả có thể.`},
+    {t:`Có ${e1.c} kết quả thuận lợi cho biến cố “${e1.d}”.`,f:`Có ${e1.c+1} kết quả thuận lợi cho biến cố “${e1.d}”.`,why:`Số kết quả thuận lợi cho “${e1.d}” là ${e1.c}.`},
+    {t:`Xác suất của biến cố “${e2.d}” bằng ${qh(Q(e2.c,6))}.`,f:`Xác suất của biến cố “${e2.d}” bằng ${qh(Q(e2.c+1,6))}.`,why:`Có ${e2.c} kết quả thuận lợi trên 6 kết quả có thể nên xác suất là ${fr(e2.c,6)}${Q(e2.c,6)[1]===6?'':` = ${qh(Q(e2.c,6))}`}.`},
+    imp?{t:`Biến cố “số chấm xuất hiện lớn hơn 6” là biến cố không thể và có xác suất bằng 0.`,f:`Biến cố “số chấm xuất hiện lớn hơn 6” là biến cố chắc chắn và có xác suất bằng 1.`,why:`Không có mặt nào có hơn 6 chấm nên biến cố không thể, xác suất bằng 0.`}:
+        {t:`Biến cố “số chấm xuất hiện nhỏ hơn 7” là biến cố chắc chắn và có xác suất bằng 1.`,f:`Biến cố “số chấm xuất hiện nhỏ hơn 7” là biến cố không thể và có xác suất bằng 0.`,why:`Mọi mặt đều có số chấm từ 1 đến 6, nhỏ hơn 7, nên biến cố chắc chắn, xác suất bằng 1.`}
+  ];
+  return mkDS(r,{stem:`Gieo một con xúc xắc sáu mặt cân đối một lần. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>e1.c<6&&e2.c<6});
+});
+DS8('ds8-8-box',8,'VD',r=>{
+  const a=r.int(3,8),b=r.int(2,7),c=r.int(2,6),t=a+b+c,add=r.int(2,6),pb=Q(b,t),pr=Q(a,t),pnew=Q(b+add,t+add);
+  const items=[
+    {t:`Có ${t} kết quả có thể khi lấy ngẫu nhiên một viên bi từ hộp.`,f:`Có ${t-1} kết quả có thể khi lấy ngẫu nhiên một viên bi từ hộp.`,why:`Tổng số viên bi là ${a} + ${b} + ${c} = ${t}.`},
+    {t:`Xác suất để lấy được viên bi đỏ bằng ${qh(pr)}.`,f:`Xác suất để lấy được viên bi đỏ bằng ${qh(Q(a,t-1))}.`,why:`Có ${a} kết quả thuận lợi trên ${t} kết quả có thể: ${fr(a,t)}${pr[1]===t?'':` = ${qh(pr)}`}.`},
+    {t:`Xác suất để lấy được viên bi không phải màu xanh bằng ${qh(Q(t-b,t))}.`,f:`Xác suất để lấy được viên bi không phải màu xanh bằng ${qh(pb)}.`,why:`Có ${t-b} viên bi không phải màu xanh nên xác suất là ${qh(Q(t-b,t))} (hay 1 ${MINUS} ${qh(pb)}).`},
+    {t:`Nếu bỏ thêm ${add} viên bi xanh vào hộp thì xác suất lấy được viên bi xanh là ${qh(pnew)}.`,f:`Nếu bỏ thêm ${add} viên bi xanh vào hộp thì xác suất lấy được viên bi xanh là ${qh(Q(b+add,t))}.`,why:`Khi đó hộp có ${t+add} viên bi, trong đó ${b+add} viên bi xanh; xác suất là ${fr(b+add,t+add)}${pnew[1]===t+add?'':` = ${qh(pnew)}`}.`}
+  ];
+  return mkDS(r,{stem:`Một hộp đựng ${a} viên bi đỏ, ${b} viên bi xanh và ${c} viên bi vàng, cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ hộp. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>Q(b+add,t)[0]/Q(b+add,t)[1]!==pnew[0]/pnew[1]});
+});
+
+TLN8('t8-8-count',8,'NB',r=>{
+  const n=r.pick([20,25,30,36,40,45,50,60]),ev=r.pick(numEvents(n));
+  return{kind:'tln',stem:`Rút ngẫu nhiên một tấm thẻ từ hộp đựng ${n} tấm thẻ đánh số từ 1 đến ${n}. Có bao nhiêu kết quả thuận lợi cho biến cố “${ev.d}”?`,ans:ev.c,unit:'',
+    sol:`Trong tập ${nSet(n)} có ${ev.c} số thỏa mãn “${ev.d.replace('số ghi trên thẻ ','')}”, nên có ${ev.c} kết quả thuận lợi.`,chk:()=>ev.c>0};
+});
+TLN8('t8-8-prob',8,'TH',r=>{
+  const den=r.pick([4,5,10,20,25,50]),k=r.int(1,den-1),a=r.int(2,8);
+  /* hộp có tổng den viên bi; xác suất = k/den; ghi dưới dạng số thập phân */
+  const p=k/den,col=r.pick(['đỏ','xanh','vàng']);
+  const oth=den-k;
+  return{kind:'tln',stem:`Một hộp có ${den} viên bi cùng kích thước và khối lượng, trong đó có ${k} viên bi màu ${col}, các viên bi còn lại có màu khác. Lấy ngẫu nhiên một viên bi từ hộp. Tính xác suất để lấy được viên bi màu ${col} (viết dưới dạng số thập phân).`,ans:Math.round(p*100)/100,unit:'',
+    sol:`Có ${den} kết quả có thể đồng khả năng, ${k} kết quả thuận lợi. Xác suất là ${fr(k,den)} = ${fmt(Math.round(p*100)/100)}.`,chk:()=>Math.abs(p*100-Math.round(p*100))<1e-9&&oth>0};
+});
+TLN8('t8-8-two',8,'VD',r=>{
+  const s=r.int(3,11),cnt=6-Math.abs(s-7),extra=r.pick([1,2]);
+  return{kind:'tln',stem:`Gieo một con xúc xắc sáu mặt cân đối hai lần liên tiếp. Gọi ${I('A')} là biến cố “tổng số chấm của hai lần gieo bằng ${s}”. Có bao nhiêu kết quả thuận lợi cho biến cố ${I('A')}?`,ans:cnt,unit:'',
+    sol:`Các kết quả (số chấm lần 1; số chấm lần 2) có tổng bằng ${s} là ${[...Array(6).keys()].map(i=>i+1).filter(a=>s-a>=1&&s-a<=6).map(a=>`(${a}; ${s-a})`).join(', ')}. Có ${cnt} kết quả thuận lợi.`,chk:()=>cnt>=1};
+});
+TLN8('t8-8-add',8,'VD',r=>{
+  const [u,v]=r.pick([[2,3],[3,4],[3,5],[4,5]]),a=r.int(4,16),b=r.int(1,a-1),num=u*(a+b)-v*b,x=num/(v-u);
+  if(num<=0||!Number.isInteger(x)||x>40)return T.tln['t8-8-add'].gen(r);
+  return{kind:'tln',stem:`Một hộp có ${a} viên bi đỏ và ${b} viên bi xanh, cùng kích thước và khối lượng. Cần thêm vào hộp ít nhất bao nhiêu viên bi xanh để xác suất lấy được viên bi xanh từ hộp bằng ${fr(u,v)}?`,ans:x,unit:'',
+    sol:`Sau khi thêm ${I('x')} viên bi xanh, hộp có ${a+b} + ${I('x')} viên bi, trong đó ${b} + ${I('x')} viên bi xanh. Xác suất bằng ${fr(u,v)} khi ${v}(${b} + ${I('x')}) = ${u}(${a+b} + ${I('x')}) ⟺ ${v-u===1?'':`${v-u}${I('x')} = ${num} ⟺ `}${I('x')} = ${x}.`,chk:()=>v*(b+x)===u*(a+b+x)};
+});
+
+/* ----- Tự luận chương VIII ----- */
+TL8('tl8-8-box',8,'TH','real',r=>{
+  const a=r.int(3,8),b=r.int(2,8),c=r.int(1,6),t=a+b+c,col=r.pick([['đỏ',a],['xanh',b],['vàng',c]]),co2=r.pick([['đỏ',a],['xanh',b],['vàng',c]].filter(z=>z[0]!==col[0]));
+  const both=col[1]+co2[1];
+  return{kind:'tl',title:'Xác suất của biến cố (hộp bi)',parts:[
+    {pts:.5,html:`Một hộp có ${a} viên bi đỏ, ${b} viên bi xanh và ${c} viên bi vàng, cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ hộp. Có bao nhiêu kết quả có thể? Tính xác suất của biến cố “viên bi lấy được có màu ${col[0]}”.`},
+    {pts:.5,html:`Tính xác suất của biến cố “viên bi lấy được có màu ${col[0]} hoặc màu ${co2[0]}”.`}],
+    sol:[ptxt([[`Có ${a} + ${b} + ${c} = ${t} kết quả có thể, đồng khả năng.`,.25],[`Có ${col[1]} kết quả thuận lợi nên xác suất là ${fr(col[1],t)}${Q(col[1],t)[1]===t?'':` = ${qh(Q(col[1],t))}`}.`,.25]]),
+      ptxt([[`Số kết quả thuận lợi là ${col[1]} + ${co2[1]} = ${both}.`,.25],[`Xác suất là ${fr(both,t)}${Q(both,t)[1]===t?'':` = ${qh(Q(both,t))}`}.`,.25]])],
+    chk:()=>both<t};
+});
+TL8('tl8-8-cards',8,'TH','real',r=>{
+  const n=r.pick([20,24,30,36,40,50]),evs=numEvents(n),[e1,e2]=r.shuffle(evs).slice(0,2);
+  return{kind:'tl',title:'Xác suất của biến cố (hộp thẻ)',parts:[
+    {pts:.5,html:`Một hộp đựng ${n} tấm thẻ giống nhau, đánh số từ 1 đến ${n}. Rút ngẫu nhiên một tấm thẻ. Tính xác suất của biến cố ${I('A')}: “${e1.d}”.`},
+    {pts:.5,html:`Tính xác suất của biến cố ${I('B')}: “${e2.d}”.`}],
+    sol:[ptxt([[`Có ${n} kết quả có thể, đồng khả năng. Số kết quả thuận lợi cho ${I('A')} là ${e1.c}.`,.25],[`${I('P')}(${I('A')}) = ${fr(e1.c,n)}${Q(e1.c,n)[1]===n?'':` = ${qh(Q(e1.c,n))}`}.`,.25]]),
+      ptxt([[`Số kết quả thuận lợi cho ${I('B')} là ${e2.c}.`,.25],[`${I('P')}(${I('B')}) = ${fr(e2.c,n)}${Q(e2.c,n)[1]===n?'':` = ${qh(Q(e2.c,n))}`}.`,.25]])],
+    chk:()=>e1.c>0&&e2.c>0};
+});
+TL8('tl8-8-vd',8,'VD','real',r=>{
+  const a=r.int(4,10),b=r.int(2,7),t=a+b,rm=r.int(1,Math.min(3,a-1)),x=r.int(2,5);
+  const [u,v]=[Q(b,t-rm),Q(b+x,t+x)];
+  return{kind:'tl',title:'Xác suất và thay đổi số lượng kết quả',parts:[
+    {pts:.5,html:`Một hộp có ${a} viên bi đỏ và ${b} viên bi xanh, cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ hộp. Tính xác suất để lấy được viên bi xanh.`},
+    {pts:.5,html:`Nếu lấy ra khỏi hộp ${rm} viên bi đỏ rồi bỏ thêm vào hộp ${x} viên bi xanh thì xác suất lấy được viên bi xanh từ hộp bây giờ là bao nhiêu?`}],
+    sol:[ptxt([[`Có ${a} + ${b} = ${t} kết quả có thể, đồng khả năng; có ${b} kết quả thuận lợi.`,.25],[`Xác suất là ${fr(b,t)}${Q(b,t)[1]===t?'':` = ${qh(Q(b,t))}`}.`,.25]]),
+      ptxt([[`Sau khi thay đổi, hộp có ${a-rm} viên bi đỏ và ${b+x} viên bi xanh, tổng ${a-rm+b+x} viên bi.`,.25],[`Xác suất là ${fr(b+x,a-rm+b+x)}${Q(b+x,a-rm+b+x)[1]===a-rm+b+x?'':` = ${qh(Q(b+x,a-rm+b+x))}`}.`,.25]])],
+    chk:()=>a-rm>0};
+});
+/* ================= CHƯƠNG IX: TAM GIÁC ĐỒNG DẠNG (kèm định lí Pythagore) ================= */
+/* Hình phẳng đơn giản: P = {tên:[x,y]} (y hướng lên), segs = các đoạn nét liền */
+function fig2D(P,segs,o={}){
+  const names=Object.keys(P),W=o.w||230,H=o.h||150,pad=o.pad||24;
+  const xs=names.map(n=>P[n][0]),ys=names.map(n=>P[n][1]);
+  const mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
+  const k=Math.min((W-2*pad)/((mxx-mnx)||1),(H-2*pad)/((mxy-mny)||1));
+  const ox=(W-(mxx-mnx)*k)/2,oy=(H-(mxy-mny)*k)/2;
+  const S=p=>[ox+(p[0]-mnx)*k,H-oy-(p[1]-mny)*k];
+  const pts={};names.forEach(n=>pts[n]=S(P[n]));
+  const cx=names.reduce((s,n)=>s+pts[n][0],0)/names.length,cy=names.reduce((s,n)=>s+pts[n][1],0)/names.length;
+  const f=v=>v.toFixed(1);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Hình vẽ">`;
+  const line=([a,b],d)=>{const p=pts[a],q=pts[b];s+=`<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" stroke="#000" stroke-width="1.1"${d?' stroke-dasharray="4 3"':''}/>`};
+  segs.forEach(e=>line(e,0));(o.dashed||[]).forEach(e=>line(e,1));
+  (o.right||[]).forEach(([a,v,b])=>{const V=pts[v],A=pts[a],B=pts[b],ua=[A[0]-V[0],A[1]-V[1]],ub=[B[0]-V[0],B[1]-V[1]],la=Math.hypot(...ua)||1,lb=Math.hypot(...ub)||1,m=8,
+    p1=[V[0]+ua[0]/la*m,V[1]+ua[1]/la*m],p2=[V[0]+ua[0]/la*m+ub[0]/lb*m,V[1]+ua[1]/la*m+ub[1]/lb*m],p3=[V[0]+ub[0]/lb*m,V[1]+ub[1]/lb*m];
+    s+=`<polyline points="${f(p1[0])},${f(p1[1])} ${f(p2[0])},${f(p2[1])} ${f(p3[0])},${f(p3[1])}" fill="none" stroke="#000" stroke-width="0.9"/>`});
+  (o.lens||[]).forEach(([a,b,t])=>{const p=pts[a],q=pts[b],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,dx=q[0]-p[0],dy=q[1]-p[1],l=Math.hypot(dx,dy)||1;let nx=-dy/l,ny=dx/l;if((mx-cx)*nx+(my-cy)*ny<0){nx=-nx;ny=-ny}
+    s+=`<text x="${f(mx+nx*9)}" y="${f(my+ny*9+3.5)}" font-size="10" text-anchor="middle">${t}</text>`});
+  (o.show||names).forEach(n=>{const p=pts[n],off=(o.off||{})[n];let lx,ly;
+    if(off){lx=p[0]+off[0];ly=p[1]+off[1]}else{const dx=p[0]-cx,dy=p[1]-cy,l=Math.hypot(dx,dy)||1;lx=p[0]+dx/l*11;ly=p[1]+dy/l*11+4}
+    s+=`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="1.7" fill="#000"/><text x="${f(lx)}" y="${f(ly)}" font-size="11" font-style="italic" text-anchor="middle">${n}</text>`});
+  return `<div class="figure">${s}</svg></div>`;
+}
+const PYT8=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],[15,20,25],[10,24,26],[20,21,29]];
+const pyt=r=>{const t=r.pick(PYT8);return r.chance(.5)?t:[t[1],t[0],t[2]]};
+const HRT=[[15,20,25],[30,40,50],[45,60,75],[60,80,100]];
+const hrt=r=>{const t=r.pick(HRT);return r.chance(.5)?t:[t[1],t[0],t[2]]};
+const TRI8=s=>`Δ${I(s)}`;
+const cm=n=>`${fmt(n)} cm`;
+/* tam giác ABC vuông tại A, AB=a, AC=b, đường cao AH (toạ độ để vẽ hình) */
+function triRightPts(a,b){const c=Math.hypot(a,b);return{B:[0,0],C:[c,0],A:[a*a/c,a*b/c],H:[a*a/c,0]}}
+const SIM='∼';
+
+N8('m8-9-ratio',9,'NB',r=>{
+  const a=r.int(2,9),b=r.int(2,9);if(a===b)return T.nlc['m8-9-ratio'].gen(r);
+  const q=Q(a,b);
+  return mkTxt(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')}, biết ${I('AB')} = ${a} cm, ${I('DE')} = ${b} cm. Tỉ số đồng dạng của ${TRI8('ABC')} so với ${TRI8('DEF')} là`,correct:qh(q),wrongs:[qh(Q(b,a)),qh(Q(a+b,b)),qh(Q(a,a+b)),qh(Q(a,b+1)),qh(Q(a*a,b*b))],
+    sol:`Tỉ số đồng dạng của ${TRI8('ABC')} so với ${TRI8('DEF')} bằng tỉ số hai cạnh tương ứng ${I('AB')} và ${I('DE')}: ${fr(a,b)}${q[1]===b?'':` = ${qh(q)}`}.`,chk:()=>q[0]/q[1]===a/b});
+});
+N8('m8-9-sides',9,'TH',r=>{
+  const k=r.int(2,4),a=r.int(2,7),b=r.int(2,9),c=r.int(2,9),side=r.pick([['BC','EF',b],['CA','FD',c]]);
+  return mkNum(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')}, ${I('AB')} = ${a} cm, ${I(side[0])} = ${side[2]} cm, ${I('DE')} = ${k*a} cm. Độ dài ${I(side[1])} là`,correct:k*side[2],cands:[side[2]+k*a-a,side[2]*a,side[2]+k,k*side[2]+1,side[2],k*a],f:z=>`${z} cm`,
+    sol:`${TRI8('ABC')} ${SIM} ${TRI8('DEF')} nên ${fr('AB','DE')} = ${fr(I(side[0]),I(side[1]))} = ${fr(a,k*a)} = ${fr(1,k)}. Suy ra ${I(side[1])} = ${k}·${side[2]} = ${k*side[2]} cm.`,chk:()=>(k*a)/a===k});
+});
+N8('m8-9-angle',9,'TH',r=>{
+  const A=r.int(4,14)*5,B=r.int(4,14)*5,C=180-A-B;if(C<=10||A===B||B===C||A===C)return T.nlc['m8-9-angle'].gen(r);
+  const val={A,B,C},dv={A:'D',B:'E',C:'F'},known=r.shuffle(['A','B','C']).slice(0,2),need=['A','B','C'].find(x=>!known.includes(x)),corr=dv[need];
+  return mkNum(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')}, biết ∠${I(known[0])} = ${val[known[0]]}°, ∠${I(known[1])} = ${val[known[1]]}°. Số đo ∠${I(corr)} là`,correct:val[need],cands:[180-val[known[0]],180-val[known[1]],val[known[0]]+val[known[1]],val[known[0]],val[known[1]],val[need]+10],f:z=>`${z}°`,
+    sol:`${TRI8('ABC')} ${SIM} ${TRI8('DEF')} nên các góc tương ứng bằng nhau: ∠${corr} = ∠${need}. Trong ${TRI8('ABC')}: ∠${need} = 180° ${MINUS} ${val[known[0]]}° ${MINUS} ${val[known[1]]}° = ${val[need]}°. Vậy ∠${corr} = ${val[need]}°.`,chk:()=>A+B+C===180});
+});
+N8('m8-9-case',9,'NB',r=>{
+  const L={ccc:'cạnh – cạnh – cạnh (c.c.c)',cgc:'cạnh – góc – cạnh (c.g.c)',gg:'góc – góc (g.g)'};
+  const q=r.pick([
+    {t:`ba cặp cạnh tương ứng của hai tam giác tỉ lệ với nhau`,k:'ccc'},
+    {t:`hai cặp cạnh tương ứng của hai tam giác tỉ lệ và các góc xen giữa hai cặp cạnh đó bằng nhau`,k:'cgc'},
+    {t:`hai góc của tam giác này lần lượt bằng hai góc của tam giác kia`,k:'gg'}]);
+  return mkTxt(r,{stem:`Nếu ${q.t} thì hai tam giác đồng dạng theo trường hợp`,correct:L[q.k],wrongs:[...Object.keys(L).filter(z=>z!==q.k).map(z=>L[z]),'cạnh – cạnh – góc (c.c.g)'],
+    sol:`Đây là trường hợp đồng dạng ${L[q.k]}. Không có trường hợp đồng dạng “cạnh – cạnh – góc” tổng quát.`,chk:()=>true});
+});
+N8('m8-9-check',9,'TH',r=>{
+  const t=r.pick([[3,4,5],[4,5,6],[2,3,4],[5,6,7],[6,8,10],[5,12,13],[4,6,9],[7,8,10]]),k=r.pick([2,3]),[a,b,c]=t;
+  const S=(x,y,z)=>`(${x} cm; ${y} cm; ${z} cm)`,base=S(a,b,c),ok=S(k*a,k*b,k*c);
+  const wr=[S(k*a,k*b,k*c+1),S(k*a+1,k*b+1,k*c+1),S(a+k,b+k,c+k),S(k*a,k*b+1,k*c),S(k*a+2,k*b,k*c)].filter(z=>z!==ok);
+  return mkTxt(r,{stem:`Cho tam giác ${I('ABC')} có độ dài ba cạnh ${base}. Tam giác nào sau đây đồng dạng với ${TRI8('ABC')}? (Cho biết độ dài ba cạnh của tam giác đó.)`,correct:ok,wrongs:wr,
+    sol:`Hai tam giác đồng dạng theo trường hợp c.c.c khi ba cặp cạnh tương ứng tỉ lệ. Với ${ok}: ${fr(k*a,a)} = ${fr(k*b,b)} = ${fr(k*c,c)} = ${k}, nên đồng dạng với ${TRI8('ABC')}; các bộ còn lại không có ba tỉ số bằng nhau.`,
+    chk:()=>wr.every(w=>w!==ok)&&(()=>{const re=/\((\d+) cm; (\d+) cm; (\d+) cm\)/;return wr.every(w=>{const m=w.match(re).slice(1).map(Number);return !(m[0]/a===m[1]/b&&m[1]/b===m[2]/c)})})()});
+});
+N8('m8-9-perim',9,'TH',r=>{
+  const m=r.int(1,4),n=r.int(m+1,m+4),g=(x,y)=>y?g(y,x%y):x;if(g(m,n)!==1)return T.nlc['m8-9-perim'].gen(r);
+  const p1=r.int(2,6)*n;/* chu vi ΔDEF, ΔABC ∼ ΔDEF tỉ số m/n */
+  const ans=p1*m/n;
+  return mkNum(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')} theo tỉ số đồng dạng ${fr(m,n)}. Biết chu vi ${TRI8('DEF')} bằng ${p1} cm. Chu vi ${TRI8('ABC')} bằng`,correct:ans,cands:[p1*n/m,p1*m*m/(n*n),p1+m,p1-m,p1*m,ans+n],f:z=>`${fmt(z)} cm`,
+    sol:`Tỉ số chu vi của hai tam giác đồng dạng bằng tỉ số đồng dạng nên chu vi ${TRI8('ABC')} = ${fr(m,n)}·${p1} = ${ans} cm.`,chk:()=>Number.isInteger(ans)});
+});
+N8('m8-9-area',9,'TH',r=>{
+  const m=r.int(1,4),n=r.int(m+1,m+3),g=(x,y)=>y?g(y,x%y):x;if(g(m,n)!==1)return T.nlc['m8-9-area'].gen(r);
+  const s1=r.int(1,6)*m*m,ans=s1*n*n/(m*m);
+  return mkNum(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')} theo tỉ số đồng dạng ${fr(m,n)}. Biết diện tích ${TRI8('ABC')} bằng ${s1} cm². Diện tích ${TRI8('DEF')} bằng`,correct:ans,cands:[s1*n/m,s1*m*m/(n*n),s1+n-m,s1*n,ans+n*n,ans-n],f:z=>`${fmt(z)} cm²`,
+    sol:`Tỉ số diện tích bằng bình phương tỉ số đồng dạng: ${fr('S<sub>ABC</sub>','S<sub>DEF</sub>')} = ${fr(m*m,n*n)}. Suy ra diện tích ${TRI8('DEF')} = ${s1}·${fr(n*n,m*m)} = ${ans} cm².`,chk:()=>Number.isInteger(ans)&&ans>0});
+});
+N8('m8-9-pyth',9,'NB',r=>{
+  const [a,b,c]=pyt(r);
+  return mkNum(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Độ dài cạnh ${I('BC')} là`,correct:c,cands:[a+b,c+1,c-1,Math.abs(b*b-a*a),a*b,c+2],f:z=>`${z} cm`,
+    sol:`Theo định lí Pythagore: ${I('BC')}${sup(2)} = ${I('AB')}${sup(2)} + ${I('AC')}${sup(2)} = ${a}${sup(2)} + ${b}${sup(2)} = ${c*c}. Vậy ${I('BC')} = ${c} cm.`,chk:()=>a*a+b*b===c*c});
+});
+N8('m8-9-pyth2',9,'TH',r=>{
+  const [a,b,c]=pyt(r);
+  return mkNum(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('BC')} = ${c} cm, ${I('AB')} = ${a} cm. Độ dài cạnh ${I('AC')} là`,correct:b,cands:[c-a,c+a,b+1,b-1,c,Math.round((c*c+a*a)**.5)],f:z=>`${z} cm`,
+    sol:`Theo định lí Pythagore: ${I('AC')}${sup(2)} = ${I('BC')}${sup(2)} ${MINUS} ${I('AB')}${sup(2)} = ${c*c} ${MINUS} ${a*a} = ${b*b}. Vậy ${I('AC')} = ${b} cm.`,chk:()=>a*a+b*b===c*c});
+});
+N8('m8-9-inv',9,'NB',r=>{
+  const [a,b,c]=r.pick(PYT8.slice(0,6)),S=(x,y,z)=>`${x} cm, ${y} cm, ${z} cm`;
+  const wr=[S(a,b,c+1),S(a+1,b+1,c+1),S(a+1,b,c),S(a,b+2,c+1),S(a+2,b+3,c+4)].filter(z=>z!==S(a,b,c));
+  return mkTxt(r,{stem:`Bộ ba độ dài nào sau đây là độ dài ba cạnh của một tam giác vuông?`,correct:S(a,b,c),wrongs:wr,
+    sol:`Theo định lí Pythagore đảo, tam giác có ba cạnh ${a}, ${b}, ${c} là tam giác vuông vì ${a}${sup(2)} + ${b}${sup(2)} = ${a*a+b*b} = ${c}${sup(2)}; các bộ còn lại không thỏa mãn.`,
+    chk:()=>wr.every(w=>{const m=w.match(/\d+/g).map(Number).sort((x,y)=>x-y);return m[0]*m[0]+m[1]*m[1]!==m[2]*m[2]})});
+});
+N8('m8-9-diag',9,'TH',r=>{
+  const [a,b,c]=pyt(r);
+  return mkNum(r,{stem:`Một hình chữ nhật có chiều dài ${Math.max(a,b)} cm và chiều rộng ${Math.min(a,b)} cm. Độ dài đường chéo của hình chữ nhật là`,correct:c,cands:[a+b,c+1,c-1,Math.abs(a-b),a*b],f:z=>`${z} cm`,
+    sol:`Đường chéo chia hình chữ nhật thành hai tam giác vuông có hai cạnh góc vuông ${a} cm và ${b} cm. Độ dài đường chéo = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${rt(c*c)} = ${c} cm.`,chk:()=>a*a+b*b===c*c});
+});
+N8('m8-9-sqdiag',9,'TH',r=>{
+  const a=r.int(2,12);
+  return mkTxt(r,{stem:`Đường chéo của hình vuông có cạnh ${a} cm có độ dài là`,correct:`${a}${rt(2)} cm`,wrongs:[`${2*a} cm`,`${a*a}${rt(2)} cm`,`${rt(a)} cm`,`${a} cm`,`${a}${rt(3)} cm`],
+    sol:`Đường chéo chia hình vuông thành hai tam giác vuông cân có cạnh góc vuông ${a} cm nên độ dài đường chéo = ${rt(`${a}${sup(2)} + ${a}${sup(2)}`)} = ${rt(2*a*a)} = ${a}${rt(2)} cm.`,chk:()=>true});
+});
+N8('m8-9-isoh',9,'TH',r=>{
+  const [m,h,c]=pyt(r);
+  return mkNum(r,{stem:`Tam giác ${I('ABC')} cân tại ${I('A')} có ${I('AB')} = ${I('AC')} = ${c} cm, ${I('BC')} = ${2*m} cm. Độ dài đường cao ${I('AH')} là`,correct:h,cands:[c-m,c+m,h+1,h-1,m],f:z=>`${z} cm`,
+    sol:`${I('AH')} cũng là trung tuyến nên ${I('HB')} = ${m} cm. Trong tam giác vuông ${I('AHB')}: ${I('AH')}${sup(2)} = ${c}${sup(2)} ${MINUS} ${m}${sup(2)} = ${h*h}. Vậy ${I('AH')} = ${h} cm.`,chk:()=>m*m+h*h===c*c});
+});
+N8('m8-9-par',9,'TH',r=>{
+  const b1=r.int(5,12),a1=r.int(2,b1-2),k=r.int(2,4),bc=a1*k*1,x=Q(a1*bc,b1);
+  if(x[1]!==1)return T.nlc['m8-9-par'].gen(r);
+  return mkNum(r,{stem:`Cho tam giác ${I('ABC')}, điểm ${I('D')} thuộc ${I('AB')}, điểm ${I('E')} thuộc ${I('AC')} sao cho ${I('DE')} // ${I('BC')}. Biết ${I('AD')} = ${a1} cm, ${I('AB')} = ${b1} cm, ${I('BC')} = ${bc} cm. Độ dài ${I('DE')} là`,correct:x[0],cands:[bc-a1,bc*b1/a1,x[0]+1,x[0]-1,bc+b1-a1],f:z=>`${fmt(z)} cm`,
+    sol:`${I('DE')} // ${I('BC')} nên ${TRI8('ADE')} ${SIM} ${TRI8('ABC')}, suy ra ${fr('DE','BC')} = ${fr('AD','AB')}. Do đó ${I('DE')} = ${I('BC')}·${fr(a1,b1)} = ${bc}·${a1}/${b1} = ${x[0]} cm.`,chk:()=>a1*bc%b1===0});
+});
+N8('m8-9-hrt',9,'TH',r=>{
+  const [a,b,c]=hrt(r),AH=a*b/c,BH=a*a/c,CH=b*b/c,ask=r.pick(['AH','BH','CH']);
+  const val={AH,BH,CH},ex={AH:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${AH} cm`,BH:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${BH} cm`,CH:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${CH} cm`};
+  return mkNum(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, ${I('BC')} = ${c} cm. Độ dài ${I(ask)} là`,correct:val[ask],cands:[AH,BH,CH,a+b-c,val[ask]+1,val[ask]-1,c-val[ask]].filter(z=>z!==val[ask]),f:z=>`${fmt(z)} cm`,
+    sol:`Áp dụng hệ thức lượng trong tam giác vuông (hoặc dùng các cặp tam giác đồng dạng): ${ex[ask]}.`,chk:()=>Number.isInteger(AH)&&Number.isInteger(BH)&&Number.isInteger(CH)&&BH+CH===c});
+});
+N8('m8-9-shadow',9,'TH',r=>{
+  const p=r.pick([1,2,3]),q=r.pick([2,3,4].filter(z=>z!==p)),k=r.int(3,8);
+  return mkNum(r,{stem:`Vào cùng một thời điểm, một cọc tiêu cao ${p} m có bóng trên mặt đất dài ${q} m, còn một cái cây có bóng dài ${k*q} m. Chiều cao của cái cây là (xem tia nắng song song, cọc và cây vuông góc với mặt đất)`,correct:k*p,cands:[k*q,p+k,k*p+1,k*p-1,q*k+p,p*q],f:z=>`${z} m`,
+    sol:`Hai tam giác vuông tạo bởi cọc và bóng của nó, cây và bóng của nó đồng dạng (g.g) nên ${fr('chiều cao cây','chiều cao cọc')} = ${fr('bóng cây','bóng cọc')} = ${fr(k*q,q)} = ${k}. Chiều cao cây = ${k}·${p} = ${k*p} m.`,chk:()=>true});
+});
+N8('m8-9-ladder',9,'TH',r=>{
+  const [d,h,l]=pyt(r),ask=r.chance(.5);
+  return mkNum(r,{stem:ask?`Một chiếc thang dài ${l} m dựa vào tường thẳng đứng, chân thang cách tường ${d} m. Đầu trên của thang chạm tường ở độ cao bao nhiêu mét (so với mặt đất, mặt đất nằm ngang)?`:`Một chiếc thang dài ${l} m dựa vào tường thẳng đứng. Khi đầu trên của thang chạm tường ở độ cao ${h} m so với mặt đất thì chân thang cách tường bao nhiêu mét?`,correct:ask?h:d,cands:ask?[l-d,l+d,h+1,h-1,l]:[l-h,l+h,d+1,d-1,l],f:z=>`${z} m`,
+    sol:`Thang, tường và mặt đất tạo thành tam giác vuông có cạnh huyền ${l} m. ${ask?`Chiều cao = ${rt(`${l}${sup(2)} ${MINUS} ${d}${sup(2)}`)} = ${rt(h*h)} = ${h} m`:`Khoảng cách = ${rt(`${l}${sup(2)} ${MINUS} ${h}${sup(2)}`)} = ${rt(d*d)} = ${d} m`}.`,chk:()=>d*d+h*h===l*l});
+});
+
+DS8('ds8-9-sim',9,'NB',r=>{
+  const m=r.int(1,3),n=r.int(m+1,m+3),g=(x,y)=>y?g(y,x%y):x;if(g(m,n)!==1)return T.ds['ds8-9-sim'].gen(r);
+  const a=r.int(2,6)*m,b=r.int(2,6)*m,c=r.int(2,6)*m;/* ΔABC ∼ ΔDEF theo tỉ số m/n */
+  if(a===c||a+b<=c||b+c<=a||a+c<=b)return T.ds['ds8-9-sim'].gen(r);
+  const items=[
+    {t:`${I('DE')} = ${a*n/m} cm.`,f:'',why:`${fr('AB','DE')} = ${fr(m,n)} nên ${I('DE')} = ${a}·${n}/${m} = ${a*n/m} cm.`},
+    {t:`∠${I('DEF')} = ∠${I('ABC')}.`,f:`∠${I('DEF')} = ∠${I('ACB')}.`,why:`Hai tam giác đồng dạng có các góc tương ứng bằng nhau: ∠DEF = ∠ABC (đỉnh ${I('E')} tương ứng với đỉnh ${I('B')}); vì ${I('AB')} ≠ ${I('CA')} nên ∠ABC ≠ ∠ACB.`},
+    {t:`Tỉ số chu vi của ${TRI8('ABC')} và ${TRI8('DEF')} bằng ${fr(m,n)}.`,f:`Tỉ số chu vi của ${TRI8('ABC')} và ${TRI8('DEF')} bằng ${fr(m*m,n*n)}.`,why:`Tỉ số chu vi bằng tỉ số đồng dạng ${fr(m,n)}.`},
+    {t:`Tỉ số diện tích của ${TRI8('ABC')} và ${TRI8('DEF')} bằng ${fr(m*m,n*n)}.`,f:`Tỉ số diện tích của ${TRI8('ABC')} và ${TRI8('DEF')} bằng ${fr(m,n)}.`,why:`Tỉ số diện tích bằng bình phương tỉ số đồng dạng: ${fr(m*m,n*n)}.`}
+  ];
+  const dd=a*n/m,wrongDE=dd+r.pick([1,2,3]);
+  items[0].f=`${I('DE')} = ${wrongDE} cm.`;
+  return mkDS(r,{stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')} theo tỉ số đồng dạng ${fr(m,n)}, biết ${I('AB')} = ${a} cm, ${I('BC')} = ${b} cm, ${I('CA')} = ${c} cm. Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>Number.isInteger(dd)&&wrongDE!==dd});
+});
+DS8('ds8-9-pyth',9,'TH',r=>{
+  const [a,b,c]=hrt(r),AH=a*b/c,BH=a*a/c,CH=b*b/c;
+  const P=triRightPts(a,b);
+  const items=[
+    {t:`${I('BC')} = ${c} cm.`,f:`${I('BC')} = ${c+1} cm.`,why:`${I('BC')}${sup(2)} = ${a}${sup(2)} + ${b}${sup(2)} = ${c*c}.`},
+    {t:`${TRI8('HBA')} ${SIM} ${TRI8('ABC')}.`,f:`${TRI8('HBA')} ${SIM} ${TRI8('ACB')}.`,why:`Hai tam giác vuông ${TRI8('HBA')} và ${TRI8('ABC')} có chung góc nhọn ${I('B')} nên đồng dạng, với ${I('H')}↔${I('A')}, ${I('B')}↔${I('B')}, ${I('A')}↔${I('C')}.`},
+    {t:`${I('AH')} = ${AH} cm.`,f:`${I('AH')} = ${AH+r.pick([2,3])} cm.`,why:`${I('AH')}·${I('BC')} = ${I('AB')}·${I('AC')} nên ${I('AH')} = ${a}·${b}/${c} = ${AH} cm.`},
+    {t:`${I('BH')} = ${BH} cm.`,f:`${I('BH')} = ${CH} cm.`,why:`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${BH} cm.`}
+  ];
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm.${fig2D(P,[['A','B'],['B','C'],['C','A'],['A','H']],{right:[['B','A','C'],['A','H','B']],off:{H:[0,15]}})} Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>BH!==CH&&a*a+b*b===c*c});
+});
+
+TLN8('t8-9-pyth',9,'TH',r=>{
+  const f=r.int(0,2);let stem,ans,sol;
+  if(f===0){const [a,b,c]=pyt(r);stem=`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Tính độ dài ${I('BC')} (đơn vị cm).`;ans=c;sol=`${I('BC')}${sup(2)} = ${a}${sup(2)} + ${b}${sup(2)} = ${c*c} nên ${I('BC')} = ${c} cm.`}
+  else if(f===1){const [d,h,l]=pyt(r);stem=`Một chiếc thang dài ${l} m dựa vào bức tường thẳng đứng, chân thang cách tường ${d} m. Đầu trên của thang cách mặt đất bao nhiêu mét?`;ans=h;sol=`Chiều cao = ${rt(`${l}${sup(2)} ${MINUS} ${d}${sup(2)}`)} = ${rt(h*h)} = ${h} m.`}
+  else{const [a,b,c]=pyt(r);stem=`Một hình chữ nhật có hai kích thước ${a} cm và ${b} cm. Tính độ dài đường chéo của hình chữ nhật (đơn vị cm).`;ans=c;sol=`Đường chéo = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${rt(c*c)} = ${c} cm.`}
+  return{kind:'tln',stem,ans,unit:'',sol,chk:()=>true};
+});
+TLN8('t8-9-sim',9,'TH',r=>{
+  const a=r.int(3,8),k=r.int(2,5),b=r.int(3,9);
+  return{kind:'tln',stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('MNP')} có ${I('AB')} = ${a} cm, ${I('BC')} = ${b} cm, ${I('MN')} = ${k*a} cm. Tính độ dài ${I('NP')} (đơn vị cm).`,ans:k*b,unit:'',
+    sol:`${fr('MN','AB')} = ${fr('NP','BC')} = ${fr(k*a,a)} = ${k}, nên ${I('NP')} = ${k}·${b} = ${k*b} cm.`,chk:()=>true};
+});
+TLN8('t8-9-height',9,'TH',r=>{
+  const [a,b,c]=hrt(r),ask=r.pick(['AH','BH','CH']),v={AH:a*b/c,BH:a*a/c,CH:b*b/c}[ask];
+  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Tính độ dài ${I(ask)} (đơn vị cm).`,ans:v,unit:'',
+    sol:`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm. ${ask==='AH'?`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${v}`:ask==='BH'?`${I('AB')}${sup(2)} = ${I('BH')}·${I('BC')} nên ${I('BH')} = ${a}${sup(2)}/${c} = ${v}`:`${I('AC')}${sup(2)} = ${I('CH')}·${I('BC')} nên ${I('CH')} = ${b}${sup(2)}/${c} = ${v}`} cm.`,chk:()=>Number.isInteger(v)};
+});
+TLN8('t8-9-shadow',9,'VD',r=>{
+  const p=r.pick([1.5,2,3]),q=r.pick([2,3,4].filter(z=>z!==p)),k=r.int(4,9);
+  const ans=k*p;
+  return{kind:'tln',stem:`Vào cùng một thời điểm, một cọc cao ${fmt(p)} m có bóng dài ${q} m, một tòa nhà có bóng dài ${k*q} m. Tính chiều cao của tòa nhà (đơn vị m).`,ans,unit:'',
+    sol:`Hai tam giác vuông tạo bởi vật và bóng của nó đồng dạng (g.g), nên chiều cao tòa nhà = ${fmt(p)}·${fr(k*q,q)} = ${fmt(ans)} m.`,chk:()=>Math.abs(ans*100-Math.round(ans*100))<1e-9};
+});
+TLN8('t8-9-area',9,'VD',r=>{
+  const m=r.int(1,3),n=r.int(m+1,m+3),g=(x,y)=>y?g(y,x%y):x;if(g(m,n)!==1)return T.tln['t8-9-area'].gen(r);
+  const s=r.int(1,5)*n*n,ans=s*m*m/(n*n);
+  return{kind:'tln',stem:`Cho ${TRI8('ABC')} ${SIM} ${TRI8('DEF')} theo tỉ số đồng dạng ${fr(m,n)}. Biết diện tích ${TRI8('DEF')} bằng ${s} cm². Tính diện tích ${TRI8('ABC')} (đơn vị cm²).`,ans,unit:'',
+    sol:`Tỉ số diện tích bằng bình phương tỉ số đồng dạng: ${fr('S<sub>ABC</sub>','S<sub>DEF</sub>')} = ${fr(m*m,n*n)}. Vậy diện tích ${TRI8('ABC')} = ${s}·${fr(m*m,n*n)} = ${ans} cm².`,chk:()=>Number.isInteger(ans)};
+});
+TLN8('t8-9-bis',9,'VD',r=>{
+  /* AD là phân giác: DB/DC = AB/AC ⟹ DC = BC·AC/(AB + AC) */
+  let a,b,c;for(let i=0;i<500;i++){a=r.int(3,12);b=r.int(3,12);c=r.int(Math.abs(a-b)+1,a+b-1);if(a!==b&&(c*b)%(a+b)===0)break}
+  const dc=c*b/(a+b);if((c*b)%(a+b)!==0)return T.tln['t8-9-bis'].gen(r);
+  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} có ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, ${I('BC')} = ${c} cm. Đường phân giác ${I('AD')} (${I('D')} thuộc ${I('BC')}). Tính độ dài ${I('DC')} (đơn vị cm).`,ans:dc,unit:'',
+    sol:`Theo tính chất đường phân giác: ${fr('DB','DC')} = ${fr('AB','AC')} = ${fr(a,b)}, suy ra ${fr('DC','BC')} = ${fr(b,a+b)}. Vậy ${I('DC')} = ${c}·${b}/${a+b} = ${dc} cm.`,chk:()=>(c*b)%(a+b)===0&&a+b>c&&Math.abs(a-b)<c};
+});
+TLN8('t8-9-vdc',9,'VDC',r=>{
+  const [a,b,c]=hrt(r),AH=a*b/c;
+  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Kẻ đường cao ${I('AH')}; gọi ${I('M')}, ${I('N')} lần lượt là hình chiếu của ${I('H')} trên ${I('AB')} và ${I('AC')}. Tính độ dài ${I('MN')} (đơn vị cm).`,ans:AH,unit:'',
+    sol:`Tứ giác ${I('AMHN')} có ba góc vuông (∠${I('A')} = ∠${I('M')} = ∠${I('N')} = 90°) nên là hình chữ nhật, suy ra ${I('MN')} = ${I('AH')}. Ta có ${I('BC')} = ${c} cm nên ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm. Vậy ${I('MN')} = ${AH} cm.`,chk:()=>Number.isInteger(AH)};
+});
+
+/* ----- Tự luận chương IX ----- */
+TL8('tl8-9-hrt',9,'TH','geo',r=>{
+  const [a,b,c]=hrt(r),AH=a*b/c,BH=a*a/c,P=triRightPts(a,b);
+  const fig=fig2D(P,[['A','B'],['B','C'],['C','A'],['A','H']],{right:[['B','A','C'],['A','H','B']],off:{H:[0,15]}});
+  return{kind:'tl',title:'Tam giác đồng dạng',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}.${fig} Chứng minh ${TRI8('HBA')} ${SIM} ${TRI8('ABC')}.`},
+    {pts:.5,html:`Cho ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm. Tính độ dài ${I('BC')} và ${I('AH')}.`}],
+    sol:[ptxt([[`Xét ${TRI8('HBA')} và ${TRI8('ABC')} có ∠${I('BHA')} = ∠${I('BAC')} = 90° và ∠${I('B')} chung.`,.25],[`Do đó ${TRI8('HBA')} ${SIM} ${TRI8('ABC')} (g.g).`,.25]]),
+      ptxt([[`${I('BC')} = ${rt(`${a}${sup(2)} + ${b}${sup(2)}`)} = ${c} cm (định lí Pythagore).`,.25],[`${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm.`,.25]])],
+    chk:()=>Number.isInteger(AH)&&a*a+b*b===c*c};
+});
+TL8('tl8-9-alt',9,'VD','geo',r=>{
+  /* ΔABC nhọn, BD ⊥ AC, CE ⊥ AB; cos A = u/v, AB = v·m, AC = v·n, AD = u·m, AE = u·n */
+  let u,v,m,n;
+  for(let i=0;i<300;i++){[u,v]=r.pick([[1,2],[1,3],[2,3],[3,4],[1,4],[2,5]]);m=r.int(1,4);n=r.int(1,4);if(n!==m&&u*m<v*n&&u*n<v*m)break}
+  if(!(n!==m&&u*m<v*n&&u*n<v*m))return T.tl['tl8-9-alt'].gen(r);
+  const AB=v*m,AC=v*n,AD=u*m,AE=u*n,cosA=u/v,sinA=Math.sqrt(1-cosA*cosA);
+  const Pt={A:[0,0],B:[AB,0],C:[AC*cosA,AC*sinA],E:[AC*cosA,0],D:[AB*cosA*cosA,AB*cosA*sinA]};
+  const fig=fig2D(Pt,[['A','B'],['B','C'],['C','A'],['B','D'],['C','E']],{right:[['A','D','B'],['A','E','C']],off:{E:[0,15]}});
+  return{kind:'tl',title:'Tam giác đồng dạng (hai đường cao)',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác nhọn ${I('ABC')} có hai đường cao ${I('BD')} và ${I('CE')} (${I('D')} thuộc ${I('AC')}, ${I('E')} thuộc ${I('AB')}).${fig} Chứng minh ${TRI8('ABD')} ${SIM} ${TRI8('ACE')}.`},
+    {pts:.5,html:`Chứng minh ${I('AD')}·${I('AC')} = ${I('AE')}·${I('AB')}. Biết ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm, ${I('AE')} = ${AE} cm, tính độ dài ${I('AD')}.`}],
+    sol:[ptxt([[`Xét ${TRI8('ABD')} và ${TRI8('ACE')} có ∠${I('ADB')} = ∠${I('AEC')} = 90° và ∠${I('A')} chung.`,.25],[`Do đó ${TRI8('ABD')} ${SIM} ${TRI8('ACE')} (g.g).`,.25]]),
+      ptxt([[`Từ ${TRI8('ABD')} ${SIM} ${TRI8('ACE')} suy ra ${fr('AD','AE')} = ${fr('AB','AC')}, tức ${I('AD')}·${I('AC')} = ${I('AE')}·${I('AB')}.`,.25],[`${I('AD')} = ${I('AE')}·${I('AB')}/${I('AC')} = ${AE}·${AB}/${AC} = ${AD} cm.`,.25]])],
+    chk:()=>AD*AC===AE*AB&&AB>AE&&AC>AD};
+});
+TL8('tl8-9-ladder',9,'VD','real',r=>{
+  const [d,h,l]=pyt(r),down=r.int(1,Math.min(3,h-1));
+  /* thang dài l; chân cách tường d, chạm tường ở độ cao h. Trượt xuống down mét: cao h − down, chân cách tường √(l² − (h−down)²) (không nhất thiết nguyên) */
+  const h2=h-down,x2=l*l-h2*h2;
+  return{kind:'tl',title:'Ứng dụng định lí Pythagore',parts:[
+    {pts:.5,html:`Một chiếc thang dài ${l} m dựa vào bức tường thẳng đứng. Chân thang cách chân tường ${d} m. Tính độ cao của đầu trên thang so với mặt đất (mặt đất phẳng, nằm ngang).`},
+    {pts:.5,html:`Nếu đầu trên của thang trượt xuống ${down} m thì chân thang cách chân tường bây giờ bao nhiêu mét? (Làm tròn kết quả đến hàng phần mười.)`}],
+    sol:[ptxt([[`Thang, tường và mặt đất tạo thành tam giác vuông với cạnh huyền ${l} m.`,.25],[`Độ cao = ${rt(`${l}${sup(2)} ${MINUS} ${d}${sup(2)}`)} = ${rt(h*h)} = ${h} m.`,.25]]),
+      ptxt([[`Độ cao mới là ${h} ${MINUS} ${down} = ${h2} m. Khoảng cách từ chân thang đến tường là ${rt(`${l}${sup(2)} ${MINUS} ${h2}${sup(2)}`)} = ${rt(x2)}.`,.25],[Number.isInteger(Math.sqrt(x2))?`= ${Math.sqrt(x2)} m.`:`≈ ${fmt(Math.round(Math.sqrt(x2)*10)/10)} m.`,.25]])],
+    chk:()=>d*d+h*h===l*l&&x2>0};
+});
+TL8('tl8-9-vdc',9,'VDC','geo',r=>{
+  const [a,b,c]=hrt(r),AH=a*b/c,P=triRightPts(a,b),AM=a*AH/c,AN=b*AH/c;
+  /* M, N: hình chiếu của H trên AB, AC. AM·AB = AH² = AN·AC. ΔAMN ∼ ΔACB. */
+  /* M, N là chân đường vuông góc hạ từ H */
+  const proj=(Pnt,U,V)=>{const dx=V[0]-U[0],dy=V[1]-U[1],t=((Pnt[0]-U[0])*dx+(Pnt[1]-U[1])*dy)/(dx*dx+dy*dy);return[U[0]+t*dx,U[1]+t*dy]};
+  const Mp=proj(P.H,P.A,P.B),Np=proj(P.H,P.A,P.C);
+  const fig=fig2D({...P,M:Mp,N:Np},[['A','B'],['B','C'],['C','A'],['A','H'],['H','M'],['H','N'],['M','N']],{right:[['B','A','C'],['A','H','B'],['A','M','H'],['A','N','H']],off:{H:[0,15]}});
+  return{kind:'tl',title:'Tam giác đồng dạng và hệ thức lượng',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}, đường cao ${I('AH')}. Gọi ${I('M')}, ${I('N')} lần lượt là hình chiếu của ${I('H')} trên ${I('AB')} và ${I('AC')}.${fig} Chứng minh ${I('AM')}·${I('AB')} = ${I('AH')}${sup(2)} và ${I('AN')}·${I('AC')} = ${I('AH')}${sup(2)}.`},
+    {pts:.5,html:`Chứng minh ${TRI8('AMN')} ${SIM} ${TRI8('ACB')}. Biết ${I('AB')} = ${a} cm, ${I('AC')} = ${b} cm, tính độ dài ${I('MN')}.`}],
+    sol:[ptxt([[`${TRI8('AMH')} ${SIM} ${TRI8('AHB')} (g.g: ∠${I('AMH')} = ∠${I('AHB')} = 90°, ∠${I('A')}${sub(1)} chung) nên ${fr('AM','AH')} = ${fr('AH','AB')}, tức ${I('AM')}·${I('AB')} = ${I('AH')}${sup(2)}.`,.25],[`Tương tự ${TRI8('ANH')} ${SIM} ${TRI8('AHC')} nên ${I('AN')}·${I('AC')} = ${I('AH')}${sup(2)}.`,.25]]),
+      ptxt([[`Từ hai hệ thức trên có ${I('AM')}·${I('AB')} = ${I('AN')}·${I('AC')}, suy ra ${fr('AM','AC')} = ${fr('AN','AB')}; cùng ∠${I('A')} = 90° nên ${TRI8('AMN')} ${SIM} ${TRI8('ACB')} (c.g.c).`,.25],[`${I('AMHN')} là hình chữ nhật nên ${I('MN')} = ${I('AH')} = ${I('AB')}·${I('AC')}/${I('BC')} = ${a}·${b}/${c} = ${AH} cm (với ${I('BC')} = ${c} cm).`,.25]])],
+    chk:()=>Number.isInteger(AH)&&Math.abs(Math.hypot(Mp[0]-Np[0],Mp[1]-Np[1])-AH)<1e-6};
+});
+/* ================= CHƯƠNG X: MỘT SỐ HÌNH KHỐI TRONG THỰC TIỄN (hình chóp tam giác đều, hình chóp tứ giác đều) ================= */
+/* Bộ (a/2; h; d): nửa cạnh đáy, chiều cao, trung đoạn của hình chóp tứ giác đều */
+const PYR4=[[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10],[8,6,10],[9,12,15],[12,9,15]];
+const pyr4=r=>{const [m,h,d]=r.pick(PYR4);return{a:2*m,h,d}};
+const SABCD=`${I('S.ABCD')}`,SABC=`${I('S.ABC')}`;
+/* Hình vẽ hình chóp tứ giác đều (O tâm đáy, M trung điểm AB) */
+function figPyr4(o={}){
+  const a=4,h=o.h||4.6,P={A:[0,0,0],B:[a,0,0],C:[a,a,0],D:[0,a,0],S:[a/2,a/2,h],O:[a/2,a/2,0],M:[a/2,0,0]};
+  const show=['S','A','B','C','D'].concat(o.mo?['O','M']:[]);
+  return fig3D(P,[['S','A'],['S','B'],['S','C'],['A','B'],['B','C']].concat(o.mo?[['S','M']]:[]),[['S','D'],['A','D'],['D','C']].concat(o.mo?[['S','O'],['O','M']]:[]),show,{w:200,h:170});
+}
+function figPyr3(o={}){
+  const a=4,s=a*Math.sqrt(3)/2,h=o.h||4.4,P={B:[a/2,0,0],A:[0,s,0],C:[a,s,0],S:[a/2,s*2/3,h],O:[a/2,s*2/3,0]};
+  return fig3D(P,[['S','A'],['S','B'],['S','C'],['A','B'],['B','C']],[['A','C']].concat(o.o?[['S','O']]:[]),['S','A','B','C'].concat(o.o?['O']:[]),{w:200,h:170});
+}
+
+N8('m8-10-elem',10,'NB',r=>{
+  const t=r.pick([['tứ giác đều',{mặt:5,cạnh:8,đỉnh:5}],['tam giác đều',{mặt:4,cạnh:6,đỉnh:4}]]),what=r.pick(['mặt','cạnh','đỉnh']),v=t[1][what];
+  return mkNum(r,{stem:`Hình chóp ${t[0]} có bao nhiêu ${what}?`,correct:v,cands:[v+1,v-1,v+2,v*2,t[1].mặt===v?t[1].cạnh:t[1].mặt],
+    sol:`Hình chóp ${t[0]} có ${t[1].đỉnh} đỉnh (1 đỉnh chung và ${t[1].đỉnh-1} đỉnh của đáy), ${t[1].cạnh} cạnh (${t[1].cạnh/2} cạnh bên và ${t[1].cạnh/2} cạnh đáy) và ${t[1].mặt} mặt (${t[1].mặt-1} mặt bên và 1 mặt đáy).`,chk:()=>true});
+});
+N8('m8-10-face',10,'NB',r=>{
+  const q=r.pick([
+    {s:`Mặt đáy của hình chóp tứ giác đều là`,ok:'hình vuông',wr:['hình chữ nhật có hai kích thước khác nhau','hình thoi không là hình vuông','tam giác đều','hình thang cân']},
+    {s:`Các mặt bên của hình chóp tứ giác đều là`,ok:'các tam giác cân bằng nhau',wr:['các hình vuông bằng nhau','các tam giác vuông bằng nhau','các hình chữ nhật bằng nhau','các tam giác có ba cạnh khác nhau']},
+    {s:`Mặt đáy của hình chóp tam giác đều là`,ok:'tam giác đều',wr:['tam giác vuông','tam giác cân không đều','hình vuông','tam giác có ba cạnh khác nhau']},
+    {s:`Chân đường cao của hình chóp tứ giác đều là`,ok:'giao điểm hai đường chéo của đáy',wr:['trung điểm một cạnh đáy','một đỉnh của đáy','trung điểm một cạnh bên','một điểm bất kì trên cạnh đáy']},
+    {s:`Trung đoạn của hình chóp đều là`,ok:'đường cao vẽ từ đỉnh của một mặt bên',wr:['đường cao của hình chóp','một cạnh bên của hình chóp','đường chéo của mặt đáy','đoạn nối hai đỉnh của đáy']}]);
+  return mkTxt(r,{stem:q.s,correct:q.ok,wrongs:r.shuffle(q.wr),sol:`${q.s} ${q.ok}.`,chk:()=>true});
+});
+N8('m8-10-sxq',10,'TH',r=>{
+  if(r.chance(.5)){const {a,d}=pyr4(r),S=2*a*d;
+    return mkNum(r,{stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và trung đoạn ${d} cm. Diện tích xung quanh của hình chóp là`,correct:S,cands:[a*d,4*a*d,S+a*a,a*a,2*a+d],f:z=>`${z} cm²`,
+      sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} với nửa chu vi đáy ${I('p')} = ${fr(`4·${a}`,2)} = ${2*a} cm. Vậy ${I('S')}${sub('xq')} = ${2*a}·${d} = ${S} cm².`,chk:()=>true})}
+  const a=r.int(3,12)*2,d=r.int(4,15),S=3*a*d/2;
+  return mkNum(r,{stem:`Một hình chóp tam giác đều có cạnh đáy ${a} cm và trung đoạn ${d} cm. Diện tích xung quanh của hình chóp là`,correct:S,cands:[3*a*d,a*d,S/3,S+a,a*d/2],f:z=>`${fmt(z)} cm²`,
+    sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} với nửa chu vi đáy ${I('p')} = ${fr(`3·${a}`,2)} = ${3*a/2} cm. Vậy ${I('S')}${sub('xq')} = ${3*a/2}·${d} = ${S} cm².`,chk:()=>Number.isInteger(S)});
+});
+N8('m8-10-vol',10,'TH',r=>{
+  if(r.chance(.5)){const {a,h}=pyr4(r),V=a*a*h/3;
+    return mkNum(r,{stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và chiều cao ${h} cm. Thể tích của hình chóp là`,correct:V,cands:[a*a*h,a*h/3,V*2,a*a*h/2,V+a],f:z=>`${fmt(z)} cm³`,
+      sol:`${I('V')} = ${fr(1,3)}${I('S')}·${I('h')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,chk:()=>Number.isInteger(V)})}
+  const S=r.int(2,12)*3,h=r.int(3,15),V=S*h/3;
+  return mkNum(r,{stem:`Một hình chóp tam giác đều có diện tích đáy ${S} cm² và chiều cao ${h} cm. Thể tích của hình chóp là`,correct:V,cands:[S*h,S*h/2,V+h,V*2,S+h],f:z=>`${fmt(z)} cm³`,
+    sol:`${I('V')} = ${fr(1,3)}${I('S')}·${I('h')} = ${fr(1,3)}·${S}·${h} = ${V} cm³.`,chk:()=>Number.isInteger(V)});
+});
+N8('m8-10-apo',10,'TH',r=>{
+  const {a,h,d}=pyr4(r);
+  return mkNum(r,{stem:`Hình chóp tứ giác đều ${SABCD} có cạnh đáy ${a} cm, chiều cao ${I('SO')} = ${h} cm. Độ dài trung đoạn của hình chóp là`,correct:d,cands:[a/2+h,Math.round(Math.hypot(a,h)),d+1,d-1,h,a],f:z=>`${z} cm`,
+    sol:`Gọi ${I('M')} là trung điểm của ${I('AB')}, ${I('OM')} = ${fr(a,2)} = ${a/2} cm. Tam giác ${I('SOM')} vuông tại ${I('O')} nên ${I('SM')} = ${rt(`${h}${sup(2)} + ${a/2}${sup(2)}`)} = ${rt(d*d)} = ${d} cm.`,chk:()=>h*h+(a/2)**2===d*d});
+});
+N8('m8-10-stp',10,'TH',r=>{
+  const {a,d}=pyr4(r),S=a*a+2*a*d;
+  return mkNum(r,{stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và trung đoạn ${d} cm. Diện tích toàn phần của hình chóp (tổng diện tích các mặt) là`,correct:S,cands:[2*a*d,a*a+a*d,a*a+4*a*d,S+a,4*a*d],f:z=>`${z} cm²`,
+    sol:`${I('S')}${sub('xq')} = ${2*a}·${d} = ${2*a*d} cm², diện tích đáy = ${a}${sup(2)} = ${a*a} cm². Diện tích toàn phần = ${2*a*d} + ${a*a} = ${S} cm².`,chk:()=>true});
+});
+N8('m8-10-h',10,'TH',r=>{
+  const a=r.pick([3,4,5,6,9,10,12]),h=r.int(2,12),V=a*a*h/3;if(!Number.isInteger(V))return T.nlc['m8-10-h'].gen(r);
+  return mkNum(r,{stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và thể tích ${V} cm³. Chiều cao của hình chóp là`,correct:h,ok:c=>c>0&&Number.isInteger(c),cands:[3*h,V/(a*a),h+1,h-1,Math.round(V/a)],f:z=>`${fmt(z)} cm`,
+    sol:`${I('V')} = ${fr(1,3)}${I('a')}${sup(2)}${I('h')} nên ${I('h')} = ${fr(`3${I('V')}`,`${I('a')}${sup(2)}`)} = ${fr(`3·${V}`,a*a)} = ${h} cm.`,chk:()=>3*V===a*a*h});
+});
+N8('m8-10-real',10,'TH',r=>{
+  const {a,h,d}=pyr4(r),kind=r.int(0,1);
+  if(kind===0){const S=2*a*d/100;
+    return mkNum(r,{stem:`Một chiếc lều có dạng hình chóp tứ giác đều, cạnh đáy ${fmt(a/10)} m, trung đoạn ${fmt(d/10)} m. Diện tích vải cần dùng để làm bốn mặt bên của lều (không kể đáy và các mép nối) là`,correct:S,cands:[a*d/100,4*a*d/100,S+a*a/100,(a*a+2*a*d)/100,S*2],f:z=>`${fmt(z)} m²`,
+      sol:`Diện tích vải bằng diện tích xung quanh: ${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${fmt(2*a/10)}·${fmt(d/10)} = ${fmt(S)} m².`,chk:()=>Math.abs(S*100-Math.round(S*100))<1e-9})}
+  const V=a*a*h/3;
+  return mkNum(r,{stem:`Một khối gỗ trang trí có dạng hình chóp tứ giác đều, cạnh đáy ${a} cm, chiều cao ${h} cm. Thể tích khối gỗ là`,correct:V,cands:[a*a*h,V*2,a*a*h/2,V+a*a,a*h],f:z=>`${fmt(z)} cm³`,
+    sol:`${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,chk:()=>Number.isInteger(V)});
+});
+
+DS8('ds8-10-pyr',10,'TH',r=>{
+  const {a,h,d}=pyr4(r),Sxq=2*a*d,V=a*a*h/3;
+  const items=[
+    {t:`Hình chóp ${SABCD} có 8 cạnh.`,f:`Hình chóp ${SABCD} có 6 cạnh.`,why:`Có 4 cạnh bên và 4 cạnh đáy.`},
+    {t:`Trung đoạn của hình chóp bằng ${d} cm.`,f:`Trung đoạn của hình chóp bằng ${a/2+h} cm.`,why:`${I('SM')} = ${rt(`${h}${sup(2)} + ${a/2}${sup(2)}`)} = ${d} cm (${I('M')} là trung điểm của ${I('AB')}).`},
+    {t:`Diện tích xung quanh của hình chóp bằng ${Sxq} cm².`,f:`Diện tích xung quanh của hình chóp bằng ${a*d} cm².`,why:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${2*a}·${d} = ${Sxq} cm².`},
+    {t:`Thể tích của hình chóp bằng ${V} cm³.`,f:`Thể tích của hình chóp bằng ${a*a*h} cm³.`,why:`${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`}
+  ];
+  return mkDS(r,{stem:`Cho hình chóp tứ giác đều ${SABCD} có cạnh đáy ${a} cm, chiều cao ${I('SO')} = ${h} cm.${figPyr4({mo:1})} Xét tính đúng sai của các khẳng định sau:`,items,chk:()=>h*h+(a/2)**2===d*d&&Number.isInteger(V)});
+});
+
+TLN8('t8-10-sxq',10,'TH',r=>{
+  const {a,d}=pyr4(r),S=2*a*d;
+  return{kind:'tln',stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm, trung đoạn ${d} cm. Tính diện tích xung quanh của hình chóp (đơn vị cm²).`,ans:S,unit:'',
+    sol:`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${2*a}·${d} = ${S} cm².`,chk:()=>true};
+});
+TLN8('t8-10-vol',10,'TH',r=>{
+  if(r.chance(.5)){const {a,h}=pyr4(r),V=a*a*h/3;
+    return{kind:'tln',stem:`Tính thể tích của hình chóp tứ giác đều có cạnh đáy ${a} cm và chiều cao ${h} cm (đơn vị cm³).`,ans:V,unit:'',sol:`${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,chk:()=>Number.isInteger(V)}}
+  const S=r.int(2,15)*3,h=r.int(3,12),V=S*h/3;
+  return{kind:'tln',stem:`Tính thể tích của hình chóp tam giác đều có diện tích đáy ${S} cm² và chiều cao ${h} cm (đơn vị cm³).`,ans:V,unit:'',sol:`${I('V')} = ${fr(1,3)}·${S}·${h} = ${V} cm³.`,chk:()=>Number.isInteger(V)};
+});
+TLN8('t8-10-real',10,'VD',r=>{
+  const {a,h,d}=pyr4(r),price=r.pick([20,25,30,40,50]),S=2*a*d;
+  return{kind:'tln',stem:`Người ta làm mái che có dạng bốn mặt bên của một hình chóp tứ giác đều, cạnh đáy ${a} m, chiều cao ${h} m. Chi phí lợp mái là ${price} nghìn đồng/m². Tính tổng chi phí lợp mái (đơn vị nghìn đồng).`,ans:S*price,unit:'',
+    sol:`Trung đoạn ${I('d')} = ${rt(`${h}${sup(2)} + ${a/2}${sup(2)}`)} = ${d} m. Diện tích mái ${I('S')}${sub('xq')} = ${2*a}·${d} = ${S} m². Chi phí: ${S}·${price} = ${S*price} nghìn đồng.`,chk:()=>h*h+(a/2)**2===d*d};
+});
+TLN8('t8-10-vdc',10,'VDC',r=>{
+  const {a,h,d}=pyr4(r),Stp=a*a+2*a*d,V=a*a*h/3;
+  return{kind:'tln',stem:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và diện tích toàn phần (tổng diện tích các mặt) bằng ${Stp} cm². Tính thể tích của hình chóp (đơn vị cm³).`,ans:V,unit:'',
+    sol:`${I('S')}${sub('xq')} = ${Stp} ${MINUS} ${a}${sup(2)} = ${2*a*d} cm², nên trung đoạn ${I('d')} = ${2*a*d}/${2*a} = ${d} cm. Chiều cao ${I('h')} = ${rt(`${d}${sup(2)} ${MINUS} ${a/2}${sup(2)}`)} = ${h} cm. Thể tích ${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,chk:()=>h*h+(a/2)**2===d*d&&Number.isInteger(V)};
+});
+
+TL8('tl8-10-pyr3',10,'TH','real',r=>{
+  const a=r.int(3,10)*2,d=r.int(5,14),k=r.pick([2,3]),Sxq=3*a*d/2;
+  return{kind:'tl',title:'Hình chóp tam giác đều',parts:[
+    {pts:.5,html:`Một hộp quà có dạng hình chóp tam giác đều ${SABC} với cạnh đáy ${a} cm, trung đoạn ${d} cm.${figPyr3({o:1})} Tính diện tích giấy cần dùng để dán kín các mặt bên của hộp (không kể mép dán).`},
+    {pts:.5,html:`Người ta làm một hộp quà thứ hai cũng có dạng hình chóp tam giác đều, có cạnh đáy và trung đoạn đều gấp ${k} lần hộp thứ nhất. Diện tích giấy dán các mặt bên của hộp thứ hai gấp bao nhiêu lần hộp thứ nhất? Tính diện tích đó.`}],
+    sol:[ptxt([[`Nửa chu vi đáy ${I('p')} = ${fr(`3·${a}`,2)} = ${3*a/2} cm.`,.25],[`Diện tích giấy = ${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${3*a/2}·${d} = ${Sxq} cm².`,.25]]),
+      ptxt([[`Hộp thứ hai có nửa chu vi đáy ${k*3*a/2} cm và trung đoạn ${k*d} cm nên ${I('S')}${sub('xq')} = ${k*3*a/2}·${k*d} = ${k*k*Sxq} cm².`,.25],[`Vậy diện tích giấy gấp ${k}·${k} = ${k*k} lần hộp thứ nhất.`,.25]])],
+    chk:()=>Number.isInteger(Sxq)};
+});
+TL8('tl8-10-pyr4',10,'VD','geo',r=>{
+  const {a,h,d}=pyr4(r),Sxq=2*a*d,V=a*a*h/3;
+  return{kind:'tl',title:'Hình chóp tứ giác đều',parts:[
+    {pts:.5,html:`Cho hình chóp tứ giác đều ${SABCD} có cạnh đáy ${a} cm, chiều cao ${I('SO')} = ${h} cm. Gọi ${I('M')} là trung điểm của ${I('AB')}.${figPyr4({mo:1})} Tính độ dài trung đoạn ${I('SM')} và diện tích xung quanh của hình chóp.`},
+    {pts:.5,html:`Tính thể tích của hình chóp ${SABCD}.`}],
+    sol:[ptxt([[`${I('OM')} = ${fr(a,2)} = ${a/2} cm; tam giác ${I('SOM')} vuông tại ${I('O')} nên ${I('SM')} = ${rt(`${h}${sup(2)} + ${a/2}${sup(2)}`)} = ${d} cm.`,.25],[`${I('S')}${sub('xq')} = ${I('p')}·${I('d')} = ${2*a}·${d} = ${Sxq} cm².`,.25]]),
+      ptxt([[`Diện tích đáy = ${a}${sup(2)} = ${a*a} cm².`,.25],[`${I('V')} = ${fr(1,3)}·${a*a}·${h} = ${V} cm³.`,.25]])],
+    chk:()=>h*h+(a/2)**2===d*d&&Number.isInteger(V)};
+});
+TL8('tl8-10-vdc',10,'VDC','geo',r=>{
+  const {a,h,d}=pyr4(r),Stp=a*a+2*a*d,V=a*a*h/3,k=r.pick([2,3]);
+  return{kind:'tl',title:'Hình chóp tứ giác đều (vận dụng cao)',parts:[
+    {pts:.5,html:`Một hình chóp tứ giác đều có cạnh đáy ${a} cm và tổng diện tích các mặt bằng ${Stp} cm². Tính trung đoạn và chiều cao của hình chóp.${figPyr4({mo:1})}`},
+    {pts:.5,html:`Tính thể tích của hình chóp. Nếu giữ nguyên chiều cao và tăng cạnh đáy lên ${k} lần thì thể tích tăng lên bao nhiêu lần?`}],
+    sol:[ptxt([[`${I('S')}${sub('xq')} = ${Stp} ${MINUS} ${a*a} = ${2*a*d} cm² = ${2*a}·${I('d')} ⟹ ${I('d')} = ${d} cm.`,.25],[`${I('h')} = ${rt(`${d}${sup(2)} ${MINUS} ${a/2}${sup(2)}`)} = ${h} cm.`,.25]]),
+      ptxt([[`${I('V')} = ${fr(1,3)}·${a}${sup(2)}·${h} = ${V} cm³.`,.25],[`Cạnh đáy tăng ${k} lần thì diện tích đáy tăng ${k*k} lần, chiều cao không đổi nên thể tích tăng ${k*k} lần.`,.25]])],
+    chk:()=>h*h+(a/2)**2===d*d&&Number.isInteger(V)};
+});
 
 /* ================= Khung đề (theo mẫu 12 + 2 + 4 + 3) ================= */
-const CH_NAME={1:'Đa thức nhiều biến',2:'Hằng đẳng thức đáng nhớ',3:'Tứ giác',4:'Định lí Thalès',5:'Dữ liệu và biểu đồ'};
+const CH_NAME={1:'Đa thức nhiều biến',2:'Hằng đẳng thức đáng nhớ',3:'Tứ giác',4:'Định lí Thalès',5:'Dữ liệu và biểu đồ',6:'Phân thức đại số',7:'Phương trình bậc nhất và hàm số bậc nhất',8:'Mở đầu về tính xác suất của biến cố',9:'Tam giác đồng dạng',10:'Một số hình khối trong thực tiễn'};
 const PTS={nlc:0.25,dsItem:0.25,tln:0.5,tl:1};
 const G8={grade:8,school:'THCS',mon:'Toán 8',chName:CH_NAME,tlQ:[1,1,1],
   note:'Cấu trúc theo một mẫu tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ).'};
@@ -5237,6 +6548,12 @@ const BLUEPRINT={
   ck1:{...G8,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
     nlc:[1,1,2,2,2,3,3,3,4,4,5,5],ds:[3,5],tln:[2,3,4,5],
     tl:[{role:'alg'},{role:'real',chs:[3,5]},{role:'geo',chs:[3,4]}]},
+  gk2:{...G8,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương VI – VII (Kết nối tri thức, tập 2)',chapters:[6,7],
+    nlc:[6,6,6,6,6,6,7,7,7,7,7,7],ds:[6,7],tln:[6,6,7,7],
+    tl:[{role:'alg',chs:[6]},{role:'real',chs:[7]},{role:'alg',chs:[7]}]},
+  ck2:{...G8,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – X (Kết nối tri thức, tập 2)',chapters:[6,7,8,9,10],
+    nlc:[6,6,7,7,7,8,8,9,9,9,10,10],ds:[7,9],tln:[6,8,9,10],
+    tl:[{role:'alg',chs:[6]},{role:'real',chs:[7,8,9]},{role:'geo',chs:[9,10]}]},
   '11gk1':{...G11,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I, II (đến cấp số cộng), IV (Kết nối tri thức)',chapters:[1,2,4],excl:['csn'],
     nlc:[1,1,1,1,1,2,2,2,4,4,4,4],ds:[1,4],tln:[1,1,2,2],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[4]}]},
@@ -5343,9 +6660,9 @@ const LV_NAME={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng',VDC:'Vậ
 /* Ba mức độ khó. Mỗi mức quy định mức nhận thức mong muốn cho từng vị trí câu trong đề.
    Chuẩn ≈ 30/40/20/10 (NB/TH/VD/VDC), theo một khung đề cuối kì I Toán 8 đăng trên cổng giáo dục VNPT. */
 const DIFFS={
-  co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH']},tl:['TH','VD','VD']},
-  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB']},tl:['TH','VD','VDC']},
-  nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH']},tl:['TH','VD','VDC']}
+  co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH'],gk2:['NB','TH','TH','TH'],ck2:['TH','NB','TH','TH']},tl:['TH','VD','VD']},
+  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
+  nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH'],gk2:['TH','VD','VD','VD'],ck2:['VD','TH','VD','VD']},tl:['TH','VD','VDC']}
 };
 /* Độ khó cho lớp 11 (cấu trúc 12 + 3 + 4 + 3 tự luận 0,5 / 0,5 / 1,0). */
 const DIFFS11={
@@ -5670,7 +6987,7 @@ function render(){
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom';
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${bp.grade===7||bp.grade===11?'học kì I và II':'học kì I'}. Các lớp và học kì khác sẽ thêm sau.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
 }
 function syncInputs(){
