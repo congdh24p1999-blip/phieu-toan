@@ -238,6 +238,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
           <label><input type="radio" name="diff" value="nang_cao">Nâng cao</label>
         </div>
         <p class="hint" id="diffHint"></p>
+        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng (ngoài SGK của khối lớp)</span></label>
+        <p class="hint">Ở mức Nâng cao luôn được phép. Trang đáp án ghi rõ câu nào là câu mở rộng.</p>
       </div>
       <div class="field">
         <span class="lbl">Thông tin đầu đề (không bắt buộc)</span>
@@ -1242,7 +1244,7 @@ TL('tl-quad-real',3,'VD','real',r=>{
 });
 TL('tl-geo-rhombus',3,'VDC','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
   {pts:.5,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}. Gọi ${I('M')} là trung điểm của ${I('BC')}; kẻ ${I('MD')} ⊥ ${I('AB')} tại ${I('D')}, ${I('ME')} ⊥ ${I('AC')} tại ${I('E')}. Chứng minh tứ giác ${I('ADME')} là hình chữ nhật.`},
-  {pts:.5,html:`Gọi ${I('N')} là điểm đối xứng với ${I('M')} qua ${I('D')}. Chứng minh tứ giác ${I('AMBN')} là hình thoi.`}],
+  {pts:.5,html:`Trên tia đối của tia ${I('DM')} lấy điểm ${I('N')} sao cho ${I('DN')} = ${I('DM')}. Chứng minh tứ giác ${I('AMBN')} là hình thoi.`}],
   sol:[ptxt([[`Tứ giác ADME có ∠DAE = 90°, ∠ADM = 90°, ∠AEM = 90°`,.25],[`Tứ giác có ba góc vuông là hình chữ nhật. Vậy ADME là hình chữ nhật`,.25]]),
         ptxt([[`MD ⊥ AB, AC ⊥ AB nên MD // AC. M là trung điểm BC nên D là trung điểm AB`,.25],[`D là trung điểm của AB và của MN nên AMBN là hình bình hành; lại có MN ⊥ AB nên AMBN là hình thoi`,.25]])]}));
 TL('tl-geo-para',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
@@ -1251,7 +1253,7 @@ TL('tl-geo-para',3,'VD','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,p
   sol:[ptxt([[`AB // CD và AB = CD nên AE // CF`,.25],[`AE = AB/2 = CD/2 = CF. Tứ giác AECF có AE // CF và AE = CF nên là hình bình hành`,.25]]),
         ptxt([[`O là trung điểm của AC (tính chất hình bình hành ABCD)`,.25],[`AECF là hình bình hành nên AC và EF cắt nhau tại trung điểm của mỗi đường, tức O là trung điểm của EF. Vậy E, O, F thẳng hàng`,.25]])]}));
 TL('tl-geo-isos',3,'VDC','geo',r=>({kind:'tl',title:'Hình học',note:GEO_NOTE,parts:[
-  {pts:.5,html:`Cho tam giác ${I('ABC')} cân tại ${I('A')}, đường cao ${I('AH')}. Gọi ${I('M')} là trung điểm của ${I('AC')}, ${I('N')} là điểm đối xứng với ${I('H')} qua ${I('M')}. Chứng minh tứ giác ${I('AHCN')} là hình chữ nhật.`},
+  {pts:.5,html:`Cho tam giác ${I('ABC')} cân tại ${I('A')}, đường cao ${I('AH')}. Gọi ${I('M')} là trung điểm của ${I('AC')}, trên tia đối của tia ${I('MH')} lấy điểm ${I('N')} sao cho ${I('MN')} = ${I('MH')}. Chứng minh tứ giác ${I('AHCN')} là hình chữ nhật.`},
   {pts:.5,html:`Chứng minh tứ giác ${I('ABHN')} là hình bình hành.`}],
   sol:[ptxt([[`M là trung điểm của AC và của HN nên AHCN là hình bình hành`,.25],[`Có ∠AHC = 90° (AH là đường cao) nên AHCN là hình chữ nhật`,.25]]),
         ptxt([[`AHCN là hình chữ nhật nên AN // HC và AN = HC. Tam giác ABC cân tại A nên đường cao AH cũng là trung tuyến: HB = HC`,.25],[`Suy ra AN // BH và AN = BH, nên ABHN là hình bình hành`,.25]])]}));
@@ -5880,6 +5882,25 @@ N8('m8-7-incdec',7,'NB',r=>{
   return mkTxt(r,{stem:`Cho hàm số ${yLine(a,b)}. Khẳng định nào sau đây đúng?`,correct:ok,wrongs:[op,`Hàm số có hệ số góc bằng ${sg(b)}`,`Đồ thị hàm số đi qua gốc tọa độ`,`Hàm số luôn nhận giá trị dương`],
     sol:`Hệ số ${I('a')} = ${sg(a)} ${inc?'&gt; 0':'&lt; 0'} nên hàm số ${inc?'đồng biến':'nghịch biến'} trên ℝ. Hệ số góc là ${I('a')} = ${sg(a)} (không phải ${sg(b)}); đồ thị cắt trục tung tại (0; ${sg(b)}) nên không đi qua gốc tọa độ.`,chk:()=>b!==0});
 });
+/* Theo SGK Toán 8 (Bài 29): a > 0 thì góc tạo bởi đường thẳng y = ax + b và trục Ox là góc nhọn, a < 0 là góc tù */
+N8('m8-7-angle',7,'NB',r=>{
+  if(r.chance(.5)){
+    const a=r.nz(-6,6),b=r.nz(-6,6),acute=a>0;
+    return mkTxt(r,{stem:`Góc tạo bởi đường thẳng ${yLine(a,b)} và trục ${I('Ox')} là`,correct:acute?'góc nhọn':'góc tù',wrongs:[acute?'góc tù':'góc nhọn','góc vuông','góc bẹt'],
+      sol:`Hệ số góc ${I('a')} = ${sg(a)} ${acute?'&gt; 0':'&lt; 0'} nên góc tạo bởi đường thẳng và trục ${I('Ox')} là góc ${acute?'nhọn':'tù'}.`,chk:()=>true});
+  }
+  const want=r.chance(.5)?'nhọn':'tù',sg1=want==='nhọn'?1:-1,a0=sg1*r.int(1,6),b0=r.nz(-6,6);
+  const others=[1,2,3].map(()=>[-sg1*r.int(1,6),r.nz(-6,6)]);
+  const ok=yLine(a0,b0),wr=others.map(([a,b])=>yLine(a,b));
+  return mkTxt(r,{stem:`Đường thẳng nào sau đây tạo với trục ${I('Ox')} một góc ${want}?`,correct:ok,wrongs:wr.concat([`${I('y')} = ${sg(b0)}`]),
+    sol:`Đường thẳng ${I('y')} = ${I('a')}${X8} + ${I('b')} tạo với trục ${I('Ox')} góc ${want} khi ${I('a')} ${want==='nhọn'?'&gt; 0':'&lt; 0'}. Chỉ ${ok} có hệ số góc ${sg(a0)} thỏa mãn.`,chk:()=>others.every(([a])=>a*sg1<0)});
+});
+N8('m8-7-acute',7,'TH',r=>{
+  const p=r.nz(-5,5),c=r.nz(-5,5),acute=r.chance(.5),mm=I('m');
+  const sym=acute?'&gt;':'&lt;',ok=`${mm} ${sym} ${sg(p)}`,wr=[`${mm} ${acute?'&lt;':'&gt;'} ${sg(p)}`,`${mm} ${sym} ${sg(-p)}`,`${mm} ${acute?'&lt;':'&gt;'} ${sg(-p)}`,`${mm} = ${sg(p)}`];
+  return mkTxt(r,{stem:`Đường thẳng ${I('y')} = (${mm} ${sT(-p)})${X8} ${sT(c)} (với ${mm} ≠ ${sg(p)}) tạo với trục ${I('Ox')} một góc ${acute?'nhọn':'tù'} khi`,correct:ok,wrongs:wr,
+    sol:`Góc tạo bởi đường thẳng và trục ${I('Ox')} là góc ${acute?'nhọn':'tù'} khi hệ số góc ${acute?'dương':'âm'}: ${mm} ${sT(-p)} ${sym} 0 ⟺ ${ok}.`,chk:()=>p!==0});
+});
 N8('m8-7-cross',7,'NB',r=>{
   const mode=r.int(0,2),a1=r.nz(-4,4),b1=r.nz(-5,5);let a2,b2,ok,why;const y2=(a,b)=>mode===1?`${I('y')} = ${sg(b)} ${sT(a,X8)}`:yLine(a,b);
   if(mode===0){a2=a1;b2=b1+r.pick([-3,-2,-1,1,2,3]);ok='Song song với nhau';why=`Hai đường thẳng có cùng hệ số góc ${sg(a1)} và tung độ gốc khác nhau (${sg(b1)} ≠ ${sg(b2)}).`}
@@ -5959,7 +5980,7 @@ DS8('ds8-7-fn',7,'TH',r=>{
   const x1=r.nz(-3,3),y1=a*x1+b,inc=a>0;
   const items=[
     {t:`Hệ số góc của đường thẳng ${yLine(a,b)} là ${sg(a)}.`,f:`Hệ số góc của đường thẳng ${yLine(a,b)} là ${sg(b)}.`,why:`Hệ số góc là hệ số ${I('a')} của ${I('x')}, tức ${sg(a)}.`},
-    {t:`Hàm số ${inc?'đồng biến':'nghịch biến'} trên ℝ.`,f:`Hàm số ${inc?'nghịch biến':'đồng biến'} trên ℝ.`,why:`${I('a')} = ${sg(a)} ${inc?'&gt; 0':'&lt; 0'} nên hàm số ${inc?'đồng biến':'nghịch biến'}.`},
+    {t:`Đồ thị hàm số tạo với trục ${I('Ox')} một góc ${inc?'nhọn':'tù'}.`,f:`Đồ thị hàm số tạo với trục ${I('Ox')} một góc ${inc?'tù':'nhọn'}.`,why:`Hệ số góc ${I('a')} = ${sg(a)} ${inc?'&gt; 0':'&lt; 0'} nên góc tạo bởi đường thẳng và trục ${I('Ox')} là góc ${inc?'nhọn':'tù'}.`},
     {t:`Đồ thị hàm số cắt trục tung tại điểm ${ptS(0,b)}.`,f:`Đồ thị hàm số cắt trục tung tại điểm ${ptS(b,0)}.`,why:`Cho ${I('x')} = 0 được ${I('y')} = ${sg(b)}.`},
     {t:`Điểm ${I('M')}${ptS(x1,y1)} thuộc đồ thị hàm số.`,f:`Điểm ${I('M')}${ptS(x1,y1+1)} thuộc đồ thị hàm số.`,why:`Thay ${I('x')} = ${sg(x1)}: ${I('y')} = ${sg(a)}·${x1<0?`(${sg(x1)})`:x1} ${b<0?MINUS:'+'} ${Math.abs(b)} = ${sg(y1)}.`}
   ];
@@ -6100,7 +6121,7 @@ N8('m8-8-space',8,'NB',r=>{
   if(f===0){stem=`Gieo một con xúc xắc sáu mặt cân đối. Số kết quả có thể xảy ra của phép thử là`;ans=6;why=`Con xúc xắc có 6 mặt nên có 6 kết quả có thể.`}
   else if(f===1){const n=r.int(10,40);stem=`Một hộp đựng ${n} tấm thẻ giống nhau, đánh số từ 1 đến ${n}. Rút ngẫu nhiên một tấm thẻ từ hộp. Số kết quả có thể xảy ra của phép thử là`;ans=n;why=`Có ${n} tấm thẻ nên có ${n} kết quả có thể.`}
   else if(f===2){const a=r.int(2,7),b=r.int(2,7),c=r.int(1,6);stem=`Một túi có ${a} viên bi đỏ, ${b} viên bi xanh và ${c} viên bi vàng, các viên bi có cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi từ túi. Số kết quả có thể xảy ra của phép thử là`;ans=a+b+c;why=`Mỗi viên bi là một kết quả có thể, tổng số viên bi là ${a} + ${b} + ${c} = ${a+b+c}.`}
-  else if(f===3){const k=r.pick([3,4]);stem=`Tung một đồng xu cân đối ${k} lần liên tiếp. Số kết quả có thể xảy ra của phép thử là`;ans=2**k;why=`Mỗi lần tung có 2 kết quả (sấp, ngửa) nên có 2${sup(k)} = ${2**k} kết quả có thể.`}
+  else if(f===3){const w=r.pick([['một ngày trong tuần',7],['một tháng trong năm',12],['một chữ cái trong bảng chữ cái tiếng Việt (gồm 29 chữ cái)',29]]);stem=`Chọn ngẫu nhiên ${w[0]}. Số kết quả có thể xảy ra là`;ans=w[1];why=`Mỗi lựa chọn là một kết quả có thể, có ${w[1]} kết quả.`}
   else{const n=r.pick([8,10,12,16,20]);stem=`Một vòng quay may mắn được chia thành ${n} hình quạt bằng nhau, đánh số từ 1 đến ${n}. Quay vòng quay một lần, mũi tên dừng ở một hình quạt. Số kết quả có thể xảy ra của phép thử là`;ans=n;why=`Có ${n} hình quạt bằng nhau nên có ${n} kết quả có thể.`}
   return mkNum(r,{stem,correct:ans,cands:[ans+1,ans-1,ans*2,ans+2,Math.round(ans/2)],sol:why,chk:()=>true});
 });
@@ -6136,10 +6157,11 @@ N8('m8-8-balls',8,'TH',r=>{
     sol:`Tổng số viên bi là ${a} + ${b} + ${c} = ${t}, nên có ${t} kết quả có thể đồng khả năng; có ${col[1]} kết quả thuận lợi. Xác suất là ${fr(col[1],t)}${Q(col[1],t)[1]===t?'':` = ${qh(Q(col[1],t))}`}.`,chk:()=>t>col[1]});
 });
 N8('m8-8-compl',8,'TH',r=>{
-  const t=r.pick([5,6,8,10,12,15]),k=r.int(1,t-1),p=Q(k,t),col=r.pick(['đỏ','xanh','vàng','trắng']);
-  if(p[1]===1)return T.nlc['m8-8-compl'].gen(r);
-  return mkTxt(r,{stem:`Lấy ngẫu nhiên một viên bi từ một túi, xác suất để lấy được viên bi màu ${col} là ${qh(p)}. Xác suất để viên bi lấy được <b>không</b> có màu ${col} là`,correct:qh(Q(t-k,t)),wrongs:[qh(Q(k,t)),qh(Q(t-k,k)),qh(Q(k+1,t)),qh(Q(1,t)),qh(Q(t,k)),qh(Q(t-k+1,t))].filter(z=>z!==qh(Q(t-k,t))),
-    sol:`Biến cố “không lấy được bi màu ${col}” là biến cố đối của biến cố “lấy được bi màu ${col}”, nên xác suất bằng 1 ${MINUS} ${qh(p)} = ${qh(Q(t-k,t))}.`,chk:()=>Q(t-k,t)[0]>0&&Q(t-k,t)[0]/Q(t-k,t)[1]+k/t===1});
+  /* Theo SGK: biết xác suất và tổng số kết quả thì đếm ngược lại số kết quả thuận lợi (không dùng công thức biến cố đối) */
+  const t=r.pick([4,5,6,8,10]),k=r.int(1,t-1),j=r.int(2,6),N=t*j,red=k*j,col=r.pick(['đỏ','xanh','vàng','trắng']);
+  if(Q(k,t)[1]===1)return T.nlc['m8-8-compl'].gen(r);
+  return mkNum(r,{stem:`Một túi có ${N} viên bi cùng kích thước và khối lượng. Lấy ngẫu nhiên một viên bi, xác suất lấy được viên bi màu ${col} là ${qh(Q(k,t))}. Số viên bi <b>không</b> có màu ${col} trong túi là`,correct:N-red,cands:[red,N-k,t-k,N-red+1,N-red-1,k*t],
+    sol:`Số viên bi màu ${col} là ${N}·${qh(Q(k,t))} = ${red}. Số viên bi không có màu ${col} là ${N} ${MINUS} ${red} = ${N-red}.`,chk:()=>red*t===N*k});
 });
 N8('m8-8-dice2',8,'TH',r=>{
   const s=r.int(3,11),cnt=6-Math.abs(s-7);
@@ -6721,6 +6743,16 @@ TL8('tl8-7-vdc3',7,'VDC','alg',r=>{
       ptxt([[`Phương trình có nghiệm duy nhất khi ${mm} ≠ ${sg(p)}, khi đó ${X8} = ${fr(`${mm} ${sT(q)}`,`${mm} ${sT(-p)}`)} = 1 + ${fr(sg(s),`${mm} ${sT(-p)}`)}.`,.25],[`${X8} nguyên ⟺ ${mm} ${sT(-p)} là ước của ${sg(s)} ⟺ ${mm} ∈ {${SETS(ms)}}.`,.25]])],
     chk:()=>ms.every(m=>m!==p&&Number.isInteger((m+q)/(m-p)))&&m0!==p};
 });
+/* ===== Câu MỞ RỘNG: dùng kiến thức chưa có trong SGK của khối lớp đó.
+   Chỉ xuất hiện khi chọn mức Nâng cao hoặc bật “Cho phép câu mở rộng”; trang đáp án có ghi chú. ===== */
+const EXT_NOTES={
+  nlc:{'m8-7-incdec':'đồng biến, nghịch biến – chưa có trong SGK Toán 8','m8-7-mono':'đồng biến, nghịch biến – chưa có trong SGK Toán 8',
+       'm8-8-dice2':'phép thử gieo hai lần – chưa có trong SGK Toán 8','m8-8-coin':'phép thử tung nhiều lần – chưa có trong SGK Toán 8',
+       'm7-8-coin':'phép thử tung nhiều lần – chưa có trong SGK Toán 7'},
+  tln:{'t8-8-two':'phép thử gieo hai lần – chưa có trong SGK Toán 8'},
+  tl:{'tl8-7-vdc2':'biện luận phương trình theo tham số – nâng cao, ngoài SGK Toán 8'}
+};
+Object.entries(EXT_NOTES).forEach(([k,o])=>Object.entries(o).forEach(([id,n])=>{if(!T[k][id])throw new Error('EXT: thiếu '+id);T[k][id].ext=n}));
 
 /* ================= Khung đề (theo mẫu 12 + 2 + 4 + 3) ================= */
 const CH_NAME={1:'Đa thức nhiều biến',2:'Hằng đẳng thức đáng nhớ',3:'Tứ giác',4:'Định lí Thalès',5:'Dữ liệu và biểu đồ',6:'Phân thức đại số',7:'Phương trình bậc nhất và hàm số bậc nhất',8:'Mở đầu về tính xác suất của biến cố',9:'Tam giác đồng dạng',10:'Một số hình khối trong thực tiễn'};
@@ -6804,7 +6836,10 @@ function structNote(s){
   if(s.n4)a.push(`${s.n4} câu tự luận (${fmtP(s.n4)} đ)`);
   return`Cấu trúc do thầy cô chọn: ${a.join(', ')}. Đây là khung tham khảo, chưa phải khung chính thức của Bộ hay của trường.`;
 }
-const poolOf=(bp,kind)=>Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec)));
+/* Câu mở rộng (t.ext): chỉ dùng khi bật ALLOW_EXT hoặc đang tạo đề mức Nâng cao (CUR_DIFF). */
+let ALLOW_EXT=false,CUR_DIFF='chuan';
+const extOK=()=>ALLOW_EXT||CUR_DIFF==='nang_cao';
+const poolOf=(bp,kind)=>Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
 /* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
 function apportion(n,w,cap){
   const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};
@@ -6902,7 +6937,7 @@ function relabelDeep(v,shift,L){
   return walk(v,'');
 }
 function buildExam(term,base,diff,st){
-  diff=DIFFS[diff]?diff:'chuan';
+  diff=DIFFS[diff]?diff:'chuan';CUR_DIFF=diff;
   const bp=bpOf(term,st),used=new Set(),usedId=new Set(),D=dOf(term,diff),G=bp.grade,S=bp.sk?'|'+bp.sk:'';
   const pickT=(kind,pred,want)=>{
     const all=poolOf(bp,kind).filter(pred);
@@ -6924,7 +6959,7 @@ function buildExam(term,base,diff,st){
     const rg=new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}${S}`);
     let q=t.gen(rg);
     if(RELABEL_RE.test(t.id)){const L=G===11?PT_LETTERS11:PT_LETTERS,sh=rg.int(0,L.length-1);if(sh)q=relabelDeep(q,sh,L)}
-    q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;return q;
+    q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.ext)q.ext=t.ext;return q;
   };
   const nb=Math.min(bp.nlc.length,Math.round(D.nb*bp.nlc.length/12)),nl=nlcLevels(bp.nlc,nb);
   const byT=x=>Array.isArray(x)?x:x[term];
@@ -7017,7 +7052,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function defYear(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=7?`${y} – ${y+1}`:`${y-1} – ${y}`}
 function loadState(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
 function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
-const state=Object.assign({grade:8,kind:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam',diff:'chuan',struct:'chuan',cs:null},loadState());
+const state=Object.assign({grade:8,kind:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam',diff:'chuan',struct:'chuan',cs:null,ext:false},loadState());
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
 if(![7,8,11].includes(state.grade))state.grade=8;
@@ -7113,6 +7148,9 @@ function keyHTML(base,vs,bp){
     h+='</section>';
   });
   const v0=vs[0];
+  /* Ghi chú các câu mở rộng (ngoài SGK) để giáo viên chủ động dặn học sinh */
+  const exts=[...v0.nlc.map((q,i)=>[i+1,q]),...v0.ds.map((q,i)=>[P.s2+i,q]),...v0.tln.map((q,i)=>[P.s3+i,q]),...v0.tl.map((q,i)=>[P.s4+i,q])].filter(([,q])=>q.ext);
+  if(exts.length)h+=`<section class="ksec"><p class="ksmall"><b>Lưu ý câu mở rộng</b> (theo mã đề ${esc(v0.code)}): ${exts.map(([n,q])=>`Câu ${n} – ${q.ext}`).join('; ')}.</p></section>`;
   if(P.nL)h+=`<section class="ksec"><h3>Phần ${P.rom.tl}. Tự luận (${pts(P.p4)} điểm)</h3><p class="ksmall">Mọi cách giải đúng khác đều cho điểm tối đa của ý đó. Điểm toàn bài không làm tròn.</p>`;
   v0.tl.forEach((q,i)=>{
     h+=`<div class="lg"><div class="qs"><b>Câu ${P.s4+i}</b> (${pts(q.parts.reduce((a,p)=>a+p.pts,0))} điểm)</div>`;
@@ -7174,6 +7212,7 @@ const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vậ
 function render(){
   const err=state.struct==='custom'?structCheck(state.cs):'';
   let st=curStruct(),bp,ex;const base=state.code;
+  ALLOW_EXT=!!state.ext;CUR_DIFF=state.diff;
   try{bp=bpOf(state.term,st);ex=buildExam(state.term,base,state.diff,st)}
   catch(e){st=STRUCTS.chuan;lastGoodStruct=st;bp=bpOf(state.term,st);ex=buildExam(state.term,base,state.diff,st)}
   const vs=[...Array(state.nv).keys()].map(v=>makeVariant(ex,v));
@@ -7199,7 +7238,7 @@ function syncInputs(){
   document.querySelectorAll('input[name=diff]').forEach(i=>i.checked=i.value===state.diff);
   document.querySelectorAll('input[name=nv]').forEach(i=>i.checked=+i.value===state.nv);
   $('#dept').value=state.dept;$('#school').value=state.school;$('#year').value=state.year;$('#time').value=state.time;
-  $('#code').value=state.code;$('#sol').checked=!!state.sol;
+  $('#code').value=state.code;$('#sol').checked=!!state.sol;$('#ext').checked=!!state.ext;
   $('#struct').value=state.struct;
   ['n1','n2','n3','n4'].forEach(k=>$('#cs_'+k).value=state.cs[k]);
   $('#cs_p1').value=String(state.cs.p1);$('#cs_p3').value=String(state.cs.p3);
@@ -7221,6 +7260,7 @@ $('#time').addEventListener('input',e=>{const v=+e.target.value;if(v>=15&&v<=180
 $('#code').addEventListener('input',e=>{const c=e.target.value.replace(/\D/g,'').slice(0,3);e.target.value=c;if(c.length===3){state.code=c;update()}});
 $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.value=state.code});
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
+$('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
 $('#struct').innerHTML=STRUCT_ORDER.map(k=>`<option value="${k}">${esc(STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
 $('#struct').addEventListener('change',e=>{
   const v=e.target.value;
