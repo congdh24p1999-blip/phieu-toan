@@ -89,4 +89,4 @@ TL11b('tl11-7-tri',7,'VD','c',r=>{
       ptxt([[`${I('AH')} ⊂ ${PLN('SAB')} nên ${I('AH')} ⊥ ${I('BC')}; lại có ${I('AH')} ⊥ ${I('SB')} nên ${I('AH')} ⊥ ${PLN('SBC')}, do đó ${I('d')}(${I('A')}, ${PLN('SBC')}) = ${I('AH')}.`,.25],
       [`Trong tam giác ${I('SAB')} vuông tại ${I('A')}: ${I('SB')} = ${L(SB)}, ${I('AH')} = ${fr(`${I('SA')}·${I('AB')}`,'SB')} = ${ahTxt}.`,.25]])],
     chk:()=>closeN(AH,s*t/SB)&&L(SB)!==null&&!!ahTxt};
-});
+},'kc');
