@@ -3562,6 +3562,98 @@ TL11('tl4-third',4,'VDC','c',r=>{
       ptxt([[`Trong ${PLN('S'+X+Y)}, gọi ${I('P')} = ${I(X+'I')} ∩ ${I('S'+Y)}. Vì ${I('P')} ∈ ${I(X+'I')} ⊂ ${pl} nên ${I('P')} là giao điểm của ${I('S'+Y)} và ${pl}.`,.25],[`Kẻ ${I('OK')} ∥ ${I(X+'P')} (${I('K')} ∈ ${I('S'+Y)}): ${I('OK')} là đường trung bình của tam giác ${I(Y+X+'P')} nên ${I('K')} là trung điểm ${I('P'+Y)}; ${I('IP')} ∥ ${I('OK')} và ${I('I')} là trung điểm ${I('SO')} nên ${I('P')} là trung điểm ${I('SK')}. Do đó ${I('SP')} = ${I('PK')} = ${I('K'+Y)}, ${fr('SP','S'+Y)} = ${fr(1,3)}.`,.25]])],
     chk:()=>{const a=V3.sub(P.I,P0[X]),b=V3.sub(P.P,P0[X]);return V3.len(V3.cross(a,b))<1e-9}};
 });
+const dd11=(v,k=4)=>String(+v.toFixed(k)).replace('.',',');
+/* ===== Toán 11: thêm câu vận dụng cao và biến thể hình không gian (theo dạng Bài tập cuối chương SGK KNTT) ===== */
+/* SGK 4.44: trọng tâm hai mặt bên, GK ∥ (ABCD), mặt phẳng qua GK song song với đáy */
+TL11('tl4-gk',4,'VDC','c',r=>{
+  const F=chopHBH(),P={...F.P},alt=r.chance(.5);
+  const [f1,f2]=alt?[['A','B'],['B','C']]:[['A','D'],['C','D']],[g,k]=r.pick([['G','K'],['G','H'],['E','F']]);
+  P.M=V3.mid(P[f1[0]],P[f1[1]]);P.N=V3.mid(P[f2[0]],P[f2[1]]);P[g]=V3.lerp(P.S,P.M,2/3);P[k]=V3.lerp(P.S,P.N,2/3);
+  const fig=fig3D(P,F.solid.concat([['S','N']]),F.dashed.concat([['S','M'],[g,k],['M','N'],['A','C']]),['S','A','B','C','D','M','N',g,k]);
+  const t1='S'+f1.join(''),t2='S'+f2.join('');
+  const A1="A′",B1="B′",C1="C′",D1="D′";
+  return{kind:'tl',title:'Đường thẳng và mặt phẳng song song',parts:[
+    {pts:.5,html:`Cho hình chóp ${I('S.ABCD')} có đáy ${I('ABCD')} là hình bình hành. Gọi ${I(g)}, ${I(k)} lần lượt là trọng tâm của các tam giác ${I(t1)}, ${I(t2)}.${fig}Chứng minh ${I(g+k)} ∥ ${PLN('ABCD')}.`},
+    {pts:.5,html:`Mặt phẳng chứa đường thẳng ${I(g+k)} và song song với ${PLN('ABCD')} cắt các cạnh ${I('SA')}, ${I('SB')}, ${I('SC')}, ${I('SD')} lần lượt tại ${I(A1)}, ${I(B1)}, ${I(C1)}, ${I(D1)}. Tính tỉ số ${fr(`S${A1}`,'SA')} và chứng minh ${I(A1+B1+C1+D1)} là hình bình hành.`}],
+    sol:[ptxt([[`Gọi ${I('M')}, ${I('N')} lần lượt là trung điểm của ${I(f1.join(''))}, ${I(f2.join(''))}. Vì ${I(g)}, ${I(k)} là trọng tâm nên ${fr('S'+g,'SM')} = ${fr('S'+k,'SN')} = ${fr(2,3)}, suy ra ${I(g+k)} ∥ ${I('MN')} (định lí Thalès đảo trong tam giác ${I('SMN')}).`,.25],
+      [`${I('MN')} ⊂ ${PLN('ABCD')} và ${I(g+k)} ⊄ ${PLN('ABCD')} nên ${I(g+k)} ∥ ${PLN('ABCD')}.`,.25]]),
+      ptxt([[`Mặt phẳng ${PLN('P')} ∥ ${PLN('ABCD')} cắt ${PLN(t1)} theo giao tuyến qua ${I(g)} song song với ${I(f1.join(''))}; trong tam giác ${I('SM'+f1[0])} ta có ${fr(`S${f1[0]}′`,'S'+f1[0])} = ${fr('S'+g,'SM')} = ${fr(2,3)}. Lập luận tương tự với các mặt bên còn lại: ${fr(`S${A1}`,'SA')} = ${fr(`S${B1}`,'SB')} = ${fr(`S${C1}`,'SC')} = ${fr(`S${D1}`,'SD')} = ${fr(2,3)}.`,.25],
+      [`Do đó ${I(A1+B1)} ∥ ${I('AB')}, ${I(A1+B1)} = ${fr(2,3)}${I('AB')} và ${I(D1+C1)} ∥ ${I('DC')}, ${I(D1+C1)} = ${fr(2,3)}${I('DC')}. Vì ${I('AB')} ∥ ${I('DC')} và ${I('AB')} = ${I('DC')} nên ${I(A1+B1)} ∥ ${I(D1+C1)} và ${I(A1+B1)} = ${I(D1+C1)}: ${I(A1+B1+C1+D1)} là hình bình hành.`,.25]])],
+    chk:()=>{const d=V3.sub(P[k],P[g]),n=V3.cross(V3.sub(P.B,P.A),V3.sub(P.D,P.A));return Math.abs(V3.dot(d,n))<1e-9}};
+});
+/* SGK 4.46: tứ diện, mặt phẳng qua M song song với AD và BC */
+TL11('tl4-tetk',4,'VDC','c',r=>{
+  const [pp,qq]=r.pick([[1,2],[2,1],[1,1],[2,3],[3,2]]),F=tuDien(),P={...F.P},t=pp/(pp+qq),u=qq/(pp+qq),kk=Q(qq,pp);
+  P.M=V3.lerp(P.A,P.B,t);P.N=V3.lerp(P.A,P.C,t);P.K=V3.lerp(P.C,P.D,u);P.Q=V3.lerp(P.B,P.D,u);
+  const cond=pp===qq?`${I('M')} là trung điểm của ${I('AB')}`:pp===1?`${I('BM')} = ${qq}${I('AM')}`:qq===1?`${I('AM')} = ${pp}${I('BM')}`:`${qq}${I('AM')} = ${pp}${I('BM')}`;
+  const fig=fig3D(P,F.solid.concat([['M','N'],['N','K']]),F.dashed.concat([['K','Q'],['Q','M']]),['A','B','C','D','M','N','K','Q']);
+  return{kind:'tl',title:'Hai đường thẳng song song, thiết diện',parts:[
+    {pts:.5,html:`Cho tứ diện ${I('ABCD')}. Trên cạnh ${I('AB')} lấy điểm ${I('M')} sao cho ${cond}. Mặt phẳng ${PLN('P')} đi qua ${I('M')} và song song với hai đường thẳng ${I('AD')}, ${I('BC')}.${fig}Xác định giao điểm ${I('N')} của ${PLN('P')} với ${I('AC')} và giao điểm ${I('K')} của ${PLN('P')} với ${I('CD')}.`},
+    {pts:.5,html:`Tính tỉ số ${fr('KC','KD')} và chứng minh thiết diện của tứ diện cắt bởi ${PLN('P')} là hình bình hành.`}],
+    sol:[ptxt([[`${PLN('P')} ∥ ${I('BC')} nên ${PLN('P')} cắt ${PLN('ABC')} theo giao tuyến qua ${I('M')} song song với ${I('BC')}, cắt ${I('AC')} tại ${I('N')}.`,.25],
+      [`${PLN('P')} ∥ ${I('AD')} nên ${PLN('P')} cắt ${PLN('ACD')} theo giao tuyến qua ${I('N')} song song với ${I('AD')}, cắt ${I('CD')} tại ${I('K')}; tương tự, đường thẳng qua ${I('M')} song song với ${I('AD')} cắt ${I('BD')} tại ${I('Q')}.`,.25]]),
+      ptxt([[`${I('MN')} ∥ ${I('BC')} nên ${fr('CN','CA')} = ${fr('BM','BA')} = ${fr(qq,pp+qq)}; ${I('NK')} ∥ ${I('AD')} nên ${fr('CK','CD')} = ${fr('CN','CA')} = ${fr(qq,pp+qq)}. Suy ra ${fr('KC','KD')} = ${qh(kk)}.`,.25],
+      [`Thiết diện là tứ giác ${I('MNKQ')} có ${I('MQ')} ∥ ${I('NK')} (cùng song song với ${I('AD')}) và ${I('MN')} ∥ ${I('QK')} (cùng song song với ${I('BC')}) nên là hình bình hành.`,.25]])],
+    chk:()=>{const kc=V3.len(V3.sub(P.K,P.C)),kd=V3.len(V3.sub(P.K,P.D));return Math.abs(kc/kd-qv(kk))<1e-9&&V3.len(V3.cross(V3.sub(P.K,P.N),V3.sub(P.D,P.A)))<1e-9&&V3.len(V3.cross(V3.sub(P.Q,P.K),V3.sub(P.C,P.B)))<1e-9}};
+});
+/* SGK 6.39: vi khuẩn N(t) = N0·e^{rt} */
+TL11b('tl11-6-bact',6,'VDC','a',r=>{
+  const n0=r.pick([100,200,500,1000]),g=r.pick([1.2,1.25,1.5,1.6,2]),n1=Math.round(n0*g),t1=r.int(3,5),m=r.pick([3,5,10]);
+  const Nt=n0*g**t1,Tm=Math.log(m)/Math.log(g),rr=Math.log(g);
+  if(Math.abs(Nt-Math.round(Nt))>1e-6&&Math.abs((Nt%1)-.5)<.02)return T.tl['tl11-6-bact'].gen(r);
+  const N=I('N'),t=I('t'),e1=`${I('e')}${sup(`${I('r')}${t}`)}`;
+  return{kind:'tl',title:'Hàm số mũ trong thực tế',parts:[
+    {pts:.5,html:`Giả sử quá trình nuôi cấy vi khuẩn tuân theo quy luật tăng trưởng ${N}(${t}) = ${N}${sub(0)}·${e1}, trong đó ${N}${sub(0)} là số lượng vi khuẩn ban đầu, ${N}(${t}) là số lượng vi khuẩn sau ${t} giờ và ${I('r')} là tỉ lệ tăng trưởng mỗi giờ. Ban đầu có ${n0} con và sau 1 giờ số lượng tăng lên ${n1} con. Tìm ${I('r')} và tính số lượng vi khuẩn sau ${t1} giờ (làm tròn đến hàng đơn vị).`},
+    {pts:.5,html:`Sau bao lâu thì số lượng vi khuẩn gấp ${m} lần số lượng ban đầu (làm tròn kết quả đến hàng phần trăm của giờ)?`}],
+    sol:[ptxt([[`Ta có ${n1} = ${n0}·${I('e')}${sup(I('r'))} nên ${I('e')}${sup(I('r'))} = ${fmt(g)}, ${I('r')} = ln ${fmt(g)} ≈ ${dd11(rr)}.`,.25],
+      [`${N}(${t1}) = ${n0}·${I('e')}${sup(`${t1}${I('r')}`)} = ${n0}·${fmt(g)}${sup(t1)} ≈ ${Math.round(Nt)} (con).`,.25]]),
+      ptxt([[`Cần tìm ${t} sao cho ${n0}·${e1} = ${m}·${n0}, tức ${fmt(g)}${sup(t)} = ${m}.`,.25],[`${t} = log${sub(fmt(g))} ${m} = ${fr(`ln ${m}`,`ln ${fmt(g)}`)} ≈ ${dd11(Tm,2)} (giờ).`,.25]])],
+    chk:()=>closeN(n0*Math.exp(rr*t1),Nt)&&closeN(g**Tm,m)&&Number.isInteger(n1)};
+});
+/* SGK 9.31: tiếp tuyến của hyperbol y = a/x tạo với hai trục tam giác có diện tích không đổi */
+TL11b('tl11-9-hyp',9,'VDC','b',r=>{
+  const a=r.pick([1,2,3,4,6]),x0=r.pick([-3,-2,-1,1,2,3]),kq=Q(-a,x0*x0),mq=Q(2*a,x0),y0=Q(a,x0);
+  const kx=qv(kq)===-1?MINUS:qh(kq);
+  const line=`${I('y')} = ${kx}${I('x')} ${qv(mq)>0?'+':MINUS} ${qh(Q(Math.abs(2*a),Math.abs(x0)))}`;
+  const x=I('x'),y=I('y'),u=I('x')+sub(0);
+  return{kind:'tl',title:'Phương trình tiếp tuyến',parts:[
+    {pts:.5,html:`Cho hàm số ${y} = ${fr(a,x)} có đồ thị ${PLN('C')}. Viết phương trình tiếp tuyến của ${PLN('C')} tại điểm có hoành độ ${x} = ${sg(x0)}.`},
+    {pts:.5,html:`Chứng minh rằng mọi tiếp tuyến của ${PLN('C')} đều tạo với hai trục tọa độ một tam giác có diện tích không đổi. Tính diện tích đó.`}],
+    sol:[ptxt([[`${y}′ = ${MINUS}${fr(a,`${x}${sup(2)}`)}, ${y}′(${sg(x0)}) = ${qh(kq)}; ${y}(${sg(x0)}) = ${qh(y0)}.`,.25],[`Tiếp tuyến: ${y} = ${qh(kq)}(${x} ${x0>0?MINUS:'+'} ${Math.abs(x0)}) ${qv(y0)>0?'+':MINUS} ${qh(Q(Math.abs(a),Math.abs(x0)))}, hay ${line}.`,.25]]),
+      ptxt([[`Tiếp tuyến tại ${I('M')}(${u}; ${fr(a,u)}) (${u} ≠ 0): ${y} = ${MINUS}${fr(a,`${u}${sup(2)}`)}(${x} ${MINUS} ${u}) + ${fr(a,u)}. Nó cắt ${I('Ox')} tại ${I('A')}(2${u}; 0) và cắt ${I('Oy')} tại ${I('B')}(0; ${fr(2*a,u)}).`,.25],
+      [`${I('S')}${sub('OAB')} = ${fr(1,2)}·${I('OA')}·${I('OB')} = ${fr(1,2)}·|2${u}|·${fr(2*a,`|${u}|`)} = ${2*a}, không phụ thuộc vào ${u}.`,.25]])],
+    chk:()=>{const f=t=>a/t,d=-a/(x0*x0),xi=x0-f(x0)/d,yi=f(x0)-d*x0;return closeN(xi,2*x0)&&closeN(yi,qv(mq))&&closeN(Math.abs(xi*yi)/2,2*a)}};
+});
+/* Xác suất "ít nhất một lần": quy tắc nhân cho biến cố độc lập và biến cố đối */
+TL11b('tl11-8-atleast',8,'VDC','b',r=>{
+  const p=r.pick([0.3,0.4,0.6,0.7,0.8]),q=Math.round((1-p)*10)/10,thr=r.pick([0.99,0.999]),n=Math.ceil(Math.log(1-thr)/Math.log(q)-1e-12);
+  if(Math.abs(Math.log(1-thr)/Math.log(q)-Math.round(Math.log(1-thr)/Math.log(q)))<1e-6)return T.tl['tl11-8-atleast'].gen(r);
+  const P3=1-q**3,P1=3*p*q*q,f4=v=>dd11(v);
+  return{kind:'tl',title:'Quy tắc nhân xác suất và biến cố đối',parts:[
+    {pts:.5,html:`Một xạ thủ bắn vào bia một cách độc lập, xác suất bắn trúng của mỗi viên là ${fmt(p)}. Xạ thủ bắn 3 viên. Tính xác suất để có đúng một viên trúng bia và xác suất để có ít nhất một viên trúng bia.`},
+    {pts:.5,html:`Xạ thủ phải bắn ít nhất bao nhiêu viên để xác suất có ít nhất một viên trúng bia lớn hơn ${dd11(thr)}?`}],
+    sol:[ptxt([[`Xác suất đúng một viên trúng: 3·${fmt(p)}·${fmt(q)}${sup(2)} = ${f4(P1)}.`,.25],[`Biến cố đối của “có ít nhất một viên trúng” là “cả 3 viên đều trượt”, có xác suất ${fmt(q)}${sup(3)}; do đó xác suất cần tìm là 1 ${MINUS} ${fmt(q)}${sup(3)} = ${f4(P3)}.`,.25]]),
+      ptxt([[`Bắn ${I('n')} viên, xác suất có ít nhất một viên trúng là 1 ${MINUS} ${fmt(q)}${sup(I('n'))}. Cần 1 ${MINUS} ${fmt(q)}${sup(I('n'))} &gt; ${dd11(thr)} ⇔ ${fmt(q)}${sup(I('n'))} &lt; ${dd11(1-thr)}.`,.25],
+      [`⇔ ${I('n')} &gt; log${sub(fmt(q))} ${dd11(1-thr)} ≈ ${dd11(Math.log(1-thr)/Math.log(q),2)}. Vậy phải bắn ít nhất ${n} viên.`,.25]])],
+    chk:()=>1-q**n>thr&&1-q**(n-1)<=thr};
+});
+/* SGK 7.40: hình chóp có đáy tam giác vuông tại B, SA ⊥ (ABC) */
+const TRI7_SET=[[3,4],[4,3],[Math.sqrt(3),1],[1,Math.sqrt(3)],[1,1],[2,1]];
+TL11b('tl11-7-tri',7,'VD','c',r=>{
+  const [s,t]=r.pick(TRI7_SET),SB=Math.hypot(s,t),AH=s*t/SB;
+  const P={A:[0,0,0],B:[4.2,0,0],C:[4.2,3.2,0],S:[0,0,4.6]};P.H=V3.lerp(P.S,P.B,(4.6*4.6)/(4.6*4.6+4.2*4.2));
+  const E=autoEdges({A:P.A,B:P.B,C:P.C,S:P.S},[['A','B','C'],['S','A','B'],['S','B','C'],['S','C','A']]);
+  const fig=fig3D(P,E.solid,E.dashed.concat([['A','H']]),['S','A','B','C','H']);
+  const L=v=>{const m={1:'',2:'2',3:'3',4:'4'};if(closeN(v,Math.sqrt(3)))return`${I('a')}√3`;if(closeN(v,Math.sqrt(2)))return`${I('a')}√2`;if(closeN(v,Math.sqrt(5)))return`${I('a')}√5`;if(Number.isInteger(v))return`${m[v]??v}${I('a')}`;return null};
+  const ahTxt={'3,4':fr(`12${I('a')}`,5),'4,3':fr(`12${I('a')}`,5),[`${Math.sqrt(3)},1`]:fr(`${I('a')}√3`,2),[`1,${Math.sqrt(3)}`]:fr(`${I('a')}√3`,2),'1,1':fr(`${I('a')}√2`,2),'2,1':fr(`2${I('a')}√5`,5)}[`${s},${t}`];
+  return{kind:'tl',title:'Hai mặt phẳng vuông góc, khoảng cách',parts:[
+    {pts:.5,html:`Cho hình chóp ${I('S.ABC')} có đáy ${I('ABC')} là tam giác vuông tại ${I('B')}, ${I('SA')} ⊥ ${PLN('ABC')}, ${I('SA')} = ${L(s)}, ${I('AB')} = ${L(t)}.${fig}Chứng minh ${I('BC')} ⊥ ${PLN('SAB')} và ${PLN('SBC')} ⊥ ${PLN('SAB')}.`},
+    {pts:.5,html:`Gọi ${I('H')} là hình chiếu vuông góc của ${I('A')} trên ${I('SB')}. Chứng minh ${I('AH')} ⊥ ${PLN('SBC')} và tính khoảng cách từ ${I('A')} đến mặt phẳng ${PLN('SBC')}.`}],
+    sol:[ptxt([[`${I('BC')} ⊥ ${I('AB')} (tam giác ${I('ABC')} vuông tại ${I('B')}) và ${I('BC')} ⊥ ${I('SA')} (vì ${I('SA')} ⊥ ${PLN('ABC')}) nên ${I('BC')} ⊥ ${PLN('SAB')}.`,.25],[`Mặt phẳng ${PLN('SBC')} chứa ${I('BC')} ⊥ ${PLN('SAB')} nên ${PLN('SBC')} ⊥ ${PLN('SAB')}.`,.25]]),
+      ptxt([[`${I('AH')} ⊂ ${PLN('SAB')} nên ${I('AH')} ⊥ ${I('BC')}; lại có ${I('AH')} ⊥ ${I('SB')} nên ${I('AH')} ⊥ ${PLN('SBC')}, do đó ${I('d')}(${I('A')}, ${PLN('SBC')}) = ${I('AH')}.`,.25],
+      [`Trong tam giác ${I('SAB')} vuông tại ${I('A')}: ${I('SB')} = ${L(SB)}, ${I('AH')} = ${fr(`${I('SA')}·${I('AB')}`,'SB')} = ${ahTxt}.`,.25]])],
+    chk:()=>closeN(AH,s*t/SB)&&L(SB)!==null&&!!ahTxt};
+});
 
 /* ================================================================
    LỚP 7 – Toán 7 Kết nối tri thức, học kì I
@@ -3573,6 +3665,7 @@ const DS7=(id,ch,lv,gen)=>reg('ds',id,ch,lv,gen,{g:7});
 const TLN7=(id,ch,lv,gen)=>reg('tln',id,ch,lv,gen,{g:7});
 const TL7=(id,ch,lv,role,gen)=>reg('tl',id,ch,lv,gen,{role,g:7});
 const qp=q=>q[0]<0?`(${qh(q)})`:qh(q);              /* số hữu tỉ, thêm ngoặc nếu âm */
+const pr7=q=>`(${qh(q)})`;
 const rq=(r,dens=[2,3,4,5,6,7,8,9])=>{for(;;){const q=Q(r.nz(-9,9),r.pick(dens));if(q[1]>1)return q}};
 const finiteDec=q=>{let d=q[1];while(d%2===0)d/=2;while(d%5===0)d/=5;return d===1};
 const dec=(v,k)=>(v<0?MINUS:'')+Math.abs(v).toFixed(k).replace('.',',');
@@ -4009,13 +4102,13 @@ TL7('tl7-alg1',1,'TH','alg',r=>{
 TL7('tl7-alg2',1,'VD','alg',r=>{
   const b=r.pick([2,3]),m=r.int(3,7),n=r.int(2,5),k=r.int(2,4),e=m+2*n-3*k;
   if(e<0||e>12)return T.tl['tl7-alg2'].gen(r);
-  const a=rq(r,[2,3,4,5]),pa=Q(Math.abs(a[0]),a[1]),c=rq(r,[2,3,4]),s1=qadd(c,pa),s2=qsub(c,pa);
-  return{kind:'tl',title:'Lũy thừa, giá trị tuyệt đối',parts:[
+  const q=r.pick([Q(2,3),Q(-2,3),Q(3,2),Q(-3,2),Q(1,2),Q(-1,2),Q(3,4),Q(-1,3)]),u=r.int(2,4),d=r.int(2,3),w=u+d,ans=Q(q[0]**d,q[1]**d);
+  return{kind:'tl',title:'Lũy thừa của một số hữu tỉ',parts:[
     {pts:.5,html:`Tính ${fr(`${b}${sup(m)} · ${b*b}${sup(n)}`,`${b**3}${sup(k)}`)}.`},
-    {pts:.5,html:`Tìm ${I('x')}, biết |${I('x')} ${MINUS} ${qp(c)}| = ${qh(pa)}.`}],
+    {pts:.5,html:`Tìm ${I('x')}, biết ${I('x')} · ${pr7(q)}${sup(u)} = ${pr7(q)}${sup(w)}.`}],
     sol:[ptxt([[`= ${fr(`${b}${sup(m)} · ${b}${sup(2*n)}`,`${b}${sup(3*k)}`)} = ${b}${sup(`${m} + ${2*n} − ${3*k}`)}`,.25],[`= ${b}${sup(e)} = ${b**e}`,.25]]),
-      ptxt([[`x − ${qp(c)} = ${qh(pa)} hoặc x − ${qp(c)} = ${qh(Q(-pa[0],pa[1]))}`,.25],[`x = ${qh(s1)} hoặc x = ${qh(s2)}`,.25]])],
-    chk:()=>Math.abs(b**m*(b*b)**n/(b**3)**k-b**e)<1e-6};
+      ptxt([[`${I('x')} = ${pr7(q)}${sup(w)} : ${pr7(q)}${sup(u)} = ${pr7(q)}${sup(w-u)}`,.25],[`${I('x')} = ${qh(ans)}`,.25]])],
+    chk:()=>Math.abs(b**m*(b*b)**n/(b**3)**k-b**e)<1e-6&&closeN(qv(ans)*qv(q)**u,qv(q)**w)};
 });
 TL7('tl7-alg3',2,'TH','alg',r=>{
   const a=r.int(2,12),b=r.int(2,9),c=rq(r),v=Q(a*c[1]-b*c[1]+Math.abs(c[0]),c[1]);
@@ -4979,6 +5072,65 @@ TL7b('tl7-7-sum',7,'VDC','alg',r=>{
       ptxt([[`(${xx} ${MINUS} 1)(${xlin(1,-c)}) = ${xx}${sup(2)} ${MINUS} ${xx} ${c<0?'+':MINUS} ${Math.abs(c)}${xx} ${c<0?MINUS:'+'} ${Math.abs(c)} = ${polyH(P)} = ${I('P')}(${xx}).`,.25],[`${I('P')}(${xx}) = 0 ⟺ ${xx} = 1 hoặc ${xx} = ${sg(c)}. Vậy ${I('P')}(${xx}) có hai nghiệm 1 và ${sg(c)}.`,.25]])],
     chk:()=>pe(P,1)===0&&pe(P,c)===0&&c!==1};
 });
+/* ===== Toán 7: bổ sung sau khi đối chiếu bài tập SGK Kết nối tri thức ===== */
+/* SGK 7.44: tìm đa thức B sao cho A + B = C hoặc A − B = C */
+N7b('m7-7-find',7,'TH',r=>{
+  const A=P1(rcoef(r),rcoef(r),rcoef(r),rcoef(r,-5,5)),C=P1(rcoef(r),rcoef(r),rcoef(r),rcoef(r,-5,5)),plus=r.int(0,1)===1;
+  const B=plus?Pl.sub(C,A):Pl.sub(A,C),wr=plus?[Pl.sub(A,C),Pl.add(A,C)]:[Pl.sub(C,A),Pl.add(A,C)];
+  return mkPoly(r,{stem:`Cho ${I('A')}(${I('x')}) = ${ph(A)} và ${I('C')}(${I('x')}) = ${ph(C)}. Đa thức ${I('B')}(${I('x')}) thỏa mãn ${I('A')}(${I('x')}) ${plus?'+':MINUS} ${I('B')}(${I('x')}) = ${I('C')}(${I('x')}) là`,correct:B,wrongs:wr,
+    sol:`${I('B')}(${I('x')}) = ${plus?`${I('C')}(${I('x')}) ${MINUS} ${I('A')}(${I('x')})`:`${I('A')}(${I('x')}) ${MINUS} ${I('C')}(${I('x')})`} = ${ph(B)}.`,
+    chk:()=>[-2,0,1,3].every(x=>(plus?ev1(A,x)+ev1(B,x):ev1(A,x)-ev1(B,x))===ev1(C,x))});
+});
+/* SGK 7.43: a + b + c = 0 thì x = 1 là nghiệm của ax² + bx + c */
+TL7b('tl7-7-abc',7,'VDC','alg',r=>{
+  const p=r.int(1,4);let s;do{s=r.nz(-9,9)}while(s===p);/* nghiệm thứ hai s/p */
+  const q=-(p+s),G=P1(s,q,p),t=Q(s,p),F=I('F'),Gx=`${I('G')}(${I('x')})`;
+  const lin=`${p===1?'':p}${I('x')} ${s<0?'+':MINUS} ${Math.abs(s)}`;
+  return{kind:'tl',title:'Nghiệm của đa thức bậc hai',parts:[
+    {pts:.5,html:`Cho đa thức ${F}(${I('x')}) = ${I('a')}${I('x')}${sup(2)} + ${I('b')}${I('x')} + ${I('c')} (${I('a')} ≠ 0). Giải thích tại sao nếu ${I('a')} + ${I('b')} + ${I('c')} = 0 thì ${I('x')} = 1 là một nghiệm của ${F}(${I('x')}).`},
+    {pts:.5,html:`Áp dụng: cho ${Gx} = ${ph(G)}. Chứng tỏ ${Gx} = (${I('x')} ${MINUS} 1)(${lin}) và tìm tất cả các nghiệm của ${Gx}.`}],
+    sol:[ptxt([[`${F}(1) = ${I('a')}·1${sup(2)} + ${I('b')}·1 + ${I('c')} = ${I('a')} + ${I('b')} + ${I('c')}.`,.25],[`Vì ${I('a')} + ${I('b')} + ${I('c')} = 0 nên ${F}(1) = 0, do đó ${I('x')} = 1 là một nghiệm của ${F}(${I('x')}).`,.25]]),
+      ptxt([[`(${I('x')} ${MINUS} 1)(${lin}) = ${p===1?'':p}${I('x')}${sup(2)} ${s<0?'+':MINUS} ${Math.abs(s)}${I('x')} ${MINUS} ${p===1?'':p}${I('x')} ${s<0?MINUS:'+'} ${Math.abs(s)} = ${ph(G)} = ${Gx}.`,.25],
+      [`${Gx} = 0 khi ${I('x')} ${MINUS} 1 = 0 hoặc ${lin} = 0, tức ${I('x')} = 1 hoặc ${I('x')} = ${qh(t)}. Vậy ${Gx} có hai nghiệm là 1 và ${qh(t)}.`,.25]])],
+    chk:()=>ev1(G,1)===0&&closeN(ev1(G,qv(t)),0)&&[-3,0,2,5].every(x=>ev1(G,x)===(x-1)*(p*x-s))};
+});
+/* SGK 6.38: chia tỉ lệ nghịch */
+const INV7=[[4,5,6],[2,3,4],[3,4,6],[4,6,8],[6,8,12],[3,5,6],[2,4,5]];
+TL7b('tl7-6-inv',6,'VD','real',r=>{
+  const d=r.pick(INV7),L=d.reduce((a,b)=>a*b/gcd(a,b)),m=r.int(1,3),c=L*m,w=d.map(v=>c/v),k=w[0]-w[1];
+  const ctx=r.pick([['đội công nhân làm đường','người','ngày'],['đội công nhân sửa đường','người','ngày'],['tổ máy cày (các máy có cùng năng suất) cày ba cánh đồng có cùng diện tích','máy','giờ']]);
+  const team=ctx[0].includes('máy cày')?'tổ':'đội';
+  const stem=team==='tổ'?`Ba ${ctx[0]}. Tổ thứ nhất cày xong trong ${d[0]} ${ctx[2]}, tổ thứ hai trong ${d[1]} ${ctx[2]}, tổ thứ ba trong ${d[2]} ${ctx[2]}. Biết tổ thứ nhất có nhiều hơn tổ thứ hai ${k} ${ctx[1]}.`
+    :`Ba ${ctx[0]} được giao ba khối lượng công việc như nhau. Đội thứ nhất hoàn thành trong ${d[0]} ${ctx[2]}, đội thứ hai trong ${d[1]} ${ctx[2]}, đội thứ ba trong ${d[2]} ${ctx[2]}. Biết đội thứ nhất nhiều hơn đội thứ hai ${k} ${ctx[1]} và năng suất của mỗi ${ctx[1]} là như nhau.`;
+  const [x,y,z]=['x','y','z'].map(I);
+  return{kind:'tl',title:'Đại lượng tỉ lệ nghịch',parts:[
+    {pts:.5,html:`${stem} Gọi số ${ctx[1]} của ba ${team} lần lượt là ${x}, ${y}, ${z}. Giải thích vì sao ${d[0]}${x} = ${d[1]}${y} = ${d[2]}${z}.`},
+    {pts:.5,html:`Tính số ${ctx[1]} của mỗi ${team}.`}],
+    sol:[ptxt([[`Với cùng một khối lượng công việc, số ${ctx[1]} và thời gian hoàn thành là hai đại lượng tỉ lệ nghịch.`,.25],[`Do đó ${d[0]}${x} = ${d[1]}${y} = ${d[2]}${z}; chia các vế cho ${L} được ${fr(x,L/d[0])} = ${fr(y,L/d[1])} = ${fr(z,L/d[2])}.`,.25]]),
+      ptxt([[`Áp dụng tính chất dãy tỉ số bằng nhau: ${fr(x,L/d[0])} = ${fr(y,L/d[1])} = ${fr(`${x} ${MINUS} ${y}`,`${L/d[0]} ${MINUS} ${L/d[1]}`)} = ${fr(k,L/d[0]-L/d[1])} = ${m}.`,.25],
+      [`Suy ra ${x} = ${m}·${L/d[0]} = ${w[0]}, ${y} = ${m}·${L/d[1]} = ${w[1]}, ${z} = ${m}·${L/d[2]} = ${w[2]}. Vậy ba ${team} lần lượt có ${w[0]}, ${w[1]}, ${w[2]} ${ctx[1]}.`,.25]])],
+    chk:()=>w.every(Number.isInteger)&&k>0&&w[0]*d[0]===w[2]*d[2]&&k/(L/d[0]-L/d[1])===m};
+});
+/* SGK 8.15: tấm bìa quay */
+N7b('m7-8-wheel',8,'TH',r=>{
+  const n=r.pick([6,8,10,12]),f=r.pick([['ghi số lẻ',v=>v%2===1],['ghi số chẵn',v=>v%2===0],['ghi số chia hết cho 3',v=>v%3===0],['ghi số lớn hơn 4',v=>v>4],['ghi số nhỏ hơn 3',v=>v<3]]),c=[...Array(n)].map((_,i)=>i+1).filter(f[1]).length;
+  return mkF(r,{stem:`Một tấm bìa hình tròn được chia thành ${n} hình quạt bằng nhau, ghi các số 1; 2; …; ${n}, gắn vào trục quay có mũi tên cố định ở tâm. Quay tấm bìa một lần. Xác suất để mũi tên chỉ vào hình quạt ${f[0]} là`,correct:Q(c,n),cands:[Q(1,n),Q(n-c,n),Q(c,n+1),Q(c+1,n),Q(c,n-1)].filter(q=>!qeq(q,Q(c,n))),
+    sol:`Có ${n} kết quả đồng khả năng; có ${c} hình quạt ${f[0]}. Xác suất là ${fr(c,n)} = ${qh(Q(c,n))}.`});
+});
+/* SGK 9.36: góc tù, DE < BC */
+TL7b('tl7-9-obt',9,'VDC','geo',r=>{
+  const Pt={B:[0,0],C:[6,0],A:[r.pick([2.4,2.8,3.2]),r.pick([1.5,1.7,1.9])]};
+  const lerp=(P,Q2,t)=>[P[0]+(Q2[0]-P[0])*t,P[1]+(Q2[1]-P[1])*t];Pt.D=lerp(Pt.A,Pt.B,r.pick([.45,.55])),Pt.E=lerp(Pt.A,Pt.C,r.pick([.4,.5]));
+  const fig=fig2D(Pt,[['A','B'],['B','C'],['C','A'],['D','E'],['B','E']],{off:{A:[0,-6]}});
+  return{kind:'tl',title:'Quan hệ giữa góc và cạnh đối diện',note:GEO_NOTE,parts:[
+    {pts:.5,html:`Cho tam giác ${I('ABC')} có ${ANG('BAC')} là góc tù. Lấy điểm ${I('D')} nằm giữa ${I('A')} và ${I('B')}, điểm ${I('E')} nằm giữa ${I('A')} và ${I('C')}.${fig}Chứng minh ${ANG('BDE')} là góc tù, từ đó suy ra ${I('DE')} &lt; ${I('BE')}.`},
+    {pts:.5,html:`Chứng minh ${I('BE')} &lt; ${I('BC')}, từ đó suy ra ${I('DE')} &lt; ${I('BC')}.`}],
+    sol:[ptxt([[`${ANG('BDE')} là góc ngoài tại đỉnh ${I('D')} của tam giác ${I('ADE')} nên ${ANG('BDE')} = ${ANG('DAE')} + ${ANG('AED')} &gt; ${ANG('DAE')} &gt; 90°, tức ${ANG('BDE')} là góc tù.`,.25],
+      [`Trong tam giác ${I('BDE')}, ${ANG('BDE')} tù nên là góc lớn nhất, cạnh đối diện ${I('BE')} là cạnh lớn nhất; do đó ${I('DE')} &lt; ${I('BE')}.`,.25]]),
+      ptxt([[`Tương tự, ${ANG('BEC')} là góc ngoài tại đỉnh ${I('E')} của tam giác ${I('ABE')} nên ${ANG('BEC')} &gt; ${ANG('BAE')} &gt; 90°; trong tam giác ${I('BEC')} cạnh ${I('BC')} đối diện góc tù nên ${I('BE')} &lt; ${I('BC')}.`,.25],
+      [`Từ ${I('DE')} &lt; ${I('BE')} và ${I('BE')} &lt; ${I('BC')} suy ra ${I('DE')} &lt; ${I('BC')}.`,.25]])],
+    chk:()=>{const d=(P,Q2)=>Math.hypot(P[0]-Q2[0],P[1]-Q2[1]),ab=[Pt.B[0]-Pt.A[0],Pt.B[1]-Pt.A[1]],ac=[Pt.C[0]-Pt.A[0],Pt.C[1]-Pt.A[1]];return ab[0]*ac[0]+ab[1]*ac[1]<0&&d(Pt.D,Pt.E)<d(Pt.B,Pt.E)&&d(Pt.B,Pt.E)<d(Pt.B,Pt.C)}};
+});
 /* ================================================================
    MỞ RỘNG NGÂN HÀNG CÂU ĐÚNG/SAI (phần II)
    Mỗi câu có 4 ý; mỗi ý có bản đúng và bản sai, bản sai luôn khác bản đúng về giá trị.
@@ -5127,10 +5279,10 @@ DS7('ds7-abs',1,'NB',r=>{
   const bigX=Math.abs(qv(x))>Math.abs(qv(y)),nx=Q(-x[0],x[1]);
   return mkDS(r,{stem:`Cho hai số hữu tỉ ${I('x')} = ${qh(x)} và ${I('y')} = ${qh(y)}. Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Số đối của ${I('x')} là ${qh(nx)}.`,f:`Số đối của ${I('x')} là ${qh(x)}.`,why:`Số đối của ${qh(x)} là ${qh(nx)}.`},
-    {t:`|${I('x')}| = ${qh(nx)}.`,f:`|${I('x')}| = ${qh(x)}.`,why:`x âm nên |x| = −x = ${qh(nx)}.`},
-    {t:`${I('x')} < ${I('y')}.`,f:`${I('x')} > ${I('y')}.`,why:`x là số âm, y là số dương nên x < y.`},
-    {t:`|${I('x')}| ${bigX?'>':'<'} |${I('y')}|.`,f:`|${I('x')}| ${bigX?'<':'>'} |${I('y')}|.`,why:`|x| = ${qh(nx)} ≈ ${dec(Math.abs(qv(x)),2)}, |y| = ${qh(y)} ≈ ${dec(qv(y),2)}.`}
-  ],chk:()=>qv(x)<0&&qv(y)>0&&Math.abs(qv(x))!==Math.abs(qv(y))});
+    {t:`${I('x')} + ${I('y')} = ${qh(qadd(x,y))}.`,f:`${I('x')} + ${I('y')} = ${qh(qadd(nx,y))}.`,why:`${I('x')} + ${I('y')} = ${qh(x)} + ${qh(y)} = ${qh(qadd(x,y))}.`},
+    {t:`${I('x')} &lt; ${I('y')}.`,f:`${I('x')} > ${I('y')}.`,why:`${I('x')} là số âm, ${I('y')} là số dương nên ${I('x')} &lt; ${I('y')}.`},
+    {t:`Trên trục số, điểm biểu diễn số ${I('x')} nằm bên trái gốc ${I('O')}.`,f:`Trên trục số, điểm biểu diễn số ${I('x')} nằm bên phải gốc ${I('O')}.`,why:`${I('x')} &lt; 0 nên điểm biểu diễn ${I('x')} nằm bên trái gốc ${I('O')}.`}
+  ],chk:()=>qv(x)<0&&qv(y)>0&&qv(qadd(x,y))!==qv(qadd(nx,y))});
 });
 /* Chương II: Số thực */
 const SQR_IRR=[2,3,5,6,7,10,11,12,13,15],SQR_RAT=[4,9,16,25,36,49];
