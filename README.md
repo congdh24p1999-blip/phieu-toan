@@ -4,6 +4,8 @@ Công cụ miễn phí tạo đề kiểm tra Toán cấp 2, cấp 3 (hiện có
 
 Câu hỏi bám theo SGK của khối lớp. Một số câu dùng kiến thức ngoài SGK (ví dụ đồng biến, nghịch biến ở lớp 8) được đánh dấu là câu mở rộng: chỉ xuất hiện ở mức Nâng cao hoặc khi bật tùy chọn "Cho phép câu mở rộng", và trang đáp án ghi rõ câu nào là câu mở rộng.
 
+Trang đáp án có bảng đối chiếu mỗi câu với bài học trong SGK Kết nối tri thức với cuộc sống (ví dụ "Bài 23. Phép cộng và phép trừ phân thức đại số: Câu 15, 19"), giúp giáo viên biết câu nào kiểm tra bài nào.
+
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
 - `index.html`: Xưởng đề Toán (trang chính).
