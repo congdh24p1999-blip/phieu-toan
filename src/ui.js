@@ -245,4 +245,16 @@ function doPrint(what){
 }
 $('#printExam').addEventListener('click',()=>doPrint('exam'));
 $('#printKey').addEventListener('click',()=>doPrint('key'));
+/* Tải file Word: dùng đúng nội dung đang hiển thị */
+async function doWord(what,btn){
+  const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
+  try{
+    try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
+    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2'}[state.kind]||state.kind;
+    await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`);
+  }catch(e){alert('Chưa tạo được file Word: '+e.message)}
+  finally{btn.disabled=false;btn.textContent=old}
+}
+$('#wordExam').addEventListener('click',e=>doWord('exam',e.currentTarget));
+$('#wordKey').addEventListener('click',e=>doWord('key',e.currentTarget));
 syncInputs();setTab(state.tab);render();
