@@ -9,6 +9,9 @@ const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
   note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
 const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
 const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
+const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm'};
+const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
+  note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
 const BLUEPRINT={
   '7gk1':{...G7,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,1,2,3],
@@ -43,6 +46,12 @@ const BLUEPRINT={
   '11ck2':{...G11,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – IX (Kết nối tri thức, tập 2)',chapters:[6,7,8,9],
     nlc:[6,6,7,7,7,8,8,8,9,9,9,9],ds:[7,9],tln:[6,7,8,9],
     tl:[{role:'a',chs:[6]},{role:'c',chs:[7]},{role:'b',chs:[8,9]}]},
+  '12gk1':{...G12,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I và Chương II, bài 6 – 7 (Kết nối tri thức)',chapters:[1,2],excl:['b8'],
+    nlc:[1,1,1,1,1,1,1,1,2,2,2,2],ds:[1,2],tln:[1,1,1,2],
+    tl:[{role:'a',chs:[1]},{role:'b',chs:[1]},{role:'c',chs:[2]}]},
+  '12ck1':{...G12,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
+    nlc:[1,1,1,1,1,2,2,2,2,3,3,3],ds:[1,2],tln:[1,1,2,3],
+    tl:[{role:'a',chs:[1]},{role:'b',chs:[1,3]},{role:'c',chs:[2]}]},
   '11ck1':{...G11,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
     nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[4,5],tln:[1,2,3,5],
     tl:[{role:'a',chs:[1,2]},{role:'b',chs:[5]},{role:'c',chs:[4]}]}

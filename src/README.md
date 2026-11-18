@@ -19,6 +19,7 @@ Cần Node.js (≥ 18) và Python 3.
 | `ui.js` | Điều khiển giao diện, trang đề, trang đáp án, ma trận |
 | `core1.js`, `core2.js` | Hàm dùng chung (số, đa thức, định dạng), Toán 8 học kì I |
 | `core11*.js` | Toán 11 (`core11k.js`: câu vận dụng cao bổ sung) |
+| `core12a.js` … `core12e.js` | Toán 12 học kì I (a: Bài 1–2 và hàm vẽ đồ thị, bảng biến thiên; b: Bài 3–5; c: Chương II vectơ, toạ độ; d: Chương III; e: dạng bổ sung) |
 | `core7*.js` | Toán 7 (`core7d.js`: dạng bổ sung theo bài tập SGK) |
 | `core-ds.js` | Câu đúng sai lớp 7 |
 | `core8a.js` … `core8i.js` | Toán 8 học kì II theo chương (a: VI, b: VII, c: VIII, d: IX, e: X); f–i: bổ sung, bài hình |
@@ -44,6 +45,9 @@ python3 ui3.py && python3 uiext.py   # thử giao diện bằng Playwright (ản
 python3 pr8.py                    # in thử PDF A4 (lưu ở out/)
 python3 wordtest.py 8 ck2 101 2    # tải thử file Word đề và đáp án (lớp, kì, mã đề, số mã đề)
 python3 wstest.py                 # thử chế độ phiếu bài tập: mọi bài học đều tạo được phiếu, tải Word
+python3 ui12.py                   # thử lớp 12 qua giao diện (đề, đáp án, ma trận)
+node hyph.js '12'                 # tìm dấu trừ ASCII "-" lọt vào nội dung
+node lv11.js 12gk1,12ck1          # tỉ lệ mức độ nhận thức theo độ khó
 ```
 
 `tcmp.js` so sánh với bản trước: tạo `core_prev.js` từ `git show HEAD:index.html` (phần script trước `const LS_KEY=`) rồi chạy `node tcmp.js`.

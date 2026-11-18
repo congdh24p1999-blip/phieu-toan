@@ -7,7 +7,7 @@ with sync_playwright() as p:
     errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto('file://'+os.path.join(HERE,'..','index.html'));pg.evaluate("localStorage.clear()");pg.reload();pg.wait_for_timeout(300)
     pg.check('input[name=mode][value="ws"]',force=True);pg.wait_for_timeout(300)
-    for g in ['7','8','11']:
+    for g in ['7','8','11','12']:
         pg.check(f'input[name=grade][value="{g}"]',force=True);pg.wait_for_timeout(200)
         boxes=pg.query_selector_all('#lesBox input');print('lớp',g,'số bài',len(boxes),pg.inner_text('#meta'))
         for i,bx in enumerate(boxes):

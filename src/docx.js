@@ -50,6 +50,7 @@ const DOCX=(()=>{
     if(has(c,'lm')){const sm=c.querySelector('small');return[`<m:limLow>${ME([mr('lim',{...f,i:false})])}<m:lim>${mathOf(sm,f).join('')}</m:lim></m:limLow>`]}
     if(has(c,'cs')){const rows=[...c.querySelectorAll('.rows>span')];return[`<m:d><m:dPr><m:begChr m:val="{"/><m:endChr m:val=""/></m:dPr><m:e><m:eqArr>${rows.map(rw=>ME(mathOf(rw,f))).join('')}</m:eqArr></m:e></m:d>`]}
     if(has(c,'hw'))return[`<m:acc><m:accPr><m:chr m:val="̂"/></m:accPr>${ME(mathOf(c,f))}</m:acc>`];
+    if(has(c,'vc'))return[`<m:acc><m:accPr><m:chr m:val="⃗"/></m:accPr>${ME(mathOf(c,f))}</m:acc>`];
     if(tag==='br')return[];
     const g={...f};if(tag==='i'||tag==='em')g.i=true;if(tag==='b'||tag==='strong')g.b=true;
     return mathOf(c,g);
@@ -66,7 +67,7 @@ const DOCX=(()=>{
     }
     return out;
   }
-  const isMath=el=>has(el,'fr')||has(el,'rt')||has(el,'lm')||has(el,'cs')||has(el,'hw');
+  const isMath=el=>has(el,'fr')||has(el,'rt')||has(el,'lm')||has(el,'cs')||has(el,'hw')||has(el,'vc');
   /* ---------- Hình vẽ ---------- */
   let IMGS=[],imgMap=new Map();
   async function rasterize(svg){

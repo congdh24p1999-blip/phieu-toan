@@ -149,6 +149,9 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .hw.hn{--hr:9deg}
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;font-size:.95em}
 .fr.ng{margin-left:.25em}
+.vc{position:relative;display:inline-block;padding-top:.5em;line-height:1;white-space:nowrap}
+.vc::before{content:"";position:absolute;left:.06em;right:.18em;top:.28em;border-top:.065em solid currentColor}
+.vc::after{content:"";position:absolute;right:.02em;top:calc(.28em - .17em);border-left:.3em solid currentColor;border-top:.2em solid transparent;border-bottom:.2em solid transparent}
 .fr>span:first-child{border-bottom:1px solid #000;padding:0 3px}
 .fr>span:last-child{padding:0 3px}
 .endmark{text-align:center;font-weight:700;margin:12px 0 2px}
@@ -219,7 +222,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
           <label class="off"><input type="radio" name="grade" value="9" disabled>9</label>
           <label class="off"><input type="radio" name="grade" value="10" disabled>10</label>
           <label><input type="radio" name="grade" value="11">11</label>
-          <label class="off"><input type="radio" name="grade" value="12" disabled>12</label>
+          <label><input type="radio" name="grade" value="12">12</label>
         </div>
         <p class="hint" id="gradeHint"></p>
       </div>
@@ -3827,6 +3830,1327 @@ TL11b('tl11-7-dih',7,'VD','c',r=>{
       ptxt([[`${I('S'+X)} ⊥ ${I(E)}, ${I('A'+X)} ⊥ ${I(E)} nên ${AG('S'+X+'A')} là góc phẳng nhị diện của góc nhị diện [${I('S')}, ${I(E)}, ${I('A')}].`,.25],[`tan ${AG('S'+X+'A')} = ${fr('SA','A'+X)} = ${tv}, nên góc nhị diện bằng ${th}°.`,.25]])],
     chk:()=>closeN(Math.atan({30:1/Math.sqrt(3),45:1,60:Math.sqrt(3)}[th])*180/Math.PI,th)};
 },'mm');
+/* ================================================================
+   LỚP 12 – Toán 12 Kết nối tri thức, học kì I
+   Phần dùng chung (đồ thị, bảng biến thiên, vectơ) + Chương I, Bài 1 – 2
+   ================================================================ */
+const N12=(id,ch,lv,les,gen,sec)=>reg('nlc',id,ch,lv,gen,{g:12,hk:1,les,sec});
+const DS12=(id,ch,lv,les,gen,sec)=>reg('ds',id,ch,lv,gen,{g:12,hk:1,les,sec});
+const TLN12=(id,ch,lv,les,gen,sec)=>reg('tln',id,ch,lv,gen,{g:12,hk:1,les,sec});
+const TL12=(id,ch,lv,role,les,gen,sec)=>reg('tl',id,ch,lv,gen,{role,g:12,hk:1,les,sec});
+/* Kí hiệu */
+const vc=s=>`<span class="vc">${s}</span>`;                 /* vectơ có mũi tên */
+const FPX=`${I('f')}′(${I('x')})`,YF=`${I('y')} = ${FX}`;
+const inf=v=>v===Infinity?'+∞':v===-Infinity?'−∞':fmt(v);    /* số hoặc ±∞ (chữ thường, dùng được trong SVG) */
+const ivO=(a,b)=>`(${inf(a)}; ${inf(b)})`,ivC=(a,b)=>`[${inf(a)}; ${inf(b)}]`;
+const P3=(cs,v='x')=>polyH(cs,v);
+const pev=(cs,x)=>cs.reduce((s,c)=>s*x+c,0);
+const pder=cs=>cs.slice(0,-1).map((c,i)=>c*(cs.length-1-i));
+const isInt=v=>Math.abs(v-Math.round(v))<1e-9;
+const uniqBy=(a,f)=>{const s=new Set();return a.filter(x=>{const k=f(x);if(s.has(k))return false;s.add(k);return true})};
+/* "a x" với hệ số đẹp: coefX(−1,'x') → "−x" */
+const den2=d=>d?`(${xlin(1,d)})${sup(2)}`:I('x')+sup(2);
+const coefV=(c,v)=>(c===1?'':c===-1?MINUS:sg(c))+v;
+
+/* ---------- Bảng biến thiên (SVG) ----------
+   nd: các nút [{x, d:'0'|'||'|'', y, lv:'t'|'b'|'m'}]; nút '||' có y=[trái,phải], lv=[trái,phải].
+   sg: dấu của f′ trên từng khoảng ('+' hoặc '−'). */
+function bbtSVG(nd,sgn,o={}){
+  const n=nd.length,cw=o.cw||(n>4?62:74),L=46,W=L+44+(n-1)*cw,hx=24,hd=24,hf=64,H=hx+hd+hf;
+  const X=i=>L+22+i*cw,f=v=>v.toFixed(1),T=v=>typeof v==='number'?inf(v):v;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Bảng biến thiên">`;
+  s+=`<rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#000" stroke-width="1"/>`;
+  s+=`<line x1="0" y1="${hx}" x2="${W}" y2="${hx}" stroke="#000"/><line x1="0" y1="${hx+hd}" x2="${W}" y2="${hx+hd}" stroke="#000"/><line x1="${L}" y1="0" x2="${L}" y2="${H}" stroke="#000"/>`;
+  const fn=o.fn||'f';
+  s+=`<text x="${L/2}" y="16" font-size="12" text-anchor="middle" font-style="italic">x</text>`;
+  s+=`<text x="${L/2}" y="${hx+16}" font-size="12" text-anchor="middle"><tspan font-style="italic">${fn}</tspan>′(<tspan font-style="italic">x</tspan>)</text>`;
+  s+=`<text x="${L/2}" y="${hx+hd+hf/2+4}" font-size="12" text-anchor="middle"><tspan font-style="italic">${fn}</tspan>(<tspan font-style="italic">x</tspan>)</text>`;
+  const yT=hx+hd+15,yB=H-7,yM=hx+hd+hf/2+4,yl=lv=>lv==='t'?yT:lv==='b'?yB:yM;
+  nd.forEach((p,i)=>{
+    s+=`<text x="${X(i)}" y="16" font-size="12" text-anchor="middle">${T(p.x)}</text>`;
+    if(p.d==='0')s+=`<text x="${X(i)}" y="${hx+16}" font-size="12" text-anchor="middle">0</text>`;
+    if(p.d==='||'){for(const dx of [-1.6,1.6])s+=`<line x1="${f(X(i)+dx)}" y1="${hx}" x2="${f(X(i)+dx)}" y2="${H}" stroke="#000" stroke-width="0.9"/>`;
+      s+=`<text x="${X(i)-5}" y="${yl(p.lv[0])}" font-size="12" text-anchor="end">${T(p.y[0])}</text><text x="${X(i)+5}" y="${yl(p.lv[1])}" font-size="12" text-anchor="start">${T(p.y[1])}</text>`}
+    else if(p.y!==undefined&&p.y!==null)s+=`<text x="${X(i)}" y="${yl(p.lv)}" font-size="12" text-anchor="middle">${T(p.y)}</text>`;
+  });
+  sgn.forEach((c,i)=>{s+=`<text x="${(X(i)+X(i+1))/2}" y="${hx+17}" font-size="13" text-anchor="middle">${c}</text>`});
+  /* mũi tên */
+  const yA=lv=>lv==='t'?yT+5:lv==='b'?yB-13:yM-4;
+  for(let i=0;i<n-1;i++){
+    const a=nd[i],b=nd[i+1],la=Array.isArray(a.lv)?a.lv[1]:a.lv,lb=Array.isArray(b.lv)?b.lv[0]:b.lv;
+    const wa=String(T(Array.isArray(a.y)?a.y[1]:a.y)).length,wb=String(T(Array.isArray(b.y)?b.y[0]:b.y)).length;
+    let x1=X(i)+(a.d==='||'?8+wa*6.2:Math.max(9,wa*3.6+4)),x2=X(i+1)-(b.d==='||'?8+wb*6.2:Math.max(9,wb*3.6+4)),y1=yA(la),y2=yA(lb);
+    if(la===lb){y1=yA(la);y2=y1}
+    const ang=Math.atan2(y2-y1,x2-x1),h=6;
+    s+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="#000" stroke-width="1"/>`;
+    s+=`<polygon points="${f(x2)},${f(y2)} ${f(x2-h*Math.cos(ang-0.4))},${f(y2-h*Math.sin(ang-0.4))} ${f(x2-h*Math.cos(ang+0.4))},${f(y2-h*Math.sin(ang+0.4))}" fill="#000"/>`;
+  }
+  return `<div class="figure">${s}</svg></div>`;
+}
+/* BBT của hàm số có các điểm tới hạn xs (tăng dần) trên ℝ hoặc đoạn [lo; hi]; giá trị tại hai đầu cho sẵn. */
+function bbtOf(fv,crit,o={}){
+  const lo=o.lo===undefined?-Infinity:o.lo,hi=o.hi===undefined?Infinity:o.hi;
+  const xs=[lo,...crit,hi],ys=xs.map((x,i)=>i===0?(o.yl!==undefined?o.yl:fv(x)):i===xs.length-1?(o.yr!==undefined?o.yr:fv(x)):fv(x));
+  const sgn=[];for(let i=0;i<xs.length-1;i++){const a=xs[i],b=xs[i+1],m=!isFinite(a)?b-1:!isFinite(b)?a+1:(a+b)/2;sgn.push(o.dsign(m)>0?'+':'−')}
+  const last=xs.length-1,lv=ys.map((y,i)=>i===0?(sgn[0]==='+'?'b':'t'):i===last?(sgn[last-1]==='+'?'t':'b'):(sgn[i-1]==='+'?'t':'b'));
+  const nd=xs.map((x,i)=>({x,d:i===0||i===xs.length-1?'':'0',y:ys[i],lv:lv[i]}));
+  return bbtSVG(nd,sgn,o);
+}
+
+/* ---------- Đồ thị hàm số (SVG) ---------- */
+let G12ID=0;
+function graphSVG(fn,o){
+  const [x0,x1]=o.x,[y0,y1]=o.y,W=o.w||230,H=o.h||200,p=16;
+  const kx=(W-2*p)/(x1-x0),ky=(H-2*p)/(y1-y0),k=o.equal?Math.min(kx,ky):null;
+  let KX=k||kx,KY=k||ky;if(!k){if(KY>KX*1.5)KY=KX*1.5;if(KX>KY*1.5)KX=KY*1.5}
+  const ox=(W-(x1-x0)*KX)/2,oy=(H-(y1-y0)*KY)/2;
+  const SX=x=>ox+(x-x0)*KX,SY=y=>H-oy-(y-y0)*KY,f=v=>v.toFixed(1),id='g12c'+(++G12ID);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Đồ thị hàm số"><defs><clipPath id="${id}"><rect x="${f(SX(x0))}" y="${f(SY(y1))}" width="${f((x1-x0)*KX)}" height="${f((y1-y0)*KY)}"/></clipPath></defs>`;
+  const ar=(x,y,dx,dy)=>`<polygon points="${f(x)},${f(y)} ${f(x-dx*7-dy*3)},${f(y-dy*7+dx*3)} ${f(x-dx*7+dy*3)},${f(y-dy*7-dx*3)}" fill="#000"/>`;
+  /* trục */
+  const ax=SY(0),ay=SX(0);
+  s+=`<line x1="${f(SX(x0))}" y1="${f(ax)}" x2="${f(SX(x1))}" y2="${f(ax)}" stroke="#000" stroke-width="0.9"/>${ar(SX(x1),ax,1,0)}`;
+  s+=`<line x1="${f(ay)}" y1="${f(SY(y0))}" x2="${f(ay)}" y2="${f(SY(y1))}" stroke="#000" stroke-width="0.9"/>${ar(ay,SY(y1),0,-1)}`;
+  s+=`<text x="${f(SX(x1)-4)}" y="${f(ax+13)}" font-size="11" font-style="italic" text-anchor="end">x</text><text x="${f(ay-7)}" y="${f(SY(y1)+9)}" font-size="11" font-style="italic" text-anchor="end">y</text><text x="${f(ay-4)}" y="${f(ax+12)}" font-size="11" font-style="italic" text-anchor="end">O</text>`;
+  const dash=(xa,ya,xb,yb)=>`<line x1="${f(xa)}" y1="${f(ya)}" x2="${f(xb)}" y2="${f(yb)}" stroke="#000" stroke-width="0.7" stroke-dasharray="3 2.5"/>`;
+  const done={x:new Set(),y:new Set()};
+  const lx=(x,up)=>{if(x===0||done.x.has(x))return'';done.x.add(x);return `<text x="${f(SX(x))}" y="${f(up?ax-5:ax+13)}" font-size="10.5" text-anchor="middle">${fmt(x)}</text>`};
+  const ly=(y)=>{if(y===0||done.y.has(y))return'';done.y.add(y);return `<text x="${f(ay+(o.ylabR?5:-4))}" y="${f(SY(y)+3.5)}" font-size="10.5" text-anchor="${o.ylabR?'start':'end'}">${fmt(y)}</text>`};
+  /* tiệm cận */
+  (o.va||[]).forEach(a=>{s+=dash(SX(a),SY(y0),SX(a),SY(y1))+lx(a,o.vaUp)});
+  (o.ha||[]).forEach(b=>{s+=dash(SX(x0),SY(b),SX(x1),SY(b))+ly(b)});
+  /* điểm đánh dấu kèm đường gióng */
+  (o.marks||[]).forEach(([x,y])=>{if(x!==0)s+=dash(SX(x),ax,SX(x),SY(y));if(y!==0)s+=dash(ay,SY(y),SX(x),SY(y));s+=lx(x,y<0)+ly(y)});
+  (o.xt||[]).forEach(x=>{s+=`<line x1="${f(SX(x))}" y1="${f(ax-2)}" x2="${f(SX(x))}" y2="${f(ax+2)}" stroke="#000"/>`+lx(x,false)});
+  (o.yt||[]).forEach(y=>{s+=`<line x1="${f(ay-2)}" y1="${f(SY(y))}" x2="${f(ay+2)}" y2="${f(SY(y))}" stroke="#000"/>`+ly(y)});
+  /* đường cong */
+  const N=500,segs=[];let cur=[],prev=null;
+  const lim=(y1-y0)*3;
+  for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N,y=fn(x);
+    if(!Number.isFinite(y)||Math.abs(y)>1e4||(prev!==null&&Math.abs(y-prev)>lim)||(o.va||[]).some(a=>Math.abs(x-a)<1e-6)){if(cur.length>1)segs.push(cur);cur=[];prev=Number.isFinite(y)&&Math.abs(y)<=1e4?y:null;if(prev!==null)cur.push([x,y]);continue}
+    cur.push([x,y]);prev=y}
+  if(cur.length>1)segs.push(cur);
+  s+=`<g clip-path="url(#${id})">`+segs.map(sg2=>`<polyline points="${sg2.map(([x,y])=>f(SX(x))+','+f(SY(Math.max(y0-5,Math.min(y1+5,y)))) ).join(' ')}" fill="none" stroke="#000" stroke-width="1.5"/>`).join('')+'</g>';
+  if(o.lab)s+=`<text x="${f(SX(o.lab[0]))}" y="${f(SY(o.lab[1]))}" font-size="11" font-style="italic">${o.lab[2]||''}</text>`;
+  return `<div class="figure">${s}</svg></div>`;
+}
+/* Khung nhìn tự động cho đồ thị qua các điểm cần thấy */
+function viewOf(pts,mx=1.4,my=1.4){
+  const xs=pts.map(p=>p[0]).concat(0),ys=pts.map(p=>p[1]).concat(0);
+  return{x:[Math.floor(Math.min(...xs)-mx),Math.ceil(Math.max(...xs)+mx)],y:[Math.floor(Math.min(...ys)-my),Math.ceil(Math.max(...ys)+my)]};
+}
+
+/* ---------- Hàm bậc ba có hai cực trị nguyên ----------
+   f′(x) = 3a(x − p)(x − q), p < q. Trả về hệ số và giá trị tại cực trị. */
+function cubic12(r,o={}){
+  for(let it=0;it<500;it++){
+    const a=o.a||r.pick(o.as||[1,-1,1,-1,2,-2]),p=r.int(o.lo??-3,o.hi??2),q=p+r.int(1,o.gap||3);
+    if((a*(p+q))%2)continue;
+    const b=-3*a*(p+q)/2,c=3*a*p*q,d=o.d!==undefined?o.d:r.int(o.dlo??-5,o.dhi??5),cs=[a,b,c,d];
+    const fp=pev(cs,p),fq=pev(cs,q);
+    if(o.ok&&!o.ok({a,b,c,d,p,q,fp,fq}))continue;
+    return{a,b,c,d,p,q,cs,fp,fq,f:x=>pev(cs,x),xCD:a>0?p:q,xCT:a>0?q:p,yCD:a>0?fp:fq,yCT:a>0?fq:fp};
+  }
+  throw new Error('cubic12');
+}
+/* Hàm trùng phương y = a x⁴ − 2a k² x² + c (cực trị tại 0, ±k) */
+function quart12(r,o={}){
+  const a=o.a||r.pick([1,-1]),k=o.k||r.int(1,2),c=o.c!==undefined?o.c:r.int(-3,3),cs=[a,0,-2*a*k*k,0,c];
+  return{a,k,c,cs,f:x=>pev(cs,x),y0:c,yk:pev(cs,k)};
+}
+const signDer=cs=>x=>pev(pder(cs),x);
+/* BBT bậc ba trên ℝ */
+const bbtCubic=C=>bbtOf(C.f,[C.p,C.q],{dsign:signDer(C.cs),yl:C.a>0?-Infinity:Infinity,yr:C.a>0?Infinity:-Infinity});
+const bbtQuart=Q4=>bbtOf(Q4.f,[-Q4.k,0,Q4.k],{dsign:signDer(Q4.cs),yl:Q4.a>0?Infinity:-Infinity,yr:Q4.a>0?Infinity:-Infinity});
+/* Các khoảng đồng biến / nghịch biến từ dấu f′ trên các khoảng chia bởi crit */
+function monoIv(crit,dsign,lo=-Infinity,hi=Infinity){
+  const xs=[lo,...crit,hi],inc=[],dec=[];
+  for(let i=0;i<xs.length-1;i++){const a=xs[i],b=xs[i+1],m=!isFinite(a)?b-1:!isFinite(b)?a+1:(a+b)/2;(dsign(m)>0?inc:dec).push([a,b])}
+  return{inc,dec};
+}
+/* Phương án khoảng: đúng là một khoảng con của khoảng đúng; nhiễu là khoảng chứa điểm sai dấu */
+function ivWrongs(r,good,bad,crit,vals){
+  const W=[];bad.forEach(([a,b])=>W.push(ivO(a,b)));
+  if(crit.length>=2)W.push(ivO(crit[0],Infinity),ivO(-Infinity,crit[crit.length-1]));
+  if(vals)W.push(ivO(Math.min(...vals),Math.max(...vals)));
+  W.push(ivO(crit[0]-1,crit[crit.length-1]+1));
+  return r.shuffle(uniqBy(W,x=>x)).filter(w=>!good.some(([a,b])=>w===ivO(a,b)));
+}
+const inIv=(sub,iv)=>sub[0]>=iv[0]&&sub[1]<=iv[1];
+
+/* ===================== Chương I. Bài 1: Tính đơn điệu và cực trị ===================== */
+N12('k12-1-bbt-mono',1,'NB',[1],r=>{
+  const C=cubic12(r,{dlo:-4,dhi:4}),M=monoIv([C.p,C.q],signDer(C.cs)),want=r.chance(.5)?'inc':'dec';
+  const good=M[want],pick=r.pick(good),bad=M[want==='inc'?'dec':'inc'];
+  const cor=ivO(...pick);
+  return mkTxt(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtCubic(C)}Hàm số đã cho ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng nào dưới đây?`,
+    correct:cor,wrongs:ivWrongs(r,good,bad,[C.p,C.q],[C.fp,C.fq]).filter(w=>w!==cor),
+    sol:`Từ bảng biến thiên, ${FPX} ${want==='inc'?'> 0':'< 0'} trên ${good.map(g=>ivO(...g)).join(' và ')} nên hàm số ${want==='inc'?'đồng biến':'nghịch biến'} trên ${cor}.`,
+    chk:()=>{const m=isFinite(pick[0])&&isFinite(pick[1])?(pick[0]+pick[1])/2:isFinite(pick[0])?pick[0]+1:pick[1]-1;return(pev(pder(C.cs),m)>0)===(want==='inc')}});
+});
+N12('k12-1-bbt-ext',1,'NB',[1],r=>{
+  const C=cubic12(r,{dlo:-4,dhi:4,ok:z=>new Set([z.p,z.q,z.fp,z.fq]).size===4}),ask=r.int(0,3);
+  const W=[['Giá trị cực đại của hàm số đã cho bằng',C.yCD],['Giá trị cực tiểu của hàm số đã cho bằng',C.yCT],['Điểm cực đại của hàm số đã cho là',C.xCD],['Điểm cực tiểu của hàm số đã cho là',C.xCT]][ask];
+  const why=[`Hàm số đạt cực đại tại x = ${sg(C.xCD)}, giá trị cực đại y<sub>CĐ</sub> = ${sg(C.yCD)}.`,`Hàm số đạt cực tiểu tại x = ${sg(C.xCT)}, giá trị cực tiểu y<sub>CT</sub> = ${sg(C.yCT)}.`,`${FPX} đổi dấu từ dương sang âm khi qua x = ${sg(C.xCD)} nên đó là điểm cực đại.`,`${FPX} đổi dấu từ âm sang dương khi qua x = ${sg(C.xCT)} nên đó là điểm cực tiểu.`][ask];
+  return mkNum(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtCubic(C)}${W[0]}`,correct:W[1],ok:()=>true,cands:[C.yCD,C.yCT,C.xCD,C.xCT].filter(v=>v!==W[1]),sol:why,chk:()=>pev(pder(C.cs),C.p)===0&&pev(pder(C.cs),C.q)===0});
+});
+N12('k12-1-graph-mono',1,'NB',[1],r=>{
+  const C=cubic12(r,{as:[1,-1],lo:-2,hi:1,gap:2,ok:z=>Math.abs(z.fp)<=4&&Math.abs(z.fq)<=4&&z.fp!==0&&z.fq!==0&&z.p!==0&&z.q!==0});
+  const V=viewOf([[C.p,C.fp],[C.q,C.fq]],1.6,1.3),M=monoIv([C.p,C.q],signDer(C.cs)),want=r.chance(.5)?'inc':'dec',good=M[want],pick=r.pick(good),cor=ivO(...pick);
+  return mkTxt(r,{stem:`Cho hàm số ${YF} có đồ thị là đường cong trong hình bên.${graphSVG(C.f,{...V,marks:[[C.p,C.fp],[C.q,C.fq]]})}Hàm số đã cho ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng nào dưới đây?`,
+    correct:cor,wrongs:ivWrongs(r,good,M[want==='inc'?'dec':'inc'],[C.p,C.q],[C.fp,C.fq]).filter(w=>w!==cor),
+    sol:`Trên ${cor}, đồ thị đi ${want==='inc'?'lên':'xuống'} từ trái sang phải nên hàm số ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng đó.`,
+    chk:()=>{const m=isFinite(pick[0])&&isFinite(pick[1])?(pick[0]+pick[1])/2:isFinite(pick[0])?pick[0]+1:pick[1]-1;return(pev(pder(C.cs),m)>0)===(want==='inc')}});
+});
+N12('k12-1-graph-ext',1,'NB',[1],r=>{
+  const Q4=quart12(r,{k:1,c:r.int(-2,2)}),c=Q4.c,yk=Q4.yk;
+  if(c===0||yk===0)return T.nlc['k12-1-graph-ext'].gen(r);
+  const V=viewOf([[-1,yk],[1,yk],[0,c]],1.3,1.3),ask=r.int(0,2);
+  const isMax0=Q4.a<0?false:true;/* a>0: 0 là cực đại */
+  const Wd=[[`Điểm cực đại của đồ thị hàm số đã cho là`,`(0; ${sg(c)})`,Q4.a>0?[`(1; ${sg(yk)})`,`(${MINUS}1; ${sg(yk)})`,`(${sg(c)}; 0)`]:[`(1; ${sg(yk)})`,`(0; ${sg(c)})`,`(${sg(yk)}; 1)`]],
+    [`Giá trị cực tiểu của hàm số đã cho bằng`,sg(Q4.a>0?yk:c),[sg(Q4.a>0?c:yk),'1',MINUS+'1','0'].filter(x=>x!==sg(Q4.a>0?yk:c))],
+    [`Hàm số đã cho có bao nhiêu điểm cực trị?`,'3',['1','2','4']]][ask];
+  let cor=Wd[1],wr=Wd[2];
+  if(ask===0&&Q4.a<0){cor=`(${r.pick(['1',MINUS+'1'])}; ${sg(yk)})`;wr=[`(0; ${sg(c)})`,`(${sg(yk)}; 1)`,`(${sg(c)}; 0)`]}
+  return mkTxt(r,{stem:`Cho hàm số ${YF} có đồ thị là đường cong trong hình bên.${graphSVG(Q4.f,{...V,marks:[[-1,yk],[1,yk],[0,c]]})}${Wd[0]}`,correct:cor,wrongs:wr,
+    sol:ask===2?`Đồ thị có ba điểm “đỉnh” (hai điểm thấp nhất/cao nhất cục bộ và một điểm ở giữa) nên hàm số có 3 điểm cực trị.`:`Quan sát đồ thị: hàm số đạt cực ${Q4.a>0?'đại':'tiểu'} tại x = 0 (y = ${sg(c)}) và đạt cực ${Q4.a>0?'tiểu':'đại'} tại x = ±1 (y = ${sg(yk)}).`,
+    chk:()=>isMax0===(Q4.a>0)&&Q4.f(1)===yk&&pev(pder(Q4.cs),1)===0});
+});
+N12('k12-1-cnt',1,'TH',[1],r=>{
+  /* f′(x) = (x − a)^m (x − b)^n (x − c)^k: đếm điểm cực trị (số nghiệm bội lẻ) */
+  const roots=distinctInts(r,3,-4,5).sort((a,b)=>a-b),ex=[r.pick([1,2,3]),r.pick([1,2]),r.pick([1,2,3])];
+  const fac=roots.map((x,i)=>`${x===0?I('x'):`(${xlin(1,-x)})`}${ex[i]>1?sup(ex[i]):''}`).join('');
+  const cnt=ex.filter(e=>e%2).length,ask=r.pick(['cực trị','cực trị']);
+  return mkNum(r,{stem:`Cho hàm số ${YF} có đạo hàm ${FPX} = ${fac}, ∀${I('x')} ∈ ℝ. Số điểm ${ask} của hàm số đã cho là`,correct:cnt,ok:c=>c>=0&&c<=4,cands:[3,2,1,0,4].filter(v=>v!==cnt),
+    sol:`${FPX} đổi dấu khi qua các nghiệm bội lẻ và không đổi dấu khi qua nghiệm bội chẵn. Các nghiệm bội lẻ: ${roots.filter((_,i)=>ex[i]%2).map(sg).join('; ')||'không có'}. Vậy hàm số có ${cnt} điểm cực trị.`,
+    chk:()=>{let c=0;roots.forEach(x0=>{const g=x=>roots.reduce((s,x1,i)=>s*Math.pow(x-x1,ex[i]),1);if(Math.sign(g(x0-1e-3))!==Math.sign(g(x0+1e-3)))c++});return c===cnt}});
+});
+N12('k12-1-cub-mono',1,'TH',[1],r=>{
+  const C=cubic12(r,{d:r.int(-6,6)}),M=monoIv([C.p,C.q],signDer(C.cs)),want=r.chance(.5)?'inc':'dec',good=M[want],pick=r.pick(good),cor=ivO(...pick);
+  return mkTxt(r,{stem:`Hàm số ${I('y')} = ${P3(C.cs)} ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng nào dưới đây?`,correct:cor,
+    wrongs:ivWrongs(r,good,M[want==='inc'?'dec':'inc'],[C.p,C.q]).filter(w=>w!==cor),
+    sol:`${I('y')}′ = ${P3(pder(C.cs))} = ${sg(3*C.a)}(${xlin(1,-C.p)})(${xlin(1,-C.q)}); ${I('y')}′ = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}. Lập bảng xét dấu: ${I('y')}′ ${want==='inc'?'> 0':'< 0'} trên ${good.map(g=>ivO(...g)).join(' và ')}, nên chọn ${cor}.`,
+    chk:()=>{const m=isFinite(pick[0])&&isFinite(pick[1])?(pick[0]+pick[1])/2:isFinite(pick[0])?pick[0]+1:pick[1]-1;return(pev(pder(C.cs),m)>0)===(want==='inc')}});
+});
+N12('k12-1-cub-ext',1,'TH',[1],r=>{
+  const C=cubic12(r,{d:r.int(-6,6),ok:z=>z.fp!==z.fq}),ask=r.int(0,2);
+  const W=[[`Giá trị cực đại của hàm số ${I('y')} = ${P3(C.cs)} là`,C.yCD,[C.yCT,C.xCD,C.xCT,C.d]],[`Giá trị cực tiểu của hàm số ${I('y')} = ${P3(C.cs)} là`,C.yCT,[C.yCD,C.xCT,C.xCD,C.d]],[`Điểm cực đại của hàm số ${I('y')} = ${P3(C.cs)} là`,C.xCD,[C.xCT,C.yCD,-C.xCD,C.yCT]]][ask];
+  return mkNum(r,{stem:W[0],correct:W[1],ok:()=>true,cands:W[2].filter(v=>v!==W[1]),
+    sol:`${I('y')}′ = ${P3(pder(C.cs))}; ${I('y')}′ = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}. Vì hệ số của x³ ${C.a>0?'dương':'âm'} nên hàm số đạt cực đại tại x = ${sg(C.xCD)} (y<sub>CĐ</sub> = ${sg(C.yCD)}) và đạt cực tiểu tại x = ${sg(C.xCT)} (y<sub>CT</sub> = ${sg(C.yCT)}).`,
+    chk:()=>C.f(C.xCD)===C.yCD&&pev(pder(pder(C.cs)),C.xCD)<0&&pev(pder(pder(C.cs)),C.xCT)>0});
+});
+N12('k12-1-quart',1,'TH',[1],r=>{
+  const a=r.pick([1,-1,2,-2]),b=r.nz(-8,8),c=r.int(-5,5),cs=[a,0,b,0,c],n=a*b<0?3:1,ask=r.int(0,1);
+  if(ask===0)return mkNum(r,{stem:`Số điểm cực trị của hàm số ${I('y')} = ${P3(cs)} là`,correct:n,ok:v=>v>=0,cands:[0,1,2,3,4].filter(v=>v!==n),
+    sol:`${I('y')}′ = ${P3(pder(cs))} = ${coefV(4*a,I('x'))}(${I('x')}${sup(2)} ${b/(2*a)<0?MINUS:'+'} ${fmt(Math.abs(b/(2*a)))}). ${n===3?`Vì a·b < 0 nên ${I('y')}′ = 0 có ba nghiệm phân biệt và đổi dấu qua mỗi nghiệm`:`Vì a·b > 0 nên ${I('y')}′ = 0 chỉ có nghiệm x = 0 và đổi dấu qua nghiệm đó`}, do đó hàm số có ${n} điểm cực trị.`,
+    chk:()=>{let k=0;for(const x0 of [0,Math.sqrt(Math.abs(b/(2*a))),-Math.sqrt(Math.abs(b/(2*a)))])if(Math.abs(pev(pder(cs),x0))<1e-9&&Math.sign(pev(pder(cs),x0-1e-4))!==Math.sign(pev(pder(cs),x0+1e-4)))k++;return k===n}});
+  /* hỏi giá trị cực trị tại x = 0 */
+  const ex0=a*b<0?(a>0?'đại':'tiểu'):(a>0?'tiểu':'đại');
+  return mkTxt(r,{stem:`Hàm số ${I('y')} = ${P3(cs)} đạt cực ${ex0} tại điểm nào dưới đây?`,correct:`${I('x')} = 0`,wrongs:[`${I('x')} = ${sg(c)}`,`${I('x')} = 1`,`${I('x')} = ${MINUS}1`,`${I('x')} = 2`],
+    sol:`${I('y')}′ = ${P3(pder(cs))}; ${I('y')}″ = ${P3(pder(pder(cs)))}, ${I('y')}″(0) = ${sg(2*b)} ${2*b<0?'< 0':'> 0'} nên hàm số đạt cực ${2*b<0?'đại':'tiểu'} tại ${I('x')} = 0.`,
+    chk:()=>(ex0==='đại')===(2*b<0)});
+});
+N12('k12-1-rat',1,'TH',[1],r=>{
+  for(;;){const a=r.nz(-4,4),b=r.int(-6,6),d=r.nz(-4,4),c=1,D=a*d-b*c;if(!D)continue;
+    const inc=D>0,stem=`Cho hàm số ${I('y')} = ${fr(xlin(a,b),xlin(c,d))}. Khẳng định nào sau đây đúng?`,x0=-d;
+    const S=(t)=>`Hàm số ${t?'đồng biến':'nghịch biến'}`;
+    return mkTxt(r,{stem,correct:`${S(inc)} trên các khoảng ${ivO(-Infinity,x0)} và ${ivO(x0,Infinity)}.`,
+      wrongs:[`${S(!inc)} trên các khoảng ${ivO(-Infinity,x0)} và ${ivO(x0,Infinity)}.`,`${S(inc)} trên ℝ.`,`${S(inc)} trên ℝ \\ {${sg(x0)}}.`,`${S(!inc)} trên ℝ.`],
+      sol:`Tập xác định D = ℝ \\ {${sg(x0)}}. ${I('y')}′ = ${fr(`${sg(a)}·${d<0?'('+sg(d)+')':d} ${MINUS} ${b<0?'('+sg(b)+')':b}·1`,`(${xlin(c,d)})${sup(2)}`)} = ${fr(sg(D),`(${xlin(c,d)})${sup(2)}`)} ${inc?'> 0':'< 0'} với mọi x ≠ ${sg(x0)}. Vậy hàm số ${inc?'đồng biến':'nghịch biến'} trên từng khoảng xác định (không nói “trên ℝ \\ {${sg(x0)}}”).`,
+      chk:()=>Math.sign((a*(x0+1.5)+b)/(x0+1.5+d)-(a*(x0+1)+b)/(x0+1+d))===(inc?1:-1)})}
+});
+N12('k12-1-fpgraph',1,'TH',[1],r=>{
+  /* đồ thị y = f′(x) là parabol cắt trục hoành tại p, q */
+  for(;;){const p=r.int(-2,1),q=p+r.int(2,3),s=r.pick([1,-1]),g=x=>s*(x-p)*(x-q)*(s>0?1:1);if(p===0||q===0)continue;
+    const vy=g((p+q)/2);if(Math.abs(vy)>4.5)continue;
+    const V=viewOf([[p,0],[q,0],[(p+q)/2,vy]],1.2,1.2),M=monoIv([p,q],g),want=r.chance(.5)?'inc':'dec',good=M[want],pick=r.pick(good),cor=ivO(...pick);
+    return mkTxt(r,{stem:`Cho hàm số ${YF} có đạo hàm liên tục trên ℝ. Đồ thị của hàm số ${I('y')} = ${FPX} là đường cong trong hình bên.${graphSVG(g,{...V,xt:[p,q]})}Hàm số ${YF} ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng nào dưới đây?`,correct:cor,
+      wrongs:ivWrongs(r,good,M[want==='inc'?'dec':'inc'],[p,q]).concat([ivO(Math.min(0,vy),Math.max(0,Math.round(vy)))]).filter(w=>w!==cor),
+      sol:`Hàm số ${FX} ${want==='inc'?'đồng biến':'nghịch biến'} trên khoảng mà ${FPX} ${want==='inc'?'> 0':'< 0'}, tức là phần đồ thị của ${I('y')} = ${FPX} nằm ${want==='inc'?'phía trên':'phía dưới'} trục hoành: ${good.map(g2=>ivO(...g2)).join(' và ')}. Chọn ${cor}.`,
+      chk:()=>{const m=isFinite(pick[0])&&isFinite(pick[1])?(pick[0]+pick[1])/2:isFinite(pick[0])?pick[0]+1:pick[1]-1;return(g(m)>0)===(want==='inc')}})}
+});
+N12('k12-1-param',1,'VD',[1],r=>{
+  /* y = x³/3 + m x² + k x đồng biến trên ℝ ⟺ m² ≤ k */
+  const t=r.int(1,4),k=t*t,c=r.int(-5,5),sgn=r.pick([1,-1]);
+  const stem=`Tìm tất cả các giá trị của tham số ${I('m')} để hàm số ${I('y')} = ${fr(1,3)}${I('x')}${sup(3)} ${sgn>0?'+':MINUS} ${I('m')}${I('x')}${sup(2)} + ${k===1?'':k}${I('x')}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''} đồng biến trên ℝ.`;
+  return mkTxt(r,{stem,correct:`${MINUS}${t} ≤ ${I('m')} ≤ ${t}`,wrongs:[`${MINUS}${t} < ${I('m')} < ${t}`,`${I('m')} ≤ ${MINUS}${t} hoặc ${I('m')} ≥ ${t}`,`${MINUS}${k} ≤ ${I('m')} ≤ ${k}`,`${I('m')} ≥ ${t}`],
+    sol:`${I('y')}′ = ${I('x')}${sup(2)} ${sgn>0?'+':MINUS} 2${I('m')}${I('x')} + ${k}. Hàm số đồng biến trên ℝ ⟺ ${I('y')}′ ≥ 0 ∀x ⟺ Δ′ = ${I('m')}${sup(2)} ${MINUS} ${k} ≤ 0 ⟺ ${MINUS}${t} ≤ ${I('m')} ≤ ${t}.`,
+    chk:()=>[t,-t,0].every(m=>{const D=m*m-k;return D<=0})&&(t+1)*(t+1)-k>0});
+});
+DS12('ds12-1-cubic',1,'TH',[1],r=>{
+  const C=cubic12(r,{d:r.int(-5,5),ok:z=>z.fp!==z.fq}),dp=pder(C.cs),M=monoIv([C.p,C.q],signDer(C.cs));
+  const decIv=M.dec[0],incIv=M.inc[0];
+  return mkDS(r,{stem:`Cho hàm số ${YF} = ${P3(C.cs)}. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`${FPX} = ${P3(dp)}.`,f:`${FPX} = ${P3(dp[1]?[dp[0],-dp[1],dp[2]]:[dp[0],0,-dp[2]])}.`,why:`Đạo hàm: ${FPX} = ${P3(dp)}.`},
+    {t:`Hàm số nghịch biến trên khoảng ${ivO(...decIv)}.`,f:`Hàm số nghịch biến trên khoảng ${ivO(...incIv)}.`,why:`${FPX} = 0 ⟺ x ∈ {${sg(C.p)}; ${sg(C.q)}}; ${FPX} < 0 trên ${M.dec.map(z=>ivO(...z)).join(' và ')}.`},
+    {t:`Hàm số đạt cực đại tại ${I('x')} = ${sg(C.xCD)}.`,f:`Hàm số đạt cực đại tại ${I('x')} = ${sg(C.xCT)}.`,why:`${FPX} đổi dấu từ + sang − khi qua x = ${sg(C.xCD)}.`},
+    {t:`Giá trị cực tiểu của hàm số bằng ${sg(C.yCT)}.`,f:`Giá trị cực tiểu của hàm số bằng ${sg(C.yCD)}.`,why:`y<sub>CT</sub> = f(${sg(C.xCT)}) = ${sg(C.yCT)}.`}],
+    chk:()=>pev(dp,C.p)===0&&pev(dp,C.q)===0&&C.f(C.xCT)===C.yCT&&C.yCD!==C.yCT&&(dp[1]!==0||dp[2]!==0)});
+});
+DS12('ds12-1-bbt',1,'NB',[1],r=>{
+  const Q4=quart12(r,{c:r.int(-3,3),k:r.int(1,3)}),a=Q4.a,k=Q4.k,c=Q4.c,yk=Q4.yk;
+  const top0=a>0;/* a>0: x=0 là cực đại */
+  return mkDS(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtQuart(Q4)}Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Hàm số ${top0?'nghịch biến':'đồng biến'} trên khoảng ${ivO(0,k)}.`,f:`Hàm số ${top0?'đồng biến':'nghịch biến'} trên khoảng ${ivO(0,k)}.`,why:`Trên ${ivO(0,k)} ta có ${FPX} ${top0?'< 0':'> 0'}.`},
+    {t:`Hàm số có ba điểm cực trị.`,f:`Hàm số có hai điểm cực trị.`,why:`${FPX} đổi dấu khi qua x = ${MINUS}${k}, x = 0, x = ${k}.`},
+    {t:`Giá trị cực ${top0?'đại':'tiểu'} của hàm số bằng ${sg(c)}.`,f:`Giá trị cực ${top0?'đại':'tiểu'} của hàm số bằng ${sg(yk)}.`,why:`Hàm số đạt cực ${top0?'đại':'tiểu'} tại x = 0 với giá trị ${sg(c)}.`},
+    {t:`Hàm số ${top0?`có giá trị nhỏ nhất trên ℝ bằng ${sg(yk)}`:`có giá trị lớn nhất trên ℝ bằng ${sg(yk)}`}.`,f:`Hàm số ${top0?`có giá trị lớn nhất trên ℝ bằng ${sg(c)}`:`có giá trị nhỏ nhất trên ℝ bằng ${sg(c)}`}.`,why:top0?`Khi x → ±∞ thì f(x) → +∞ nên hàm số không có giá trị lớn nhất; giá trị nhỏ nhất là ${sg(yk)}.`:`Khi x → ±∞ thì f(x) → −∞ nên hàm số không có giá trị nhỏ nhất; giá trị lớn nhất là ${sg(yk)}.`}],
+    chk:()=>(top0?yk<c:yk>c)});
+});
+DS12('ds12-1-fp',1,'VD',[1],r=>{
+  /* f′(x) = (x − a)(x − b)²(x − c), a < b < c hoặc các hoán vị */
+  const [a,b,c]=distinctInts(r,3,-4,4).sort((u,v)=>u-v),dbl=r.pick([a,b,c]),others=[a,b,c].filter(x=>x!==dbl);
+  const g=x=>(x-others[0])*(x-others[1])*(x-dbl)**2,fac=`(${xlin(1,-others[0])})(${xlin(1,-others[1])})(${xlin(1,-dbl)})${sup(2)}`;
+  const lo=others[0],hi=others[1];/* f′<0 trên (lo;hi) trừ điểm kép */
+  return mkDS(r,{stem:`Cho hàm số ${YF} có đạo hàm ${FPX} = ${fac}, ∀${I('x')} ∈ ℝ. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Hàm số nghịch biến trên khoảng ${ivO(lo,hi)}.`,f:`Hàm số đồng biến trên khoảng ${ivO(lo,hi)}.`,why:`Trên ${ivO(lo,hi)}, (${xlin(1,-lo)})(${xlin(1,-hi)}) < 0 và (${xlin(1,-dbl)})² ≥ 0 nên ${FPX} ≤ 0 (chỉ bằng 0 tại hữu hạn điểm).`},
+    {t:`Hàm số có đúng hai điểm cực trị.`,f:`Hàm số có ba điểm cực trị.`,why:`${FPX} chỉ đổi dấu khi qua x = ${sg(lo)} và x = ${sg(hi)}; x = ${sg(dbl)} là nghiệm kép nên không phải điểm cực trị.`},
+    {t:`Hàm số đạt cực tiểu tại ${I('x')} = ${sg(hi)}.`,f:`Hàm số đạt cực đại tại ${I('x')} = ${sg(hi)}.`,why:`Qua x = ${sg(hi)}, ${FPX} đổi dấu từ − sang +.`},
+    {t:`${I('f')}(${sg(lo)}) > ${I('f')}(${sg(hi)}).`,f:`${I('f')}(${sg(lo)}) < ${I('f')}(${sg(hi)}).`,why:`Hàm số nghịch biến trên [${sg(lo)}; ${sg(hi)}] nên f(${sg(lo)}) > f(${sg(hi)}).`}],
+    chk:()=>g((lo+hi)/2+0.013)<0&&g(hi+0.5)>0&&g(lo-0.5)>0&&Math.sign(g(dbl-0.01))===Math.sign(g(dbl+0.01))});
+});
+TLN12('t12-1-param',1,'VD',[1],r=>{
+  const t=r.int(1,6),k=t*t,c=r.int(-5,5),R=r.pick([10,15,20]);
+  return{kind:'tln',stem:`Có bao nhiêu giá trị nguyên của tham số ${I('m')} để hàm số ${I('y')} = ${fr(1,3)}${I('x')}${sup(3)} ${MINUS} ${I('m')}${I('x')}${sup(2)} + ${k===1?'':k}${I('x')}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''} đồng biến trên ℝ?`,ans:2*t+1,unit:'',
+    sol:`${I('y')}′ = x² − 2mx + ${k} ≥ 0 ∀x ⟺ Δ′ = m² − ${k} ≤ 0 ⟺ −${t} ≤ m ≤ ${t}. Có ${2*t+1} giá trị nguyên.`,chk:()=>{let n=0;for(let m=-R;m<=R;m++)if(m*m-k<=0)n++;return n===2*t+1}};
+});
+TLN12('t12-1-sum',1,'TH',[1],r=>{
+  const C=cubic12(r,{d:r.int(-5,5)}),ask=r.int(0,1);
+  const ans=ask?C.yCD-C.yCT:C.yCD+C.yCT;
+  return{kind:'tln',stem:`Gọi ${I('y')}<sub>CĐ</sub>, ${I('y')}<sub>CT</sub> lần lượt là giá trị cực đại và giá trị cực tiểu của hàm số ${I('y')} = ${P3(C.cs)}. Tính ${ask?`${I('y')}<sub>CĐ</sub> ${MINUS} ${I('y')}<sub>CT</sub>`:`${I('y')}<sub>CĐ</sub> + ${I('y')}<sub>CT</sub>`}.`,ans,unit:'',
+    sol:`${I('y')}′ = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}. y<sub>CĐ</sub> = y(${sg(C.xCD)}) = ${sg(C.yCD)}, y<sub>CT</sub> = y(${sg(C.xCT)}) = ${sg(C.yCT)}. Kết quả: ${sg(ans)}.`,chk:()=>C.yCD>C.yCT};
+});
+TLN12('t12-1-findm',1,'VD',[1],r=>{
+  /* y = x³ − 3x² + m x + 1 đạt cực tiểu/đại tại x0 */
+  for(;;){const a=r.pick([1,-1]),b=r.nz(-4,4)*3,x0=r.int(-3,3),m=-(3*a*x0*x0+2*b*x0),dd=6*a*x0+2*b;if(dd===0)continue;
+    const kind=dd>0?'tiểu':'đại';
+    return{kind:'tln',stem:`Tìm giá trị của tham số ${I('m')} để hàm số ${I('y')} = ${coefV(a,I('x')+sup(3))} ${b<0?MINUS:'+'} ${Math.abs(b)}${I('x')}${sup(2)} + ${I('m')}${I('x')} + 1 đạt cực ${kind} tại ${I('x')} = ${sg(x0)}.`,ans:m,unit:'',
+      sol:`${I('y')}′ = ${coefV(3*a,I('x')+sup(2))} ${2*b<0?MINUS:'+'} ${Math.abs(2*b)}${I('x')} + ${I('m')}; ${I('y')}′(${sg(x0)}) = 0 ⟺ ${sg(3*a*x0*x0+2*b*x0)} + m = 0 ⟺ m = ${sg(m)}. Thử lại: ${I('y')}″(${sg(x0)}) = ${sg(dd)} ${dd>0?'> 0':'< 0'} nên hàm số đạt cực ${kind} tại x = ${sg(x0)}. Vậy m = ${sg(m)}.`,
+      chk:()=>3*a*x0*x0+2*b*x0+m===0}}
+});
+TL12('tl12-1-mono',1,'TH','a',[1],r=>{
+  const C=cubic12(r,{d:r.int(-5,5)}),M=monoIv([C.p,C.q],signDer(C.cs)),dp=pder(C.cs);
+  return{kind:'tl',title:'Tính đơn điệu và cực trị',parts:[
+    {pts:.5,html:`Tìm các khoảng đơn điệu của hàm số ${I('y')} = ${P3(C.cs)}.`},
+    {pts:.5,html:`Tìm cực trị của hàm số đó.`}],
+    sol:[ptxt([[`Tập xác định ℝ. ${I('y')}′ = ${P3(dp)} = ${sg(3*C.a)}(${xlin(1,-C.p)})(${xlin(1,-C.q)}); ${I('y')}′ = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}.`,.25],
+      [`Hàm số đồng biến trên ${M.inc.map(z=>ivO(...z)).join(' và ')}; nghịch biến trên ${M.dec.map(z=>ivO(...z)).join(' và ')}.`,.25]]),
+      ptxt([[`Hàm số đạt cực đại tại x = ${sg(C.xCD)}, y<sub>CĐ</sub> = ${sg(C.yCD)}.`,.25],[`Hàm số đạt cực tiểu tại x = ${sg(C.xCT)}, y<sub>CT</sub> = ${sg(C.yCT)}.`,.25]])],
+    chk:()=>C.f(C.xCD)===C.yCD&&C.f(C.xCT)===C.yCT};
+});
+TL12('tl12-1-rat2',1,'VD','a',[1],r=>{
+  /* y = (x² + b x + c)/(x − d): y′ = (x² − 2dx − bd − c)/(x−d)², chọn để nghiệm nguyên d ± t */
+  for(;;){const d=r.int(-3,3),t=r.int(1,3),b=r.int(-4,4),c=t*t-d*d-b*d;/* x²−2dx−bd−c = (x−d)² − t² */
+    if(c===-(d*d)-b*d)continue;/* tử chia hết cho mẫu */
+    const x1=d-t,x2=d+t,g=x=>(x*x+b*x+c)/(x-d),y1=g(x1),y2=g(x2);
+    if(!isInt(y1)||!isInt(y2))continue;
+    return{kind:'tl',title:'Cực trị của hàm phân thức',parts:[
+      {pts:.5,html:`Tìm các khoảng đơn điệu của hàm số ${I('y')} = ${fr(xquad(1,b,c),xlin(1,-d))}.`},
+      {pts:.5,html:`Tìm điểm cực đại, điểm cực tiểu của đồ thị hàm số đó.`}],
+      sol:[ptxt([[`Tập xác định D = ℝ \\ {${sg(d)}}. ${I('y')}′ = ${fr(xquad(1,-2*d,-b*d-c),`(${xlin(1,-d)})${sup(2)}`)}; ${I('y')}′ = 0 ⟺ x = ${sg(x1)} hoặc x = ${sg(x2)}.`,.25],
+        [`Hàm số đồng biến trên ${ivO(-Infinity,x1)} và ${ivO(x2,Infinity)}; nghịch biến trên ${ivO(x1,d)} và ${ivO(d,x2)}.`,.25]]),
+        ptxt([[`Điểm cực đại của đồ thị: (${sg(x1)}; ${sg(y1)}).`,.25],[`Điểm cực tiểu của đồ thị: (${sg(x2)}; ${sg(y2)}).`,.25]])],
+      chk:()=>{const yd=x=>(x*x-2*d*x-b*d-c);return yd(x1)===0&&yd(x2)===0&&g(x1-.01)<y1&&g(x2+.01)>y2}}}
+});
+
+/* ===================== Bài 2: Giá trị lớn nhất và giá trị nhỏ nhất ===================== */
+N12('k12-2-graph',1,'NB',[2],r=>{
+  const C=cubic12(r,{as:[1,-1],lo:-2,hi:1,gap:2,ok:z=>Math.abs(z.fp)<=4&&Math.abs(z.fq)<=4&&z.fp!==0&&z.fq!==0&&z.p!==0&&z.q!==0});
+  /* đoạn [lo; hi] chứa hai cực trị, hai đầu mút đều có giá trị nguyên */
+  const lo=C.p-1,hi=C.q+1,ylo=C.f(lo),yhi=C.f(hi);if(Math.abs(ylo)>6||Math.abs(yhi)>6)return T.nlc['k12-2-graph'].gen(r);
+  const vals=[ylo,C.fp,C.fq,yhi],M=Math.max(...vals),m=Math.min(...vals),ask=r.chance(.5);
+  const g=x=>x<lo-1e-9||x>hi+1e-9?NaN:C.f(x),V=viewOf([[lo,ylo],[hi,yhi],[C.p,C.fp],[C.q,C.fq]],.8,.8);
+  return mkNum(r,{stem:`Cho hàm số ${YF} liên tục trên đoạn ${ivC(lo,hi)} và có đồ thị như hình bên.${graphSVG(g,{...V,marks:[[lo,ylo],[hi,yhi],[C.p,C.fp],[C.q,C.fq]]})}Giá trị ${ask?'lớn nhất':'nhỏ nhất'} của hàm số đã cho trên đoạn ${ivC(lo,hi)} bằng`,correct:ask?M:m,ok:()=>true,cands:vals.concat([lo,hi]).filter(v=>v!==(ask?M:m)),
+    sol:`Điểm ${ask?'cao':'thấp'} nhất của đồ thị trên đoạn ${ivC(lo,hi)} có tung độ ${sg(ask?M:m)} nên ${ask?'max':'min'} = ${sg(ask?M:m)}.`,chk:()=>M>m});
+});
+N12('k12-2-bbt',1,'NB',[2],r=>{
+  const C=cubic12(r,{dlo:-4,dhi:4,ok:z=>z.fp!==z.fq}),lo=C.p-r.int(1,2),hi=C.q+r.int(1,2),ylo=C.f(lo),yhi=C.f(hi);
+  const vals=[ylo,C.fp,C.fq,yhi],M=Math.max(...vals),m=Math.min(...vals),ask=r.chance(.5);
+  if(new Set(vals).size<4)return T.nlc['k12-2-bbt'].gen(r);
+  return mkNum(r,{stem:`Cho hàm số ${YF} liên tục trên đoạn ${ivC(lo,hi)} và có bảng biến thiên như sau:${bbtOf(C.f,[C.p,C.q],{lo,hi,dsign:signDer(C.cs)})}Giá trị ${ask?'lớn nhất':'nhỏ nhất'} của hàm số trên đoạn ${ivC(lo,hi)} là`,correct:ask?M:m,ok:()=>true,cands:vals.concat([C.xCD,C.xCT]).filter(v=>v!==(ask?M:m)),
+    sol:`So sánh các giá trị trong bảng: ${vals.map(sg).join('; ')}. Giá trị ${ask?'lớn nhất':'nhỏ nhất'} là ${sg(ask?M:m)}.`,chk:()=>M>m});
+});
+N12('k12-2-cubic',1,'TH',[2],r=>{
+  for(;;){const C=cubic12(r,{d:r.int(-5,5)}),lo=r.int(C.p-2,C.p),hi=r.int(Math.max(lo+1,C.p+1),C.q+2);
+    const cand=[lo,hi,...[C.p,C.q].filter(x=>x>lo&&x<hi)],vals=cand.map(C.f),M=Math.max(...vals),m=Math.min(...vals),ask=r.chance(.5);
+    if(M===m)continue;const ans=ask?M:m;
+    return mkNum(r,{stem:`Giá trị ${ask?'lớn nhất':'nhỏ nhất'} của hàm số ${I('y')} = ${P3(C.cs)} trên đoạn ${ivC(lo,hi)} bằng`,correct:ans,ok:()=>true,cands:[C.fp,C.fq,C.f(lo),C.f(hi),ask?m:M,C.d].filter(v=>v!==ans),
+      sol:`${I('y')}′ = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}. Trên đoạn ${ivC(lo,hi)} xét các giá trị: ${cand.map((x,i)=>`y(${sg(x)}) = ${sg(vals[i])}`).join('; ')}. Vậy ${ask?'max':'min'} = ${sg(ans)}.`,
+      chk:()=>{let b=ask?-1e9:1e9;for(let i=0;i<=2000;i++){const v=C.f(lo+(hi-lo)*i/2000);b=ask?Math.max(b,v):Math.min(b,v)}return Math.abs(b-ans)<1e-3}})}
+});
+N12('k12-2-rat',1,'TH',[2],r=>{
+  for(;;){const a=r.nz(-3,3),b=r.int(-6,6),d=r.int(-3,3),D=a*d-b;if(!D)continue;
+    const lo=r.int(-d+1,-d+3),hi=lo+r.int(1,3),f=x=>(a*x+b)/(x+d),ask=r.chance(.5),inc=D>0,ans=ask?(inc?f(hi):f(lo)):(inc?f(lo):f(hi));
+    const qf=x=>Q(a*x+b,x+d),qa=ask?(inc?qf(hi):qf(lo)):(inc?qf(lo):qf(hi));
+    return mkF(r,{stem:`Giá trị ${ask?'lớn nhất':'nhỏ nhất'} của hàm số ${I('y')} = ${fr(xlin(a,b),xlin(1,d))} trên đoạn ${ivC(lo,hi)} bằng`,correct:qa,
+      cands:[ask?(inc?qf(lo):qf(hi)):(inc?qf(hi):qf(lo)),Q(a),qf(0),qf((lo+hi)%2?lo+1:(lo+hi)/2)],
+      sol:`${I('y')}′ = ${fr(sg(D),den2(d))} ${inc?'> 0':'< 0'} trên đoạn ${ivC(lo,hi)} nên hàm số ${inc?'đồng biến':'nghịch biến'} trên đoạn này. Giá trị ${ask?'lớn nhất':'nhỏ nhất'} là y(${sg(ask===inc?hi:lo)}) = ${qh(qa)}.`,
+      chk:()=>Math.abs(qv(qa)-ans)<1e-9&&(lo+d)>0})}
+});
+N12('k12-2-amgm',1,'TH',[2],r=>{
+  const k=r.int(1,6),c=r.int(-3,4),ask=r.int(0,1);
+  const fx=`${I('x')} + ${fr(k*k,I('x'))}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''}`;
+  return mkNum(r,{stem:ask?`Giá trị nhỏ nhất của hàm số ${I('y')} = ${fx} trên khoảng ${ivO(0,Infinity)} bằng`:`Hàm số ${I('y')} = ${fx} đạt giá trị nhỏ nhất trên khoảng ${ivO(0,Infinity)} tại ${I('x')} bằng`,
+    correct:ask?2*k+c:k,ok:v=>v>0||ask,cands:ask?[k+c,k*k+c,2*k*k+c,2*k,k+1+c]:[k*k,2*k,k+1,2],
+    sol:`${I('y')}′ = 1 ${MINUS} ${fr(k*k,I('x')+sup(2))} = 0 ⟺ x = ${k} (vì x > 0). ${I('y')}′ < 0 trên (0; ${k}), ${I('y')}′ > 0 trên (${k}; +∞) nên min = y(${k}) = ${sg(2*k+c)}.`,
+    chk:()=>{let b=1e9,bx=0;for(let i=1;i<=4000;i++){const x=i*k/1000,v=x+k*k/x+c;if(v<b){b=v;bx=x}}return Math.abs(b-(2*k+c))<1e-6&&Math.abs(bx-k)<1e-6}});
+});
+N12('k12-2-quart',1,'TH',[2],r=>{
+  for(;;){const Q4=quart12(r,{k:r.int(1,2),c:r.int(-4,4)}),lo=r.int(-3,0),hi=r.int(1,3);
+    const cand=[lo,hi,...[-Q4.k,0,Q4.k].filter(x=>x>lo&&x<hi)],vals=cand.map(Q4.f),M=Math.max(...vals),m=Math.min(...vals),ask=r.chance(.5),ans=ask?M:m;if(M===m)continue;
+    return mkNum(r,{stem:`Giá trị ${ask?'lớn nhất':'nhỏ nhất'} của hàm số ${I('y')} = ${P3(Q4.cs)} trên đoạn ${ivC(lo,hi)} bằng`,correct:ans,ok:()=>true,cands:vals.concat([Q4.c,Q4.yk,ask?m:M]).filter(v=>v!==ans),
+      sol:`${I('y')}′ = ${P3(pder(Q4.cs))} = 0 ⟺ x ∈ {${MINUS}${Q4.k}; 0; ${Q4.k}}. Trên đoạn ${ivC(lo,hi)}: ${cand.map((x,i)=>`y(${sg(x)}) = ${sg(vals[i])}`).join('; ')}. Vậy ${ask?'max':'min'} = ${sg(ans)}.`,
+      chk:()=>{let b=ask?-1e9:1e9;for(let i=0;i<=2000;i++){const v=Q4.f(lo+(hi-lo)*i/2000);b=ask?Math.max(b,v):Math.min(b,v)}return Math.abs(b-ans)<1e-3}})}
+});
+DS12('ds12-2-seg',1,'TH',[2],r=>{
+  for(;;){const C=cubic12(r,{d:r.int(-5,5)}),lo=C.p-r.int(1,2),hi=C.q+r.int(0,1);
+    const cand=[lo,hi,...[C.p,C.q].filter(x=>x>lo&&x<hi)],vals=cand.map(C.f),M=Math.max(...vals),m=Math.min(...vals);if(M===m||new Set(vals).size<cand.length)continue;
+    const xin=[C.p,C.q].filter(x=>x>lo&&x<hi);
+    return mkDS(r,{stem:`Cho hàm số ${YF} = ${P3(C.cs)} xét trên đoạn ${ivC(lo,hi)}. Xét tính đúng sai của các khẳng định sau:`,items:[
+      {t:`Phương trình ${FPX} = 0 có ${xin.length} nghiệm thuộc khoảng ${ivO(lo,hi)}.`,f:`Phương trình ${FPX} = 0 có ${xin.length===2?1:2} nghiệm thuộc khoảng ${ivO(lo,hi)}.`,why:`${FPX} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}; số nghiệm thuộc ${ivO(lo,hi)} là ${xin.length}.`},
+      {t:`${I('f')}(${sg(lo)}) = ${sg(C.f(lo))}.`,f:`${I('f')}(${sg(lo)}) = ${sg(C.f(lo)+r.pick([-2,2]))}.`,why:`Thay x = ${sg(lo)}: f(${sg(lo)}) = ${sg(C.f(lo))}.`},
+      {t:`Giá trị lớn nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(M)}.`,f:`Giá trị lớn nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(M===C.yCD?Math.max(...vals.filter(v=>v!==M)):C.yCD)}.`,why:`So sánh ${cand.map((x,i)=>`f(${sg(x)}) = ${sg(vals[i])}`).join('; ')}.`},
+      {t:`Giá trị nhỏ nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(m)}.`,f:`Giá trị nhỏ nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(m===C.yCT?Math.min(...vals.filter(v=>v!==m)):C.yCT)}.`,why:`Giá trị nhỏ nhất trong các giá trị trên là ${sg(m)}.`}],
+      chk:()=>xin.length>=1&&C.f(lo)!==C.f(lo)+2})}
+});
+TLN12('t12-2-sqrt',1,'VD',[2],r=>{
+  /* y = x + √(2t² − x²): max = 2t tại x = t; min = −t√2 tại x = −t√2 */
+  const t=r.int(1,5),k=2*t*t,c=r.int(-3,3);
+  return{kind:'tln',stem:`Tìm giá trị lớn nhất của hàm số ${I('y')} = ${I('x')} + ${rt(`${k} ${MINUS} ${I('x')}${sup(2)}`)}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''}.`,ans:2*t+c,unit:'',
+    sol:`Tập xác định [${MINUS}${rt(k)}; ${rt(k)}]. ${I('y')}′ = 1 ${MINUS} ${fr(I('x'),rt(`${k} − x²`))} = 0 ⟺ ${rt(`${k} − x²`)} = x ⟺ x = ${t}. y(${t}) = ${sg(2*t+c)}, y(${rt(k)}) = ${rt(k)}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''}, y(${MINUS}${rt(k)}) = ${MINUS}${rt(k)}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''}. Vậy max = ${sg(2*t+c)}.`,
+    chk:()=>{let b=-1e9;for(let i=0;i<=4000;i++){const x=-Math.sqrt(k)+2*Math.sqrt(k)*i/4000,v=x+Math.sqrt(Math.max(0,k-x*x))+c;b=Math.max(b,v)}return Math.abs(b-(2*t+c))<1e-4}};
+});
+TLN12('t12-2-Mm',1,'VD',[2],r=>{
+  for(;;){const C=cubic12(r,{d:r.int(-5,5)}),lo=r.int(C.p-2,C.p),hi=r.int(C.q,C.q+2);if(lo>=hi)continue;
+    const cand=[lo,hi,...[C.p,C.q].filter(x=>x>lo&&x<hi)],vals=cand.map(C.f),M=Math.max(...vals),m=Math.min(...vals),op=r.pick(['+','−']);
+    if(M===m)continue;const ans=op==='+'?M+m:M-m;
+    return{kind:'tln',stem:`Gọi ${I('M')}, ${I('m')} lần lượt là giá trị lớn nhất và giá trị nhỏ nhất của hàm số ${I('y')} = ${P3(C.cs)} trên đoạn ${ivC(lo,hi)}. Tính ${I('M')} ${op} ${I('m')}.`,ans,unit:'',
+      sol:`${I('y')}′ = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}. ${cand.map((x,i)=>`y(${sg(x)}) = ${sg(vals[i])}`).join('; ')}. M = ${sg(M)}, m = ${sg(m)} ⟹ M ${op} m = ${sg(ans)}.`,chk:()=>Math.abs(ans)<1000}}
+});
+TL12('tl12-2-max',1,'TH','a',[2],r=>{
+  for(;;){const C=cubic12(r,{d:r.int(-5,5)}),lo=C.p-r.int(0,1),hi=C.q+r.int(1,2);
+    const cand=[lo,hi,...[C.p,C.q].filter(x=>x>lo&&x<hi)],vals=cand.map(C.f),M=Math.max(...vals),m=Math.min(...vals);if(M===m)continue;
+    const a=r.nz(-3,3),b=r.int(-5,5),d=r.int(1,3),D=a*d-b;if(!D)continue;
+    const l2=0,h2=r.int(2,4),qf=x=>Q(a*x+b,x+d),inc=D>0,qM=inc?qf(h2):qf(l2),qm=inc?qf(l2):qf(h2);
+    return{kind:'tl',title:'Giá trị lớn nhất, giá trị nhỏ nhất',parts:[
+      {pts:.5,html:`Tìm giá trị lớn nhất và giá trị nhỏ nhất của hàm số ${I('y')} = ${P3(C.cs)} trên đoạn ${ivC(lo,hi)}.`},
+      {pts:.5,html:`Tìm giá trị lớn nhất và giá trị nhỏ nhất của hàm số ${I('y')} = ${fr(xlin(a,b),xlin(1,d))} trên đoạn ${ivC(l2,h2)}.`}],
+      sol:[ptxt([[`${I('y')}′ = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}; ${cand.map((x,i)=>`y(${sg(x)}) = ${sg(vals[i])}`).join('; ')}.`,.25],[`max = ${sg(M)}, min = ${sg(m)}.`,.25]]),
+        ptxt([[`${I('y')}′ = ${fr(sg(D),den2(d))} ${inc?'> 0':'< 0'} trên ${ivC(l2,h2)} nên hàm số ${inc?'đồng biến':'nghịch biến'}.`,.25],[`max = ${qh(qM)}, min = ${qh(qm)}.`,.25]])],
+      chk:()=>qv(qM)>qv(qm)}}
+});
+/* ================================================================
+   LỚP 12 – Chương I, Bài 3 – 5: Tiệm cận, khảo sát và vẽ đồ thị, ứng dụng thực tiễn
+   ================================================================ */
+/* Hàm phân thức y = (ax + b)/(cx + d) */
+function ratF(r,o={}){
+  for(let it=0;it<500;it++){
+    const c=o.c||1,a=r.nz(-4,4),d=r.int(o.dlo??-4,o.dhi??4),b=r.int(-6,6);
+    if(a*d-b*c===0)continue;
+    if(o.ok&&!o.ok({a,b,c,d}))continue;
+    return{a,b,c,d,D:a*d-b*c,x0:Q(-d,c),y0:Q(a,c),f:x=>(a*x+b)/(c*x+d),html:fr(xlin(a,b),xlin(c,d))};
+  }
+  throw new Error('ratF');
+}
+const xEq=v=>`${I('x')} = ${v}`,yEq=v=>`${I('y')} = ${v}`;
+
+/* ===================== Bài 3: Đường tiệm cận ===================== */
+N12('k12-3-vert',1,'NB',[3],r=>{
+  const R=ratF(r,{c:r.pick([1,1,2,3])}),ask=r.chance(.5);
+  const cor=ask?xEq(qh(R.x0)):yEq(qh(R.y0));
+  const W=ask?[xEq(qh(Q(R.d,R.c))),yEq(qh(R.y0)),xEq(qh(R.y0)),xEq(qh(Q(-R.b,R.a)))]:[yEq(qh(Q(-R.y0[0],R.y0[1]))),xEq(qh(R.x0)),yEq(qh(Q(R.b,R.d||1))),xEq(qh(R.y0))];
+  return mkTxt(r,{stem:`Tiệm cận ${ask?'đứng':'ngang'} của đồ thị hàm số ${I('y')} = ${R.html} là đường thẳng`,correct:cor,wrongs:W.filter(w=>w!==cor).concat([ask?xEq('1'):yEq('1'),ask?xEq('0'):yEq('0'),ask?xEq(MINUS+'1'):yEq(MINUS+'1'),ask?xEq('2'):yEq('2')]),
+    sol:ask?`${lim(I('x'),`(${qh(R.x0)})${sup('+')}`)} y = ±∞ nên tiệm cận đứng là ${xEq(qh(R.x0))}.`:`${lim(I('x'),'±∞')} y = ${fr(sg(R.a),R.c)} = ${qh(R.y0)} nên tiệm cận ngang là ${yEq(qh(R.y0))}.`,
+    chk:()=>ask?Math.abs(R.f(qv(R.x0)+1e-7))>1e5:Math.abs(R.f(1e9)-qv(R.y0))<1e-6});
+});
+N12('k12-3-lim',1,'NB',[3],r=>{
+  const a=r.nz(-5,5),b=r.nz(-5,5),kind=r.int(0,2);
+  if(kind===0)return mkTxt(r,{stem:`Cho hàm số ${YF} có ${lim(I('x'),PINF)} ${FX} = ${sg(a)} và ${lim(I('x'),NINF)} ${FX} = ${sg(a)}. Khẳng định nào sau đây đúng?`,
+    correct:`Đồ thị hàm số có đúng một tiệm cận ngang là đường thẳng ${yEq(sg(a))}.`,wrongs:[`Đồ thị hàm số có đúng một tiệm cận ngang là đường thẳng ${xEq(sg(a))}.`,`Đồ thị hàm số có hai tiệm cận ngang.`,`Đồ thị hàm số không có tiệm cận ngang.`],
+    sol:`Theo định nghĩa, đường thẳng ${yEq(sg(a))} là tiệm cận ngang (cả hai phía cho cùng một giới hạn nên chỉ có một tiệm cận ngang).`});
+  if(kind===1)return mkTxt(r,{stem:`Cho hàm số ${YF} có ${lim(I('x'),PINF)} ${FX} = ${sg(a)} và ${lim(I('x'),NINF)} ${FX} = ${sg(a===b?b+1:b)}. Số tiệm cận ngang của đồ thị hàm số là`,
+    correct:'2',wrongs:['1','0','3'],sol:`Hai giới hạn hữu hạn khác nhau nên đồ thị có hai tiệm cận ngang ${yEq(sg(a))} và ${yEq(sg(a===b?b+1:b))}.`});
+  return mkTxt(r,{stem:`Cho hàm số ${YF} có ${lim(I('x'),`${sg(a)}${sup('+')}`)} ${FX} = +∞. Khẳng định nào sau đây đúng?`,
+    correct:`Đường thẳng ${xEq(sg(a))} là tiệm cận đứng của đồ thị hàm số.`,wrongs:[`Đường thẳng ${yEq(sg(a))} là tiệm cận ngang của đồ thị hàm số.`,`Đường thẳng ${yEq(sg(a))} là tiệm cận đứng của đồ thị hàm số.`,`Đồ thị hàm số không có tiệm cận đứng.`],
+    sol:`Theo định nghĩa: nếu ${lim(I('x'),`${I('a')}${sup('+')}`)} f(x) = +∞ thì đường thẳng x = a là tiệm cận đứng.`});
+});
+N12('k12-3-bbt',1,'TH',[3],r=>{
+  /* BBT hàm có một tiệm cận đứng x0; giới hạn ở ±∞ là L1, L2 (có thể ±∞) */
+  const x0=r.int(-3,3),dec=r.chance(.5);
+  const L1=r.pick([r.int(-4,4),r.int(-4,4),dec?Infinity:-Infinity]),L2=r.pick([r.int(-4,4),r.int(-4,4),dec?-Infinity:Infinity]);
+  const nd=dec?[{x:-Infinity,d:'',y:L1,lv:'t'},{x:x0,d:'||',y:[-Infinity,Infinity],lv:['b','t']},{x:Infinity,d:'',y:L2,lv:'b'}]
+    :[{x:-Infinity,d:'',y:L1,lv:'b'},{x:x0,d:'||',y:[Infinity,-Infinity],lv:['t','b']},{x:Infinity,d:'',y:L2,lv:'t'}];
+  const hor=new Set([L1,L2].filter(Number.isFinite)).size,tot=hor+1;
+  return mkNum(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtSVG(nd,dec?['−','−']:['+','+'])}Tổng số tiệm cận đứng và tiệm cận ngang của đồ thị hàm số đã cho là`,correct:tot,ok:v=>v>=0,cands:[0,1,2,3,4].filter(v=>v!==tot),
+    sol:`${lim(I('x'),`${sg(x0)}${sup('+')}`)} f(x) = ${dec?'+∞':'−∞'} nên ${xEq(sg(x0))} là tiệm cận đứng. ${[L1,L2].filter(Number.isFinite).length?`Tiệm cận ngang: ${[...new Set([L1,L2].filter(Number.isFinite))].map(v=>yEq(sg(v))).join(' và ')}.`:'Không có tiệm cận ngang.'} Tổng cộng ${tot} đường tiệm cận.`,
+    chk:()=>tot>=1&&tot<=3});
+});
+N12('k12-3-obl',1,'TH',[3],r=>{
+  const b=r.int(-6,6),c=r.int(-6,6),d=r.nz(-4,4);if(d*d-b*d+c===0)return T.nlc['k12-3-obl'].gen(r);
+  const k=b-d,cor=yEq(xlin(1,k));
+  return mkTxt(r,{stem:`Tiệm cận xiên của đồ thị hàm số ${I('y')} = ${fr(xquad(1,b,c),xlin(1,d))} là đường thẳng`,correct:cor,wrongs:[yEq(xlin(1,b)),yEq(xlin(1,b+d)),yEq(xlin(1,-k)),yEq(xlin(1,d)),xEq(sg(-d))].filter(w=>w!==cor),
+    sol:`Chia đa thức: ${fr(xquad(1,b,c),xlin(1,d))} = ${xlin(1,k)} + ${fr(sg(c-k*d),xlin(1,d))}. Vì ${lim(I('x'),'±∞')} ${fr(sg(c-k*d),xlin(1,d))} = 0 nên tiệm cận xiên là ${cor}.`,
+    chk:()=>Math.abs((1e6*1e6+b*1e6+c)/(1e6+d)-(1e6+k))<1e-3&&c-k*d!==0});
+});
+N12('k12-3-count',1,'TH',[3],r=>{
+  /* y = (x − u)/((x − p)(x − q)) */
+  const [p,q]=distinctInts(r,2,-4,4).sort((a,b)=>a-b),u=r.chance(.4)?r.pick([p,q]):r.int(-5,5);
+  const den=xquad(1,-(p+q),p*q),ver=[p,q].filter(z=>z!==u),tot=ver.length+1;
+  return mkNum(r,{stem:`Tổng số tiệm cận đứng và tiệm cận ngang của đồ thị hàm số ${I('y')} = ${fr(xlin(1,-u),den)} là`,correct:tot,ok:v=>v>=0,cands:[0,1,2,3,4].filter(v=>v!==tot),
+    sol:`Mẫu số có nghiệm x = ${sg(p)}, x = ${sg(q)}. ${ver.length<2?`Tại x = ${sg(u)} tử số cũng bằng 0, rút gọn được y = ${fr(1,xlin(1,-[p,q].find(z=>z!==u)))} nên x = ${sg(u)} không là tiệm cận đứng. `:''}Tiệm cận đứng: ${ver.map(v=>xEq(sg(v))).join(', ')}. Bậc tử nhỏ hơn bậc mẫu nên ${yEq('0')} là tiệm cận ngang. Tổng: ${tot}.`,
+    chk:()=>ver.every(v=>Math.abs((v+1e-7-u)/((v+1e-7-p)*(v+1e-7-q)))>1e5)&&[p,q].filter(z=>z===u).every(z=>Math.abs((z+1e-7-u)/((z+1e-7-p)*(z+1e-7-q)))<1e3)});
+});
+DS12('ds12-3-rat',1,'TH',[3],r=>{
+  const R=ratF(r,{ok:z=>z.d!==0&&z.b%z.d===0&&z.d!==-z.a&&z.a!==z.b}),x0=-R.d,y0=R.a,yi=R.b/R.d;
+  return mkDS(r,{stem:`Cho hàm số ${I('y')} = ${R.html}. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Đồ thị hàm số có tiệm cận đứng là đường thẳng ${xEq(sg(x0))}.`,f:`Đồ thị hàm số có tiệm cận đứng là đường thẳng ${xEq(sg(-x0))}.`,why:`Mẫu bằng 0 tại x = ${sg(x0)} (tử khác 0) và ${lim(I('x'),`(${sg(x0)})${sup('+')}`)} y = ±∞.`},
+    {t:`Đồ thị hàm số có tiệm cận ngang là đường thẳng ${yEq(sg(y0))}.`,f:`Đồ thị hàm số có tiệm cận ngang là đường thẳng ${yEq(sg(R.b))}.`,why:`${lim(I('x'),'±∞')} y = ${sg(y0)}.`},
+    {t:`Giao điểm của hai đường tiệm cận là điểm ${I('I')}(${sg(x0)}; ${sg(y0)}).`,f:`Giao điểm của hai đường tiệm cận là điểm ${I('I')}(${sg(y0)}; ${sg(x0)}).`,why:`Giao điểm của ${xEq(sg(x0))} và ${yEq(sg(y0))} là (${sg(x0)}; ${sg(y0)}).`},
+    {t:`Đồ thị hàm số cắt trục tung tại điểm có tung độ bằng ${sg(yi)}.`,f:`Đồ thị hàm số cắt trục tung tại điểm có tung độ bằng ${sg(yi===y0?yi+1:y0)}.`,why:`Thay x = 0: y = ${fr(sg(R.b),sg(R.d))} = ${sg(yi)}.`}],
+    chk:()=>Math.abs(R.f(0)-yi)<1e-9&&x0!==-x0&&y0!==R.b});
+});
+TLN12('t12-3-ab',1,'VD',[3],r=>{
+  for(;;){const b=r.pick([1,2,-1,-2]),x0=2/b,y0=r.nz(-4,4),a=y0*b;if(-2*a-b===0)continue;
+    return{kind:'tln',stem:`Biết đồ thị hàm số ${I('y')} = ${fr(`${I('a')}${I('x')} + 1`,`${I('b')}${I('x')} ${MINUS} 2`)} (${I('a')}, ${I('b')} là các số thực) có tiệm cận đứng là đường thẳng ${xEq(sg(x0))} và tiệm cận ngang là đường thẳng ${yEq(sg(y0))}. Tính ${I('a')} + ${I('b')}.`,ans:a+b,unit:'',
+      sol:`Tiệm cận đứng x = ${fr(2,I('b'))} = ${sg(x0)} ⟹ b = ${sg(b)}; tiệm cận ngang y = ${fr(I('a'),I('b'))} = ${sg(y0)} ⟹ a = ${sg(a)}. Vậy a + b = ${sg(a+b)}.`,chk:()=>2/b===x0&&a/b===y0}}
+});
+TLN12('t12-3-area',1,'VD',[3],r=>{
+  const R=ratF(r,{c:1,ok:z=>z.d!==0}),S=Math.abs(R.d*R.a);
+  return{kind:'tln',stem:`Hai đường tiệm cận của đồ thị hàm số ${I('y')} = ${R.html} cùng với hai trục tọa độ tạo thành một hình chữ nhật. Tính diện tích hình chữ nhật đó.`,ans:S,unit:'',
+    sol:`Tiệm cận đứng ${xEq(sg(-R.d))}, tiệm cận ngang ${yEq(sg(R.a))}. Hình chữ nhật có hai cạnh ${Math.abs(R.d)} và ${Math.abs(R.a)} nên diện tích là ${S}.`,chk:()=>S>0};
+});
+TLN12('t12-3-obl',1,'VD',[3],r=>{
+  for(;;){const a=r.pick([2,3,-2,-1]),b=r.int(-8,8),c=r.int(-6,6),d=r.nz(-3,3);
+    /* (a x² + b x + c)/(x + d) = a x + (b − a d) + (c − d(b − a d))/(x + d) */
+    const k=b-a*d,rem=c-d*k;if(rem===0)continue;
+    return{kind:'tln',stem:`Tiệm cận xiên của đồ thị hàm số ${I('y')} = ${fr(xquad(a,b,c),xlin(1,d))} là đường thẳng ${I('y')} = ${I('m')}${I('x')} + ${I('n')}. Tính ${I('m')} + ${I('n')}.`,ans:a+k,unit:'',
+      sol:`${fr(xquad(a,b,c),xlin(1,d))} = ${xlin(a,k)} + ${fr(sg(rem),xlin(1,d))}. Tiệm cận xiên: ${yEq(xlin(a,k))}, nên m = ${sg(a)}, n = ${sg(k)}, m + n = ${sg(a+k)}.`,chk:()=>Math.abs((a*1e12+b*1e6+c)/(1e6+d)-(a*1e6+k))<1e-3}}
+});
+
+/* ===================== Bài 4: Khảo sát và vẽ đồ thị ===================== */
+const cubGraph=(r,o={})=>cubic12(r,{as:[1,-1],lo:-2,hi:1,gap:2,ok:z=>Math.abs(z.fp)<=4&&Math.abs(z.fq)<=4&&z.fp!==0&&z.fq!==0&&z.p!==0&&z.q!==0&&z.d!==0&&(!o.ok||o.ok(z))});
+N12('k12-4-which',1,'TH',[4],r=>{
+  const C=cubGraph(r),V=viewOf([[C.p,C.fp],[C.q,C.fq]],1.6,1.3);
+  const neg=[-C.a,-C.b,-C.c,C.d],sh=[C.a,C.b,C.c,C.d+r.pick([-2,2])],mir=[C.a,-C.b,C.c,C.d];
+  const quart=[C.a,0,-2*C.a,0,C.d];
+  const cor=`${I('y')} = ${P3(C.cs)}`,W=[neg,sh,mir].map(cs=>`${I('y')} = ${P3(cs)}`).concat([`${I('y')} = ${P3(quart)}`]);
+  return mkTxt(r,{stem:`Đường cong trong hình bên là đồ thị của hàm số nào dưới đây?${graphSVG(C.f,{...V,marks:[[C.p,C.fp],[C.q,C.fq]],yt:[C.d]})}`,correct:cor,wrongs:W.filter(w=>w!==cor),
+    sol:`Đồ thị có dạng bậc ba với hệ số của x³ ${C.a>0?'dương (nhánh phải đi lên)':'âm (nhánh phải đi xuống)'}, cắt trục tung tại điểm có tung độ ${sg(C.d)} và có hai điểm cực trị (${sg(C.p)}; ${sg(C.fp)}), (${sg(C.q)}; ${sg(C.fq)}). Chỉ hàm số ${cor} thoả mãn.`,
+    chk:()=>pev(C.cs,0)===C.d&&pev(pder(C.cs),C.p)===0&&pev(pder(C.cs),C.q)===0&&(pev(neg,C.p)!==C.fp||pev(neg,C.q)!==C.fq)});
+});
+N12('k12-4-sign',1,'TH',[4],r=>{
+  const C=cubGraph(r),V=viewOf([[C.p,C.fp],[C.q,C.fq]],1.6,1.3);
+  const S=(a,d)=>`${I('a')} ${a>0?'>':'<'} 0, ${I('d')} ${d>0?'>':'<'} 0`;
+  return mkTxt(r,{stem:`Cho hàm số ${I('y')} = ${I('a')}${I('x')}${sup(3)} + ${I('b')}${I('x')}${sup(2)} + ${I('c')}${I('x')} + ${I('d')} có đồ thị là đường cong trong hình bên.${graphSVG(C.f,{...V})}Khẳng định nào sau đây đúng?`,
+    correct:S(C.a,C.d),wrongs:[S(-C.a,C.d),S(C.a,-C.d),S(-C.a,-C.d)],
+    sol:`Nhánh bên phải của đồ thị đi ${C.a>0?'lên':'xuống'} nên a ${C.a>0?'> 0':'< 0'}; đồ thị cắt trục tung tại điểm nằm ${C.d>0?'phía trên':'phía dưới'} gốc O nên d ${C.d>0?'> 0':'< 0'}.`,chk:()=>C.d!==0});
+});
+N12('k12-4-ratg',1,'TH',[4],r=>{
+  let R,x0,y0,yi,xi;
+  for(;;){const d=r.pick([1,-1,2,-2]),a=r.pick([1,-1,2,-2]);xi=r.nz(-4,4);const b=-a*xi;if((b%d)||xi===-d)continue;yi=b/d;if(yi===a||Math.abs(yi)>4)continue;
+    R={a,b,c:1,d,f:x=>(a*x+b)/(x+d),html:fr(xlin(a,b),xlin(1,d))};x0=-d;y0=a;break}
+  const V={x:[Math.min(-5,x0-3),Math.max(5,x0+3)],y:[Math.min(-5,y0-3),Math.max(5,y0+3)]};
+  const cor=`${I('y')} = ${R.html}`;
+  const W=[[R.a,R.b,1,-R.d],[1,R.b,R.a,R.d],[R.a,-R.b,1,R.d],[-R.a,R.b,1,R.d],[R.b,R.a,1,R.d],[R.a,R.b,1,R.d+(R.d>0?1:-1)],[R.a,R.b+R.a,1,R.d],[-R.a,-R.b,1,R.d],[2*R.a,R.b,1,R.d],[R.a,2*R.b,1,R.d]].filter(([a,b,c,d])=>a*d-b*c!==0).map(([a,b,c,d])=>`${I('y')} = ${fr(xlin(a,b),xlin(c,d))}`);
+  return mkTxt(r,{stem:`Đường cong trong hình bên là đồ thị của hàm số nào dưới đây?${graphSVG(R.f,{...V,va:[x0],ha:[y0],xt:[xi],yt:[yi],w:230,h:220})}`,correct:cor,wrongs:W.filter(w=>w!==cor),
+    sol:`Từ hình vẽ: tiệm cận đứng ${xEq(sg(x0))}, tiệm cận ngang ${yEq(sg(y0))}, đồ thị cắt Oy tại (0; ${sg(yi)}) và cắt Ox tại (${sg(xi)}; 0). Chỉ hàm số ${cor} thoả mãn.`,
+    chk:()=>Math.abs(R.f(0)-yi)<1e-9&&Math.abs(R.f(xi))<1e-9});
+});
+N12('k12-4-roots',1,'TH',[4],r=>{
+  const C=cubic12(r,{dlo:-4,dhi:4,ok:z=>z.fp!==z.fq}),lo=C.yCT,hi=C.yCD,ask=r.int(0,3);
+  let m,n;
+  if(ask===0){m=r.int(lo+1,hi-1);if(m===lo||m===hi)m=hi+1;n=hi-lo>=2?3:1}
+  if(ask===1){m=r.pick([lo,hi]);n=2}
+  if(ask===2){m=r.pick([lo-r.int(1,3),hi+r.int(1,3)]);n=1}
+  if(ask===3){m=hi-lo>=2?r.int(lo+1,hi-1):hi+1;n=m>lo&&m<hi?3:1}
+  const k=r.pick([1,2]),eq=k===1?`${FX} = ${sg(m)}`:`2${FX} ${m*2<0?'+':MINUS} ${Math.abs(m*2)} = 0`;
+  return mkNum(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtCubic(C)}Số nghiệm thực của phương trình ${eq} là`,correct:n,ok:v=>v>=0,cands:[0,1,2,3,4].filter(v=>v!==n),
+    sol:`${k===2?`Phương trình ⟺ f(x) = ${sg(m)}. `:''}Số nghiệm bằng số giao điểm của đồ thị y = f(x) với đường thẳng y = ${sg(m)}. Vì giá trị cực đại là ${sg(hi)}, giá trị cực tiểu là ${sg(lo)} nên ${n===3?`${sg(lo)} < ${sg(m)} < ${sg(hi)}: có 3 nghiệm`:n===2?`đường thẳng đi qua điểm cực trị: có 2 nghiệm`:'đường thẳng nằm ngoài khoảng giữa hai giá trị cực trị: có 1 nghiệm'}.`,
+    chk:()=>{let c=0;const g=x=>C.f(x)-m;const xs=[];for(let i=-4000;i<=4000;i++)xs.push(i/400);let prev=g(xs[0]);for(let i=1;i<xs.length;i++){const v=g(xs[i]);if(v===0)c++;else if(prev!==0&&Math.sign(v)!==Math.sign(prev))c++;prev=v}
+      return n===2?(m===lo||m===hi):c===n}});
+});
+N12('k12-4-center',1,'TH',[4],r=>{
+  const R=ratF(r,{c:r.pick([1,1,2])}),cor=`${I('I')}(${qh(R.x0)}; ${qh(R.y0)})`;
+  return mkTxt(r,{stem:`Tâm đối xứng của đồ thị hàm số ${I('y')} = ${R.html} là điểm`,correct:cor,wrongs:[`${I('I')}(${qh(R.y0)}; ${qh(R.x0)})`,`${I('I')}(${qh(Q(R.d,R.c))}; ${qh(R.y0)})`,`${I('I')}(${qh(R.x0)}; ${qh(Q(-R.a,R.c))})`,`${I('I')}(${qh(Q(R.d,R.c))}; ${qh(Q(-R.a,R.c))})`,`${I('I')}(${qh(qadd(R.x0,Q(1)))}; ${qh(R.y0)})`,`${I('I')}(${qh(R.x0)}; ${qh(qadd(R.y0,Q(1)))})`].filter(w=>w!==cor),
+    sol:`Đồ thị hàm số ${I('y')} = ${fr(`ax + b`,`cx + d`)} nhận giao điểm của hai đường tiệm cận làm tâm đối xứng. Tiệm cận đứng ${xEq(qh(R.x0))}, tiệm cận ngang ${yEq(qh(R.y0))} nên tâm đối xứng là ${cor}.`,
+    chk:()=>{const x0=qv(R.x0),y0=qv(R.y0);return[0.3,1.7,-2.2].every(h=>Math.abs(R.f(x0+h)+R.f(x0-h)-2*y0)<1e-9)}});
+});
+N12('k12-4-oy',1,'NB',[4],r=>{
+  const C=cubic12(r,{d:r.nz(-7,7)}),cor=`(0; ${sg(C.d)})`;
+  return mkTxt(r,{stem:`Đồ thị hàm số ${I('y')} = ${P3(C.cs)} cắt trục tung tại điểm`,correct:cor,wrongs:[`(${sg(C.d)}; 0)`,`(0; ${sg(C.a)})`,`(0; ${sg(C.d+C.a+C.b+C.c)})`,`(0; ${sg(-C.d)})`,`(0; ${sg(C.d+1)})`,`(0; ${sg(C.d-1)})`].filter(w=>w!==cor),
+    sol:`Cho x = 0 ta được y = ${sg(C.d)}. Giao điểm với trục tung là ${cor}.`,chk:()=>C.f(0)===C.d});
+});
+DS12('ds12-4-graph',1,'TH',[4],r=>{
+  const C=cubGraph(r,{ok:z=>Math.abs(z.fp-z.fq)>=2}),V=viewOf([[C.p,C.fp],[C.q,C.fq]],1.6,1.3),lo=C.yCT,hi=C.yCD;
+  const m=r.int(lo+1,hi-1),zc=C.fp*C.fq<0?3:1;
+  return mkDS(r,{stem:`Cho hàm số ${I('y')} = ${FX} có đồ thị là đường cong trong hình bên.${graphSVG(C.f,{...V,marks:[[C.p,C.fp],[C.q,C.fq]]})}Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Hàm số đạt cực tiểu tại ${I('x')} = ${sg(C.xCT)}.`,f:`Hàm số đạt cực tiểu tại ${I('x')} = ${sg(C.xCD)}.`,why:`Điểm thấp nhất cục bộ của đồ thị có hoành độ ${sg(C.xCT)}.`},
+    {t:`${FPX} ${C.a>0?'<':'>'} 0 với mọi ${I('x')} ∈ ${ivO(C.p,C.q)}.`,f:`${FPX} ${C.a>0?'>':'<'} 0 với mọi ${I('x')} ∈ ${ivO(C.p,C.q)}.`,why:`Trên ${ivO(C.p,C.q)} đồ thị đi ${C.a>0?'xuống':'lên'}.`},
+    {t:`Phương trình ${FX} = ${sg(m)} có 3 nghiệm phân biệt.`,f:`Phương trình ${FX} = ${sg(m)} có 2 nghiệm phân biệt.`,why:`Đường thẳng y = ${sg(m)} nằm giữa y<sub>CT</sub> = ${sg(lo)} và y<sub>CĐ</sub> = ${sg(hi)} nên cắt đồ thị tại 3 điểm.`},
+    {t:`Phương trình ${FX} = 0 có ${zc} nghiệm thực.`,f:`Phương trình ${FX} = 0 có ${zc===3?1:3} nghiệm thực.`,why:`Đồ thị cắt trục hoành tại ${zc} điểm.`}],
+    chk:()=>m>lo&&m<hi&&(zc===1||zc===3)});
+});
+TLN12('t12-4-m',1,'VD',[4],r=>{
+  const C=cubic12(r,{d:r.int(-5,5),ok:z=>Math.abs(z.fp-z.fq)>=3}),lo=C.yCT,hi=C.yCD,n=hi-lo-1;
+  return{kind:'tln',stem:`Có bao nhiêu giá trị nguyên của tham số ${I('m')} để phương trình ${P3(C.cs)} = ${I('m')} có ba nghiệm thực phân biệt?`,ans:n,unit:'',
+    sol:`Xét f(x) = ${P3(C.cs)}: f′(x) = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}; y<sub>CĐ</sub> = ${sg(hi)}, y<sub>CT</sub> = ${sg(lo)}. Phương trình có ba nghiệm phân biệt ⟺ ${sg(lo)} < m < ${sg(hi)}. Có ${n} giá trị nguyên.`,chk:()=>n>=2};
+});
+TL12('tl12-4-curve',1,'VD','a',[4],r=>{
+  const C=cubic12(r,{d:r.int(-4,4),ok:z=>Math.abs(z.fp-z.fq)>=2}),lo=C.yCT,hi=C.yCD;
+  return{kind:'tl',title:'Khảo sát hàm số và số nghiệm của phương trình',parts:[
+    {pts:.5,html:`Lập bảng biến thiên của hàm số ${I('y')} = ${P3(C.cs)}.`},
+    {pts:.5,html:`Tìm các giá trị của tham số ${I('m')} để phương trình ${P3(C.cs)} = ${I('m')} có đúng hai nghiệm thực phân biệt.`}],
+    sol:[ptxt([[`${I('y')}′ = ${P3(pder(C.cs))} = 0 ⟺ x = ${sg(C.p)} hoặc x = ${sg(C.q)}; y(${sg(C.p)}) = ${sg(C.fp)}, y(${sg(C.q)}) = ${sg(C.fq)}.`,.25],[`Bảng biến thiên:${bbtCubic(C)}`,.25]]),
+      ptxt([[`Số nghiệm bằng số giao điểm của đồ thị với đường thẳng y = m (song song hoặc trùng với trục hoành).`,.25],[`Phương trình có đúng hai nghiệm ⟺ đường thẳng đi qua một điểm cực trị ⟺ m = ${sg(hi)} hoặc m = ${sg(lo)}.`,.25]])],
+    chk:()=>C.f(C.xCD)===hi&&C.f(C.xCT)===lo};
+});
+
+/* ===================== Bài 5: Ứng dụng đạo hàm trong thực tiễn ===================== */
+N12('k12-5-vel',1,'TH',[5],r=>{
+  const k=r.int(1,4),a=3*k,b=r.int(2,20),T0=r.pick([a,a+1,a+2,10,12].filter(t=>t>k+1));
+  /* s(t) = −t³ + a t² + b t; v = −3t² + 2a t + b, max tại t = a/3 = k */
+  const vmax=-3*k*k+2*a*k+b;
+  return mkNum(r,{stem:`Một vật chuyển động theo quy luật ${I('s')}(${I('t')}) = ${MINUS}${I('t')}${sup(3)} + ${a}${I('t')}${sup(2)} + ${b}${I('t')}, với ${I('t')} (giây) là khoảng thời gian tính từ lúc vật bắt đầu chuyển động và ${I('s')} (mét) là quãng đường vật đi được trong khoảng thời gian đó. Trong ${T0} giây đầu tiên, vận tốc lớn nhất của vật bằng bao nhiêu?`,
+    correct:vmax,f:v=>`${v} m/s`,cands:[b,-k*k*k+a*k*k+b*k,vmax+k,2*a+b,vmax-3],
+    sol:`v(t) = s′(t) = ${MINUS}3t² + ${2*a}t + ${b}; v′(t) = ${MINUS}6t + ${2*a} = 0 ⟺ t = ${k} ∈ [0; ${T0}]. v đạt giá trị lớn nhất tại t = ${k}: v(${k}) = ${vmax} (m/s).`,
+    chk:()=>{let m=-1e9;for(let i=0;i<=T0*200;i++){const t=i/200;m=Math.max(m,-3*t*t+2*a*t+b)}return Math.abs(m-vmax)<1e-6}});
+});
+N12('k12-5-cost',1,'TH',[5],r=>{
+  const k=r.int(2,10),m=k*k*r.pick([1,100]),sq=Math.sqrt(m),c=r.int(1,40),a=r.pick([1,1,2]);
+  /* chi phí trung bình C̄(x) = a·x + c + m·a/x? dùng C(x) = x² + c x + m ⟹ C̄ = x + c + m/x, min tại x = √m */
+  return mkNum(r,{stem:`Tổng chi phí để sản xuất ${I('x')} sản phẩm của một xưởng là ${I('C')}(${I('x')}) = ${xquad(1,c,m)} (nghìn đồng). Để chi phí trung bình cho mỗi sản phẩm là nhỏ nhất thì xưởng cần sản xuất bao nhiêu sản phẩm?`,
+    correct:sq,f:v=>String(v),ok:v=>v>0,cands:[m/2,2*sq,sq/2,sq+c,m].filter(v=>Number.isInteger(v)),
+    sol:`Chi phí trung bình ${I('C')}̄(x) = ${fr('C(x)',I('x'))} = x + ${c} + ${fr(m,I('x'))} (x > 0). ${I('C')}̄′(x) = 1 − ${fr(m,'x²')} = 0 ⟺ x = ${sq}. Lập bảng biến thiên: ${I('C')}̄ đạt giá trị nhỏ nhất tại x = ${sq}.`,chk:()=>sq*sq===m&&a>0});
+});
+N12('k12-5-fence',1,'TH',[5],r=>{
+  const k=r.int(2,15),L=4*k,ask=r.chance(.5);
+  /* rào ba cạnh, cạnh song song tường = L/2, hai cạnh vuông góc = L/4 */
+  return mkNum(r,{stem:`Một người dùng ${L} m lưới rào ba cạnh của một mảnh vườn hình chữ nhật, cạnh còn lại là bức tường có sẵn (không phải rào). ${ask?'Diện tích lớn nhất của mảnh vườn có thể rào được là':'Để diện tích mảnh vườn lớn nhất thì độ dài cạnh song song với bức tường là'}`,
+    correct:ask?2*k*k:2*k,f:v=>ask?`${v} m²`:`${v} m`,cands:ask?[k*k,4*k*k,3*k*k,k*k*4/2+k]:[k,3*k,4*k,L/3].filter(v=>Number.isInteger(v)),
+    sol:`Gọi x (m) là độ dài mỗi cạnh vuông góc với tường (0 < x < ${L/2}), cạnh song song với tường dài ${L} − 2x. S(x) = x(${L} − 2x); S′(x) = ${L} − 4x = 0 ⟺ x = ${k}. Khi đó cạnh song song với tường dài ${2*k} m và S<sub>max</sub> = ${2*k*k} m².`,
+    chk:()=>{let b=0;for(let i=0;i<=L*100;i++){const x=i/200;b=Math.max(b,x*(L-2*x))}return Math.abs(b-2*k*k)<1e-6}});
+});
+N12('k12-5-box',1,'VD',[5],r=>{
+  const k=r.int(2,8),a=6*k;
+  return mkNum(r,{stem:`Từ một tấm bìa hình vuông cạnh ${a} cm, người ta cắt bỏ ở bốn góc bốn hình vuông bằng nhau cạnh ${I('x')} (cm) rồi gập lại thành một chiếc hộp không nắp. Để thể tích chiếc hộp lớn nhất thì ${I('x')} bằng`,
+    correct:k,f:v=>`${fmt(v)} cm`,ok:v=>v>0,cands:[2*k,3*k,a/4,k/2,a/3].filter(v=>v<a/2),
+    sol:`V(x) = x(${a} − 2x)², 0 < x < ${a/2}. V′(x) = (${a} − 2x)(${a} − 6x) = 0 ⟺ x = ${k} (nhận) hoặc x = ${a/2} (loại). Lập bảng biến thiên: V lớn nhất khi x = ${k} cm.`,
+    chk:()=>{let b=0,bx=0;for(let i=1;i<a*100/2;i++){const x=i/100,v=x*(a-2*x)**2;if(v>b){b=v;bx=x}}return Math.abs(bx-k)<0.011}});
+});
+TLN12('t12-5-box',1,'VD',[5],r=>{
+  const k=r.int(1,5),a=6*k,V=16*k*k*k;
+  return{kind:'tln',stem:`Từ một tấm nhôm hình vuông cạnh ${a} dm, người ta cắt bỏ ở bốn góc bốn hình vuông bằng nhau rồi gập lại thành một chiếc thùng không nắp. Tính thể tích lớn nhất của chiếc thùng (đơn vị: dm³).`,ans:V,unit:'dm³',
+    sol:`Gọi x (dm) là cạnh hình vuông bị cắt, 0 < x < ${a/2}. V(x) = x(${a} − 2x)²; V′(x) = (${a} − 2x)(${a} − 6x) = 0 ⟹ x = ${k}. V<sub>max</sub> = V(${k}) = ${k}·${a-2*k}² = ${V} (dm³).`,chk:()=>k*(a-2*k)**2===V};
+});
+TLN12('t12-5-rev',1,'VD',[5],r=>{
+  for(;;){const P0=r.pick([40,50,60,80,100]),N0=r.pick([100,200,300,400]),s=r.pick([1,2,5]),k=r.pick([10,20,25,40,50]);
+    /* R(x) = (P0 − s x)(N0 + k x), x = số lần giảm giá s nghìn đồng */
+    const num=k*P0-s*N0,den=2*s*k;if(num<=0||num%den)continue;const x=num/den,p=P0-s*x;if(p<=0||x<1)continue;
+    return{kind:'tln',stem:`Một cửa hàng bán một loại sản phẩm với giá ${P0} nghìn đồng/sản phẩm thì mỗi tháng bán được ${N0} sản phẩm. Khảo sát cho thấy cứ giảm giá ${s} nghìn đồng thì mỗi tháng bán thêm được ${k} sản phẩm. Để doanh thu mỗi tháng lớn nhất thì cửa hàng nên bán với giá bao nhiêu nghìn đồng một sản phẩm?`,ans:p,unit:'nghìn đồng',
+      sol:`Gọi x là số lần giảm ${s} nghìn đồng. Doanh thu R(x) = (${P0} − ${s}x)(${N0} + ${k}x). R′(x) = ${k*P0-s*N0} − ${2*s*k}x = 0 ⟺ x = ${x}. R lớn nhất khi giá bán là ${P0} − ${s}·${x} = ${p} (nghìn đồng).`,
+      chk:()=>{const R=t=>(P0-s*t)*(N0+k*t);return R(x)>=R(x+0.1)&&R(x)>=R(x-0.1)}}}
+});
+TLN12('t12-5-cyl',1,'VDC',[5],r=>{
+  const V=r.pick([1,2,0.5,1.5,3]),L=V*1000;/* lít → cm³ */
+  const R0=Math.cbrt(L/(2*Math.PI)),ans=Math.round(R0*100)/100;
+  return{kind:'tln',stem:`Một công ty cần làm một chiếc hộp hình trụ có nắp với dung tích ${fmt(V)} lít. Để tốn ít vật liệu nhất (diện tích toàn phần nhỏ nhất) thì bán kính đáy của hộp bằng bao nhiêu xentimét? (Làm tròn kết quả đến hàng phần trăm.)`,ans,unit:'cm',
+    sol:`${fmt(V)} lít = ${L} cm³. V = πR²h ⟹ h = ${fr(L,'πR²')}. S(R) = 2πR² + 2πRh = 2πR² + ${fr(2*L,'R')}. S′(R) = 4πR − ${fr(2*L,'R²')} = 0 ⟺ R = ∛(${fr(L,'2π')}) ≈ ${fmt(ans)} (cm).`,chk:()=>Math.abs(4*Math.PI*R0-2*L/(R0*R0))<1e-6};
+});
+TLN12('t12-5-pop',1,'VD',[5],r=>{
+  const k=r.int(3,10),a=3*k,c=r.pick([100,200,500,1000]);
+  return{kind:'tln',stem:`Số ca nhiễm của một dịch bệnh sau ${I('t')} ngày (0 ≤ ${I('t')} ≤ ${2*k}) được ước tính bởi ${I('N')}(${I('t')}) = ${MINUS}${I('t')}${sup(3)} + ${a}${I('t')}${sup(2)} + ${c}. Tốc độ tăng số ca nhiễm được tính bởi ${I('N')}′(${I('t')}). Hỏi vào ngày thứ mấy thì tốc độ tăng số ca nhiễm là lớn nhất?`,ans:k,unit:'',
+    sol:`N′(t) = ${MINUS}3t² + ${2*a}t; (N′)′(t) = ${MINUS}6t + ${2*a} = 0 ⟺ t = ${k}. N′ đồng biến trên [0; ${k}] và nghịch biến trên [${k}; ${2*k}] nên tốc độ tăng lớn nhất vào ngày thứ ${k}.`,chk:()=>-6*k+2*a===0};
+});
+DS12('ds12-5-motion',1,'TH',[5],r=>{
+  const k=r.int(1,4),a=3*k,b=r.int(3,15);/* s = t³ − a t² + b t + ... ; v = 3t² − 2a t + b; v min tại t = k */
+  const vmin=3*k*k-2*a*k+b,t1=2,v1=3*t1*t1-2*a*t1+b,acc=6*t1-2*a;
+  if(vmin<=0)return T.ds['ds12-5-motion'].gen(r);
+  return mkDS(r,{stem:`Một chất điểm chuyển động thẳng có phương trình ${I('s')}(${I('t')}) = ${I('t')}${sup(3)} ${MINUS} ${a}${I('t')}${sup(2)} + ${b}${I('t')} (${I('t')} tính bằng giây, ${I('s')} tính bằng mét). Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Vận tốc của chất điểm tại thời điểm ${I('t')} là ${I('v')}(${I('t')}) = 3${I('t')}${sup(2)} ${MINUS} ${2*a}${I('t')} + ${b}.`,f:`Vận tốc của chất điểm tại thời điểm ${I('t')} là ${I('v')}(${I('t')}) = 3${I('t')}${sup(2)} ${MINUS} ${a}${I('t')} + ${b}.`,why:`v(t) = s′(t) = 3t² − ${2*a}t + ${b}.`},
+    {t:`Vận tốc tại thời điểm ${I('t')} = ${t1} giây là ${v1} m/s.`,f:`Vận tốc tại thời điểm ${I('t')} = ${t1} giây là ${v1+3} m/s.`,why:`v(${t1}) = ${3*t1*t1} − ${2*a*t1} + ${b} = ${v1}.`},
+    {t:`Gia tốc tại thời điểm ${I('t')} = ${t1} giây là ${acc} m/s².`,f:`Gia tốc tại thời điểm ${I('t')} = ${t1} giây là ${acc+2*a} m/s².`,why:`a(t) = v′(t) = 6t − ${2*a}, a(${t1}) = ${acc}.`},
+    {t:`Vận tốc của chất điểm nhỏ nhất tại thời điểm ${I('t')} = ${k} giây.`,f:`Vận tốc của chất điểm nhỏ nhất tại thời điểm ${I('t')} = ${2*k} giây.`,why:`v′(t) = 6t − ${2*a} = 0 ⟺ t = ${k}; v′ đổi dấu từ − sang + nên v nhỏ nhất tại t = ${k}.`}],
+    chk:()=>v1!==v1+3&&acc!==acc+2*a&&k!==2*k});
+});
+TL12('tl12-5-real',1,'VD','b',[5],r=>{
+  const k=r.int(2,12),L=4*k,m=r.int(2,6),a=6*m,V=16*m*m*m;
+  return{kind:'tl',title:'Bài toán tối ưu trong thực tiễn',parts:[
+    {pts:.5,html:`Bác An có ${L} m lưới thép để rào ba cạnh của một khu đất hình chữ nhật, cạnh còn lại tựa vào bờ tường. Tìm kích thước khu đất để diện tích rào được là lớn nhất.`},
+    {pts:.5,html:`Từ một tấm tôn hình vuông cạnh ${a} cm, người ta cắt ở bốn góc bốn hình vuông bằng nhau rồi gập lại thành một cái hộp không nắp. Tính thể tích lớn nhất của cái hộp.`}],
+    sol:[ptxt([[`Gọi x (m) là cạnh vuông góc với tường (0 < x < ${L/2}); diện tích S(x) = x(${L} − 2x).`,.25],[`S′(x) = ${L} − 4x = 0 ⟺ x = ${k}. Diện tích lớn nhất khi khu đất có kích thước ${k} m × ${2*k} m (S = ${2*k*k} m²).`,.25]]),
+      ptxt([[`Gọi x (cm) là cạnh hình vuông cắt bỏ (0 < x < ${a/2}); V(x) = x(${a} − 2x)²; V′(x) = (${a} − 2x)(${a} − 6x).`,.25],[`V′(x) = 0 ⟺ x = ${m} (nhận). Lập bảng biến thiên được V<sub>max</sub> = V(${m}) = ${V} cm³.`,.25]])],
+    chk:()=>m*(a-2*m)**2===V};
+});
+TL12('tl12-5-rev',1,'VDC','b',[5],r=>{
+  for(;;){const P0=r.pick([30,40,50,60]),N0=r.pick([200,300,400,500]),s=r.pick([1,2]),k=r.pick([20,25,40,50]),c0=r.pick([10,15,20]);
+    /* lợi nhuận L(x) = (P0 − s x − c0)(N0 + k x) */
+    const num=k*(P0-c0)-s*N0,den=2*s*k;if(num<=0||num%den)continue;const x=num/den,p=P0-s*x;if(p<=c0||x<1)continue;
+    const Lmax=(p-c0)*(N0+k*x);
+    return{kind:'tl',title:'Bài toán lợi nhuận',parts:[
+      {pts:.5,html:`Một cửa hàng nhập một loại áo với giá ${c0} nghìn đồng/chiếc và bán với giá ${P0} nghìn đồng/chiếc thì mỗi tháng bán được ${N0} chiếc. Cửa hàng dự định giảm giá bán; cứ giảm ${s} nghìn đồng thì mỗi tháng bán thêm được ${k} chiếc. Gọi ${I('x')} là số lần giảm ${s} nghìn đồng. Viết công thức lợi nhuận mỗi tháng ${I('L')}(${I('x')}) theo ${I('x')}.`},
+      {pts:.5,html:`Tìm giá bán để lợi nhuận mỗi tháng lớn nhất và tính lợi nhuận lớn nhất đó.`}],
+      sol:[ptxt([[`Giá bán ${P0} − ${s}x (nghìn đồng), số áo bán được ${N0} + ${k}x.`,.25],[`L(x) = (${P0} − ${s}x − ${c0})(${N0} + ${k}x) = (${P0-c0} − ${s}x)(${N0} + ${k}x), 0 ≤ x < ${(P0-c0)/s}.`,.25]]),
+        ptxt([[`L′(x) = ${num} − ${den}x = 0 ⟺ x = ${x}; L′ đổi dấu từ + sang − nên L đạt giá trị lớn nhất tại x = ${x}.`,.25],[`Giá bán ${p} nghìn đồng/chiếc, lợi nhuận lớn nhất ${Lmax.toLocaleString('vi-VN')} nghìn đồng.`,.25]])],
+      chk:()=>{const L=t=>(P0-s*t-c0)*(N0+k*t);return L(x)===Lmax&&L(x)>=L(x+.5)&&L(x)>=L(x-.5)}}}
+});
+TL12('tl12-5-motion',1,'VD','b',[5],r=>{
+  const k=r.int(1,4),a=3*k,b=r.int(5,24),T0=2*k+r.int(1,3),vmax=-3*k*k+2*a*k+b;
+  return{kind:'tl',title:'Ứng dụng đạo hàm trong chuyển động',parts:[
+    {pts:.5,html:`Một vật chuyển động theo quy luật ${I('s')}(${I('t')}) = ${MINUS}${I('t')}${sup(3)} + ${a}${I('t')}${sup(2)} + ${b}${I('t')}, trong đó ${I('t')} (giây) là thời gian tính từ lúc bắt đầu chuyển động, ${I('s')} (mét) là quãng đường đi được. Tính vận tốc và gia tốc của vật tại thời điểm ${I('t')} = 1 giây.`},
+    {pts:.5,html:`Trong ${T0} giây đầu tiên, tại thời điểm nào vật đạt vận tốc lớn nhất? Tính vận tốc lớn nhất đó.`}],
+    sol:[ptxt([[`v(t) = s′(t) = ${MINUS}3t² + ${2*a}t + ${b}; v(1) = ${-3+2*a+b} m/s.`,.25],[`a(t) = v′(t) = ${MINUS}6t + ${2*a}; a(1) = ${-6+2*a} m/s².`,.25]]),
+      ptxt([[`v′(t) = ${MINUS}6t + ${2*a} = 0 ⟺ t = ${k} ∈ [0; ${T0}]; v đồng biến trên [0; ${k}], nghịch biến trên [${k}; ${T0}].`,.25],[`Vận tốc lớn nhất đạt tại t = ${k} giây: v(${k}) = ${vmax} m/s.`,.25]])],
+    chk:()=>vmax===-3*k*k+2*a*k+b&&k<T0};
+});
+/* ================================================================
+   LỚP 12 – Chương II: Vectơ và hệ trục toạ độ trong không gian (Bài 6 – 8)
+   ================================================================ */
+const srt12=(...a)=>a.sort().join('');
+const tup=v=>`(${v.map(fmt).join('; ')})`;
+const vadd=(u,v)=>u.map((x,i)=>x+v[i]),vsub=(u,v)=>u.map((x,i)=>x-v[i]),vmul=(u,k)=>u.map(x=>x*k),vdot=(u,v)=>u.reduce((s,x,i)=>s+x*v[i],0),veq=(u,v)=>u.every((x,i)=>Math.abs(x-v[i])<1e-9);
+const vlen2=u=>vdot(u,u);
+/* ---------- Hình hộp / hình lập phương: toạ độ đơn vị của các đỉnh ---------- */
+const BOXV={A:[0,0,0],B:[1,0,0],C:[1,1,0],D:[0,1,0],'A′':[0,0,1],'B′':[1,0,1],'C′':[1,1,1],'D′':[0,1,1]};
+const BOXN=Object.keys(BOXV);
+const bv=(X,Y)=>vsub(BOXV[Y],BOXV[X]);
+const BVECS=[];BOXN.forEach(X=>BOXN.forEach(Y=>{if(X!==Y)BVECS.push([X,Y])}));
+const vh=(X,Y)=>vc(I(X+Y));
+const repsOf=(t,pref)=>{const L=BVECS.filter(([X,Y])=>veq(bv(X,Y),t));return pref?L.sort((a,b)=>(b[0]===pref)-(a[0]===pref)):L};
+const boxFig=(cube)=>{const P=cube?{A:[0,0,0],B:[3.4,0,0],C:[3.4,3.4,0],D:[0,3.4,0]}:{A:[0,0,0],B:[4.2,0,0],C:[5.0,2.6,0],D:[0.8,2.6,0]};
+  ['A','B','C','D'].forEach(k=>P[k+'′']=[P[k][0]+(cube?0:0.7),P[k][1]+(cube?0:0.3),cube?3.4:3]);
+  return fig3D(P,[['A','B'],['B','C'],['A′','B′'],['B′','C′'],['C′','D′'],['D′','A′'],['A','A′'],['B','B′'],['C','C′']],[['A','D'],['D','C'],['D','D′']],BOXN)};
+const BOXT=`${I('ABCD.A′B′C′D′')}`;
+/* một vectơ "đẹp" giữa hai đỉnh: cạnh hoặc đường chéo mặt */
+const niceV=(r,maxL=2)=>{for(;;){const [X,Y]=r.pick(BVECS);if(vlen2(bv(X,Y))<=maxL)return[X,Y]}};
+/* biểu diễn tổ hợp: [[hệ số, X, Y], ...] */
+const coefH=c=>c===1?'':c===-1?MINUS:Number.isInteger(c)?sg(c):(c<0?MINUS:'')+fr(Q(Math.round(Math.abs(c)*6),6)[0],Q(Math.round(Math.abs(c)*6),6)[1]);
+const combH=ts=>ts.map(([c,X,Y],i)=>{const s=coefH(c)+vh(X,Y);return i===0?s:(c<0?` ${MINUS} ${coefH(-c)}${vh(X,Y)}`:` + ${s}`)}).join('');
+
+/* ===================== Bài 6: Vectơ trong không gian ===================== */
+N12('k12-6-box-sum',2,'NB',[6],r=>{
+  const X=r.pick(BOXN),nb=BOXN.filter(Y=>vlen2(bv(X,Y))===1),Ov=BOXN.find(Y=>vlen2(bv(X,Y))===3);
+  const fd=BOXN.filter(Y=>vlen2(bv(X,Y))===2);
+  const nbS=r.shuffle(nb);
+  return mkTxt(r,{stem:`Cho hình hộp ${BOXT}.${boxFig(false)}Tổng ${nbS.map(Y=>vh(X,Y)).join(' + ')} bằng vectơ nào dưới đây?`,correct:vh(X,Ov),wrongs:r.shuffle([vh(Ov,X),vh(X,fd[0]),vh(X,fd[1]),vh(nbS[0],Ov)]),
+    sol:`Theo quy tắc hình hộp: ${nbS.map(Y=>vh(X,Y)).join(' + ')} = ${vh(X,Ov)}.`,chk:()=>veq(nb.reduce((s,Y)=>vadd(s,bv(X,Y)),[0,0,0]),bv(X,Ov))});
+});
+N12('k12-6-box-eq',2,'NB',[6],r=>{
+  const [X,Y]=niceV(r),t=bv(X,Y),eq=repsOf(t).filter(([a,b])=>!(a===X&&b===Y)),opp=repsOf(vmul(t,-1));
+  const cor=r.pick(eq),oth=BVECS.filter(([a,b])=>!veq(bv(a,b),t)&&!veq(bv(a,b),vmul(t,-1))&&vlen2(bv(a,b))===vlen2(t));
+  return mkTxt(r,{stem:`Cho hình hộp ${BOXT}. Vectơ nào dưới đây bằng vectơ ${vh(X,Y)}?`,correct:vh(...cor),wrongs:r.shuffle([...r.shuffle(opp).slice(0,2),...r.shuffle(oth).slice(0,3)]).map(v=>vh(...v)),
+    sol:`Hai vectơ bằng nhau khi cùng hướng và cùng độ dài. Trong hình hộp, ${vh(X,Y)} = ${vh(...cor)} (các mặt của hình hộp là hình bình hành).`,chk:()=>veq(bv(...cor),t)});
+});
+/* sinh một đẳng thức u + v = w trong hình hộp (w là vectơ giữa hai đỉnh) */
+function boxEq(r){
+  for(;;){const [X,Y]=niceV(r),[Z,W]=niceV(r),t=vadd(bv(X,Y),bv(Z,W)),reps=repsOf(t,X);if(!reps.length||veq(t,[0,0,0]))continue;
+    if(X+Y===Z+W)continue;const w=reps[0];
+    const bad=BVECS.filter(v=>!veq(bv(...v),t)&&(v[0]===w[0]||v[1]===w[1])&&vlen2(bv(...v))<=3);
+    return{u:[X,Y],v:[Z,W],w,t,bad}}
+}
+N12('k12-6-box-add',2,'TH',[6],r=>{
+  const E=boxEq(r);
+  return mkTxt(r,{stem:`Cho hình hộp ${BOXT}. Vectơ ${vh(...E.u)} + ${vh(...E.v)} bằng vectơ nào dưới đây?`,correct:vh(...E.w),wrongs:r.shuffle(E.bad).map(v=>vh(...v)),
+    sol:`Thay các vectơ bằng các vectơ bằng nhau trong hình hộp rồi dùng quy tắc ba điểm (hoặc quy tắc hình bình hành): ${vh(...E.u)} + ${vh(...E.v)} = ${vh(...E.w)}.`,chk:()=>veq(E.t,bv(...E.w))});
+});
+N12('k12-6-box-false',2,'TH',[6],r=>{
+  const tr=[],seen=new Set();while(tr.length<4){const E=boxEq(r),k=vh(...E.u)+vh(...E.v);if(seen.has(k))continue;seen.add(k);tr.push(E)}
+  const st=E=>`${vh(...E.u)} + ${vh(...E.v)} = ${vh(...E.w)}.`,F=tr[0],fw=r.pick(F.bad);
+  return mkTxt(r,{stem:`Cho hình hộp ${BOXT}.${boxFig(false)}Khẳng định nào dưới đây <b>sai</b>?`,correct:`${vh(...F.u)} + ${vh(...F.v)} = ${vh(...fw)}.`,wrongs:tr.slice(1).map(st),
+    sol:`Ta có ${vh(...F.u)} + ${vh(...F.v)} = ${vh(...F.w)} ≠ ${vh(...fw)}. Các khẳng định còn lại đúng theo quy tắc ba điểm, quy tắc hình bình hành, quy tắc hình hộp.`,
+    chk:()=>!veq(F.t,bv(...fw))&&tr.slice(1).every(E=>veq(E.t,bv(...E.w)))});
+});
+DS12('ds12-6-box',2,'TH',[6],r=>{
+  const tr=[],seen=new Set();while(tr.length<4){const E=boxEq(r),k=vh(...E.u)+vh(...E.v);if(seen.has(k))continue;seen.add(k);tr.push(E)}
+  const its=tr.map(E=>{const fw=r.pick(E.bad);return{t:`${vh(...E.u)} + ${vh(...E.v)} = ${vh(...E.w)}.`,f:`${vh(...E.u)} + ${vh(...E.v)} = ${vh(...fw)}.`,why:`${vh(...E.u)} + ${vh(...E.v)} = ${vh(...E.w)} (quy tắc ba điểm/hình bình hành/hình hộp).`,ok:!veq(E.t,bv(...fw))}});
+  return mkDS(r,{stem:`Cho hình hộp ${BOXT}.${boxFig(false)}Xét tính đúng sai của các khẳng định sau:`,items:its,chk:()=>its.every(i=>i.ok)});
+});
+/* ---- Tứ diện: các đẳng thức vectơ, kiểm tra bằng toạ độ ---- */
+function tetStatements(r){
+  const L=r.shuffle(['A','B','C','D']),[A,B,C,D]=L,so=(...a)=>a.sort().join(''),P={[A]:[0,0,0],[B]:[3.1,0.4,0.2],[C]:[1.2,2.7,-0.3],[D]:[0.7,1.1,2.9]};
+  const G1=vmul(vadd(vadd(P[B],P[C]),P[D]),1/3),G=vmul(vadd(vadd(vadd(P[A],P[B]),P[C]),P[D]),1/4),M=vmul(vadd(P[A],P[B]),1/2),N=vmul(vadd(P[C],P[D]),1/2);
+  const Q={...P,G:G1,H:G,M,N},v=(x,y)=>vsub(Q[y],Q[x]),z=[0,0,0];
+  const S=[
+    {ctx:`Gọi ${I('G')} là trọng tâm tam giác ${I(srt12(B,C,D))}.`,t:`${vh(A,B)} + ${vh(A,C)} + ${vh(A,D)} = 3${vh(A,'G')}`,f:`${vh(A,B)} + ${vh(A,C)} + ${vh(A,D)} = ${vh(A,'G')}`,tv:()=>veq(vadd(vadd(v(A,B),v(A,C)),v(A,D)),vmul(v(A,'G'),3)),fv:()=>veq(vadd(vadd(v(A,B),v(A,C)),v(A,D)),v(A,'G'))},
+    {ctx:`Gọi ${I('G')} là trọng tâm tam giác ${I(srt12(B,C,D))}.`,t:`${vh('G',B)} + ${vh('G',C)} + ${vh('G',D)} = ${vc('0')}`,f:`${vh('G',A)} + ${vh('G',B)} + ${vh('G',C)} = ${vc('0')}`,tv:()=>veq(vadd(vadd(v('G',B),v('G',C)),v('G',D)),z),fv:()=>veq(vadd(vadd(v('G',A),v('G',B)),v('G',C)),z)},
+    {ctx:`Gọi ${I('M')}, ${I('N')} lần lượt là trung điểm của ${I(srt12(A,B))} và ${I(srt12(C,D))}.`,t:`${vh('M','N')} = ${fr(1,2)}(${vh(A,D)} + ${vh(B,C)})`,f:`${vh('M','N')} = ${fr(1,2)}(${vh(A,B)} + ${vh(C,D)})`,tv:()=>veq(v('M','N'),vmul(vadd(v(A,D),v(B,C)),.5)),fv:()=>veq(v('M','N'),vmul(vadd(v(A,B),v(C,D)),.5))},
+    {ctx:`Gọi ${I('M')}, ${I('N')} lần lượt là trung điểm của ${I(srt12(A,B))} và ${I(srt12(C,D))}.`,t:`${vh('M','N')} = ${fr(1,2)}(${vh(A,C)} + ${vh(B,D)})`,f:`${vh('M','N')} = ${vh(A,C)} + ${vh(B,D)}`,tv:()=>veq(v('M','N'),vmul(vadd(v(A,C),v(B,D)),.5)),fv:()=>veq(v('M','N'),vadd(v(A,C),v(B,D)))},
+    {ctx:'',t:`${vh(A,B)} + ${vh(C,D)} = ${vh(A,D)} + ${vh(C,B)}`,f:`${vh(A,B)} + ${vh(C,D)} = ${vh(A,C)} + ${vh(D,B)}`,tv:()=>veq(vadd(v(A,B),v(C,D)),vadd(v(A,D),v(C,B))),fv:()=>veq(vadd(v(A,B),v(C,D)),vadd(v(A,C),v(D,B)))},
+    {ctx:`Gọi ${I('O')} là trọng tâm của tứ diện.`,t:`${vh('O',A)} + ${vh('O',B)} + ${vh('O',C)} + ${vh('O',D)} = ${vc('0')}`,f:`${vh(A,B)} + ${vh(A,C)} + ${vh(A,D)} = 3${vh(A,'O')}`,tv:()=>veq([A,B,C,D].reduce((s,X)=>vadd(s,v('H',X)),z),z),fv:()=>veq(vadd(vadd(v(A,B),v(A,C)),v(A,D)),vmul(v(A,'H'),3))}
+  ];
+  return{S,L};
+}
+N12('k12-6-tetra',2,'TH',[6],r=>{
+  const {S}=tetStatements(r),pick=r.shuffle(S).filter((s,i,a)=>a.findIndex(x=>x.ctx===s.ctx)===i).slice(0,4),wantTrue=r.chance(.5);
+  const ctx=pick.map(s=>s.ctx).filter(Boolean).join(' '),corS=pick[0],cor=(wantTrue?corS.t:corS.f)+'.',wr=pick.slice(1).map(s=>(wantTrue?s.f:s.t)+'.');
+  return mkTxt(r,{stem:`Cho tứ diện ${I('ABCD')}. ${ctx} Khẳng định nào dưới đây ${wantTrue?'đúng':'<b>sai</b>'}?`,correct:cor,wrongs:wr,
+    sol:`Khẳng định ${wantTrue?'đúng':'sai'} là: ${cor}${wantTrue?'':` Đẳng thức đúng là: ${corS.t}.`} (Dùng quy tắc ba điểm, tính chất trung điểm và trọng tâm.)`,
+    chk:()=>pick.length===4&&pick.every(s=>s.tv()===true&&s.fv()===false)});
+});
+/* ---- Tích vô hướng ---- */
+const ANG_V={0:[1,'1'],30:[Math.sqrt(3)/2,fr(rt(3),2)],45:[Math.SQRT1_2,fr(rt(2),2)],60:[.5,fr(1,2)],90:[0,'0'],120:[-.5,MINUS+fr(1,2)],135:[-Math.SQRT1_2,MINUS+fr(rt(2),2)],150:[-Math.sqrt(3)/2,MINUS+fr(rt(3),2)],180:[-1,MINUS+'1']};
+/* √n rút gọn: 8 → 2√2, 9 → 3 */
+const sqH=n=>{let a=1,b=n;for(let k=Math.floor(Math.sqrt(n));k>1;k--)if(b%(k*k)===0){a*=k;b/=k*k;break}return b===1?String(a):(a===1?'':a)+rt(b)};
+/* p·q·cos θ dạng HTML */
+function dotH(p,q,th){
+  const pq=p*q;
+  if(th===90)return'0';if(th===0)return String(pq);if(th===180)return sg(-pq);
+  if(th===60||th===120)return qh(Q(th===60?pq:-pq,2));
+  const rad=th===45||th===135?2:3,neg=th>90,qq=Q(pq,2),co=qq[0]===1&&qq[1]===1?'':qq[1]===1?String(qq[0]):null;
+  const core=co!==null?`${co}${rt(rad)}`:fr(`${qq[0]===1?'':qq[0]}${rt(rad)}`,qq[1]);
+  return(neg?MINUS:'')+core;
+}
+N12('k12-6-dot',2,'TH',[6],r=>{
+  const p=r.int(1,6),q=r.int(2,6),th=r.pick([30,45,60,90,120,135,150]),cor=dotH(p,q,th);
+  const others=[30,45,60,120,135,150,0].filter(t=>t!==th).map(t=>dotH(p,q,t)).concat([String(p*q),String(p+q)]);
+  return mkTxt(r,{stem:`Trong không gian, cho hai vectơ ${vc(I('a'))}, ${vc(I('b'))} thoả mãn |${vc(I('a'))}| = ${p}, |${vc(I('b'))}| = ${q} và (${vc(I('a'))}, ${vc(I('b'))}) = ${th}°. Tích vô hướng ${vc(I('a'))}·${vc(I('b'))} bằng`,correct:cor,wrongs:r.shuffle(uniqBy(others,x=>x)).filter(x=>x!==cor),
+    sol:`${vc(I('a'))}·${vc(I('b'))} = |${vc(I('a'))}|·|${vc(I('b'))}|·cos(${vc(I('a'))}, ${vc(I('b'))}) = ${p}·${q}·cos ${th}° = ${cor}.`,chk:()=>true});
+});
+/* góc giữa hai vectơ trong hình lập phương */
+function cubeAngPair(r){
+  for(;;){const u=niceV(r,3),v=niceV(r,3),a=bv(...u),b=bv(...v),c=vdot(a,b)/Math.sqrt(vlen2(a)*vlen2(b));
+    const th=Object.keys(ANG_V).map(Number).find(t=>Math.abs(ANG_V[t][0]-c)<1e-9);if(th===undefined||(u[0]===v[0]&&u[1]===v[1]))continue;
+    if(vlen2(a)===3&&vlen2(b)===3)continue;return{u,v,th}}
+}
+N12('k12-6-cube-ang',2,'TH',[6],r=>{
+  const {u,v,th}=cubeAngPair(r),opts=[0,45,60,90,120,135,180].filter(t=>t!==th);
+  return mkTxt(r,{stem:`Cho hình lập phương ${BOXT}.${boxFig(true)}Góc giữa hai vectơ ${vh(...u)} và ${vh(...v)} bằng`,correct:th+'°',wrongs:r.shuffle(opts).map(t=>t+'°'),
+    sol:`Dời các vectơ về chung gốc (dùng các vectơ bằng nhau trong hình lập phương) rồi xét tam giác tạo thành (các mặt là hình vuông, các đường chéo mặt bằng nhau). Ta được (${vh(...u)}, ${vh(...v)}) = ${th}°.`,
+    chk:()=>{const a=bv(...u),b=bv(...v);return Math.abs(Math.acos(Math.max(-1,Math.min(1,vdot(a,b)/Math.sqrt(vlen2(a)*vlen2(b)))))*180/Math.PI-th)<1e-6}});
+});
+const a2H=k=>k===0?'0':(k===1?'':k===-1?MINUS:sg(k))+I('a')+sup(2);
+N12('k12-6-cube-dot',2,'VD',[6],r=>{
+  for(;;){const u=niceV(r,3),v=niceV(r,3),k=vdot(bv(...u),bv(...v));if(u[0]+u[1]===v[0]+v[1]||k*k===vlen2(bv(...u))*vlen2(bv(...v)))continue;
+    const cor=a2H(k),W=[-2,-1,0,1,2,3].filter(x=>x!==k).map(a2H).concat([`${fr(I('a')+sup(2),2)}`,`${I('a')}${sup(2)}${rt(2)}`]);
+    return mkTxt(r,{stem:`Cho hình lập phương ${BOXT} có cạnh bằng ${I('a')}. Tích vô hướng ${vh(...u)}·${vh(...v)} bằng`,correct:cor,wrongs:r.shuffle(W),
+      sol:`Phân tích theo ba vectơ đôi một vuông góc ${vh('A','B')}, ${vh('A','D')}, ${vh('A','A′')} (độ dài ${I('a')}): ${vh(...u)} = ${combH(bv(...u).map((c,i)=>[c,'A',['B','D','A′'][i]]).filter(t=>t[0]))}, ${vh(...v)} = ${combH(bv(...v).map((c,i)=>[c,'A',['B','D','A′'][i]]).filter(t=>t[0]))}. Suy ra tích vô hướng bằng ${cor}.`,
+      chk:()=>Number.isInteger(k)})}
+});
+DS12('ds12-6-dot',2,'VD',[6],r=>{
+  for(;;){const p=r.int(1,6),q=r.int(1,6),th=r.pick([60,120]),ab=(th===60?1:-1)*p*q/2;if(!Number.isInteger(ab)||p===q)continue;
+    const s1=p*p+q*q+2*ab,s2=p*p+q*q-2*ab,k=r.int(2,3),e=p*p-ab+k*ab-k*q*q;
+    const A=vc(I('a')),B=vc(I('b'));
+    return mkDS(r,{stem:`Trong không gian, cho hai vectơ ${A}, ${B} có |${A}| = ${p}, |${B}| = ${q} và góc giữa chúng bằng ${th}°. Xét tính đúng sai của các khẳng định sau:`,items:[
+      {t:`${A}·${B} = ${sg(ab)}.`,f:`${A}·${B} = ${sg(-ab)}.`,why:`${A}·${B} = ${p}·${q}·cos ${th}° = ${sg(ab)}.`},
+      {t:`(${A} + ${B})${sup(2)} = ${s1}.`,f:`(${A} + ${B})${sup(2)} = ${p*p+q*q}.`,why:`(${A} + ${B})² = |${A}|² + 2${A}·${B} + |${B}|² = ${p*p} + ${2*ab<0?'('+sg(2*ab)+')':2*ab} + ${q*q} = ${s1}.`},
+      {t:`|${A} ${MINUS} ${B}| = ${rt(s2)}.`.replace(rt(s2),Number.isInteger(Math.sqrt(s2))?String(Math.sqrt(s2)):rt(s2)),f:`|${A} ${MINUS} ${B}| = ${Number.isInteger(Math.sqrt(s1))?String(Math.sqrt(s1)):rt(s1)}.`,why:`|${A} − ${B}|² = ${p*p} − ${2*ab<0?'('+sg(2*ab)+')':2*ab} + ${q*q} = ${s2}.`},
+      {t:`(${A} + ${k}${B})·(${A} ${MINUS} ${B}) = ${sg(e)}.`,f:`(${A} + ${k}${B})·(${A} ${MINUS} ${B}) = ${sg(e+k*q*q)}.`,why:`(${A} + ${k}${B})·(${A} − ${B}) = |${A}|² + ${k-1}${A}·${B} − ${k}|${B}|² = ${p*p} + ${k-1}·(${sg(ab)}) − ${k*q*q} = ${sg(e)}.`}],
+      chk:()=>s1!==s2&&s1!==p*p+q*q&&e!==e+k*q*q})}
+});
+TLN12('t12-6-dot',2,'VD',[6],r=>{
+  for(;;){const p=r.int(1,6),q=r.int(1,6),th=r.pick([60,120,90]),ab=th===90?0:(th===60?1:-1)*p*q/2;if(!Number.isInteger(ab))continue;
+    const m=r.int(1,4),n=r.int(1,3),ans=p*p+(m-n)*ab-m*n*q*q,A=vc(I('a')),B=vc(I('b'));
+    return{kind:'tln',stem:`Trong không gian, cho hai vectơ ${A}, ${B} có |${A}| = ${p}, |${B}| = ${q} và (${A}, ${B}) = ${th}°. Tính (${A} + ${m===1?'':m}${B})·(${A} ${MINUS} ${n===1?'':n}${B}).`,ans,unit:'',
+      sol:`${A}·${B} = ${sg(ab)}. (${A} + ${m}${B})·(${A} − ${n}${B}) = |${A}|² + ${m-n<0?'('+sg(m-n)+')':m-n}·${A}·${B} − ${m*n}|${B}|² = ${p*p} + ${m-n<0?'('+sg(m-n)+')':m-n}·(${sg(ab)}) − ${m*n*q*q} = ${sg(ans)}.`,chk:()=>Math.abs(ans)<1000}}
+});
+TLN12('t12-6-sum',2,'VD',[6],r=>{
+  const L=[[3,5,7,60],[5,3,7,60],[7,8,13,60],[8,7,13,60],[5,16,19,60],[3,8,7,120],[5,8,7,120],[8,15,13,120],[7,15,13,120],[5,21,19,120],[6,10,14,60],[6,16,14,120]],[p,q,c,th]=r.pick(L);
+  return{kind:'tln',stem:`Trong không gian, cho hai vectơ ${vc(I('a'))}, ${vc(I('b'))} có |${vc(I('a'))}| = ${p}, |${vc(I('b'))}| = ${q} và góc giữa hai vectơ bằng ${th}°. Tính |${vc(I('a'))} + ${vc(I('b'))}|.`,ans:c,unit:'',
+    sol:`|${vc(I('a'))} + ${vc(I('b'))}|² = ${p}² + ${q}² + 2·${p}·${q}·cos ${th}° = ${p*p} + ${q*q} ${th===60?'+':MINUS} ${p*q} = ${c*c}. Vậy |${vc(I('a'))} + ${vc(I('b'))}| = ${c}.`,chk:()=>p*p+q*q+(th===60?1:-1)*p*q===c*c};
+});
+TLN12('t12-6-force',2,'VD',[6],r=>{
+  const L=[[1,2,2,3],[2,3,6,7],[1,4,8,9],[4,4,7,9],[2,6,9,11],[6,6,7,11],[2,10,11,15],[3,4,12,13]],[a,b,c,d]=r.pick(L),k=r.pick([5,10,20]);
+  return{kind:'tln',stem:`Ba lực ${vc(I('F'))}${sub(1)}, ${vc(I('F'))}${sub(2)}, ${vc(I('F'))}${sub(3)} cùng tác động vào một vật, có giá đôi một vuông góc với nhau và có độ lớn lần lượt là ${a*k} N, ${b*k} N, ${c*k} N. Tính độ lớn của hợp lực ${vc(I('F'))}${sub(1)} + ${vc(I('F'))}${sub(2)} + ${vc(I('F'))}${sub(3)} (đơn vị: N).`,ans:d*k,unit:'N',
+    sol:`Dựng hình hộp chữ nhật có ba cạnh xuất phát từ một đỉnh biểu diễn ba lực; hợp lực là đường chéo của hình hộp. Độ lớn: ${rt(`${a*k}² + ${b*k}² + ${c*k}²`)} = ${d*k} (N).`,chk:()=>a*a+b*b+c*c===d*d};
+});
+TLN12('t12-6-cube',2,'VD',[6],r=>{
+  for(;;){const s=r.int(2,6),u=niceV(r,3),v=niceV(r,3),k=vdot(bv(...u),bv(...v));if(!k||u[0]+u[1]===v[0]+v[1]||k*k===vlen2(bv(...u))*vlen2(bv(...v)))continue;
+    return{kind:'tln',stem:`Cho hình lập phương ${BOXT} có cạnh bằng ${s}. Tính tích vô hướng ${vh(...u)}·${vh(...v)}.`,ans:k*s*s,unit:'',
+      sol:`Biểu diễn hai vectơ qua ba vectơ đôi một vuông góc ${vh('A','B')}, ${vh('A','D')}, ${vh('A','A′')} (mỗi vectơ có độ dài ${s}) rồi khai triển: ${vh(...u)}·${vh(...v)} = ${k<0?'('+sg(k)+')':k}·${s}² = ${sg(k*s*s)}.`,chk:()=>Number.isInteger(k)}}
+});
+TL12('tl12-6-vec',2,'VD','c',[6],r=>{
+  const [A,B,C,D]=r.shuffle(['A','B','C','D']),s=r.int(2,5),uv=(()=>{for(;;){const u=niceV(r,2),v=niceV(r,3),k=vdot(bv(...u),bv(...v));if(k&&u[0]+u[1]!==v[0]+v[1]&&k*k!==vlen2(bv(...u))*vlen2(bv(...v)))return{u,v,k}}})();
+  return{kind:'tl',title:'Vectơ trong không gian',parts:[
+    {pts:.5,html:`Cho tứ diện ${I('ABCD')}. Gọi ${I('M')}, ${I('N')} lần lượt là trung điểm của ${I(srt12(A,B))} và ${I(srt12(C,D))}. Chứng minh rằng ${vh('M','N')} = ${fr(1,2)}(${vh(A,D)} + ${vh(B,C)}).`},
+    {pts:.5,html:`Cho hình lập phương ${BOXT} có cạnh bằng ${s}. Tính ${vh(...uv.u)}·${vh(...uv.v)}.`}],
+    sol:[ptxt([[`${vh('M','N')} = ${vh('M',A)} + ${vh(A,D)} + ${vh(D,'N')} và ${vh('M','N')} = ${vh('M',B)} + ${vh(B,C)} + ${vh(C,'N')}.`,.25],[`Cộng vế: 2${vh('M','N')} = (${vh('M',A)} + ${vh('M',B)}) + (${vh(A,D)} + ${vh(B,C)}) + (${vh(D,'N')} + ${vh(C,'N')}) = ${vh(A,D)} + ${vh(B,C)} (vì M, N là trung điểm). Suy ra điều phải chứng minh.`,.25]]),
+      ptxt([[`Đặt ${vc(I('x'))} = ${vh('A','B')}, ${vc(I('y'))} = ${vh('A','D')}, ${vc(I('z'))} = ${vh('A','A′')}: đôi một vuông góc, độ dài ${s}. ${vh(...uv.u)} = ${tupXYZ(bv(...uv.u))}, ${vh(...uv.v)} = ${tupXYZ(bv(...uv.v))}.`,.25],[`Khai triển: ${vh(...uv.u)}·${vh(...uv.v)} = ${uv.k<0?'('+sg(uv.k)+')':uv.k}·${s}² = ${sg(uv.k*s*s)}.`,.25]])],
+    chk:()=>Number.isInteger(uv.k)};
+});
+const tupXYZ=v=>{const n=[vc(I('x')),vc(I('y')),vc(I('z'))],t=v.map((c,i)=>c?{c,n:n[i]}:null).filter(Boolean);return t.map((x,i)=>(i===0?(x.c<0?MINUS:''):(x.c<0?` ${MINUS} `:' + '))+(Math.abs(x.c)===1?'':Math.abs(x.c))+x.n).join('')||vc('0')};
+TL12('tl12-6-dot',2,'VD','c',[6],r=>{
+  for(;;){const p=r.int(2,6),q=r.int(1,5),th=r.pick([60,120]),ab=(th===60?1:-1)*p*q/2;if(!Number.isInteger(ab)||p===q)continue;
+    /* (a + k b) ⊥ (a − b) ⟺ p² − ab + k(ab − q²) = 0 */
+    const den=q*q-ab;if(den===0)continue;const kq=Q(p*p-ab,den);
+    const A=vc(I('a')),B=vc(I('b')),s=p*p+q*q+2*ab;
+    return{kind:'tl',title:'Tích vô hướng của hai vectơ',parts:[
+      {pts:.5,html:`Trong không gian, cho hai vectơ ${A}, ${B} có |${A}| = ${p}, |${B}| = ${q} và (${A}, ${B}) = ${th}°. Tính ${A}·${B} và |${A} + ${B}|.`},
+      {pts:.5,html:`Tìm số thực ${I('k')} để hai vectơ ${A} + ${I('k')}${B} và ${A} ${MINUS} ${B} vuông góc với nhau.`}],
+      sol:[ptxt([[`${A}·${B} = ${p}·${q}·cos ${th}° = ${sg(ab)}.`,.25],[`|${A} + ${B}|² = ${p*p} + 2·(${sg(ab)}) + ${q*q} = ${s} ⟹ |${A} + ${B}| = ${Number.isInteger(Math.sqrt(s))?Math.sqrt(s):rt(s)}.`,.25]]),
+        ptxt([[`(${A} + k${B})·(${A} − ${B}) = |${A}|² − ${A}·${B} + k${A}·${B} − k|${B}|² = ${sg(p*p-ab)} ${(ab-q*q)<0?MINUS:'+'} ${Math.abs(ab-q*q)}k.`,.25],[`Hai vectơ vuông góc ⟺ ${sg(p*p-ab)} ${(ab-q*q)<0?MINUS:'+'} ${Math.abs(ab-q*q)}k = 0 ⟺ k = ${qh(kq)}.`,.25]])],
+      chk:()=>Math.abs(p*p-ab+qv(kq)*(ab-q*q))<1e-9}}
+});
+
+/* ===================== Bài 7: Hệ trục toạ độ trong không gian ===================== */
+const pt3=r=>[r.nz(-6,6),r.nz(-6,6),r.nz(-6,6)];
+N12('k12-7-proj',2,'NB',[7],r=>{
+  const [x,y,z]=pt3(r),k=r.int(0,5),nm=r.pick(['M','N','A','E']);
+  const T7=[['mặt phẳng (Oxy)',[x,y,0]],['mặt phẳng (Oyz)',[0,y,z]],['mặt phẳng (Oxz)',[x,0,z]],['trục Ox',[x,0,0]],['trục Oy',[0,y,0]],['trục Oz',[0,0,z]]][k];
+  const W=[[x,y,0],[0,y,z],[x,0,z],[x,0,0],[0,y,0],[0,0,z],[x,y,-z],[-x,y,z]].filter(v=>!veq(v,T7[1])).map(tup);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, hình chiếu vuông góc của điểm ${I(nm)}${tup([x,y,z])} trên ${T7[0]} là điểm có toạ độ`,correct:tup(T7[1]),wrongs:r.shuffle(W),
+    sol:`Hình chiếu vuông góc trên ${T7[0]} giữ nguyên ${k<3?'hai toạ độ ứng với hai trục của mặt phẳng':'toạ độ ứng với trục đó'} và các toạ độ còn lại bằng 0: ${tup(T7[1])}.`,chk:()=>true});
+});
+N12('k12-7-ijk',2,'NB',[7],r=>{
+  const v=[r.int(-6,6),r.int(-6,6),r.int(-6,6)];if(v.filter(x=>x).length<2)return T.nlc['k12-7-ijk'].gen(r);
+  const ijk=['i','j','k'].map(s=>vc(I(s))),e=v.map((c,i)=>c?{c,n:ijk[i]}:null).filter(Boolean).map((x,i)=>(i===0?(x.c<0?MINUS:''):(x.c<0?` ${MINUS} `:' + '))+(Math.abs(x.c)===1?'':Math.abs(x.c))+x.n).join('');
+  const A=vc(I('a')),W=[[v[1],v[0],v[2]],[v[0],v[2],v[1]],[-v[0],v[1],v[2]],[v[0],-v[1],v[2]],[v[2],v[1],v[0]],[v[0],v[1],-v[2]],[-v[0],-v[1],-v[2]],[v[0]+1,v[1],v[2]]].filter(w=>!veq(w,v)).map(tup);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho vectơ ${A} = ${e}. Toạ độ của vectơ ${A} là`,correct:tup(v),wrongs:r.shuffle(uniqBy(W,x=>x)),
+    sol:`${A} = x${ijk[0]} + y${ijk[1]} + z${ijk[2]} ⟺ ${A} = (x; y; z). Do đó ${A} = ${tup(v)}.`,chk:()=>true});
+});
+N12('k12-7-AB',2,'NB',[7],r=>{
+  const A=pt3(r),B=pt3(r),v=vsub(B,A);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Toạ độ của vectơ ${vh('A','B')} là`,correct:tup(v),wrongs:uniqBy([tup(vmul(v,-1)),tup(vadd(A,B)),tup(vmul(vadd(A,B),.5)),tup([v[0],v[1],-v[2]]),tup([v[0],v[1],v[2]+1]),tup(vsub(A,vmul(B,1)).map((x,i)=>i?x:x+1))],x=>x).filter(x=>x!==tup(v)),
+    sol:`${vh('A','B')} = (x${sub('B')} − x${sub('A')}; y${sub('B')} − y${sub('A')}; z${sub('B')} − z${sub('A')}) = ${tup(v)}.`,chk:()=>veq(vadd(A,v),B)});
+});
+N12('k12-7-sym',2,'TH',[7],r=>{
+  const [x,y,z]=pt3(r),k=r.int(0,4);
+  const T7=[['mặt phẳng (Oxy)',[x,y,-z]],['mặt phẳng (Oyz)',[-x,y,z]],['mặt phẳng (Oxz)',[x,-y,z]],['trục Ox',[x,-y,-z]],['gốc toạ độ O',[-x,-y,-z]]][k];
+  const W=[[x,y,-z],[-x,y,z],[x,-y,z],[x,-y,-z],[-x,-y,-z],[x,y,0],[-x,-y,z]].filter(v=>!veq(v,T7[1])).map(tup);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, điểm đối xứng với điểm ${I('M')}${tup([x,y,z])} qua ${T7[0]} có toạ độ là`,correct:tup(T7[1]),wrongs:r.shuffle(W),
+    sol:`Gọi H là hình chiếu của M trên ${T7[0]}; điểm đối xứng M′ thoả mãn H là trung điểm MM′. ${k===4?'Đối xứng qua O: đổi dấu cả ba toạ độ':'Ta đổi dấu các toạ độ không thuộc '+T7[0]}: M′${tup(T7[1])}.`,chk:()=>true});
+});
+N12('k12-7-box',2,'TH',[7],r=>{
+  const a=r.int(2,8),b=r.int(2,8),c=r.int(2,8),k=r.int(0,3);
+  const V7={B:[a,b,0],"A′":[a,0,c],"C′":[0,b,c],"B′":[a,b,c]},nm=['B','A′','C′','B′'][k],cor=V7[nm];
+  const W=[[a,b,c],[a,b,0],[a,0,c],[0,b,c],[b,a,c],[a,c,b]].filter(v=>!veq(v,cor)).map(tup);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hình hộp chữ nhật ${I('OABC.O′A′B′C′')} có ${I('A')}(${a}; 0; 0), ${I('C')}(0; ${b}; 0), ${I('O′')}(0; 0; ${c}). Toạ độ của điểm ${I(nm)} là`,correct:tup(cor),wrongs:r.shuffle(uniqBy(W,x=>x)),
+    sol:`${vh('O',nm)} = ${nm==='B'?`${vh('O','A')} + ${vh('O','C')}`:nm==='A′'?`${vh('O','A')} + ${vh('O','O′')}`:nm==='C′'?`${vh('O','C')} + ${vh('O','O′')}`:`${vh('O','A')} + ${vh('O','C')} + ${vh('O','O′')}`} nên ${I(nm)}${tup(cor)}.`,chk:()=>true});
+});
+N12('k12-7-dist',2,'TH',[7],r=>{
+  const [x,y,z]=pt3(r),k=r.int(0,2),pl=['(Oxy)','(Oyz)','(Oxz)'][k],d=Math.abs([z,x,y][k]);
+  return mkNum(r,{stem:`Trong không gian ${I('Oxyz')}, khoảng cách từ điểm ${I('M')}${tup([x,y,z])} đến mặt phẳng ${pl} bằng`,correct:d,ok:v=>v>0,cands:[Math.abs(x),Math.abs(y),Math.abs(z),Math.abs(x)+Math.abs(y)].filter(v=>v!==d),
+    sol:`Hình chiếu của M trên ${pl} là H; MH bằng giá trị tuyệt đối của toạ độ còn lại: ${d}.`,chk:()=>d>0});
+});
+DS12('ds12-7-pt',2,'NB',[7],r=>{
+  const [x,y,z]=pt3(r),ijk=['i','j','k'].map(s=>vc(I(s)));
+  const e=(v)=>v.map((c,i)=>({c,n:ijk[i]})).map((t,i)=>(i===0?(t.c<0?MINUS:''):(t.c<0?` ${MINUS} `:' + '))+(Math.abs(t.c)===1?'':Math.abs(t.c))+t.n).join('');
+  return mkDS(r,{stem:`Trong không gian ${I('Oxyz')}, cho điểm ${I('M')}${tup([x,y,z])}. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Hình chiếu vuông góc của ${I('M')} trên mặt phẳng (Oxy) là ${tup([x,y,0])}.`,f:`Hình chiếu vuông góc của ${I('M')} trên mặt phẳng (Oxy) là ${tup([0,0,z])}.`,why:`Hình chiếu trên (Oxy) giữ hoành độ, tung độ và có cao độ 0.`},
+    {t:`Hình chiếu vuông góc của ${I('M')} trên trục Oz là ${tup([0,0,z])}.`,f:`Hình chiếu vuông góc của ${I('M')} trên trục Oz là ${tup([x,y,0])}.`,why:`Hình chiếu trên Oz là (0; 0; ${sg(z)}).`},
+    {t:`Điểm đối xứng với ${I('M')} qua mặt phẳng (Oxz) là ${tup([x,-y,z])}.`,f:`Điểm đối xứng với ${I('M')} qua mặt phẳng (Oxz) là ${tup([-x,y,-z])}.`,why:`Đối xứng qua (Oxz): đổi dấu tung độ.`},
+    {t:`${vh('O','M')} = ${e([x,y,z])}.`,f:`${vh('O','M')} = ${e([x,y,-z])}.`,why:`${vh('O','M')} = (${sg(x)}; ${sg(y)}; ${sg(z)}) nên ${vh('O','M')} = ${e([x,y,z])}.`}],
+    chk:()=>z!==0});
+});
+TLN12('t12-7-room',2,'TH',[7],r=>{
+  const a=2*r.int(2,6),b=2*r.int(2,5),h=r.pick([3,3.2,3.5,4]);
+  return{kind:'tln',stem:`Một phòng học có dạng hình hộp chữ nhật với chiều dài ${a} m, chiều rộng ${b} m và chiều cao ${fmt(h)} m. Một chiếc đèn được treo tại chính giữa trần nhà. Chọn hệ trục ${I('Oxyz')} có gốc ${I('O')} là một góc phòng, mặt phẳng (Oxy) trùng mặt sàn, các trục Ox, Oy lần lượt dọc theo chiều dài, chiều rộng của phòng (đơn vị: mét). Giả sử đèn có toạ độ (${I('a')}; ${I('b')}; ${I('c')}). Tính ${I('a')} + ${I('b')} + ${I('c')}.`,ans:a/2+b/2+h,unit:'',
+    sol:`Đèn ở chính giữa trần nên có toạ độ (${a/2}; ${b/2}; ${fmt(h)}). Tổng: ${fmt(a/2+b/2+h)}.`,chk:()=>true};
+});
+TL12('tl12-7-room',2,'TH','c',[7],r=>{
+  const a=r.int(4,10),b=r.int(3,8),h=r.pick([3,4]),x=r.int(1,a-1),y=r.int(1,b-1),d=r.pick([0.5,1]);
+  return{kind:'tl',title:'Hệ trục toạ độ trong không gian',parts:[
+    {pts:.5,html:`Một căn phòng có dạng hình hộp chữ nhật ${I('OABC.O′A′B′C′')} với ${I('OA')} = ${a} m, ${I('OC')} = ${b} m, ${I('OO′')} = ${h} m. Chọn hệ trục ${I('Oxyz')} sao cho ${I('A')}, ${I('C')}, ${I('O′')} lần lượt nằm trên các tia Ox, Oy, Oz (đơn vị: mét). Tìm toạ độ các điểm ${I('B')}, ${I('O′')}, ${I('B′')}.`},
+    {pts:.5,html:`Một chiếc đèn treo cách trần ${fmt(d)} m, cách bức tường (Oxz) ${y} m và cách bức tường (Oyz) ${x} m. Tìm toạ độ của đèn và toạ độ hình chiếu vuông góc của đèn trên mặt sàn.`}],
+    sol:[ptxt([[`${I('B')}(${a}; ${b}; 0), ${I('O′')}(0; 0; ${h}).`,.25],[`${I('B′')}(${a}; ${b}; ${h}).`,.25]]),
+      ptxt([[`Đèn có hoành độ ${x}, tung độ ${y}, cao độ ${h} − ${fmt(d)} = ${fmt(h-d)}: đèn ở điểm (${x}; ${y}; ${fmt(h-d)}).`,.25],[`Hình chiếu trên mặt sàn (Oxy) là (${x}; ${y}; 0).`,.25]])],
+    chk:()=>x<a&&y<b};
+});
+
+/* ===================== Bài 8: Biểu thức toạ độ của các phép toán vectơ ===================== */
+const B8='b8';
+const vecN=(n,v)=>`${vc(I(n))}${tup(v)}`;
+N12('k12-8-lin',2,'NB',[8],r=>{
+  const a=pt3(r),b=pt3(r),m=r.pick([1,2,3]),n=r.pick([1,2,-1,-2]),v=vadd(vmul(a,m),vmul(b,n));
+  const ex=`${m===1?'':m}${vc(I('a'))} ${n<0?MINUS:'+'} ${Math.abs(n)===1?'':Math.abs(n)}${vc(I('b'))}`;
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',a)} và ${vecN('b',b)}. Toạ độ của vectơ ${ex} là`,correct:tup(v),wrongs:uniqBy([tup(vadd(vmul(a,m),vmul(b,-n))),tup(vadd(a,vmul(b,n))),tup(vadd(vmul(a,m),b)),tup(vmul(v,-1)),tup(vadd(vmul(a,m+1),vmul(b,n))),tup(v.map((x,i)=>i===1?x+1:x)),tup(v.map((x,i)=>i===2?-x:x))],x=>x).filter(x=>x!==tup(v)),
+    sol:`${ex} = (${m}·${a[0]<0?'('+sg(a[0])+')':a[0]} + ${n<0?'('+n+')':n}·${b[0]<0?'('+sg(b[0])+')':b[0]}; …) = ${tup(v)}.`.replace(/\(-/g,'('+MINUS),chk:()=>veq(v,a.map((x,i)=>m*x+n*b[i]))});
+});
+N12('k12-8-dot',2,'NB',[8],r=>{
+  const a=pt3(r),b=pt3(r),d=vdot(a,b);
+  return mkNum(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',a)} và ${vecN('b',b)}. Tích vô hướng ${vc(I('a'))}·${vc(I('b'))} bằng`,correct:d,ok:()=>true,cands:[-d,d+2*a[2]*b[2],a[0]*b[0]+a[1]*b[1]-a[2]*b[2],a[0]*b[1]+a[1]*b[2]+a[2]*b[0]].filter(v=>v!==d),
+    sol:`${vc(I('a'))}·${vc(I('b'))} = ${a.map((x,i)=>`${x<0?'('+sg(x)+')':x}·${b[i]<0?'('+sg(b[i])+')':b[i]}`).join(' + ')} = ${sg(d)}.`,chk:()=>d===a[0]*b[0]+a[1]*b[1]+a[2]*b[2]});
+},B8);
+const PYQ=[[1,2,2,3],[2,3,6,7],[1,4,8,9],[4,4,7,9],[2,6,9,11],[6,6,7,11],[0,3,4,5],[2,2,1,3],[3,4,12,13],[2,10,11,15],[0,6,8,10],[4,8,1,9]];
+const pyq=r=>{const q=r.pick(PYQ),s=r.shuffle(q.slice(0,3)).map(x=>x*r.sign());return{v:s,l:q[3]}};
+N12('k12-8-len',2,'NB',[8],r=>{
+  const {v,l}=pyq(r),A=pt3(r),B=vadd(A,v),ask=r.chance(.5);
+  return mkNum(r,{stem:ask?`Trong không gian ${I('Oxyz')}, độ dài của vectơ ${vecN('u',v)} bằng`:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Độ dài đoạn thẳng ${I('AB')} bằng`,correct:l,ok:v2=>v2>0,cands:[l*l,Math.abs(v[0])+Math.abs(v[1])+Math.abs(v[2]),l+1,l-1],
+    sol:ask?`|${vc(I('u'))}| = ${rt(v.map(x=>x<0?`(${sg(x)})²`:`${x}²`).join(' + '))} = ${l}.`:`${vh('A','B')} = ${tup(v)} nên AB = ${rt(v.map(x=>x<0?`(${sg(x)})²`:`${x}²`).join(' + '))} = ${l}.`,chk:()=>vlen2(v)===l*l});
+},B8);
+N12('k12-8-mid',2,'NB',[8],r=>{
+  const A=pt3(r),B=A.map(x=>x+2*r.int(-4,4)),M=vmul(vadd(A,B),.5),ask=r.chance(.6);
+  if(ask)return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Toạ độ trung điểm ${I('M')} của đoạn thẳng ${I('AB')} là`,correct:tup(M),wrongs:uniqBy([tup(vsub(B,A)),tup(vadd(A,B)),tup(vmul(vsub(B,A),.5)),tup(vsub(vmul(A,2),B)),tup(M.map((x,i)=>i===0?x+1:x)),tup(M.map((x,i)=>i===2?-x:x))],x=>x).filter(x=>x!==tup(M)),
+    sol:`M(${fr('x<sub>A</sub> + x<sub>B</sub>',2)}; ${fr('y<sub>A</sub> + y<sub>B</sub>',2)}; ${fr('z<sub>A</sub> + z<sub>B</sub>',2)}) = ${tup(M)}.`,chk:()=>veq(vmul(vadd(A,B),.5),M)});
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho điểm ${I('A')}${tup(A)} và ${I('M')}${tup(M)}. Biết ${I('M')} là trung điểm của đoạn thẳng ${I('AB')}, toạ độ điểm ${I('B')} là`,correct:tup(B),wrongs:uniqBy([tup(vmul(vadd(A,M),.5)),tup(vsub(vmul(A,2),M)),tup(vadd(A,M)),tup(vsub(M,A)),tup(B.map((x,i)=>i===1?x+1:x)),tup(B.map((x,i)=>i===2?-x:x))],x=>x).filter(x=>x!==tup(B)),
+    sol:`B = 2M − A: x<sub>B</sub> = 2x<sub>M</sub> − x<sub>A</sub>, … ⟹ B${tup(B)}.`,chk:()=>veq(vsub(vmul(M,2),A),B)});
+},B8);
+N12('k12-8-cent',2,'TH',[8],r=>{
+  const G=pt3(r),A=pt3(r),B=pt3(r),C=vsub(vmul(G,3),vadd(A,B)),ask=r.chance(.5);
+  if(ask)return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho tam giác ${I('ABC')} có ${I('A')}${tup(A)}, ${I('B')}${tup(B)}, ${I('C')}${tup(C)}. Toạ độ trọng tâm ${I('G')} của tam giác ${I('ABC')} là`,correct:tup(G),wrongs:uniqBy([tup(vmul(G,3)),tup(vmul(vadd(A,B),.5)),tup(vmul(vadd(vadd(A,B),C),.5)),tup(vmul(G,-1))],x=>x).filter(x=>x!==tup(G)),
+    sol:`G(${fr('x<sub>A</sub> + x<sub>B</sub> + x<sub>C</sub>',3)}; …) = ${tup(G)}.`,chk:()=>veq(vmul(vadd(vadd(A,B),C),1/3),G)});
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho ${I('A')}${tup(A)}, ${I('B')}${tup(B)} và ${I('G')}${tup(G)}. Biết tam giác ${I('ABC')} có trọng tâm là ${I('G')}. Toạ độ điểm ${I('C')} là`,correct:tup(C),wrongs:uniqBy([tup(vsub(G,vadd(A,B))),tup(vmul(vadd(vadd(A,B),G),1/3).map(x=>Math.round(x))),tup(vsub(vmul(G,3),vsub(A,B))),tup(vmul(C,-1))],x=>x).filter(x=>x!==tup(C)),
+    sol:`C = 3G − A − B ⟹ C${tup(C)}.`,chk:()=>veq(vadd(vadd(A,B),C),vmul(G,3))});
+},B8);
+N12('k12-8-cos',2,'TH',[8],r=>{
+  /* chọn cặp vectơ nguyên có góc đẹp */
+  const B0=[[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,-1,0],[1,0,-1],[0,1,-1],[1,1,1],[1,-1,1]];
+  for(;;){const u=vmul(r.pick(B0),r.pick([1,2,-1])),v=vmul(r.pick(B0),r.pick([1,2,-2,3])),c=vdot(u,v)/Math.sqrt(vlen2(u)*vlen2(v));
+    const th=[0,30,45,60,90,120,135,150,180].find(t=>Math.abs(ANG_V[t][0]-c)<1e-9);if(th===undefined||th===0||th===180)continue;
+    const p=r.shuffle([0,1,2]),U=p.map(i=>u[i]),V=p.map(i=>v[i]);
+    return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',U)} và ${vecN('b',V)}. Góc giữa hai vectơ ${vc(I('a'))} và ${vc(I('b'))} bằng`,correct:th+'°',wrongs:r.shuffle([30,45,60,90,120,135,150].filter(t=>t!==th&&t!==180-th)).concat([180-th]).map(t=>t+'°'),
+      sol:`cos(${vc(I('a'))}, ${vc(I('b'))}) = ${fr(`${vc(I('a'))}·${vc(I('b'))}`,`|${vc(I('a'))}|·|${vc(I('b'))}|`)} = ${fr(sg(vdot(U,V)),`${sqH(vlen2(U))}·${sqH(vlen2(V))}`)} = ${ANG_V[th][1]} ⟹ (${vc(I('a'))}, ${vc(I('b'))}) = ${th}°.`,chk:()=>Math.abs(Math.acos(vdot(U,V)/Math.sqrt(vlen2(U)*vlen2(V)))*180/Math.PI-th)<1e-6})}
+},B8);
+N12('k12-8-perp',2,'TH',[8],r=>{
+  for(;;){const a=pt3(r),b0=pt3(r),i=r.int(0,2);if(a[i]===0)continue;
+    /* b = b0 với toạ độ i thay bởi m: a·b = 0 */
+    const rest=vdot(a,b0)-a[i]*b0[i];if(rest%a[i])continue;const m=-rest/a[i];if(Math.abs(m)>20)continue;
+    const bH=b0.map((x,j)=>j===i?I('m'):sg(x)).join('; ');
+    return mkNum(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',a)} và ${vc(I('b'))}(${bH}). Giá trị của ${I('m')} để ${vc(I('a'))} ⊥ ${vc(I('b'))} là`,correct:m,ok:()=>true,cands:[-m,m+1,m-2,rest].filter(v=>v!==m),
+      sol:`${vc(I('a'))} ⊥ ${vc(I('b'))} ⟺ ${vc(I('a'))}·${vc(I('b'))} = 0 ⟺ ${sg(rest)} + ${a[i]<0?'('+sg(a[i])+')':a[i]}m = 0 ⟺ m = ${sg(m)}.`,chk:()=>vdot(a,b0.map((x,j)=>j===i?m:x))===0})}
+},B8);
+N12('k12-8-para',2,'TH',[8],r=>{
+  const A=pt3(r),B=pt3(r),C=pt3(r),D=vsub(vadd(A,C),B);
+  if(veq(vsub(B,A),vmul(vsub(C,A),vlen2(vsub(B,A))/Math.max(1,vdot(vsub(C,A),vsub(B,A))))))return T.nlc['k12-8-para'].gen(r);
+  return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hình bình hành ${I('ABCD')} có ${I('A')}${tup(A)}, ${I('B')}${tup(B)}, ${I('C')}${tup(C)}. Toạ độ điểm ${I('D')} là`,correct:tup(D),wrongs:uniqBy([tup(vsub(vadd(A,B),C)),tup(vsub(vadd(B,C),A)),tup(vsub(B,vadd(A,C)).map(x=>-x).map((x,i)=>x+0*i).map((x,i)=>i===2?x+1:x)),tup(vmul(D,-1))],x=>x).filter(x=>x!==tup(D)),
+    sol:`ABCD là hình bình hành ⟺ ${vh('A','D')} = ${vh('B','C')} ⟺ D = A + C − B = ${tup(D)}.`,chk:()=>veq(vsub(D,A),vsub(C,B))});
+},B8);
+N12('k12-8-coll',2,'TH',[8],r=>{
+  const u=pt3(r),k=r.pick([2,-2,3,-1,-3]),v=vmul(u,k),i=r.int(0,2),j=(i+1+r.int(0,1))%3;
+  const vh2=v.map((x,t)=>t===i?I('m'):t===j?I('n'):sg(x)).join('; ');
+  return mkNum(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',u)} và ${vc(I('b'))}(${vh2}) cùng phương. Giá trị của ${I('m')} + ${I('n')} bằng`,correct:v[i]+v[j],ok:()=>true,cands:[u[i]+u[j],-(v[i]+v[j]),v[i]-v[j],v[i]+v[j]+k].filter(x=>x!==v[i]+v[j]),
+    sol:`${vc(I('b'))} cùng phương ${vc(I('a'))} ⟹ ${vc(I('b'))} = k${vc(I('a'))}; từ toạ độ đã biết suy ra k = ${sg(k)}. Do đó m = ${sg(v[i])}, n = ${sg(v[j])}, m + n = ${sg(v[i]+v[j])}.`,chk:()=>u[3-i-j]!==0&&veq(vmul(u,k),v)});
+},B8);
+DS12('ds12-8-tri',2,'TH',[8],r=>{
+  for(;;){const A=pt3(r),p=pyq(r),u=p.v,w0=[r.int(-3,3),r.int(-3,3),r.int(-3,3)];
+    /* chọn w ⊥ u để tam giác vuông tại A khi cần */
+    const right=r.chance(.5);let w=w0;
+    if(right){const cand=[[u[1],-u[0],0],[0,u[2],-u[1]],[u[2],0,-u[0]]].filter(x=>vlen2(x)>0);w=r.pick(cand)}
+    if(vlen2(w)===0)continue;const B=vadd(A,u),C=vadd(A,w),G=vmul(vadd(vadd(A,B),C),1/3);if(!G.every(Number.isInteger))continue;
+    const d=vdot(u,w);if(Math.abs(vdot(u,w))===Math.sqrt(vlen2(u)*vlen2(w)))continue;
+    return mkDS(r,{stem:`Trong không gian ${I('Oxyz')}, cho ba điểm ${I('A')}${tup(A)}, ${I('B')}${tup(B)}, ${I('C')}${tup(C)}. Xét tính đúng sai của các khẳng định sau:`,items:[
+      {t:`${vh('A','B')} = ${tup(u)}.`,f:`${vh('A','B')} = ${tup(vmul(u,-1))}.`,why:`${vh('A','B')} = B − A = ${tup(u)}.`},
+      {t:`${I('AB')} = ${p.l}.`,f:`${I('AB')} = ${p.l*p.l}.`,why:`AB = |${vh('A','B')}| = ${p.l}.`},
+      {t:`Trọng tâm của tam giác ${I('ABC')} là ${I('G')}${tup(G)}.`,f:`Trọng tâm của tam giác ${I('ABC')} là ${I('G')}${tup(vmul(vadd(B,C),.5))}.`,why:`G = (A + B + C)/3 = ${tup(G)}.`},
+      {t:`Tam giác ${I('ABC')} ${d===0?'':'không '}vuông tại ${I('A')}.`,f:`Tam giác ${I('ABC')} ${d===0?'không ':''}vuông tại ${I('A')}.`,why:`${vh('A','B')}·${vh('A','C')} = ${sg(d)}${d===0?' nên AB ⊥ AC':' ≠ 0'}.`}],
+      chk:()=>!veq(G,vmul(vadd(B,C),.5))&&p.l!==p.l*p.l})}
+},B8);
+DS12('ds12-8-vec',2,'NB',[8],r=>{
+  const a=pt3(r),b=pt3(r),s=vadd(a,b),d=vdot(a,b),la=vlen2(a),m=r.pick([2,3]);
+  return mkDS(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai vectơ ${vecN('a',a)} và ${vecN('b',b)}. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`${vc(I('a'))} + ${vc(I('b'))} = ${tup(s)}.`,f:`${vc(I('a'))} + ${vc(I('b'))} = ${tup(vsub(a,b))}.`,why:`Cộng từng toạ độ: ${tup(s)}.`},
+    {t:`${m}${vc(I('a'))} = ${tup(vmul(a,m))}.`,f:`${m}${vc(I('a'))} = ${tup([a[0]*m,a[1],a[2]])}.`,why:`Nhân từng toạ độ với ${m}.`},
+    {t:`${vc(I('a'))}·${vc(I('b'))} = ${sg(d)}.`,f:`${vc(I('a'))}·${vc(I('b'))} = ${sg(d+(d===0?2:-2*d))}.`,why:`${vc(I('a'))}·${vc(I('b'))} = ${a.map((x,i)=>`${x<0?'('+sg(x)+')':x}·${b[i]<0?'('+sg(b[i])+')':b[i]}`).join(' + ')} = ${sg(d)}.`},
+    {t:`|${vc(I('a'))}| = ${Number.isInteger(Math.sqrt(la))?Math.sqrt(la):rt(la)}.`,f:`|${vc(I('a'))}| = ${la}.`,why:`|${vc(I('a'))}| = ${rt(a.map(x=>x<0?`(${sg(x)})²`:`${x}²`).join(' + '))} = ${Number.isInteger(Math.sqrt(la))?Math.sqrt(la):rt(la)}.`}],
+    chk:()=>a[0]*m!==a[0]&&la!==1&&!veq(s,vsub(a,b))});
+},B8);
+TLN12('t12-8-oz',2,'VD',[8],r=>{
+  for(;;){const A=pt3(r),B=pt3(r),ax=r.int(0,2),nm=['Ox','Oy','Oz'][ax];
+    /* M trên trục: MA² = MB² ⟺ 2t(B−A)[ax] = |B|² − |A|² */
+    const den=2*(B[ax]-A[ax]);if(!den)continue;const num=vlen2(B)-vlen2(A);if(num%den)continue;const t=num/den;if(Math.abs(t)>40)continue;
+    const M=[0,0,0];M[ax]=t;
+    return{kind:'tln',stem:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Điểm ${I('M')} thuộc trục ${nm} sao cho ${I('MA')} = ${I('MB')}. Tìm ${['hoành độ','tung độ','cao độ'][ax]} của điểm ${I('M')}.`,ans:t,unit:'',
+      sol:`Gọi M có ${['hoành độ','tung độ','cao độ'][ax]} t, hai toạ độ còn lại bằng 0. MA² = MB² ⟺ ${sg(den)}t = ${sg(num)} ⟺ t = ${sg(t)}.`,chk:()=>vlen2(vsub(A,M))===vlen2(vsub(B,M))}}
+},B8);
+TLN12('t12-8-plane',2,'VD',[8],r=>{
+  const A=[r.int(300,900),r.int(200,700),r.int(5,9)],d=[2*r.int(20,80),2*r.int(10,40),r.pick([1,2])],B=vadd(A,d),k=r.pick([[5,10],[10,10],[15,10],[10,20]]),C=vadd(B,vmul(d,k[0]/k[1]));
+  return{kind:'tln',stem:`Trong không gian với hệ trục ${I('Oxyz')} (đơn vị: km), radar phát hiện một máy bay bay với vận tốc và hướng không đổi từ điểm ${I('A')}${tup(A)} đến điểm ${I('B')}${tup(B)} trong ${k[1]} phút. Nếu máy bay giữ nguyên vận tốc và hướng bay thì sau ${k[0]} phút tiếp theo máy bay ở điểm ${I('C')}(${I('a')}; ${I('b')}; ${I('c')}). Tính ${I('a')} + ${I('b')} + ${I('c')}.`,ans:C[0]+C[1]+C[2],unit:'',
+    sol:`${vh('B','C')} cùng hướng ${vh('A','B')} và BC = ${fr(k[0],k[1])}AB nên ${vh('B','C')} = ${fr(k[0],k[1])}${vh('A','B')} = ${tup(vmul(d,k[0]/k[1]))}. Suy ra C${tup(C)} và a + b + c = ${fmt(C[0]+C[1]+C[2])}.`,chk:()=>veq(vsub(C,B),vmul(vsub(B,A),k[0]/k[1]))};
+},B8);
+TLN12('t12-8-ball',2,'VD',[8],r=>{
+  const s1=r.int(1,4),e1=r.int(1,4),h1=r.pick([0.3,0.5,0.8,1]),n2=r.int(1,4),w2=r.int(1,4),h2=r.pick([0.4,0.6,0.7,1.2]);
+  /* Ox hướng nam, Oy hướng đông, Oz hướng lên */
+  const P=[s1,e1,h1],Q2=[-n2,-w2,h2],dd=Math.sqrt(vlen2(vsub(P,Q2))),ans=Math.round(dd*100)/100;
+  return{kind:'tln',stem:`Hai khinh khí cầu bay lên từ cùng một địa điểm. Khinh khí cầu thứ nhất cách điểm xuất phát ${s1} km về phía nam và ${e1} km về phía đông, cách mặt đất ${fmt(h1)} km. Khinh khí cầu thứ hai cách điểm xuất phát ${n2} km về phía bắc và ${w2} km về phía tây, cách mặt đất ${fmt(h2)} km. Tính khoảng cách giữa hai khinh khí cầu (đơn vị: km, làm tròn đến hàng phần trăm).`,ans,unit:'km',
+    sol:`Chọn hệ trục Oxyz gốc tại điểm xuất phát, Ox hướng nam, Oy hướng đông, Oz hướng lên trời. Hai khinh khí cầu ở ${tup(P)} và ${tup(Q2)}. Khoảng cách: ${rt(`${s1+n2}² + ${e1+w2}² + ${fmt(Math.abs(h1-h2))}²`)} ≈ ${fmt(ans)} (km).`,chk:()=>Math.abs(dd-ans)<0.006};
+},B8);
+TLN12('t12-8-ang',2,'VD',[8],r=>{
+  const B0=[[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,-1,0],[1,0,-1],[0,1,-1],[2,2,1],[1,2,2],[2,1,2]];
+  for(;;){const A=pt3(r),u=vmul(r.pick(B0),r.pick([1,2,-1])),w=vmul(r.pick(B0),r.pick([1,2,-1,3])),c=vdot(u,w)/Math.sqrt(vlen2(u)*vlen2(w));
+    const th=[30,45,60,90,120,135,150].find(t=>Math.abs(ANG_V[t][0]-c)<1e-9);if(th===undefined)continue;
+    const B=vadd(A,u),C=vadd(A,w);
+    return{kind:'tln',stem:`Trong không gian ${I('Oxyz')}, cho ba điểm ${I('A')}${tup(A)}, ${I('B')}${tup(B)}, ${I('C')}${tup(C)}. Tính số đo góc ${I('BAC')} (đơn vị: độ).`,ans:th,unit:'°',
+      sol:`${vh('A','B')} = ${tup(u)}, ${vh('A','C')} = ${tup(w)}; cos ${I('BAC')} = ${fr(sg(vdot(u,w)),`${sqH(vlen2(u))}·${sqH(vlen2(w))}`)} = ${ANG_V[th][1]} ⟹ ${I('BAC')} = ${th}°.`,chk:()=>Math.abs(Math.acos(c)*180/Math.PI-th)<1e-6}}
+},B8);
+TL12('tl12-8-tri',2,'VD','c',[8],r=>{
+  for(;;){const A=pt3(r),p=pyq(r),u=p.v,cand=[[u[1],-u[0],0],[0,u[2],-u[1]],[u[2],0,-u[0]]].filter(x=>vlen2(x)>0),w=vmul(r.pick(cand),r.pick([1,-1,2]));
+    const B=vadd(A,u),C=vadd(A,w),D=vsub(vadd(B,C),A),lw=vlen2(w),lwr=Number.isInteger(Math.sqrt(lw))?String(Math.sqrt(lw)):rt(lw);
+    const S2=p.l*Math.sqrt(lw)/2,SH=Number.isInteger(Math.sqrt(lw))?fmt(S2):`${fr(p.l===1?rt(lw):p.l+rt(lw),2)}`;
+    return{kind:'tl',title:'Toạ độ của vectơ trong không gian',parts:[
+      {pts:.5,html:`Trong không gian ${I('Oxyz')}, cho ba điểm ${I('A')}${tup(A)}, ${I('B')}${tup(B)}, ${I('C')}${tup(C)}. Chứng minh tam giác ${I('ABC')} vuông tại ${I('A')} và tính diện tích tam giác đó.`},
+      {pts:.5,html:`Tìm toạ độ điểm ${I('D')} sao cho ${I('ABDC')} là hình chữ nhật.`}],
+      sol:[ptxt([[`${vh('A','B')} = ${tup(u)}, ${vh('A','C')} = ${tup(w)}; ${vh('A','B')}·${vh('A','C')} = 0 nên tam giác ABC vuông tại A.`,.25],[`AB = ${p.l}, AC = ${lwr}; S = ${fr(1,2)}AB·AC = ${SH}.`,.25]]),
+        ptxt([[`Tam giác ABC vuông tại A nên ABDC là hình chữ nhật ⟺ ABDC là hình bình hành ⟺ ${vh('A','D')} = ${vh('A','B')} + ${vh('A','C')}.`,.25],[`Suy ra D = B + C − A = ${tup(D)}.`,.25]])],
+      chk:()=>vdot(u,w)===0&&veq(vsub(D,B),vsub(C,A))}}
+},B8);
+TL12('tl12-8-real',2,'VD','c',[8],r=>{
+  const a=r.int(5,9),b=r.int(4,7),c=r.pick([3,4]),x1=r.int(1,a-1),y1=r.int(1,b-1),h1=r.pick([0.5,0.8,1]),x2=r.int(1,a-1),y2=r.int(1,b-1),h2=r.pick([0.4,0.6,1.2]);
+  const P=[x1,y1,c-h1],Q2=[x2,y2,c-h2],dd=Math.sqrt(vlen2(vsub(P,Q2))),ans=Math.round(dd*10)/10;
+  if(x1===x2&&y1===y2)return T.tl['tl12-8-real'].gen(r);
+  return{kind:'tl',title:'Vận dụng toạ độ vectơ trong thực tiễn',parts:[
+    {pts:.5,html:`Một căn phòng dạng hình hộp chữ nhật có chiều dài ${a} m, chiều rộng ${b} m, chiều cao ${c} m. Một chiếc đèn treo cách trần ${fmt(h1)} m, cách hai bức tường vuông góc với nhau lần lượt ${x1} m và ${y1} m. Lập một hệ trục toạ độ ${I('Oxyz')} phù hợp và xác định toạ độ của chiếc đèn.`},
+    {pts:.5,html:`Người ta di chuyển chiếc đèn đến vị trí mới cách trần ${fmt(h2)} m, cách hai bức tường đó lần lượt ${x2} m và ${y2} m. Hỏi vị trí mới cách vị trí ban đầu bao nhiêu mét? (Làm tròn đến hàng phần mười.)`}],
+    sol:[ptxt([[`Chọn gốc O là góc phòng ở mặt sàn tại giao của hai bức tường, Ox, Oy dọc theo chân hai bức tường, Oz hướng lên (đơn vị: mét).`,.25],[`Đèn ở vị trí ban đầu: (${x1}; ${y1}; ${fmt(c-h1)}).`,.25]]),
+      ptxt([[`Vị trí mới: (${x2}; ${y2}; ${fmt(c-h2)}).`,.25],[`Khoảng cách: ${rt(`${Math.abs(x1-x2)}² + ${Math.abs(y1-y2)}² + ${fmt(Math.abs(h1-h2))}²`)} ≈ ${fmt(ans)} (m).`,.25]])],
+    chk:()=>Math.abs(dd-ans)<0.051};
+},B8);
+/* ================================================================
+   LỚP 12 – Chương III: Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm (Bài 9 – 10)
+   ================================================================ */
+const GRP12=[
+  {col:'Thời gian (phút)',ctx:'thời gian chờ khám bệnh của các bệnh nhân tại một phòng khám',a:[0,5],h:[5],who:'Số bệnh nhân',u:'phút'},
+  {col:'Tuổi thọ (năm)',ctx:'tuổi thọ của một số linh kiện điện tử do một phân xưởng sản xuất',a:[1.5,2],h:[0.5],who:'Số linh kiện',u:'năm'},
+  {col:'Chiều cao (cm)',ctx:'chiều cao của học sinh lớp 12A',a:[145,150,155],h:[5],who:'Số học sinh',u:'cm'},
+  {col:'Lợi nhuận (triệu đồng)',ctx:'lợi nhuận hằng tháng của một cửa hàng trong một số tháng',a:[10,20],h:[10],who:'Số tháng',u:'triệu đồng'},
+  {col:'Khối lượng (g)',ctx:'khối lượng của một số quả xoài trong một lô hàng',a:[250,300],h:[25,50],who:'Số quả',u:'g'},
+  {col:'Quãng đường (km)',ctx:'quãng đường chạy bộ mỗi tuần của các thành viên một câu lạc bộ',a:[0,10],h:[5,10],who:'Số người',u:'km'}
+];
+function grp12(r,o={}){
+  for(;;){
+    const T0=o.T||r.pick(GRP12),h=r.pick(T0.h),a=r.pick(T0.a),k=o.k||5,f=Array.from({length:k},()=>r.int(o.fmin??1,o.fmax??14));
+    if(f[0]===0||f[k-1]===0)continue;const n=f.reduce((s,x)=>s+x,0);if(n<12)continue;
+    const lo=i=>Math.round((a+i*h)*100)/100,hi=i=>lo(i+1),mid=i=>(lo(i)+hi(i))/2,lab=i=>`[${fmt(lo(i))}; ${fmt(hi(i))})`;
+    const cum=pos=>{let c=0;for(let i=0;i<k;i++){if(c+f[i]>=pos)return{i,before:c};c+=f[i]}};
+    const qu=pos=>{const {i,before}=cum(pos);return lo(i)+(pos-before)/f[i]*h};
+    const mean=f.reduce((s,x,i)=>s+x*mid(i),0)/n,v=f.reduce((s,x,i)=>s+x*mid(i)**2,0)/n-mean*mean;
+    return{T:T0,h,a,k,f,n,lo,hi,mid,lab,cum,qu,mean,v,sd:Math.sqrt(v),R:hi(k-1)-lo(0),Q1:qu(n/4),Q3:qu(3*n/4),
+      table:(who)=>tableHTML([T0.col,...f.map((_,i)=>lab(i))],[[who||T0.who,...f]])};
+  }
+}
+const gStem=D=>`Bảng sau thống kê ${D.T.ctx}:${D.table()}`;
+const rr2=v=>Math.round(v*100)/100;
+const qSol=(D,w)=>{const pos=w===1?D.n/4:3*D.n/4,{i,before}=D.cum(pos),v=D.qu(pos);
+  return `Cỡ mẫu n = ${D.n}; ${fr((w===1?'':'3')+'n',4)} = ${fmt(pos)} nên nhóm chứa Q${sub(w)} là ${D.lab(i)}. Q${sub(w)} = ${fmt(D.lo(i))} + ${fr(`${fmt(pos)} − ${before}`,D.f[i])}·${fmt(D.h)} ≈ ${fmt(rr2(v))}.`};
+const meanSol=D=>`Giá trị đại diện các nhóm: ${D.f.map((_,i)=>fmt(D.mid(i))).join('; ')}. x̄ = ${fr(D.f.map((x,i)=>`${x}·${fmt(D.mid(i))}`).join(' + '),D.n)} ≈ ${fmt(rr2(D.mean))}.`;
+const varSol=D=>`s² = ${fr(1,D.n)}(${D.f.map((x,i)=>`${x}·${fmt(D.mid(i))}²`).join(' + ')}) − x̄² ≈ ${fmt(rr2(D.v))}`;
+
+/* ===================== Bài 9: Khoảng biến thiên và khoảng tứ phân vị ===================== */
+N12('k12-9-range',3,'NB',[9],r=>{
+  const D=grp12(r);
+  return mkNum(r,{stem:`${gStem(D)}Khoảng biến thiên của mẫu số liệu ghép nhóm trên là`,correct:D.R,ok:v=>v>0,cands:[D.R-D.h,D.hi(D.k-1),D.mid(D.k-1)-D.mid(0),D.n,D.h*(D.k+1)].map(rr2).filter(v=>v!==D.R),
+    sol:`R = ${fmt(D.hi(D.k-1))} − ${fmt(D.lo(0))} = ${fmt(D.R)} (đầu mút phải của nhóm cuối trừ đầu mút trái của nhóm đầu).`,chk:()=>Math.abs(D.R-D.h*D.k)<1e-9});
+});
+N12('k12-9-qgrp',3,'NB',[9],r=>{
+  const D=grp12(r),w=r.pick([1,3]),{i}=D.cum(w===1?D.n/4:3*D.n/4);
+  return mkTxt(r,{stem:`${gStem(D)}Nhóm chứa tứ phân vị thứ ${w===1?'nhất':'ba'} của mẫu số liệu trên là`,correct:D.lab(i),wrongs:r.shuffle(D.f.map((_,j)=>j).filter(j=>j!==i)).map(D.lab),
+    sol:`Cỡ mẫu n = ${D.n}; Q${sub(w)} là số liệu thứ ${fmt(w===1?D.n/4:3*D.n/4)} (theo thứ tự tăng). Tần số tích luỹ: ${D.f.map((_,j)=>D.f.slice(0,j+1).reduce((s,x)=>s+x,0)).join('; ')} ⟹ nhóm ${D.lab(i)}.`,chk:()=>true});
+});
+N12('k12-9-dq',3,'TH',[9],r=>{
+  const D=grp12(r),dq=rr2(D.Q3-D.Q1);
+  return mkNum(r,{stem:`${gStem(D)}Khoảng tứ phân vị của mẫu số liệu ghép nhóm trên (làm tròn đến hàng phần trăm) là`,correct:dq,ok:v=>v>0,cands:[rr2(D.Q3),rr2(D.Q1),rr2(D.Q3+D.Q1),D.R,rr2(dq+D.h/2)].filter(v=>v!==dq),
+    sol:`${qSol(D,1)} ${qSol(D,3)} Δ${sub('Q')} = Q${sub(3)} − Q${sub(1)} ≈ ${fmt(dq)}.`,chk:()=>Math.abs(dq-(D.Q3-D.Q1))<0.0051&&D.Q3>D.Q1});
+});
+N12('k12-9-theory',3,'NB',[9,10],r=>{
+  const TR=[`Khoảng biến thiên của mẫu số liệu ghép nhóm bằng hiệu giữa đầu mút phải của nhóm cuối cùng và đầu mút trái của nhóm đầu tiên.`,`Khoảng tứ phân vị bằng hiệu Q${sub(3)} − Q${sub(1)}.`,`Độ lệch chuẩn là căn bậc hai số học của phương sai.`,`Phương sai, độ lệch chuẩn càng lớn thì mẫu số liệu càng phân tán.`,`Khoảng tứ phân vị đo mức độ phân tán của nửa giữa của mẫu số liệu.`];
+  const FL=[`Khoảng biến thiên của mẫu số liệu ghép nhóm bằng hiệu giữa giá trị đại diện của nhóm cuối cùng và nhóm đầu tiên.`,`Khoảng tứ phân vị bằng tổng Q${sub(3)} + Q${sub(1)}.`,`Độ lệch chuẩn bằng bình phương của phương sai.`,`Phương sai càng nhỏ thì mẫu số liệu càng phân tán.`,`Phương sai có cùng đơn vị đo với các số liệu của mẫu.`];
+  const want=r.chance(.5);
+  return mkTxt(r,{stem:`Khẳng định nào sau đây ${want?'đúng':'<b>sai</b>'}?`,correct:want?r.pick(TR):r.pick(FL),wrongs:r.shuffle(want?FL:TR),
+    sol:want?`Các khẳng định còn lại sai: độ lệch chuẩn là căn bậc hai của phương sai, Δ${sub('Q')} = Q${sub(3)} − Q${sub(1)}, phương sai có đơn vị là bình phương đơn vị của số liệu, độ phân tán tăng khi phương sai tăng.`:`Các khẳng định còn lại đúng theo định nghĩa và ý nghĩa của các số đặc trưng đo mức độ phân tán.`,chk:()=>true});
+});
+DS12('ds12-9-grp',3,'TH',[9],r=>{
+  const D=grp12(r),i1=D.cum(D.n/4).i,i3=D.cum(3*D.n/4).i,q1=rr2(D.Q1),dq=rr2(D.Q3-D.Q1);
+  return mkDS(r,{stem:`${gStem(D)}Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Khoảng biến thiên của mẫu số liệu là ${fmt(D.R)}.`,f:`Khoảng biến thiên của mẫu số liệu là ${fmt(rr2(D.R-D.h))}.`,why:`R = ${fmt(D.hi(D.k-1))} − ${fmt(D.lo(0))} = ${fmt(D.R)}.`},
+    {t:`Nhóm chứa tứ phân vị thứ ba là ${D.lab(i3)}.`,f:`Nhóm chứa tứ phân vị thứ ba là ${D.lab(i3===D.k-1?i3-1:i3+1)}.`,why:`${fr('3n',4)} = ${fmt(3*D.n/4)}; tần số tích luỹ cho thấy nhóm chứa Q${sub(3)} là ${D.lab(i3)}.`},
+    {t:`Tứ phân vị thứ nhất xấp xỉ bằng ${fmt(q1)}.`,f:`Tứ phân vị thứ nhất xấp xỉ bằng ${fmt(rr2(q1+D.h/2))}.`,why:qSol(D,1)},
+    {t:`Khoảng tứ phân vị xấp xỉ bằng ${fmt(dq)}.`,f:`Khoảng tứ phân vị xấp xỉ bằng ${fmt(rr2(D.Q3+D.Q1))}.`,why:`${qSol(D,3)} Δ${sub('Q')} ≈ ${fmt(dq)}.`}],
+    chk:()=>i1>=0&&dq!==rr2(D.Q3+D.Q1)});
+});
+TLN12('t12-9-dq',3,'VD',[9],r=>{
+  const D=grp12(r),dq=rr2(D.Q3-D.Q1);
+  return{kind:'tln',stem:`${gStem(D)}Tính khoảng tứ phân vị của mẫu số liệu ghép nhóm trên (làm tròn kết quả đến hàng phần trăm).`,ans:dq,unit:'',sol:`${qSol(D,1)} ${qSol(D,3)} Δ${sub('Q')} ≈ ${fmt(dq)}.`,chk:()=>D.Q3>D.Q1};
+});
+TLN12('t12-9-q',3,'VD',[9],r=>{
+  const D=grp12(r),w=r.pick([1,3]),v=rr2(w===1?D.Q1:D.Q3);
+  return{kind:'tln',stem:`${gStem(D)}Tìm tứ phân vị thứ ${w===1?'nhất':'ba'} của mẫu số liệu ghép nhóm trên (làm tròn kết quả đến hàng phần trăm).`,ans:v,unit:'',sol:qSol(D,w),chk:()=>true};
+});
+TL12('tl12-9-cmp',3,'VD','b',[9],r=>{
+  const T0=r.pick(GRP12.filter(t=>t.h.length===1)),D1=grp12(r,{T:T0}),D2=(()=>{for(;;){const d=grp12(r,{T:T0});if(d.h===D1.h&&d.a===D1.a&&Math.abs((d.Q3-d.Q1)-(D1.Q3-D1.Q1))>0.05)return d}})();
+  const q1=rr2(D1.Q3-D1.Q1),q2=rr2(D2.Q3-D2.Q1);
+  const tb=tableHTML([T0.col,...D1.f.map((_,i)=>D1.lab(i))],[['Nhóm I',...D1.f],['Nhóm II',...D2.f]]);
+  return{kind:'tl',title:'Khoảng tứ phân vị',parts:[
+    {pts:.5,html:`Bảng sau thống kê ${T0.ctx} ở hai nhóm I và II:${tb}Tính khoảng tứ phân vị của mẫu số liệu ghép nhóm của nhóm I.`},
+    {pts:.5,html:`Tính khoảng tứ phân vị của mẫu số liệu của nhóm II. Dựa vào khoảng tứ phân vị, cho biết số liệu của nhóm nào phân tán hơn.`}],
+    sol:[ptxt([[qSol(D1,1),.25],[`${qSol(D1,3)} Δ${sub('Q')} ≈ ${fmt(q1)}.`,.25]]),
+      ptxt([[`Tương tự, nhóm II: Q${sub(1)} ≈ ${fmt(rr2(D2.Q1))}, Q${sub(3)} ≈ ${fmt(rr2(D2.Q3))}, Δ${sub('Q')} ≈ ${fmt(q2)}.`,.25],[`Vì ${fmt(Math.max(q1,q2))} > ${fmt(Math.min(q1,q2))} nên số liệu của nhóm ${q1>q2?'I':'II'} phân tán hơn.`,.25]])],
+    chk:()=>q1!==q2};
+});
+
+/* ===================== Bài 10: Phương sai và độ lệch chuẩn ===================== */
+N12('k12-10-var',3,'TH',[10],r=>{
+  const D=grp12(r,{fmax:10}),v=rr2(D.v),ask=r.chance(.5),ans=ask?v:rr2(D.sd);
+  return mkNum(r,{stem:`${gStem(D)}${ask?'Phương sai':'Độ lệch chuẩn'} của mẫu số liệu ghép nhóm trên (làm tròn đến hàng phần trăm) là`,correct:ans,ok:x=>x>0,cands:ask?[rr2(D.sd),rr2(D.v*D.n/(D.n-1)),rr2(D.mean),rr2(D.v+D.h)]:[rr2(D.v),rr2(D.sd*2),rr2(Math.sqrt(D.v*D.n/(D.n-1))),rr2(D.sd+D.h/2)],
+    sol:`${meanSol(D)} ${varSol(D)}${ask?'.':`; s = ${rt('s²')} ≈ ${fmt(rr2(D.sd))}.`}`,chk:()=>Math.abs(ans-(ask?D.v:D.sd))<0.0051});
+});
+N12('k12-10-mean',3,'NB',[10],r=>{
+  const D=grp12(r),m=rr2(D.mean);
+  return mkNum(r,{stem:`${gStem(D)}Số trung bình của mẫu số liệu ghép nhóm trên (làm tròn đến hàng phần trăm) là`,correct:m,ok:x=>x>0,cands:[rr2(m+D.h/2),rr2(m-D.h/2),rr2(D.mid(2)),rr2(m+D.h)].filter(x=>x!==m),
+    sol:meanSol(D),chk:()=>Math.abs(m-D.mean)<0.0051});
+});
+N12('k12-10-cmp',3,'TH',[10],r=>{
+  const A=r.pick(['An','Bình','Minh','Lan']),B=r.pick(['Hùng','Mai','Nam','Hoa'].filter(x=>x!==A)),sA=rr2(r.int(30,150)/100),sB=rr2(r.int(30,150)/100),m=rr2(r.int(1010,1080)/100);
+  if(sA===sB)return T.nlc['k12-10-cmp'].gen(r);
+  const st=sA<sB?A:B,W=[`Vận động viên ${sA<sB?B:A} có thành tích ổn định hơn.`,`Hai vận động viên có thành tích ổn định như nhau.`,`Không thể so sánh vì hai mẫu có cỡ mẫu khác nhau.`];
+  return mkTxt(r,{stem:`Thời gian chạy 100 m (giây) trong các buổi tập của hai vận động viên ${A} và ${B} được ghép nhóm; hai mẫu số liệu có số trung bình xấp xỉ bằng nhau (khoảng ${fmt(m)} giây), độ lệch chuẩn lần lượt là ${I('s')}${sub('1')} ≈ ${fmt(sA)} và ${I('s')}${sub('2')} ≈ ${fmt(sB)}. Khẳng định nào sau đây đúng?`,correct:`Vận động viên ${st} có thành tích ổn định hơn.`,wrongs:W,
+    sol:`Hai mẫu có số trung bình xấp xỉ nhau nên có thể dùng độ lệch chuẩn để so sánh. Độ lệch chuẩn càng nhỏ thì số liệu càng ít phân tán, tức là thành tích càng ổn định: vận động viên ${st}.`,chk:()=>sA!==sB});
+});
+N12('k12-10-unit',3,'NB',[10],r=>{
+  const T0=r.pick(GRP12.filter(t=>['cm','g','km','phút'].includes(t.u))),u=T0.u;
+  const ask=r.chance(.5);
+  return mkTxt(r,{stem:`Cho mẫu số liệu ghép nhóm về ${T0.ctx} (đơn vị: ${u}). ${ask?'Phương sai':'Độ lệch chuẩn'} của mẫu số liệu này có đơn vị là`,correct:ask?`${u}²`:u,wrongs:ask?[u,`${u}³`,'không có đơn vị']:[`${u}²`,`${u}³`,'không có đơn vị'],
+    sol:`Phương sai là trung bình cộng các bình phương độ lệch nên có đơn vị ${u}²; độ lệch chuẩn là căn bậc hai của phương sai nên có cùng đơn vị với số liệu (${u}).`,chk:()=>true});
+});
+DS12('ds12-10-grp',3,'TH',[10],r=>{
+  const D=grp12(r,{fmax:10}),m=rr2(D.mean),v=rr2(D.v),s=rr2(D.sd);
+  return mkDS(r,{stem:`${gStem(D)}Xét tính đúng sai của các khẳng định sau (các giá trị làm tròn đến hàng phần trăm):`,items:[
+    {t:`Giá trị đại diện của nhóm ${D.lab(1)} là ${fmt(D.mid(1))}.`,f:`Giá trị đại diện của nhóm ${D.lab(1)} là ${fmt(D.lo(1))}.`,why:`Giá trị đại diện là trung điểm của nhóm: ${fr(`${fmt(D.lo(1))} + ${fmt(D.hi(1))}`,2)} = ${fmt(D.mid(1))}.`},
+    {t:`Số trung bình của mẫu số liệu xấp xỉ bằng ${fmt(m)}.`,f:`Số trung bình của mẫu số liệu xấp xỉ bằng ${fmt(rr2(m+D.h/2))}.`,why:meanSol(D)},
+    {t:`Phương sai của mẫu số liệu xấp xỉ bằng ${fmt(v)}.`,f:`Phương sai của mẫu số liệu xấp xỉ bằng ${fmt(s)}.`,why:varSol(D)+'.'},
+    {t:`Độ lệch chuẩn của mẫu số liệu xấp xỉ bằng ${fmt(s)}.`,f:`Độ lệch chuẩn của mẫu số liệu xấp xỉ bằng ${fmt(rr2(s*s*s/Math.max(.01,v)+.5))}.`,why:`s = ${rt('s²')} ≈ ${fmt(s)}.`}],
+    chk:()=>v!==s&&s!==rr2(s*s*s/Math.max(.01,v)+.5)&&D.lo(1)!==D.mid(1)});
+});
+TLN12('t12-10-var',3,'VD',[10],r=>{
+  const D=grp12(r,{fmax:10}),v=rr2(D.v);
+  return{kind:'tln',stem:`${gStem(D)}Tính phương sai của mẫu số liệu ghép nhóm trên (làm tròn kết quả đến hàng phần trăm).`,ans:v,unit:'',sol:`${meanSol(D)} ${varSol(D)}.`,chk:()=>Math.abs(v-D.v)<0.0051};
+});
+TLN12('t12-10-sd',3,'VD',[10],r=>{
+  const D=grp12(r,{fmax:10}),s=rr2(D.sd);
+  return{kind:'tln',stem:`${gStem(D)}Tính độ lệch chuẩn của mẫu số liệu ghép nhóm trên (làm tròn kết quả đến hàng phần trăm).`,ans:s,unit:'',sol:`${meanSol(D)} ${varSol(D)}; s ≈ ${fmt(s)}.`,chk:()=>Math.abs(s-D.sd)<0.0051};
+});
+TL12('tl12-10-risk',3,'VD','b',[10],r=>{
+  const T0=GRP12[3];
+  for(;;){const D1=grp12(r,{T:T0,fmax:10}),D2=grp12(r,{T:T0,fmax:10});if(D1.a!==D2.a||D1.h!==D2.h||Math.abs(D1.mean-D2.mean)>2||Math.abs(D1.sd-D2.sd)<0.3)continue;
+    const tb=tableHTML(['Lợi nhuận (triệu đồng)',...D1.f.map((_,i)=>D1.lab(i))],[['Số tháng (phương án A)',...D1.f],['Số tháng (phương án B)',...D2.f]]);
+    const s1=rr2(D1.sd),s2=rr2(D2.sd);
+    return{kind:'tl',title:'Phương sai, độ lệch chuẩn và độ rủi ro',parts:[
+      {pts:.5,html:`Một người theo dõi lợi nhuận hằng tháng khi đầu tư theo hai phương án A và B, kết quả như bảng sau:${tb}Tính số trung bình và độ lệch chuẩn của mẫu số liệu ứng với phương án A (làm tròn đến hàng phần trăm).`},
+      {pts:.5,html:`Tính độ lệch chuẩn ứng với phương án B. Nếu dùng độ lệch chuẩn để đo độ rủi ro thì phương án nào rủi ro hơn?`}],
+      sol:[ptxt([[meanSol(D1),.25],[`${varSol(D1)}; s${sub('A')} ≈ ${fmt(s1)}.`,.25]]),
+        ptxt([[`Phương án B: x̄ ≈ ${fmt(rr2(D2.mean))}, s${sub('B')} ≈ ${fmt(s2)}.`,.25],[`Hai phương án có lợi nhuận trung bình xấp xỉ nhau; s${sub(s1>s2?'A':'B')} lớn hơn nên phương án ${s1>s2?'A':'B'} rủi ro hơn.`,.25]])],
+      chk:()=>s1!==s2}}
+});
+TL12('tl12-10-sd',3,'TH','b',[10],r=>{
+  const D=grp12(r,{fmax:10}),m=rr2(D.mean),s=rr2(D.sd);
+  return{kind:'tl',title:'Phương sai và độ lệch chuẩn',parts:[
+    {pts:.5,html:`${gStem(D)}Tính số trung bình của mẫu số liệu ghép nhóm trên (làm tròn đến hàng phần trăm).`},
+    {pts:.5,html:`Tính phương sai và độ lệch chuẩn của mẫu số liệu đó (làm tròn đến hàng phần trăm).`}],
+    sol:[ptxt([[`Giá trị đại diện các nhóm: ${D.f.map((_,i)=>fmt(D.mid(i))).join('; ')}; cỡ mẫu n = ${D.n}.`,.25],[`x̄ ≈ ${fmt(m)}.`,.25]]),
+      ptxt([[`${varSol(D)}.`,.25],[`s ≈ ${fmt(s)}.`,.25]])],
+    chk:()=>Math.abs(s-D.sd)<0.0051};
+});
+/* ================================================================
+   LỚP 12 – học kì I: thêm dạng để các vị trí câu trong đề không lặp một dạng
+   ================================================================ */
+DS12('ds12-3-bbt',1,'NB',[3],r=>{
+  const x0=r.nz(-3,3),dec=r.chance(.5),L=r.pick([-4,-3,-2,-1,1,2,3,4].filter(v=>v!==x0));
+  const nd=dec?[{x:-Infinity,d:'',y:L,lv:'t'},{x:x0,d:'||',y:[-Infinity,Infinity],lv:['b','t']},{x:Infinity,d:'',y:L,lv:'b'}]
+    :[{x:-Infinity,d:'',y:L,lv:'b'},{x:x0,d:'||',y:[Infinity,-Infinity],lv:['t','b']},{x:Infinity,d:'',y:L,lv:'t'}];
+  return mkDS(r,{stem:`Cho hàm số ${YF} có bảng biến thiên như sau:${bbtSVG(nd,dec?['−','−']:['+','+'])}Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Đồ thị hàm số có tiệm cận đứng là đường thẳng ${xEq(sg(x0))}.`,f:`Đồ thị hàm số có tiệm cận đứng là đường thẳng ${xEq(sg(L))}.`,why:`${lim(I('x'),`${sg(x0)}${sup('+')}`)} f(x) = ${dec?'+∞':'−∞'}.`},
+    {t:`Đồ thị hàm số có tiệm cận ngang là đường thẳng ${yEq(sg(L))}.`,f:`Đồ thị hàm số có tiệm cận ngang là đường thẳng ${yEq(sg(x0))}.`,why:`${lim(I('x'),'±∞')} f(x) = ${sg(L)}.`},
+    {t:`Hàm số ${dec?'nghịch biến':'đồng biến'} trên khoảng ${ivO(x0,Infinity)}.`,f:`Hàm số ${dec?'đồng biến':'nghịch biến'} trên khoảng ${ivO(x0,Infinity)}.`,why:`Trên ${ivO(x0,Infinity)}, ${FPX} ${dec?'< 0':'> 0'}.`},
+    {t:`Hàm số không có cực trị.`,f:`Hàm số có một điểm cực trị là ${I('x')} = ${sg(x0)}.`,why:`${FPX} không đổi dấu trên từng khoảng xác định và x = ${sg(x0)} không thuộc tập xác định.`}],
+    chk:()=>x0!==L});
+});
+DS12('ds12-2-graph',1,'NB',[2],r=>{
+  const C=cubic12(r,{as:[1,-1],lo:-2,hi:1,gap:2,ok:z=>Math.abs(z.fp)<=4&&Math.abs(z.fq)<=4&&z.fp!==0&&z.fq!==0&&z.p!==0&&z.q!==0});
+  const cc=(C.p+C.q)/2,lo=r.chance(.5)?cc-2:cc,hi=lo+2,ylo=C.f(lo),yhi=C.f(hi);if(Math.abs(ylo)>6||Math.abs(yhi)>6)return T.ds['ds12-2-graph'].gen(r);
+  const xs=[lo,...[C.p,C.q].filter(x=>x>lo&&x<hi),hi],vals=xs.map(C.f),M=Math.max(...vals),m=Math.min(...vals),xm=xs[vals.indexOf(m)],xM=xs[vals.indexOf(M)];
+  if(vals.filter(v=>v===m).length>1||vals.filter(v=>v===M).length>1)return T.ds['ds12-2-graph'].gen(r);
+  const g=x=>x<lo-1e-9||x>hi+1e-9?NaN:C.f(x),V=viewOf([[lo,ylo],[hi,yhi],[C.p,C.fp],[C.q,C.fq]],.8,.8);
+  return mkDS(r,{stem:`Cho hàm số ${YF} liên tục trên đoạn ${ivC(lo,hi)} và có đồ thị như hình bên.${graphSVG(g,{...V,marks:xs.map((x,i)=>[x,vals[i]])})}Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Giá trị lớn nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(M)}.`,f:`Giá trị lớn nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(xM)===sg(M)?sg(M+1):sg(xM)}.`,why:`Điểm cao nhất của đồ thị trên đoạn có tung độ ${sg(M)}.`},
+    {t:`Giá trị nhỏ nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(m)}.`,f:`Giá trị nhỏ nhất của hàm số trên đoạn ${ivC(lo,hi)} bằng ${sg(m+1)}.`,why:`Điểm thấp nhất của đồ thị trên đoạn có tung độ ${sg(m)}.`},
+    {t:`Hàm số đạt giá trị nhỏ nhất trên đoạn ${ivC(lo,hi)} tại ${I('x')} = ${sg(xm)}.`,f:`Hàm số đạt giá trị nhỏ nhất trên đoạn ${ivC(lo,hi)} tại ${I('x')} = ${sg(xM)}.`,why:`Điểm thấp nhất có hoành độ ${sg(xm)}.`},
+    {t:`${I('f')}(${sg(lo)}) = ${sg(ylo)}.`,f:`${I('f')}(${sg(lo)}) = ${sg(ylo===yhi?ylo+1:yhi)}.`,why:`Đồ thị đi qua điểm (${sg(lo)}; ${sg(ylo)}).`}],
+    chk:()=>M>m&&xm!==xM});
+});
+DS12('ds12-7-box',2,'TH',[7],r=>{
+  const a=r.int(2,7),b=r.int(2,7),c=r.int(2,7);if(a===b||b===c||a===c)return T.ds['ds12-7-box'].gen(r);
+  const ijk=['i','j','k'].map(s=>vc(I(s)));
+  return mkDS(r,{stem:`Trong không gian ${I('Oxyz')}, cho hình hộp chữ nhật ${I('OABC.O′A′B′C′')} có ${I('A')}(${a}; 0; 0), ${I('C')}(0; ${b}; 0) và ${I('O′')}(0; 0; ${c}). Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`Điểm ${I('B')} có toạ độ (${a}; ${b}; 0).`,f:`Điểm ${I('B')} có toạ độ (${b}; ${a}; 0).`,why:`${vh('O','B')} = ${vh('O','A')} + ${vh('O','C')} = (${a}; ${b}; 0).`},
+    {t:`Điểm ${I('B′')} có toạ độ (${a}; ${b}; ${c}).`,f:`Điểm ${I('B′')} có toạ độ (${a}; ${c}; ${b}).`,why:`${vh('O','B′')} = ${vh('O','A')} + ${vh('O','C')} + ${vh('O','O′')}.`},
+    {t:`${vh('O','C′')} = ${b}${ijk[1]} + ${c}${ijk[2]}.`,f:`${vh('O','C′')} = ${b}${ijk[0]} + ${c}${ijk[2]}.`,why:`C′(0; ${b}; ${c}).`},
+    {t:`Hình chiếu vuông góc của ${I('B′')} trên mặt phẳng (Oxy) là điểm ${I('B')}.`,f:`Hình chiếu vuông góc của ${I('B′')} trên mặt phẳng (Oxy) là điểm ${I('C')}.`,why:`Hình chiếu của B′(${a}; ${b}; ${c}) trên (Oxy) là (${a}; ${b}; 0), chính là B.`}],
+    chk:()=>true});
+});
+DS12('ds12-6-cube',2,'VD',[6],r=>{
+  const s=r.int(2,5),L=[];
+  for(let it=0;L.length<4&&it<200;it++){const u=niceV(r,3),v=niceV(r,3),k=vdot(bv(...u),bv(...v));if(u[0]+u[1]===v[0]+v[1]||k*k===vlen2(bv(...u))*vlen2(bv(...v))||L.some(x=>x.key===vh(...u)+vh(...v)))continue;
+    L.push({key:vh(...u)+vh(...v),t:`${vh(...u)}·${vh(...v)} = ${sg(k*s*s)}.`,f:`${vh(...u)}·${vh(...v)} = ${sg(k?-k*s*s:s*s)}.`,why:`Biểu diễn qua ${vh('A','B')}, ${vh('A','D')}, ${vh('A','A′')} (đôi một vuông góc, độ dài ${s}): tích vô hướng bằng ${k<0?'('+sg(k)+')':k}·${s}² = ${sg(k*s*s)}.`,k})}
+  return mkDS(r,{stem:`Cho hình lập phương ${BOXT} có cạnh bằng ${s}.${boxFig(true)}Xét tính đúng sai của các khẳng định sau:`,items:L.map(({t,f,why})=>({t,f,why})),chk:()=>L.length===4&&L.every(x=>Number.isInteger(x.k))});
+});
+TLN12('t12-1-cnt',1,'TH',[1],r=>{
+  const roots=distinctInts(r,4,-5,5).sort((a,b)=>a-b),ex=roots.map(()=>r.pick([1,2,3,1]));
+  const fac=roots.map((x,i)=>`${x===0?I('x'):`(${xlin(1,-x)})`}${ex[i]>1?sup(ex[i]):''}`).join(''),cnt=ex.filter(e=>e%2).length,ask=r.chance(.5);
+  const big=roots.filter((x,i)=>ex[i]%2).length;
+  return{kind:'tln',stem:`Cho hàm số ${YF} có đạo hàm ${FPX} = ${fac}, ∀${I('x')} ∈ ℝ. Hàm số đã cho có bao nhiêu điểm cực trị?`,ans:cnt,unit:'',
+    sol:`Các nghiệm bội lẻ của ${FPX} (làm ${FPX} đổi dấu): ${roots.filter((_,i)=>ex[i]%2).map(sg).join('; ')||'không có'}. Vậy hàm số có ${cnt} điểm cực trị.`,chk:()=>big===cnt&&ask!==undefined};
+});
+TLN12('t12-3-asym',1,'TH',[3],r=>{
+  const R=ratF(r,{c:1}),op=r.pick(['+','·']),x0=-R.d,y0=R.a,ans=op==='+'?x0+y0:x0*y0;
+  return{kind:'tln',stem:`Đồ thị hàm số ${I('y')} = ${R.html} có tiệm cận đứng ${I('x')} = ${I('a')} và tiệm cận ngang ${I('y')} = ${I('b')}. Tính ${I('a')} ${op} ${I('b')}.`,ans,unit:'',
+    sol:`Tiệm cận đứng ${xEq(sg(x0))}, tiệm cận ngang ${yEq(sg(y0))}. Vậy a ${op} b = ${sg(ans)}.`,chk:()=>Math.abs(R.f(x0+1e-7))>1e5};
+});
+TLN12('t12-2-amgm',1,'TH',[2],r=>{
+  const k=r.int(1,7),c=r.int(-5,5),m=r.pick([1,2]);
+  /* y = m x + m k²/x + c trên (0; +∞): min = 2mk + c tại x = k */
+  return{kind:'tln',stem:`Tìm giá trị nhỏ nhất của hàm số ${I('y')} = ${m===1?'':m}${I('x')} + ${fr(m*k*k,I('x'))}${c?` ${c<0?MINUS:'+'} ${Math.abs(c)}`:''} trên khoảng ${ivO(0,Infinity)}.`,ans:2*m*k+c,unit:'',
+    sol:`${I('y')}′ = ${m} − ${fr(m*k*k,'x²')} = 0 ⟺ x = ${k} (x > 0). ${I('y')}′ < 0 trên (0; ${k}) và ${I('y')}′ > 0 trên (${k}; +∞) nên min = y(${k}) = ${sg(2*m*k+c)}.`,
+    chk:()=>{let b=1e9;for(let i=1;i<=8000;i++){const x=i*k/2000;b=Math.min(b,m*x+m*k*k/x+c)}return Math.abs(b-(2*m*k+c))<1e-6}};
+});
+TLN12('t12-7-sym',2,'TH',[7],r=>{
+  const [x,y,z]=pt3(r),k=r.int(0,4);
+  const T7=[['mặt phẳng (Oxy)',[x,y,-z]],['mặt phẳng (Oyz)',[-x,y,z]],['mặt phẳng (Oxz)',[x,-y,z]],['trục Oz',[-x,-y,z]],['gốc toạ độ O',[-x,-y,-z]]][k],v=T7[1];
+  return{kind:'tln',stem:`Trong không gian ${I('Oxyz')}, gọi ${I('M′')}(${I('a')}; ${I('b')}; ${I('c')}) là điểm đối xứng với ${I('M')}${tup([x,y,z])} qua ${T7[0]}. Tính ${I('a')} + 2${I('b')} + 3${I('c')}.`,ans:v[0]+2*v[1]+3*v[2],unit:'',
+    sol:`M′${tup(v)} nên a + 2b + 3c = ${sg(v[0])} + 2·(${sg(v[1])}) + 3·(${sg(v[2])}) = ${sg(v[0]+2*v[1]+3*v[2])}.`,chk:()=>true};
+});
+TLN12('t12-6-dot2',2,'TH',[6],r=>{
+  for(;;){const p=r.int(1,8),q=r.int(1,8),th=r.pick([60,120,180,0]),ab=th===0?p*q:th===180?-p*q:(th===60?1:-1)*p*q/2;if(!Number.isInteger(ab))continue;
+    return{kind:'tln',stem:`Trong không gian, cho hai vectơ ${vc(I('a'))}, ${vc(I('b'))} có |${vc(I('a'))}| = ${p}, |${vc(I('b'))}| = ${q} và góc giữa hai vectơ bằng ${th}°. Tính ${vc(I('a'))}·${vc(I('b'))}.`,ans:ab,unit:'',
+      sol:`${vc(I('a'))}·${vc(I('b'))} = ${p}·${q}·cos ${th}° = ${sg(ab)}.`,chk:()=>Math.abs(p*q*Math.cos(th*Math.PI/180)-ab)<1e-9}}
+});
+TL12('tl12-5-cost',1,'TH','b',[5],r=>{
+  const k=r.int(2,9),m=k*k*r.pick([1,100]),sq=Math.sqrt(m),c=r.int(5,40),L=4*r.int(3,15),q=L/4;
+  return{kind:'tl',title:'Giá trị nhỏ nhất, lớn nhất trong thực tiễn',parts:[
+    {pts:.5,html:`Tổng chi phí sản xuất ${I('x')} sản phẩm của một xưởng là ${I('C')}(${I('x')}) = ${I('x')}${sup(2)} + ${c}${I('x')} + ${m} (nghìn đồng). Tìm số sản phẩm cần sản xuất để chi phí trung bình mỗi sản phẩm là nhỏ nhất.`},
+    {pts:.5,html:`Một mảnh vườn hình chữ nhật được rào bởi ${L} m lưới thép ở ba cạnh, cạnh thứ tư là bức tường có sẵn. Tìm diện tích lớn nhất của mảnh vườn.`}],
+    sol:[ptxt([[`Chi phí trung bình f(x) = ${fr('C(x)','x')} = x + ${c} + ${fr(m,'x')}, x > 0; f′(x) = 1 − ${fr(m,'x²')}.`,.25],[`f′(x) = 0 ⟺ x = ${sq}; lập bảng biến thiên: f nhỏ nhất khi x = ${sq} (sản phẩm).`,.25]]),
+      ptxt([[`Gọi x (m) là cạnh vuông góc với tường (0 < x < ${L/2}): S(x) = x(${L} − 2x); S′(x) = ${L} − 4x.`,.25],[`S′(x) = 0 ⟺ x = ${q}; S<sub>max</sub> = S(${q}) = ${q*(L-2*q)} m².`,.25]])],
+    chk:()=>sq*sq===m&&q*(L-2*q)===L*L/8};
+});
+TL12('tl12-5-throw',1,'TH','b',[5],r=>{
+  const v0=10*r.int(1,4),h0=r.int(1,20),t1=r.pick([1,0.5]),tm=v0/10,hm=h0+v0*v0/20,vt=v0-10*t1;
+  return{kind:'tl',title:'Đạo hàm và bài toán chuyển động',parts:[
+    {pts:.5,html:`Một quả bóng được ném thẳng đứng lên trên; độ cao của bóng (mét) sau ${I('t')} giây là ${I('h')}(${I('t')}) = ${MINUS}5${I('t')}${sup(2)} + ${v0}${I('t')} + ${h0}. Tính vận tốc của quả bóng tại thời điểm ${I('t')} = ${fmt(t1)} giây.`},
+    {pts:.5,html:`Tìm độ cao lớn nhất mà quả bóng đạt được.`}],
+    sol:[ptxt([[`v(t) = h′(t) = ${MINUS}10t + ${v0}.`,.25],[`v(${fmt(t1)}) = ${fmt(vt)} (m/s).`,.25]]),
+      ptxt([[`h′(t) = 0 ⟺ t = ${fmt(tm)}; h′ > 0 khi t < ${fmt(tm)} và h′ < 0 khi t > ${fmt(tm)}.`,.25],[`Độ cao lớn nhất: h(${fmt(tm)}) = ${fmt(hm)} (m).`,.25]])],
+    chk:()=>Math.abs(-5*tm*tm+v0*tm+h0-hm)<1e-9};
+});
+TL12('tl12-6-hh',2,'VDC','c',[6],r=>{
+  const v=r.int(0,1),G=r.pick(['G','I']);
+  const tri=v?'CB′D′':'A′BD',k=v?Q(2,3):Q(1,3);
+  const s1=v?`${vh('A',G)} = ${fr(1,3)}(${vh('A','C')} + ${vh('A','B′')} + ${vh('A','D′')})`:`${vh('A',G)} = ${fr(1,3)}(${vh('A','A′')} + ${vh('A','B')} + ${vh('A','D')})`;
+  const s2=v?`${vh('A','C')} = ${vh('A','B')} + ${vh('A','D')}, ${vh('A','B′')} = ${vh('A','B')} + ${vh('A','A′')}, ${vh('A','D′')} = ${vh('A','D')} + ${vh('A','A′')}, nên ${vh('A',G)} = ${fr(2,3)}(${vh('A','B')} + ${vh('A','D')} + ${vh('A','A′')})`:`nên ${vh('A',G)} = ${fr(1,3)}${vh('A','B')} + ${fr(1,3)}${vh('A','D')} + ${fr(1,3)}${vh('A','A′')}`;
+  return{kind:'tl',title:'Vectơ trong không gian',parts:[
+    {pts:.5,html:`Cho hình hộp ${BOXT}. Gọi ${I(G)} là trọng tâm của tam giác ${I(tri)}. Biểu diễn vectơ ${vh('A',G)} theo ba vectơ ${vh('A','B')}, ${vh('A','D')}, ${vh('A','A′')}.`},
+    {pts:.5,html:`Chứng minh ba điểm ${I('A')}, ${I(G)}, ${I('C′')} thẳng hàng và tính tỉ số ${fr(I('A'+G),I('AC′'))}.`}],
+    sol:[ptxt([[`Vì ${I(G)} là trọng tâm tam giác ${I(tri)} nên ${s1}.`,.25],[`${s2}.`,.25]]),
+      ptxt([[`Theo quy tắc hình hộp: ${vh('A','B')} + ${vh('A','D')} + ${vh('A','A′')} = ${vh('A','C′')}, do đó ${vh('A',G)} = ${qh(k)}${vh('A','C′')}.`,.25],[`Suy ra ${vh('A',G)} và ${vh('A','C′')} cùng phương, nên A, ${I(G)}, C′ thẳng hàng và ${fr(I('A'+G),I('AC′'))} = ${qh(k)}.`,.25]])],
+    chk:()=>{const P={A:[0,0,0],B:[2,.3,.1],D:[.4,1.7,.2],'A′':[.5,.2,1.9]};P.C=vadd(P.B,vsub(P.D,P.A));['B','C','D'].forEach(x=>P[x+'′']=vadd(P[x],vsub(P['A′'],P.A)));
+      const g=vmul(v?vadd(vadd(P.C,P['B′']),P['D′']):vadd(vadd(P['A′'],P.B),P.D),1/3);return veq(g,vmul(P['C′'],qv(k)))}};
+});
+TL12('tl12-6-tet',2,'VDC','c',[6],r=>{
+  const k=r.int(2,3),a=r.int(2,6);
+  const num=k*k+1,den=k+1,len=num===5?`${fr(a+rt(5),den)}`:`${fr(a+rt(10),den)}`;
+  return{kind:'tl',title:'Biểu diễn vectơ trong không gian',parts:[
+    {pts:.5,html:`Cho tứ diện ${I('ABCD')}. Lấy hai điểm ${I('M')}, ${I('N')} thoả mãn ${vh('M','B')} + ${k}${vh('M','A')} = ${vc('0')} và ${vh('N','C')} = ${k}${vh('D','N')}. Biểu diễn ${vh('M','N')} theo ${vh('A','D')} và ${vh('B','C')}.`},
+    {pts:.5,html:`Giả sử ${I('AD')} = ${I('BC')} = ${a} và ${I('AD')} ⊥ ${I('BC')}. Tính độ dài đoạn thẳng ${I('MN')}.`}],
+    sol:[ptxt([[`${vh('M','N')} = ${vh('M','A')} + ${vh('A','D')} + ${vh('D','N')} và ${vh('M','N')} = ${vh('M','B')} + ${vh('B','C')} + ${vh('C','N')}.`,.25],[`Nhân đẳng thức đầu với ${k} rồi cộng với đẳng thức sau, chú ý ${k}${vh('M','A')} + ${vh('M','B')} = ${vc('0')} và ${k}${vh('D','N')} + ${vh('C','N')} = ${vc('0')}: ${den}${vh('M','N')} = ${k}${vh('A','D')} + ${vh('B','C')}, tức ${vh('M','N')} = ${fr(k,den)}${vh('A','D')} + ${fr(1,den)}${vh('B','C')}.`,.25]]),
+      ptxt([[`${I('MN')}² = ${fr(k*k,den*den)}AD² + ${fr(1,den*den)}BC² + ${fr(2*k,den*den)}${vh('A','D')}·${vh('B','C')} = ${fr(num,den*den)}·${a}² (vì ${vh('A','D')}·${vh('B','C')} = 0).`,.25],[`Vậy ${I('MN')} = ${len}.`,.25]])],
+    chk:()=>{const P={A:[0,0,0],B:[2,.3,.1],C:[.4,1.7,.2],D:[.5,.2,1.9]},M=vmul(vadd(vmul(P.A,k),P.B),1/den),N=vmul(vadd(P.C,vmul(P.D,k)),1/den);
+      return veq(vsub(N,M),vadd(vmul(vsub(P.D,P.A),k/den),vmul(vsub(P.C,P.B),1/den)))&&veq(vsub(P.B,M),vmul(vsub(P.A,M),-k))&&veq(vsub(P.C,N),vmul(vsub(N,P.D),k))}};
+});
+TL12('tl12-8-min',2,'VDC','c',[8],r=>{
+  for(;;){const A=pt3(r),B=A.map(x=>x+2*r.int(-3,3)),Iv=vmul(vadd(A,B),.5);if(Iv[2]===0||veq(A,B)||A[2]*B[2]<=0)continue;
+    const AB2=vlen2(vsub(B,A)),Mv=[Iv[0],Iv[1],0],mn=2*Iv[2]*Iv[2]+AB2/2;
+    return{kind:'tl',title:'Giá trị nhỏ nhất trong hệ toạ độ',parts:[
+      {pts:.5,html:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Gọi ${I('I')} là trung điểm của ${I('AB')}. Tìm toạ độ điểm ${I('I')} và chứng minh rằng với mọi điểm ${I('M')} ta có ${I('MA')}² + ${I('MB')}² = 2${I('MI')}² + ${fr(I('AB')+'²',2)}.`},
+      {pts:.5,html:`Tìm toạ độ điểm ${I('M')} thuộc mặt phẳng (Oxy) sao cho ${I('MA')}² + ${I('MB')}² đạt giá trị nhỏ nhất và tính giá trị nhỏ nhất đó.`}],
+      sol:[ptxt([[`I${tup(Iv)}.`,.25],[`${I('MA')}² + ${I('MB')}² = (${vh('M','I')} + ${vh('I','A')})² + (${vh('M','I')} + ${vh('I','B')})² = 2MI² + 2${vh('M','I')}·(${vh('I','A')} + ${vh('I','B')}) + IA² + IB² = 2MI² + ${fr('AB²',2)} (vì ${vh('I','A')} + ${vh('I','B')} = ${vc('0')}, IA = IB = ${fr('AB',2)}).`,.25]]),
+        ptxt([[`AB² = ${AB2} không đổi nên MA² + MB² nhỏ nhất ⟺ MI nhỏ nhất ⟺ M là hình chiếu vuông góc của I trên (Oxy): M${tup(Mv)}.`,.25],[`Khi đó MI = ${Math.abs(Iv[2])} và giá trị nhỏ nhất là 2·${Iv[2]*Iv[2]} + ${fr(AB2,2)} = ${fmt(mn)}.`,.25]])],
+      chk:()=>Math.abs(vlen2(vsub(Mv,A))+vlen2(vsub(Mv,B))-mn)<1e-9&&[[1,2],[-1,0.5]].every(([x,y])=>vlen2(vsub([x,y,0],A))+vlen2(vsub([x,y,0],B))>=mn-1e-9)}}
+},'b8');
 
 /* ================================================================
    LỚP 7 – Toán 7 Kết nối tri thức, học kì I
@@ -7916,6 +9240,8 @@ const LESSON_TITLES={
      28:'Biến cố hợp, biến cố giao, biến cố độc lập',29:'Công thức cộng xác suất',30:'Công thức nhân xác suất cho hai biến cố độc lập',
      31:'Định nghĩa và ý nghĩa của đạo hàm',32:'Các quy tắc tính đạo hàm',33:'Đạo hàm cấp hai'}
 };
+LESSON_TITLES[12]={1:'Tính đơn điệu và cực trị của hàm số',2:'Giá trị lớn nhất và giá trị nhỏ nhất của hàm số',3:'Đường tiệm cận của đồ thị hàm số',4:'Khảo sát sự biến thiên và vẽ đồ thị của hàm số',5:'Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn',
+  6:'Vectơ trong không gian',7:'Hệ trục toạ độ trong không gian',8:'Biểu thức toạ độ của các phép toán vectơ',9:'Khoảng biến thiên và khoảng tứ phân vị',10:'Phương sai và độ lệch chuẩn'};
 const LESSON_MAP=(()=>{const src=`
 m7-1-set:1 m7-1-opp:1 m7-1-cmp:1 m7-1-add:2 m7-1-muldiv:2 m7-1-pow:3 m7-1-powval:3 m7-1-solve:4 ds7-q:2 ds7-pow:3 ds7-abs:1,2 t7-1-expr:4 t7-1-x:4 t7-1-pow:3 tl7-alg1:2,4 tl7-alg2:3 tl7-shop:2,4 tl7-road:2,4 tl7-6-scale:20,21 ds7-7-coef:25 ds7-7-div:28 t7-8-prime:30 t7-8-more:30 ds8-6-def:21 t8-6-cond:21 t8-7-lin:25 t8-7-fx:27,28 t8-8-out:30 ds8-9-ratio:33 t8-10-cost:39 ds1-formula:2 tl1-val:1,2 tl1-wheel:3,4 tl2-csc2:6 tl2-seats:6 ds4-box:12,13 ds4-sec:11,12 ds5-par:16,17 ds11-6-num:18,19 t11-7-lp:24 t11-8-two:29,30 t11-9-par:31,32 ds11-9-tan:31,32 tl11-7-dih:23,25 ds7-1-calc:2,4 t7-1-move:4 t7-1-shop:2 t7-2-count:6,7 t7-2-prec:5 tl7-2-abs:6,7 t7-3-perp:10 t7-3-same:10 ds7-3-perp:10 tl7-3-perp:10 t7-4-iso:12,16 m7-5-choose:18,19 m7-5-valid:17 t7-5-diff:18 t7-5-trend:19
 m7-2-irr:6 m7-2-sqrt:6 m7-2-abs:7 m7-2-round:5 m7-2-repeat:5 m7-2-absx:7 m7-2-order:7 ds7-real:6,7 ds7-sqrt:6 ds7-round:5 t7-2-abs:7 t7-2-sq:6 t7-2-sqrt:6,7 tl7-alg3:5,6,7
@@ -7962,6 +9288,9 @@ const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
   note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
 const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
 const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
+const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm'};
+const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
+  note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
 const BLUEPRINT={
   '7gk1':{...G7,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,1,2,3],
@@ -7996,6 +9325,12 @@ const BLUEPRINT={
   '11ck2':{...G11,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – IX (Kết nối tri thức, tập 2)',chapters:[6,7,8,9],
     nlc:[6,6,7,7,7,8,8,8,9,9,9,9],ds:[7,9],tln:[6,7,8,9],
     tl:[{role:'a',chs:[6]},{role:'c',chs:[7]},{role:'b',chs:[8,9]}]},
+  '12gk1':{...G12,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I và Chương II, bài 6 – 7 (Kết nối tri thức)',chapters:[1,2],excl:['b8'],
+    nlc:[1,1,1,1,1,1,1,1,2,2,2,2],ds:[1,2],tln:[1,1,1,2],
+    tl:[{role:'a',chs:[1]},{role:'b',chs:[1]},{role:'c',chs:[2]}]},
+  '12ck1':{...G12,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
+    nlc:[1,1,1,1,1,2,2,2,2,3,3,3],ds:[1,2],tln:[1,1,2,3],
+    tl:[{role:'a',chs:[1]},{role:'b',chs:[1,3]},{role:'c',chs:[2]}]},
   '11ck1':{...G11,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
     nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[4,5],tln:[1,2,3,5],
     tl:[{role:'a',chs:[1,2]},{role:'b',chs:[5]},{role:'c',chs:[4]}]}
@@ -8244,7 +9579,7 @@ function pickFreshCode(term,diff,hist,tries,rnd,st){
 /*CORE-END*/
 /* ===== Phiếu bài tập theo bài học SGK =====
    Chọn các dạng câu gắn với bài học (t.les, xem core9les.js), xếp từ dễ đến khó. */
-const WS_CH_NAMES={7:CH7,8:CH_NAME,11:CH11};
+const WS_CH_NAMES={7:CH7,8:CH_NAME,11:CH11,12:CH12};
 /* Danh sách bài học có câu hỏi của một lớp: [{n, title, ch, hk, count}] */
 function wsLessons(g){
   const m={};
@@ -8311,7 +9646,7 @@ if(![10,15,20,30].includes(+state.wsn))state.wsn=10;state.wsn=+state.wsn;
 if(!['mix','nlc','ds','tln','tl'].includes(state.wsk))state.wsk='mix';
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
-if(![7,8,11].includes(state.grade))state.grade=8;
+if(![7,8,11,12].includes(state.grade))state.grade=8;
 if(!['gk1','ck1','gk2','ck2'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
@@ -8392,7 +9727,7 @@ function examHTML(v,bp,idx){
   h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Thầy Công · Mã đề ${esc(v.code)}</div></article>`;
   return h;
 }
-const UNIT_TXT=u=>u==='cm'?' cm':(u||'');
+const UNIT_TXT=u=>u&&/^[A-Za-zÀ-ỹĐđ]/.test(u)?' '+u:(u||'');
 function keyHTML(base,vs,bp){
   const P=partTitles(bp),tot=P.p1+P.p2+P.p3+P.p4;
   let h=`<article class="sheet key"><div class="kh"><h2>Đáp án và hướng dẫn chấm</h2><p><b>${bp.title}</b> · ${bp.mon} · Năm học ${esc(state.year)}</p><p>Tổng điểm: ${pts(tot)}</p></div>`;
@@ -8493,7 +9828,7 @@ function wsHTML(w){
   let h=`<article class="sheet exam ws">`;
   h+=`<header class="eh"><div class="l">
     <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
-    <div class="school">${state.school?'TRƯỜNG '+(g===11?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g===11?'THPT':'THCS')+' '+dots(12)}</div>
+    <div class="school">${state.school?'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã phiếu: ${esc(w.code)}</div>
   </div><div class="r">
@@ -8595,7 +9930,7 @@ function render(){
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom';
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${bp.grade===12?'học kì I (học kì II sẽ thêm sau)':'học kì I và II'}. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
 }
 function syncInputs(){
@@ -8732,6 +10067,7 @@ const DOCX=(()=>{
     if(has(c,'lm')){const sm=c.querySelector('small');return[`<m:limLow>${ME([mr('lim',{...f,i:false})])}<m:lim>${mathOf(sm,f).join('')}</m:lim></m:limLow>`]}
     if(has(c,'cs')){const rows=[...c.querySelectorAll('.rows>span')];return[`<m:d><m:dPr><m:begChr m:val="{"/><m:endChr m:val=""/></m:dPr><m:e><m:eqArr>${rows.map(rw=>ME(mathOf(rw,f))).join('')}</m:eqArr></m:e></m:d>`]}
     if(has(c,'hw'))return[`<m:acc><m:accPr><m:chr m:val="̂"/></m:accPr>${ME(mathOf(c,f))}</m:acc>`];
+    if(has(c,'vc'))return[`<m:acc><m:accPr><m:chr m:val="⃗"/></m:accPr>${ME(mathOf(c,f))}</m:acc>`];
     if(tag==='br')return[];
     const g={...f};if(tag==='i'||tag==='em')g.i=true;if(tag==='b'||tag==='strong')g.b=true;
     return mathOf(c,g);
@@ -8748,7 +10084,7 @@ const DOCX=(()=>{
     }
     return out;
   }
-  const isMath=el=>has(el,'fr')||has(el,'rt')||has(el,'lm')||has(el,'cs')||has(el,'hw');
+  const isMath=el=>has(el,'fr')||has(el,'rt')||has(el,'lm')||has(el,'cs')||has(el,'hw')||has(el,'vc');
   /* ---------- Hình vẽ ---------- */
   let IMGS=[],imgMap=new Map();
   async function rasterize(svg){
