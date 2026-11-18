@@ -144,7 +144,9 @@ function prettyMath(h){
   const hat=x=>{const t=x.replace(/<[^>]+>/g,'');return `<span class="hw ${t.length>1?'hn':'h1'}"><i>${t}</i></span>`;};
   return h
     .replace(/∠\s*(<i>[^<]*<\/i>|[A-Za-z]{1,3})/g,(m,x)=>hat(x))
-    .replace(/(\s)\/\/(\s)/g,'$1∥$2');
+    .replace(/(\s)\/\/(\s)/g,'$1∥$2')
+    /* dấu trừ đứng ngay trước phân số: tách ra một chút cho dễ nhìn */
+    .replace(/−<span class="fr">/g,'−<span class="fr ng">');
 }
 
 

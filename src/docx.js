@@ -45,7 +45,7 @@ const DOCX=(()=>{
   const ME=a=>`<m:e>${a.join('')}</m:e>`;
   function mathEl(c,f){/* một phần tử → mảng phần tử OMML */
     const tag=c.tagName.toLowerCase();
-    if(has(c,'fr')){const [a,b]=c.children;return[`<m:f><m:num>${mathOf(a,f).join('')}</m:num><m:den>${mathOf(b,f).join('')}</m:den></m:f>`]}
+    if(has(c,'fr')){const [a,b]=c.children;return[...(has(c,'ng')?[mr('\u2009',f)]:[]),`<m:f><m:num>${mathOf(a,f).join('')}</m:num><m:den>${mathOf(b,f).join('')}</m:den></m:f>`]}
     if(has(c,'rt')){const ov=c.querySelector('.ov');return[`<m:rad><m:radPr><m:degHide m:val="1"/></m:radPr><m:deg/>${ME(mathOf(ov,f))}</m:rad>`]}
     if(has(c,'lm')){const sm=c.querySelector('small');return[`<m:limLow>${ME([mr('lim',{...f,i:false})])}<m:lim>${mathOf(sm,f).join('')}</m:lim></m:limLow>`]}
     if(has(c,'cs')){const rows=[...c.querySelectorAll('.rows>span')];return[`<m:d><m:dPr><m:begChr m:val="{"/><m:endChr m:val=""/></m:dPr><m:e><m:eqArr>${rows.map(rw=>ME(mathOf(rw,f))).join('')}</m:eqArr></m:e></m:d>`]}
