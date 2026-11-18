@@ -25,6 +25,7 @@ Cần Node.js (≥ 18) và Python 3.
 | `core9ext.js` | Danh sách câu mở rộng (ngoài SGK) và ghi chú |
 | `core9les.js` | Đối chiếu mỗi dạng câu với bài học SGK Kết nối tri thức |
 | `docx.js` | Xuất file Word (.docx): chuyển trang đề/đáp án sang Word, công thức thành công thức Word, hình vẽ thành ảnh |
+| `core9ws.js` | Phiếu bài tập: chọn dạng câu theo bài học, chia loại câu, hạn chế lặp (ghép sau `core3.js`) |
 | `core3.js` | Cấu trúc đề, ma trận, mức độ, cách chọn dạng câu — **phải đứng cuối** |
 
 Mỗi dạng câu đăng kí bằng `reg(kind, id, ch, lv, gen, extra)` (qua các hàm `NLC`, `TL`, `N8`, `TL8`, `N7b`, `TL11`…). `gen(r)` nhận bộ sinh số ngẫu nhiên và trả về câu hỏi kèm lời giải; `chk()` tự kiểm tra đáp án.
@@ -42,6 +43,7 @@ node lst.js '^m7-'                # liệt kê các dạng
 python3 ui3.py && python3 uiext.py   # thử giao diện bằng Playwright (ảnh lưu ở out/)
 python3 pr8.py                    # in thử PDF A4 (lưu ở out/)
 python3 wordtest.py 8 ck2 101 2    # tải thử file Word đề và đáp án (lớp, kì, mã đề, số mã đề)
+python3 wstest.py                 # thử chế độ phiếu bài tập: mọi bài học đều tạo được phiếu, tải Word
 ```
 
 `tcmp.js` so sánh với bản trước: tạo `core_prev.js` từ `git show HEAD:index.html` (phần script trước `const LS_KEY=`) rồi chạy `node tcmp.js`.

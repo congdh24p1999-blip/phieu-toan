@@ -61,6 +61,15 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
 .hint.warn:empty{display:none}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--bg)}
+body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
+.lesbox{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--bg)}
+.lesbox details{margin:2px 0}
+.lesbox summary{cursor:pointer;font-weight:600;font-size:.86rem;padding:4px 0}
+.lesbox label{display:flex;gap:6px;align-items:flex-start;font-size:.86rem;padding:3px 0 3px 4px;cursor:pointer;line-height:1.3}
+.lesbox label input{margin-top:2px;flex:none}
+.lesbox .cnt{color:var(--muted);font-size:.8em;white-space:nowrap}
+.lesact{display:flex;justify-content:flex-end;margin-top:2px}
+.ansline{margin:3px 0 0 14px}
 .seg label{flex:1;text-align:center;padding:6px 8px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted);white-space:nowrap}
 .seg input{position:absolute;opacity:0;pointer-events:none}
 .seg label:has(input:checked){background:var(--accent);color:var(--on-accent)}
@@ -184,7 +193,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
 }
 </style>
 </head>
-<body data-tab="exam" data-print="exam">
+<body data-tab="exam" data-print="exam" data-mode="exam">
 <div class="app">
   <header class="topbar">
     <h1 class="brand">Xưởng <span>đề</span> Toán</h1>
@@ -194,6 +203,13 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
   </header>
   <div class="layout">
     <aside class="panel" aria-label="Thiết lập đề">
+      <div class="field">
+        <span class="lbl">Loại tài liệu</span>
+        <div class="seg" id="modeSeg">
+          <label><input type="radio" name="mode" value="exam">Đề kiểm tra</label>
+          <label><input type="radio" name="mode" value="ws">Phiếu bài tập</label>
+        </div>
+      </div>
       <div class="field">
         <span class="lbl">Lớp</span>
         <div class="seg" id="gradeSeg" aria-label="Chọn lớp">
@@ -207,7 +223,31 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
         </div>
         <p class="hint" id="gradeHint"></p>
       </div>
-      <div class="field">
+      <div class="field only-ws">
+        <span class="lbl">Bài học (SGK Kết nối tri thức)</span>
+        <div class="lesbox" id="lesBox"></div>
+        <div class="lesact"><button type="button" class="linkbtn" id="lesNone">Bỏ chọn tất cả</button></div>
+        <p class="hint" id="lesHint"></p>
+      </div>
+      <div class="field only-ws">
+        <span class="lbl">Số câu</span>
+        <div class="seg" id="wsnSeg">
+          <label><input type="radio" name="wsn" value="10">10</label>
+          <label><input type="radio" name="wsn" value="15">15</label>
+          <label><input type="radio" name="wsn" value="20">20</label>
+          <label><input type="radio" name="wsn" value="30">30</label>
+        </div>
+        <label for="wsk" class="lbl" style="margin-top:8px">Loại câu</label>
+        <select id="wsk">
+          <option value="mix">Trộn các loại (như đề kiểm tra)</option>
+          <option value="nlc">Chỉ trắc nghiệm nhiều lựa chọn</option>
+          <option value="ds">Chỉ trắc nghiệm đúng sai</option>
+          <option value="tln">Chỉ trả lời ngắn</option>
+          <option value="tl">Chỉ tự luận</option>
+        </select>
+        <p class="hint warn" id="wsWarn"></p>
+      </div>
+      <div class="field only-exam">
         <span class="lbl">Kì kiểm tra</span>
         <div class="seg" id="termSeg">
           <label><input type="radio" name="term" value="gk1">Giữa kì I</label>
@@ -217,7 +257,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
         </div>
         <p class="hint" id="scopeHint"></p>
       </div>
-      <div class="field" id="structField">
+      <div class="field only-exam" id="structField">
         <label for="struct">Cấu trúc đề</label>
         <select id="struct"></select>
         <div class="sbox" id="csBox" hidden>
@@ -253,7 +293,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
         <p class="hint">Ô bên phải: thời gian làm bài (phút).</p>
       </div>
       <div class="field">
-        <label for="code">Mã đề</label>
+        <label for="code" id="codeLbl">Mã đề</label>
         <div class="codebox">
           <input type="text" id="code" inputmode="numeric" maxlength="3" autocomplete="off">
           <button class="btn alt" id="newBtn" type="button">Đổi đề khác</button>
@@ -262,7 +302,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,.seg label:has(inp
         <p class="hint" id="histHint"></p>
         <button type="button" class="linkbtn" id="clearHist">Xoá lịch sử đề đã tạo</button>
       </div>
-      <div class="field">
+      <div class="field only-exam">
         <span class="lbl">Số mã đề hoán vị</span>
         <div class="seg" id="nvSeg">
           <label><input type="radio" name="nv" value="1">1</label>

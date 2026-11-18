@@ -6,7 +6,11 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function defYear(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=7?`${y} – ${y+1}`:`${y-1} – ${y}`}
 function loadState(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
 function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
-const state=Object.assign({grade:8,kind:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam',diff:'chuan',struct:'chuan',cs:null,ext:false},loadState());
+const state=Object.assign({grade:8,kind:'gk1',code:'101',nv:1,dept:'',school:'',year:defYear(),time:90,sol:true,tab:'exam',diff:'chuan',struct:'chuan',cs:null,ext:false,mode:'exam',les:{},wsn:10,wsk:'mix'},loadState());
+if(!['exam','ws'].includes(state.mode))state.mode='exam';
+if(!state.les||typeof state.les!=='object')state.les={};
+if(![10,15,20,30].includes(+state.wsn))state.wsn=10;state.wsn=+state.wsn;
+if(!['mix','nlc','ds','tln','tl'].includes(state.wsk))state.wsk='mix';
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
 if(![7,8,11].includes(state.grade))state.grade=8;
@@ -169,7 +173,111 @@ const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiể
 const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 35–40% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
 const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 
+/* ================= Phiếu bài tập theo bài học ================= */
+function wsSel(){/* các bài đang chọn của lớp hiện tại (hợp lệ) */
+  const all=wsLessons(state.grade).map(l=>l.n);
+  if(!Array.isArray(state.les[state.grade])){/* lần đầu: chọn sẵn bài đầu tiên có từ 10 dạng câu */
+    const L=wsLessons(state.grade),f=L.find(l=>l.count>=10)||L[0];return[f.n];
+  }
+  return state.les[state.grade].map(Number).filter(n=>all.includes(n));
+}
+function renderLessonBox(){
+  const L=wsLessons(state.grade),sel=new Set(wsSel()),names=WS_CH_NAMES[state.grade];
+  const chs=[...new Set(L.map(l=>l.ch))];
+  $('#lesBox').innerHTML=chs.map(c=>{const ls=L.filter(l=>l.ch===c),on=ls.some(l=>sel.has(l.n));
+    return`<details${on?' open':''}><summary>Chương ${ROM10[c]}. ${esc(names[c])}</summary>${ls.map(l=>`<label><input type="checkbox" value="${l.n}"${sel.has(l.n)?' checked':''}><span>Bài ${l.n}. ${esc(l.title)} <span class="cnt">(${l.count} dạng)</span></span></label>`).join('')}</details>`}).join('');
+}
+function wsTitleLes(g,les){
+  return les.length<=2?les.map(n=>`Bài ${n}. ${LESSON_TITLES[g][n]}`).join('; '):`Bài ${les.join(', ')}`;
+}
+function wsHTML(w){
+  const g=w.grade;let n=0;
+  let h=`<article class="sheet exam ws">`;
+  h+=`<header class="eh"><div class="l">
+    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div class="school">${state.school?'TRƯỜNG '+(g===11?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g===11?'THPT':'THCS')+' '+dots(12)}</div>
+    <div class="rule"></div>
+    <div class="code">Mã phiếu: ${esc(w.code)}</div>
+  </div><div class="r">
+    <div class="title">PHIẾU BÀI TẬP</div>
+    <div class="sub">MÔN: TOÁN – LỚP ${g}</div>
+    <div><i>${esc(wsTitleLes(g,w.lessons))}</i></div>
+  </div></header>
+  <div class="nameline"><span>Họ và tên: ${dots(18)}</span><span>Lớp: ${dots(6)}</span><span>Ngày: ${dots(6)}</span></div>`;
+  const R=['I','II','III','IV'];let r=0;
+  if(w.nlc.length){h+=`<div class="part">${R[r++]}. Trắc nghiệm nhiều phương án lựa chọn<small>Khoanh tròn chữ cái đứng trước phương án đúng.</small></div>`;
+    w.nlc.forEach(q=>{n++;h+=`<div class="q"><div class="qs"><b>Câu ${n}.</b> ${q.stem}</div><div class="opts ${optClass(q.opts)}">${q.opts.map((o,i)=>`<div><b>${LET[i]}.</b> ${o}</div>`).join('')}</div></div>`})}
+  if(w.ds.length){h+=`<div class="part">${R[r++]}. Trắc nghiệm đúng sai<small>Ghi Đ (đúng) hoặc S (sai) vào cuối mỗi ý a), b), c), d).</small></div>`;
+    w.ds.forEach(q=>{n++;h+=`<div class="q"><div class="qs"><b>Câu ${n}.</b> ${q.stem}</div><ol class="ys">${q.items.map((it,i)=>`<li><b>${'abcd'[i]})</b> ${it.text} …</li>`).join('')}</ol></div>`})}
+  if(w.tln.length){h+=`<div class="part">${R[r++]}. Trả lời ngắn<small>Ghi kết quả vào chỗ trống.</small></div>`;
+    w.tln.forEach(q=>{n++;h+=`<div class="q"><div class="qs"><b>Câu ${n}.</b> ${q.stem}</div><div class="ansline">Đáp số: ${dots(14)}</div></div>`})}
+  if(w.tl.length){h+=`<div class="part">${R[r++]}. Tự luận<small>Trình bày lời giải.</small></div>`;
+    w.tl.forEach(q=>{n++;
+      const sp=q.parts.length>1&&q.parts[0].html.includes('<br>')?q.parts[0].html.split('<br>'):null;
+      h+=`<div class="q"><div class="qs"><b>Câu ${n}.</b>${sp?' '+sp[0]:''}</div>`;
+      q.parts.forEach((p,j)=>{const ph=j===0&&sp?sp.slice(1).join('<br>'):p.html;h+=q.parts.length>1?`<div class="tl-part"><b>${'abc'[j]})</b> ${ph}</div>`:`<div class="tl-part">${ph}</div>`});
+      h+='</div>'})}
+  h+=`<div class="endmark">— HẾT —</div><div class="brandline">Xưởng đề Toán · Thầy Công · Phiếu ${esc(w.code)}</div></article>`;
+  return h;
+}
+function wsKeyHTML(w){
+  const g=w.grade,s2=w.nlc.length+1,s3=s2+w.ds.length,s4=s3+w.tln.length;
+  let h=`<article class="sheet key"><div class="kh"><h2>Đáp án phiếu bài tập</h2><p><b>Toán ${g}</b> · ${esc(wsTitleLes(g,w.lessons))} · Mã phiếu ${esc(w.code)}</p></div>`;
+  if(w.nlc.length)h+=`<div class="ksmall"><b>Trắc nghiệm nhiều phương án</b></div><table class="kt"><tr class="hi"><th>Câu</th>${w.nlc.map((_,i)=>`<th>${i+1}</th>`).join('')}</tr><tr><th>ĐA</th>${w.nlc.map(q=>`<td><b>${LET[q.ans]}</b></td>`).join('')}</tr></table>`;
+  if(w.ds.length)h+=`<div class="ksmall"><b>Trắc nghiệm đúng sai</b></div><table class="kt"><tr class="hi"><th>Câu</th><th>a)</th><th>b)</th><th>c)</th><th>d)</th></tr>${w.ds.map((q,i)=>`<tr><th>${s2+i}</th>${q.items.map(it=>`<td><b>${it.truth?'Đ':'S'}</b></td>`).join('')}</tr>`).join('')}</table>`;
+  if(w.tln.length)h+=`<div class="ksmall"><b>Trả lời ngắn</b></div><table class="kt"><tr class="hi"><th>Câu</th>${w.tln.map((_,i)=>`<th>${s3+i}</th>`).join('')}</tr><tr><th>ĐA</th>${w.tln.map(q=>`<td><b>${fmt(q.ans)}${UNIT_TXT(q.unit)}</b></td>`).join('')}</tr></table>`;
+  const exts=[...w.nlc.map((q,i)=>[i+1,q]),...w.ds.map((q,i)=>[s2+i,q]),...w.tln.map((q,i)=>[s3+i,q]),...w.tl.map((q,i)=>[s4+i,q])].filter(([,q])=>q.ext);
+  if(exts.length)h+=`<p class="ksmall"><b>Lưu ý câu mở rộng:</b> ${exts.map(([n,q])=>`Câu ${n} – ${q.ext}`).join('; ')}.</p>`;
+  if(w.tl.length){h+=`<section class="ksec"><h3>Hướng dẫn giải phần tự luận</h3>`;
+    w.tl.forEach((q,i)=>{h+=`<div class="lg"><div class="qs"><b>Câu ${s4+i}</b></div>`;q.parts.forEach((p,j)=>{h+=q.parts.length>1?`<div class="why"><b>${'abc'[j]})</b> ${q.sol[j]}</div>`:`<div class="why">${q.sol[j]}</div>`});h+='</div>'});
+    h+='</section>'}
+  if(state.sol&&w.nlc.length+w.ds.length+w.tln.length>0){
+    h+=`<section class="ksec"><h3>Lời giải chi tiết phần trắc nghiệm</h3>`;
+    w.nlc.forEach((q,i)=>{h+=`<div class="lg"><div class="qs"><b>Câu ${i+1}.</b> <b>Đáp án ${LET[q.ans]}:</b> ${q.opts[q.ans]}</div><div class="why small">${q.sol}</div></div>`});
+    w.ds.forEach((q,i)=>{h+=`<div class="lg"><div class="qs"><b>Câu ${s2+i}.</b></div>${q.items.map((it,j)=>`<div class="why small"><b>${'abcd'[j]}) ${it.truth?'Đúng':'Sai'}.</b> ${it.why}</div>`).join('')}</div>`});
+    w.tln.forEach((q,i)=>{h+=`<div class="lg"><div class="qs"><b>Câu ${s3+i}.</b> <b>Đáp án: ${fmt(q.ans)}${UNIT_TXT(q.unit)}</b></div><div class="why small">${q.sol}</div></div>`});
+    h+='</section>'}
+  /* phân bố theo bài và mức độ */
+  const all=[...w.nlc,...w.ds,...w.tln,...w.tl],byL={},lv={NB:0,TH:0,VD:0,VDC:0};
+  all.forEach(q=>{lv[q.lv]++;q.les.filter(l=>w.lessons.includes(l)).forEach(l=>byL[l]=(byL[l]||0)+1)});
+  h+=`<section class="ksec"><h3>Thống kê phiếu</h3><p class="ksmall">${w.lessons.map(l=>`Bài ${l}: ${byL[l]||0} câu`).join(' · ')}.</p><p class="ksmall">Mức độ: ${['NB','TH','VD','VDC'].filter(k=>lv[k]).map(k=>`${LV_NAME[k]} ${lv[k]} câu`).join(' · ')}.</p></section>`;
+  return h+'</article>';
+}
+function renderWS(){
+  const les=wsSel();
+  if(!les.length){
+    const msg='<article class="sheet"><p style="text-align:center;margin:40px 0">Hãy chọn ít nhất một bài học ở cột bên trái để tạo phiếu.</p></article>';
+    $('#examOut').innerHTML=msg;$('#keyOut').innerHTML=msg;$('#lesHint').textContent='Chưa chọn bài nào.';$('#wsWarn').textContent='';
+    setModeLabels();return;
+  }
+  const w=buildWS({grade:state.grade,lessons:les,n:state.wsn,kind:state.wsk,diff:state.diff,code:state.code,ext:state.ext});
+  $('#examOut').innerHTML=prettyMath(wsHTML(w));
+  $('#keyOut').innerHTML=prettyMath(wsKeyHTML(w));
+  const got=w.nlc.length+w.ds.length+w.tln.length+w.tl.length,tot=Object.values(w.pools).reduce((a,b)=>a+b,0);
+  $('#lesHint').textContent=`Đang chọn ${les.length} bài: ${les.map(n=>'Bài '+n).join(', ')}. Có ${tot} dạng câu.`;
+  const ww=[];
+  if(got<state.wsn)ww.push(`Chỉ tạo được ${got} câu với lựa chọn này.`);
+  if(w.repeats)ww.push(`Các bài đã chọn chưa đủ dạng câu khác nhau nên có ${w.repeats} câu cùng dạng với câu khác (khác số liệu). Chọn thêm bài${state.wsk==='mix'?' hoặc giảm số câu':', giảm số câu hoặc chọn “Trộn các loại”'} để ít lặp hơn.`);
+  $('#wsWarn').textContent=ww.join(' ');
+  $('#diffHint').textContent={co_ban:'Ưu tiên câu nhận biết, thông hiểu.',chuan:'Ưu tiên câu nhận biết, thông hiểu, vận dụng.',nang_cao:'Ưu tiên câu thông hiểu, vận dụng, vận dụng cao.'}[state.diff]+' Câu xếp từ dễ đến khó trong mỗi phần.';
+  $('#meta').textContent=`Phiếu bài tập Toán ${state.grade} · ${got} câu · mã phiếu ${state.code}`;
+  document.title=`Phiếu bài tập Toán ${state.grade} – mã ${state.code}`;
+  $('#tagline').textContent='Tạo phiếu bài tập Toán theo từng bài học trong SGK, có đáp án và lời giải. Mỗi mã phiếu là một phiếu khác.';
+  $('#noteTxt').textContent='Phiếu do thuật toán sinh ra từ các dạng câu gắn với bài học đã chọn; thầy cô nên đọc lướt trước khi phát cho học sinh.';
+  $('#gradeHint').textContent=`Lớp ${state.grade}, sách Kết nối tri thức. Các lớp khác sẽ thêm sau.`;
+}
+function setModeLabels(){
+  const ws=state.mode==='ws';document.body.dataset.mode=state.mode;
+  $('#codeLbl').textContent=ws?'Mã phiếu':'Mã đề';
+  $('#newBtn').textContent=ws?'Đổi phiếu khác':'Đổi đề khác';
+  $('#tabExam').textContent=ws?'Phiếu':'Đề thi';
+  $('#printExam').textContent=ws?'In phiếu':'In đề thi';
+  $('#wordExam').textContent=ws?'Word – phiếu':'Word – đề';
+}
+
 function render(){
+  setModeLabels();
+  if(state.mode==='ws'){renderLessonBox();renderWS();return}
   const err=state.struct==='custom'?structCheck(state.cs):'';
   let st=curStruct(),bp,ex;const base=state.code;
   ALLOW_EXT=!!state.ext;CUR_DIFF=state.diff;
@@ -200,6 +308,9 @@ function syncInputs(){
   $('#dept').value=state.dept;$('#school').value=state.school;$('#year').value=state.year;$('#time').value=state.time;
   $('#code').value=state.code;$('#sol').checked=!!state.sol;$('#ext').checked=!!state.ext;
   $('#struct').value=state.struct;
+  document.querySelectorAll('input[name=mode]').forEach(i=>i.checked=i.value===state.mode);
+  document.querySelectorAll('input[name=wsn]').forEach(i=>i.checked=+i.value===state.wsn);
+  $('#wsk').value=state.wsk;
   ['n1','n2','n3','n4'].forEach(k=>$('#cs_'+k).value=state.cs[k]);
   $('#cs_p1').value=String(state.cs.p1);$('#cs_p3').value=String(state.cs.p3);
 }
@@ -230,6 +341,7 @@ $('#struct').addEventListener('change',e=>{
 ['n1','n2','n3','n4'].forEach(k=>$('#cs_'+k).addEventListener('input',e=>{state.cs[k]=e.target.value===''?NaN:+e.target.value;update()}));
 ['p1','p3'].forEach(k=>$('#cs_'+k).addEventListener('change',e=>{state.cs[k]=+e.target.value;update()}));
 $('#newBtn').addEventListener('click',()=>{
+  if(state.mode==='ws'){let c=String(100+Math.floor(Math.random()*880));if(c===state.code)c=String(100+(+c-100+1)%880);state.code=c;syncInputs();update();return}
   const b=pickFreshCode(state.term,state.diff,loadHist(),150,Math.random,curStruct());
   let c=b?b.c:String(100+Math.floor(Math.random()*880));
   if(c===state.code)c=String(100+(+c-100+1)%880);
@@ -239,7 +351,7 @@ $('#clearHist').addEventListener('click',()=>{if(confirm('Xoá lịch sử các 
 $('#tabExam').addEventListener('click',()=>setTab('exam'));
 $('#tabKey').addEventListener('click',()=>setTab('key'));
 function doPrint(what){
-  try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
+  if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
   document.body.dataset.print=what;
   const back=()=>{document.body.dataset.print=state.tab;window.removeEventListener('afterprint',back)};
   window.addEventListener('afterprint',back);
@@ -251,12 +363,22 @@ $('#printKey').addEventListener('click',()=>doPrint('key'));
 async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
-    try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
+    if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
     const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2'}[state.kind]||state.kind;
-    await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`);
+    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_Bai${wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
+    await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}
   finally{btn.disabled=false;btn.textContent=old}
 }
 $('#wordExam').addEventListener('click',e=>doWord('exam',e.currentTarget));
 $('#wordKey').addEventListener('click',e=>doWord('key',e.currentTarget));
+document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>{state.mode=i.value;update()}));
+document.querySelectorAll('input[name=wsn]').forEach(i=>i.addEventListener('change',()=>{state.wsn=+i.value;update()}));
+$('#wsk').addEventListener('change',e=>{state.wsk=e.target.value;update()});
+$('#lesBox').addEventListener('change',e=>{
+  if(!e.target.matches('input[type=checkbox]'))return;
+  state.les[state.grade]=[...document.querySelectorAll('#lesBox input:checked')].map(i=>+i.value);
+  saveState();renderWS();/* không vẽ lại danh sách để giữ nguyên các chương đang mở */
+});
+$('#lesNone').addEventListener('click',()=>{document.querySelectorAll('#lesBox input').forEach(i=>i.checked=false);state.les[state.grade]=[];saveState();renderLessonBox();renderWS()});
 syncInputs();setTab(state.tab);render();

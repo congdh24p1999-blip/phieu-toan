@@ -6,6 +6,8 @@ Câu hỏi bám theo SGK của khối lớp. Một số câu dùng kiến thức
 
 Trang đáp án có bảng đối chiếu mỗi câu với bài học trong SGK Kết nối tri thức với cuộc sống (ví dụ "Bài 23. Phép cộng và phép trừ phân thức đại số: Câu 15, 19"), giúp giáo viên biết câu nào kiểm tra bài nào.
 
+**Phiếu bài tập theo bài học:** chọn "Phiếu bài tập", tick một hoặc vài bài trong SGK, chọn số câu (10–30) và loại câu. Trang tạo phiếu xếp từ dễ đến khó, kèm đáp án, lời giải; in hoặc tải Word như đề kiểm tra. Mỗi mã phiếu là một phiếu khác.
+
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
 - `index.html`: Xưởng đề Toán (trang chính).
