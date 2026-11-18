@@ -52,6 +52,12 @@ const BLUEPRINT={
   '12ck1':{...G12,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,1,2,2,2,2,3,3,3],ds:[1,2],tln:[1,1,2,3],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[1,3]},{role:'c',chs:[2]}]},
+  '12gk2':{...G12,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương IV và Chương V, bài 14 – 15 (Kết nối tri thức)',chapters:[4,5],excl:['v2'],
+    nlc:[4,4,4,4,4,4,4,4,5,5,5,5],ds:[4,5],tln:[4,4,5,5],
+    tl:[{role:'a',chs:[4]},{role:'b',chs:[4]},{role:'c',chs:[5]}]},
+  '12ck2':{...G12,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương IV – VI (Kết nối tri thức)',chapters:[4,5,6],
+    nlc:[4,4,4,4,4,5,5,5,5,6,6,6],ds:[5,6],tln:[4,4,5,6],
+    tl:[{role:'a',chs:[4]},{role:'b',chs:[6]},{role:'c',chs:[5]}]},
   '11ck1':{...G11,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
     nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[4,5],tln:[1,2,3,5],
     tl:[{role:'a',chs:[1,2]},{role:'b',chs:[5]},{role:'c',chs:[4]}]}

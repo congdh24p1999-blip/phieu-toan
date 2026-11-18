@@ -18,7 +18,7 @@ const propV=(u,v)=>{const c=cross(u,v);return c.every(x=>x===0)};
 const parT=(x0,a,t='t')=>{const tt=a?(Math.abs(a)===1?'':Math.abs(a))+I(t):'';if(!x0&&!a)return'0';if(!a)return sg(x0);if(!x0)return(a<0?MINUS:'')+tt;return`${x0}`.replace('-',MINUS)+(a<0?` ${MINUS} `:' + ')+tt};
 const lineP=(M,u,t='t')=>`${cases(...VARS.map((v,i)=>`${I(v)} = ${parT(M[i],u[i],t)}`))}`;
 const xm=(v,x0)=>x0===0?I(v):`${I(v)} ${x0>0?MINUS:'+'} ${Math.abs(x0)}`;
-const lineC=(M,u)=>VARS.map((v,i)=>fr(xm(v,M[i]),sg(u[i]))).join(' = ');
+const lineC=(M,u)=>u.some(x=>!x)?'':VARS.map((v,i)=>fr(xm(v,M[i]),sg(u[i]))).join(' = ');
 const onPlane=(p,M)=>p[0]*M[0]+p[1]*M[1]+p[2]*M[2]+p[3]===0;
 const pdist=(p,M)=>Math.abs(vdot(p.slice(0,3),M)+p[3])/Math.sqrt(vlen2(p.slice(0,3)));
 const nz3=r=>{for(;;){const v=[r.int(-4,4),r.int(-4,4),r.int(-4,4)];if(v.filter(x=>x).length>=2&&gcdA(v)===1)return v}};
@@ -157,13 +157,13 @@ N12b('k12-15-param',5,'TH',[15],r=>{
 });
 N12b('k12-15-2pts',5,'TH',[15],r=>{
   const A=pt3s(r,4),u=nzAll(r).map(x=>x%3||1),B=vadd(A,u);
-  const cor=lineC(A,u),W=[lineC(A,B),lineC(B,A),lineC(A,u.map((x,i)=>i===2?-x:x)),lineC(u,A),lineC(A,u.map((x,i)=>i===0?-x:x)),lineC(A.map(x=>-x),u)].filter(w=>w!==cor);
+  const cor=lineC(A,u),W=[lineC(A,B),lineC(B,A),lineC(A,u.map((x,i)=>i===2?-x:x)),lineC(u,A),lineC(A,u.map((x,i)=>i===0?-x:x)),lineC(A.map(x=>-x),u)].filter(w=>w&&w!==cor);
   return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, cho hai điểm ${I('A')}${tup(A)} và ${I('B')}${tup(B)}. Phương trình chính tắc của đường thẳng ${I('AB')} là`,correct:cor,wrongs:uniqBy(W,x=>x).slice(0,3),
     sol:`Đường thẳng AB đi qua A và có vectơ chỉ phương ${vh('A','B')} = ${tup(u)}: ${cor}.`,chk:()=>A.every(x=>true)&&B.every((x,i)=>x-A[i]===u[i])&&u.every(x=>x)});
 });
 N12b('k12-15-perp',5,'TH',[15],r=>{
   const n=nzAll(r).map(x=>x%3||1),M=pt3s(r,4),D=r.int(-5,5),cor=lineC(M,n);
-  const W=[lineC(n,M),lineC(M,[n[0],n[1],D||1]),lineC(M,[n[0],-n[1],n[2]]),lineC(M.map(x=>-x),n),lineC(M,[n[0],n[1],-n[2]])].filter(w=>w!==cor);
+  const W=[lineC(n,M),lineC(M,[n[0],n[1],D||1]),lineC(M,[n[0],-n[1],n[2]]),lineC(M.map(x=>-x),n),lineC(M,[n[0],n[1],-n[2]])].filter(w=>w&&w!==cor);
   return mkTxt(r,{stem:`Trong không gian ${I('Oxyz')}, đường thẳng đi qua điểm ${I('M')}${tup(M)} và vuông góc với mặt phẳng ${plN('P',n.concat([D]))} có phương trình là`,correct:cor,wrongs:uniqBy(W,x=>x).slice(0,3),
     sol:`Đường thẳng vuông góc với (P) nhận vectơ pháp tuyến ${tup(n)} của (P) làm vectơ chỉ phương: ${cor}.`,chk:()=>true});
 });
