@@ -136,7 +136,7 @@ TLN12('t12-6-dot',2,'VD',[6],r=>{
   for(;;){const p=r.int(1,6),q=r.int(1,6),th=r.pick([60,120,90]),ab=th===90?0:(th===60?1:-1)*p*q/2;if(!Number.isInteger(ab))continue;
     const m=r.int(1,4),n=r.int(1,3),ans=p*p+(m-n)*ab-m*n*q*q,A=vc(I('a')),B=vc(I('b'));
     return{kind:'tln',stem:`Trong không gian, cho hai vectơ ${A}, ${B} có |${A}| = ${p}, |${B}| = ${q} và (${A}, ${B}) = ${th}°. Tính (${A} + ${m===1?'':m}${B})·(${A} ${MINUS} ${n===1?'':n}${B}).`,ans,unit:'',
-      sol:`${A}·${B} = ${sg(ab)}. (${A} + ${m}${B})·(${A} − ${n}${B}) = |${A}|² + ${m-n<0?'('+sg(m-n)+')':m-n}·${A}·${B} − ${m*n}|${B}|² = ${p*p} + ${m-n<0?'('+sg(m-n)+')':m-n}·(${sg(ab)}) − ${m*n*q*q} = ${sg(ans)}.`,chk:()=>Math.abs(ans)<1000}}
+      sol:`${A}·${B} = ${sg(ab)}. (${A} + ${m===1?"":m}${B})·(${A} − ${n===1?"":n}${B}) = |${A}|² + ${m-n<0?'('+sg(m-n)+')':m-n}·${A}·${B} − ${m*n}|${B}|² = ${p*p} + ${m-n<0?'('+sg(m-n)+')':m-n}·(${sg(ab)}) − ${m*n*q*q} = ${sg(ans)}.`,chk:()=>Math.abs(ans)<1000}}
 });
 TLN12('t12-6-sum',2,'VD',[6],r=>{
   const L=[[3,5,7,60],[5,3,7,60],[7,8,13,60],[8,7,13,60],[5,16,19,60],[3,8,7,120],[5,8,7,120],[8,15,13,120],[7,15,13,120],[5,21,19,120],[6,10,14,60],[6,16,14,120]],[p,q,c,th]=r.pick(L);

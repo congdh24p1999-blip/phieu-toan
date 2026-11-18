@@ -9,7 +9,7 @@ const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
   note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
 const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
 const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
-const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm'};
+const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm',4:'Nguyên hàm và tích phân',5:'Phương pháp toạ độ trong không gian',6:'Xác suất có điều kiện'};
 const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
 const BLUEPRINT={

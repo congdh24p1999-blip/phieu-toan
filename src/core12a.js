@@ -17,6 +17,8 @@ const pder=cs=>cs.slice(0,-1).map((c,i)=>c*(cs.length-1-i));
 const isInt=v=>Math.abs(v-Math.round(v))<1e-9;
 const uniqBy=(a,f)=>{const s=new Set();return a.filter(x=>{const k=f(x);if(s.has(k))return false;s.add(k);return true})};
 /* "a x" với hệ số đẹp: coefX(−1,'x') → "−x" */
+/* nối thêm biểu thức: " + A" hoặc " − A" nếu A bắt đầu bằng dấu trừ */
+const plusH=h=>h.startsWith(MINUS)?` ${MINUS} ${h.slice(MINUS.length)}`:` + ${h}`;
 const den2=d=>d?`(${xlin(1,d)})${sup(2)}`:I('x')+sup(2);
 const coefV=(c,v)=>(c===1?'':c===-1?MINUS:sg(c))+v;
 
@@ -91,14 +93,20 @@ function graphSVG(fn,o){
   (o.marks||[]).forEach(([x,y])=>{if(x!==0)s+=dash(SX(x),ax,SX(x),SY(y));if(y!==0)s+=dash(ay,SY(y),SX(x),SY(y));s+=lx(x,y<0)+ly(y)});
   (o.xt||[]).forEach(x=>{s+=`<line x1="${f(SX(x))}" y1="${f(ax-2)}" x2="${f(SX(x))}" y2="${f(ax+2)}" stroke="#000"/>`+lx(x,false)});
   (o.yt||[]).forEach(y=>{s+=`<line x1="${f(ay-2)}" y1="${f(SY(y))}" x2="${f(ay+2)}" y2="${f(SY(y))}" stroke="#000"/>`+ly(y)});
+  /* miền tô (o.fill=[a,b,g]: giữa đồ thị fn và g, mặc định trục hoành) */
+  if(o.fill){const [fa,fb,g2]=o.fill,gg=g2||(()=>0),M=120,top=[],bot=[];
+    for(let i=0;i<=M;i++){const x=fa+(fb-fa)*i/M;top.push([x,fn(x)]);bot.push([x,gg(x)])}
+    const poly=top.concat(bot.reverse()).map(([x,y])=>f(SX(x))+','+f(SY(Math.max(y0,Math.min(y1,y))))).join(' ');
+    s=s.replace('</defs>',`</defs><polygon points="${poly}" fill="#cfcfcf" stroke="none"/>`)}
   /* đường cong */
-  const N=500,segs=[];let cur=[],prev=null;
-  const lim=(y1-y0)*3;
-  for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N,y=fn(x);
-    if(!Number.isFinite(y)||Math.abs(y)>1e4||(prev!==null&&Math.abs(y-prev)>lim)||(o.va||[]).some(a=>Math.abs(x-a)<1e-6)){if(cur.length>1)segs.push(cur);cur=[];prev=Number.isFinite(y)&&Math.abs(y)<=1e4?y:null;if(prev!==null)cur.push([x,y]);continue}
-    cur.push([x,y]);prev=y}
-  if(cur.length>1)segs.push(cur);
-  s+=`<g clip-path="url(#${id})">`+segs.map(sg2=>`<polyline points="${sg2.map(([x,y])=>f(SX(x))+','+f(SY(Math.max(y0-5,Math.min(y1+5,y)))) ).join(' ')}" fill="none" stroke="#000" stroke-width="1.5"/>`).join('')+'</g>';
+  const curve=(F,w)=>{const N=500,segs=[];let cur=[],prev=null;const lim=(y1-y0)*3;
+    for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N,y=F(x);
+      if(!Number.isFinite(y)||Math.abs(y)>1e4||(prev!==null&&Math.abs(y-prev)>lim)||(o.va||[]).some(a=>Math.abs(x-a)<1e-6)){if(cur.length>1)segs.push(cur);cur=[];prev=Number.isFinite(y)&&Math.abs(y)<=1e4?y:null;if(prev!==null)cur.push([x,y]);continue}
+      cur.push([x,y]);prev=y}
+    if(cur.length>1)segs.push(cur);
+    return segs.map(sg2=>`<polyline points="${sg2.map(([x,y])=>f(SX(x))+','+f(SY(Math.max(y0-5,Math.min(y1+5,y)))) ).join(' ')}" fill="none" stroke="#000" stroke-width="${w}"/>`).join('')};
+  s+=`<g clip-path="url(#${id})">`+curve(fn,1.5)+(o.more||[]).map(F=>curve(F,1.2)).join('')+'</g>';
+  (o.labs||[]).forEach(([x,y,t])=>{s+=`<text x="${f(SX(x))}" y="${f(SY(y))}" font-size="10.5" font-style="italic">${t}</text>`});
   if(o.lab)s+=`<text x="${f(SX(o.lab[0]))}" y="${f(SY(o.lab[1]))}" font-size="11" font-style="italic">${o.lab[2]||''}</text>`;
   return `<div class="figure">${s}</svg></div>`;
 }

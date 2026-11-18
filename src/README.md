@@ -20,6 +20,7 @@ Cần Node.js (≥ 18) và Python 3.
 | `core1.js`, `core2.js` | Hàm dùng chung (số, đa thức, định dạng), Toán 8 học kì I |
 | `core11*.js` | Toán 11 (`core11k.js`: câu vận dụng cao bổ sung) |
 | `core12a.js` … `core12e.js` | Toán 12 học kì I (a: Bài 1–2 và hàm vẽ đồ thị, bảng biến thiên; b: Bài 3–5; c: Chương II vectơ, toạ độ; d: Chương III; e: dạng bổ sung) |
+| `core12f.js` … | Toán 12 học kì II (f: Chương IV nguyên hàm, tích phân; kí hiệu tích phân `ig()`) |
 | `core7*.js` | Toán 7 (`core7d.js`: dạng bổ sung theo bài tập SGK) |
 | `core-ds.js` | Câu đúng sai lớp 7 |
 | `core8a.js` … `core8i.js` | Toán 8 học kì II theo chương (a: VI, b: VII, c: VIII, d: IX, e: X); f–i: bổ sung, bài hình |

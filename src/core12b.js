@@ -48,7 +48,7 @@ N12('k12-3-obl',1,'TH',[3],r=>{
   const b=r.int(-6,6),c=r.int(-6,6),d=r.nz(-4,4);if(d*d-b*d+c===0)return T.nlc['k12-3-obl'].gen(r);
   const k=b-d,cor=yEq(xlin(1,k));
   return mkTxt(r,{stem:`Tiệm cận xiên của đồ thị hàm số ${I('y')} = ${fr(xquad(1,b,c),xlin(1,d))} là đường thẳng`,correct:cor,wrongs:[yEq(xlin(1,b)),yEq(xlin(1,b+d)),yEq(xlin(1,-k)),yEq(xlin(1,d)),xEq(sg(-d))].filter(w=>w!==cor),
-    sol:`Chia đa thức: ${fr(xquad(1,b,c),xlin(1,d))} = ${xlin(1,k)} + ${fr(sg(c-k*d),xlin(1,d))}. Vì ${lim(I('x'),'±∞')} ${fr(sg(c-k*d),xlin(1,d))} = 0 nên tiệm cận xiên là ${cor}.`,
+    sol:`Chia đa thức: ${fr(xquad(1,b,c),xlin(1,d))} = ${xlin(1,k)}${c-k*d<0?` ${MINUS} `:' + '}${fr(Math.abs(c-k*d),xlin(1,d))}. Vì ${lim(I('x'),'±∞')} ${fr(Math.abs(c-k*d),xlin(1,d))} = 0 nên tiệm cận xiên là ${cor}.`,
     chk:()=>Math.abs((1e6*1e6+b*1e6+c)/(1e6+d)-(1e6+k))<1e-3&&c-k*d!==0});
 });
 N12('k12-3-count',1,'TH',[3],r=>{
@@ -83,7 +83,7 @@ TLN12('t12-3-obl',1,'VD',[3],r=>{
     /* (a x² + b x + c)/(x + d) = a x + (b − a d) + (c − d(b − a d))/(x + d) */
     const k=b-a*d,rem=c-d*k;if(rem===0)continue;
     return{kind:'tln',stem:`Tiệm cận xiên của đồ thị hàm số ${I('y')} = ${fr(xquad(a,b,c),xlin(1,d))} là đường thẳng ${I('y')} = ${I('m')}${I('x')} + ${I('n')}. Tính ${I('m')} + ${I('n')}.`,ans:a+k,unit:'',
-      sol:`${fr(xquad(a,b,c),xlin(1,d))} = ${xlin(a,k)} + ${fr(sg(rem),xlin(1,d))}. Tiệm cận xiên: ${yEq(xlin(a,k))}, nên m = ${sg(a)}, n = ${sg(k)}, m + n = ${sg(a+k)}.`,chk:()=>Math.abs((a*1e12+b*1e6+c)/(1e6+d)-(a*1e6+k))<1e-3}}
+      sol:`${fr(xquad(a,b,c),xlin(1,d))} = ${xlin(a,k)}${rem<0?` ${MINUS} `:" + "}${fr(Math.abs(rem),xlin(1,d))}. Tiệm cận xiên: ${yEq(xlin(a,k))}, nên m = ${sg(a)}, n = ${sg(k)}, m + n = ${sg(a+k)}.`,chk:()=>Math.abs((a*1e12+b*1e6+c)/(1e6+d)-(a*1e6+k))<1e-3}}
 });
 
 /* ===================== Bài 4: Khảo sát và vẽ đồ thị ===================== */

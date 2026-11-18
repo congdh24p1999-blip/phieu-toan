@@ -17,9 +17,10 @@ with sync_playwright() as p:
             if n<10:print('  bài',bx.get_attribute('value'),'chỉ',n,'câu')
             pg.evaluate("e=>{e.checked=false;e.dispatchEvent(new Event('change',{bubbles:true}))}",bx)
     # một phiếu cụ thể
-    pg.check('input[name=grade][value="8"]',force=True);pg.wait_for_timeout(200)
+    G=sys.argv[1] if len(sys.argv)>1 else '8';L=sys.argv[2].split(',') if len(sys.argv)>2 else ['21','23']
+    pg.check(f'input[name=grade][value="{G}"]',force=True);pg.wait_for_timeout(200)
     pg.click('#lesNone')
-    for v in ['21','23']:
+    for v in L:
         pg.evaluate(f"()=>{{const e=document.querySelector('#lesBox input[value=\"{v}\"]');e.checked=true;e.dispatchEvent(new Event('change',{{bubbles:true}}))}}")
     pg.check('input[name=wsn][value="15"]',force=True);pg.wait_for_timeout(300)
     print('meta',pg.inner_text('#meta'),'| warn:',pg.inner_text('#wsWarn'))
