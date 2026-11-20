@@ -264,6 +264,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
           <label><input type="radio" name="term" value="ck1">Cuối kì I</label>
           <label><input type="radio" name="term" value="gk2">Giữa kì II</label>
           <label><input type="radio" name="term" value="ck2">Cuối kì II</label>
+          <label><input type="radio" name="term" value="tn">Ôn thi TN THPT</label>
         </div>
         <p class="hint" id="scopeHint"></p>
       </div>
@@ -8033,6 +8034,77 @@ DS10b('ds10-27-team',9,'VD',[27],r=>{
     {t:`Xác suất chọn được đúng 1 học sinh nữ là ${qh(p1)}.`,f:`Xác suất chọn được đúng 1 học sinh nữ là ${qh(Q(f*nC10(m+f-1,2),N))===qh(p1)?qh(Q(p1[0]+1,p1[1])):qh(Q(f*nC10(m+f-1,2),N))}.`,why:`n(A) = ${f}·${CH(m,2)} = ${f*nC10(m,2)}.`},
     {t:`Xác suất có ít nhất 1 học sinh nữ là ${qh(qsub(Q(1),p0))}.`,f:`Xác suất có ít nhất 1 học sinh nữ là ${qh(p0)}.`,why:`P = 1 − ${fr(CH(m,3),CH(m+f,3))} = ${qh(qsub(Q(1),p0))}.`}],chk:()=>true});
 });
+/* ================================================================
+   ÔN THI TỐT NGHIỆP THPT – các dạng câu riêng theo kiểu đề chính thức 2025
+   (chỉ dùng trong đề "Ôn thi TN THPT"; g:'tn', ch là mã chủ đề 101 – 108 của BLUEPRINT['12tn'])
+   ================================================================ */
+const DST=(id,ch,lv,gen)=>reg('ds',id,ch,lv,gen,{g:'tn'});
+const TLNT=(id,ch,lv,gen)=>reg('tln',id,ch,lv,gen,{g:'tn'});
+const r2tn=x=>Math.round(x*100)/100,okR2=x=>Math.abs(x*100-Math.round(x*100))<.45;
+const v3H=v=>`(${v.map(sg).join('; ')})`;
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],crs3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+
+/* Phần II – Oxyz lồng ghép chuyển động thẳng đều (máy bay và ra-đa) */
+DST('tn-ds-motion',103,'VD',r=>{
+  for(;;){const v=[r.int(-4,4),r.int(-4,4),r.int(-1,1)];if(!v[0]&&!v[1])continue;const e=[r.int(-2,2),r.int(-2,2),r.int(1,3)],w0=crs3(v,e);
+    const g=gcd(gcd(Math.abs(w0[0]),Math.abs(w0[1])),Math.abs(w0[2]))||1,w=w0.map(x=>x/g);let w2=dot3(w,w);if(!w2||w2>200)continue;
+    if(w[2]<0)w.forEach((x,i)=>w[i]=-x);if(w[2]===0&&w2<4)continue;
+    const k=r.int(3,9),A=w.map((x,i)=>x-k*v[i]);if(A[2]<1)continue;const t1=r.int(1,k-1),P1=A.map((x,i)=>x+t1*v[i]);
+    const Rin=Math.ceil(Math.sqrt(w2))+r.int(1,4),Rout=Math.max(1,Math.floor(Math.sqrt(w2)-0.01)-r.int(0,1));if(Rout*Rout>=w2||Rout<1)continue;
+    return mkDS(r,{stem:`Trong không gian ${I('Oxyz')} (đơn vị trên mỗi trục là ki-lô-mét), một trạm ra-đa đặt tại gốc toạ độ ${I('O')}. Một máy bay đang ở vị trí ${I('A')}${v3H(A)} và bay thẳng đều; sau mỗi phút máy bay dịch chuyển theo vectơ ${vc(I('v'))} = ${v3H(v)}. Xét tính đúng sai của các khẳng định sau:`,items:[
+      {t:`Sau ${t1} phút, máy bay ở vị trí có toạ độ ${v3H(P1)}.`,f:`Sau ${t1} phút, máy bay ở vị trí có toạ độ ${v3H(A.map((x,i)=>x+(t1+1)*v[i]))}.`,why:`Vị trí sau t phút: A + t${vc(I('v'))}; với t = ${t1} được ${v3H(P1)}.`},
+      {t:`Đường bay của máy bay có phương trình tham số ${I('x')} = ${parT10(A[0],v[0])}, ${I('y')} = ${parT10(A[1],v[1])}, ${I('z')} = ${parT10(A[2],v[2])}.`,f:`Đường bay của máy bay có phương trình tham số ${I('x')} = ${parT10(v[0],A[0])}, ${I('y')} = ${parT10(v[1],A[1])}, ${I('z')} = ${parT10(v[2],A[2])}.`,why:`Đường thẳng qua A, vectơ chỉ phương ${vc(I('v'))}.`},
+      {t:`Máy bay gần trạm ra-đa nhất tại thời điểm sau ${k} phút kể từ khi ở ${I('A')}.`,f:`Máy bay gần trạm ra-đa nhất tại thời điểm sau ${k+1} phút kể từ khi ở ${I('A')}.`,why:`OM² = |${vc(I('OA'))} + t${vc(I('v'))}|² là tam thức bậc hai theo t, nhỏ nhất khi t = −${fr(`${vc(I('OA'))}·${vc(I('v'))}`,`|${vc(I('v'))}|²`)} = ${k}.`},
+      {t:`Nếu ra-đa phát hiện được vật thể cách nó không quá ${Rin} km thì ra-đa phát hiện được máy bay.`,f:`Nếu ra-đa phát hiện được vật thể cách nó không quá ${Rout} km thì ra-đa phát hiện được máy bay.`,why:`Khoảng cách ngắn nhất từ O đến đường bay bằng √${w2} ≈ ${fmt(r2tn(Math.sqrt(w2)))} km; ra-đa phát hiện được máy bay khi bán kính phát hiện không nhỏ hơn giá trị này.`}],
+      chk:()=>dot3(w,v)===0&&dot3(A,v)===-k*dot3(v,v)})}
+});
+/* Phần II – mô hình thực tế khảo sát hàm số (số lượng cá trong hồ) */
+DST('tn-ds-model',101,'TH',r=>{
+  for(;;){const a=3*r.int(2,5),t1=r.int(Math.ceil(2*a/3)+1,2*a/3+5),b=3*t1*t1-2*a*t1,c=r.int(5,40),T=t1+r.int(1,3);if(b<=0)continue;
+    const y=t=>-(t**3)+a*t*t+b*t+c,gmax=a*a/3+b;
+    return mkDS(r,{stem:`Một trang trại nuôi cá thả cá giống vào hồ. Số lượng cá trong hồ sau ${I('t')} tháng (đơn vị: trăm con) được mô hình hoá bởi ${I('y')}(${I('t')}) = ${MINUS}${I('t')}${sup(3)} + ${a}${I('t')}${sup(2)} + ${b}${I('t')} + ${c} với 0 ≤ ${I('t')} ≤ ${T}. Gọi ${I('g')}(${I('t')}) = ${I('y')}′(${I('t')}) là tốc độ thay đổi số lượng cá. Xét tính đúng sai của các khẳng định sau:`,items:[
+      {t:`Lúc thả, trong hồ có ${c} trăm con cá.`,f:`Lúc thả, trong hồ có ${c+b} trăm con cá.`,why:`y(0) = ${c}.`},
+      {t:`${I('g')}(${I('t')}) = ${MINUS}3${I('t')}${sup(2)} + ${2*a}${I('t')} + ${b}.`,f:`${I('g')}(${I('t')}) = ${MINUS}3${I('t')}${sup(2)} + ${a}${I('t')} + ${b}.`,why:`Đạo hàm của y(t).`},
+      {t:`Số lượng cá trong hồ lớn nhất sau ${t1} tháng.`,f:`Số lượng cá trong hồ lớn nhất sau ${T} tháng.`,why:`g(t) = 0 ⟺ t = ${t1} (nhận) hoặc t = ${qh(Q(-b,3*t1))} (loại); g đổi dấu từ dương sang âm tại t = ${t1}, y(${t1}) = ${y(t1)} > y(${T}) = ${y(T)}.`},
+      {t:`Tốc độ tăng số lượng cá lớn nhất bằng ${gmax} trăm con/tháng.`,f:`Tốc độ tăng số lượng cá lớn nhất bằng ${b} trăm con/tháng.`,why:`g(t) là hàm bậc hai có a < 0, lớn nhất tại t = ${a/3}: g(${a/3}) = ${gmax}.`}],chk:()=>y(t1)>y(T)&&a/3<=T})}
+});
+/* Phần III – tối ưu lợi nhuận với hàm chi phí bậc ba */
+TLNT('tn-t-profit',101,'VD',r=>{
+  for(;;){const x0=r.int(10,40),al=r.int(x0+1,2*x0),beta=r.int(50,300),p=3*x0*x0-2*al*x0+beta,F=r.int(100,999);if(p<=beta||p>5000)continue;
+    /* lợi nhuận L(x) = px − (x³ − αx² + βx + F), L′ = −3x² + 2αx + (p − β) */
+    const x2=(2*al-Math.sqrt(4*al*al+12*(p-beta)))/6;if(x2>=0)continue;
+    return{kind:'tln',stem:`Một xưởng sản xuất ${I('x')} sản phẩm mỗi ngày (0 < ${I('x')} ≤ ${2*x0}) với tổng chi phí ${I('C')}(${I('x')}) = ${I('x')}${sup(3)} ${MINUS} ${al}${I('x')}${sup(2)} + ${beta}${I('x')} + ${F} (nghìn đồng). Giá bán mỗi sản phẩm là ${p} nghìn đồng và xưởng bán hết sản phẩm làm ra. Mỗi ngày xưởng nên sản xuất bao nhiêu sản phẩm để lợi nhuận lớn nhất?`,ans:x0,unit:'',
+      sol:`Lợi nhuận L(x) = ${p}x − C(x) = −x³ + ${al}x² + ${p-beta}x − ${F}; L′(x) = −3x² + ${2*al}x + ${p-beta} = 0 ⟺ x = ${x0} (nhận) hoặc x < 0 (loại). L′ đổi dấu từ dương sang âm tại x = ${x0} nên lợi nhuận lớn nhất khi x = ${x0}.`,chk:()=>-3*x0*x0+2*al*x0+p-beta===0}}
+});
+/* Phần III – thể tích vật thể tròn xoay thực tế (chiếc bát parabol) */
+TLNT('tn-t-bowl',102,'VD',r=>{
+  for(;;){const k=r.int(2,8),h=r.int(5,12),half=r.chance(.4),hh=half?h/2:h,V=Math.PI*k*hh*hh/2,ans=Math.round(V);if(ans>=10000||Math.abs(V-Math.round(V))>.45)continue;
+    return{kind:'tln',stem:`Mặt trong của một chiếc bát là mặt tròn xoay tạo thành khi quay phần parabol ${I('y')} = ${fr(`${I('x')}${sup(2)}`,k)} (0 ≤ ${I('y')} ≤ ${h}) quanh trục ${I('Oy')} (đơn vị: cm). Người ta đổ nước vào bát đến độ cao ${fmt(hh)} cm tính từ đáy. Tính thể tích nước trong bát (đơn vị: cm³, làm tròn kết quả đến hàng đơn vị).`,ans,unit:'cm³',
+      sol:`x² = ${k}y nên V = π∫₀^${fmt(hh)} ${k}y dy = ${fr(`${k}π`,2)}·${fmt(hh)}² ≈ ${ans} (cm³).`,chk:()=>true}}
+});
+/* Phần III – khoảng cách giữa hai đường thẳng chéo nhau trong căn phòng hình hộp chữ nhật */
+TLNT('tn-t-room',104,'VD',r=>{
+  for(;;){const a=r.int(4,10),b=r.int(3,8),c=r.int(3,5),P={A:[0,0,0],B:[a,0,0],C:[a,b,0],D:[0,b,0]};P["A'"]=[0,0,c];P["B'"]=[a,0,c];P["C'"]=[a,b,c];P["D'"]=[0,b,c];
+    const L=r.pick([["A","C'","B","B'"],["A","C'","D","D'"],["B","D'","A","A'"],["B","D'","C","C'"],["A","C'","B'","D'"],["B","D'","A'","C'"]]),u=P[L[1]].map((x,i)=>x-P[L[0]][i]),w=P[L[3]].map((x,i)=>x-P[L[2]][i]),n=crs3(u,w),nn=Math.sqrt(dot3(n,n));
+    if(!nn)continue;const d=Math.abs(dot3(P[L[2]].map((x,i)=>x-P[L[0]][i]),n))/nn;if(!d||!okR2(d))continue;
+    const nm=s=>I(s.replace("'",'′'));
+    return{kind:'tln',stem:`Một phòng học có dạng hình hộp chữ nhật ${I('ABCD')}.${I('A′B′C′D′')} với ${I('AB')} = ${a} m, ${I('AD')} = ${b} m, ${I('AA′')} = ${c} m. Một sợi dây điện được căng thẳng dọc theo đoạn ${nm(L[0])}${nm(L[1])}. Tính khoảng cách giữa sợi dây và đường thẳng ${nm(L[2])}${nm(L[3])} (đơn vị: mét, làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(d),unit:'m',
+      sol:`Chọn hệ trục Oxyz với A là gốc, B(${a}; 0; 0), D(0; ${b}; 0), A′(0; 0; ${c}). Dùng công thức d = ${fr('|[u, w] · MN|','|[u, w]|')} với ${vc(I('u'))} = ${v3H(u)}, ${vc(I('w'))} = ${v3H(w)}: d ≈ ${fmt(r2tn(d))} (m).`,chk:()=>true}}
+});
+/* Phần III – xác suất sắp xếp sách trên kệ (kĩ thuật vách ngăn) */
+TLNT('tn-t-shelf',106,'VD',r=>{
+  for(;;){const m=r.int(3,6),n=r.int(2,Math.min(4,m+1)),sep=r.chance(.6),p=sep?nC10(m+1,n)/nC10(m+n,n):fact10(m+1)*fact10(n)/fact10(m+n);if(!okR2(p))continue;
+    return{kind:'tln',stem:`Trên một kệ sách người ta xếp ngẫu nhiên thành một hàng ${m} quyển sách Toán khác nhau và ${n} quyển sách Văn khác nhau. Tính xác suất để ${sep?'không có hai quyển sách Văn nào đứng cạnh nhau':'các quyển sách Văn đứng liền nhau'} (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(p),unit:'',
+      sol:sep?`n(Ω) = ${m+n}!. Xếp ${m} quyển Toán: ${m}! cách, tạo ra ${m+1} chỗ trống (kể cả hai đầu); xếp ${n} quyển Văn vào ${n} chỗ trống khác nhau: ${AH(m+1,n)} cách. P = ${fr(`${m}!·${nA10(m+1,n)}`,`${m+n}!`)} ≈ ${fmt(r2tn(p))}.`:`Coi ${n} quyển Văn là một khối: xếp ${m+1} "phần tử" có ${m+1}! cách, trong khối có ${n}! cách. P = ${fr(`${m+1}!·${n}!`,`${m+n}!`)} ≈ ${fmt(r2tn(p))}.`,chk:()=>true}}
+});
+/* Phần III – xác suất kết hợp cấp số cộng (đếm bằng liệt kê) */
+TLNT('tn-t-ap',106,'VD',r=>{
+  for(;;){const N=r.int(10,30),t=r.int(0,1);let f=0;for(let a=1;a<=N;a++)for(let b=a+1;b<=N;b++)for(let c=b+1;c<=N;c++){if(t?(a+b+c)%3===0:a+c===2*b)f++}
+    const p=f/nC10(N,3);if(!okR2(p))continue;
+    return{kind:'tln',stem:`Một hộp có ${N} tấm thẻ được đánh số từ 1 đến ${N}. Rút ngẫu nhiên đồng thời ba tấm thẻ. Tính xác suất để ${t?'tổng ba số ghi trên ba tấm thẻ chia hết cho 3':'ba số ghi trên ba tấm thẻ (sắp theo thứ tự tăng dần) lập thành một cấp số cộng'} (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(p),unit:'',
+      sol:t?`n(Ω) = ${CH(N,3)} = ${nC10(N,3)}. Chia các số thành ba nhóm theo số dư khi chia cho 3; tổng chia hết cho 3 khi ba số cùng nhóm hoặc thuộc ba nhóm khác nhau: n(A) = ${f}. P ≈ ${fmt(r2tn(p))}.`
+        :`n(Ω) = ${CH(N,3)} = ${nC10(N,3)}. Ba số a < b < c lập thành cấp số cộng ⟺ a + c = 2b ⟺ a, c cùng tính chẵn lẻ; mỗi cặp (a; c) như vậy xác định duy nhất b: n(A) = ${CH(Math.ceil(N/2),2)} + ${CH(Math.floor(N/2),2)} = ${f}. P ≈ ${fmt(r2tn(p))}.`,chk:()=>t===1||f===nC10(Math.ceil(N/2),2)+nC10(Math.floor(N/2),2)}}
+});
 
 /* ================================================================
    LỚP 7 – Toán 7 Kết nối tri thức, học kì I
@@ -12180,7 +12252,16 @@ const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
 const CH10={1:'Mệnh đề và tập hợp',2:'Bất phương trình và hệ bất phương trình bậc nhất hai ẩn',3:'Hệ thức lượng trong tam giác',4:'Vectơ',5:'Các số đặc trưng của mẫu số liệu không ghép nhóm',6:'Hàm số, đồ thị và ứng dụng',7:'Phương pháp toạ độ trong mặt phẳng',8:'Đại số tổ hợp',9:'Tính xác suất theo định nghĩa cổ điển'};
 const G10={grade:10,school:'THPT',mon:'Toán 10',chName:CH10,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
+/* Ôn thi tốt nghiệp THPT: chủ đề gộp nội dung lớp 10, 11, 12 theo cấu trúc đề chính thức năm 2025 */
+const CHTN={101:'Ứng dụng đạo hàm, khảo sát hàm số (lớp 11, 12)',102:'Nguyên hàm, tích phân và ứng dụng',103:'Vectơ và phương pháp toạ độ trong không gian',104:'Hình học không gian: quan hệ song song, vuông góc (lớp 11)',
+  105:'Thống kê: mẫu số liệu ghép nhóm (lớp 11, 12)',106:'Đại số tổ hợp và xác suất (lớp 10, 11, 12)',107:'Hàm số lượng giác, phương trình lượng giác (lớp 11)',108:'Dãy số, cấp số cộng, cấp số nhân (lớp 11)',109:'Hàm số mũ và hàm số lôgarit (lớp 11)',110:'Bất phương trình, hệ bất phương trình bậc nhất hai ẩn; hàm số bậc hai (lớp 10)'};
+const TN_MIX={101:[[12,1],[11,9],['tn',101]],102:[[12,4],['tn',102]],103:[[12,2],[12,5],['tn',103]],104:[[11,4],[11,7],['tn',104]],105:[[11,3],[12,3]],106:[[10,8],[10,9],[11,8],[12,6],['tn',106]],107:[[11,1]],108:[[11,2]],109:[[11,6]],110:[[10,2],[10,6]]};
 const BLUEPRINT={
+  '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
+    scope:'Theo cấu trúc đề thi tốt nghiệp THPT năm 2025 (giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
+    chapters:[101,102,103,104,105,106,107,108,109,110],
+    nlc:[101,102,102,102,103,103,103,104,105,107,108,109],ds:[101,101,106,103],tln:[101,110,104,102,106,106],tl:[],
+    note:'Cấu trúc theo đề chính thức năm 2025: Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
   '10gk1':{...G10,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,2,3,3],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[3]}]},
@@ -12279,7 +12360,16 @@ function structNote(s){
 /* Câu mở rộng (t.ext): chỉ dùng khi bật ALLOW_EXT hoặc đang tạo đề mức Nâng cao (CUR_DIFF). */
 let ALLOW_EXT=false,CUR_DIFF='chuan';
 const extOK=()=>ALLOW_EXT||CUR_DIFF==='nang_cao';
-const poolOf=(bp,kind)=>Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
+/* Đề ôn thi tốt nghiệp: gom mẫu câu của nhiều lớp, gán mã chủ đề của BLUEPRINT['12tn'] */
+const MIX_CACHE={};
+/* dạng trả lời ngắn hầu như luôn có đáp án dài quá 4 kí tự: không dùng trong đề ôn thi tốt nghiệp */
+const TN_EXCL=new Set(['t12-12-profit','t11-6-compound']);
+function mixPool(bp,kind){
+  const ck=bp.title+'|'+kind;
+  if(!MIX_CACHE[ck]){MIX_CACHE[ck]=[];for(const [top,L] of Object.entries(bp.mix))for(const t of Object.values(T[kind]))if(!TN_EXCL.has(t.id)&&L.some(([g,ch])=>(t.g||8)===g&&t.ch===ch))MIX_CACHE[ck].push({...t,ch:+top})}
+  return MIX_CACHE[ck].filter(t=>!t.ext||extOK());
+}
+const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
 /* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
 function apportion(n,w,cap){
   const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};
@@ -12304,7 +12394,7 @@ const BP_CACHE={};
 /* Bản thiết kế đề theo cấu trúc đã chọn. Cấu trúc mặc định trả về đúng bản gốc, nên đề cũ không đổi. */
 function bpOf(term,st){
   const base=BLUEPRINT[term],s=st||STRUCTS.chuan,sk=structKey(s);
-  if(sk===DEF_SK)return base;
+  if(sk===DEF_SK||base.tn)return base;
   const ck=term+'|'+sk;if(BP_CACHE[ck])return BP_CACHE[ck];
   const w={};base.nlc.forEach(c=>w[c]=(w[c]||0)+1);
   const warn=[],lists={};
@@ -12348,7 +12438,13 @@ const DIFFS11={
   chuan:{name:'Chuẩn',nb:8,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:6,ds:['TH','VD'],tln:['VD','VD','VD','VD'],tl:['VD','VD','VDC']}
 };
-const dOf=(term,diff)=>{const g=BLUEPRINT[term].grade;return g===8?DIFFS[diff]:DIFFS11[diff]};
+/* Độ khó cho đề ôn thi tốt nghiệp: Phần I nhận biết – thông hiểu, Phần II tăng dần đến vận dụng, Phần III chủ yếu vận dụng (như đề 2025). */
+const DIFFS_TN={
+  co_ban:{name:'Cơ bản',nb:7,ds:['NB','TH','TH','TH'],tln:['TH','TH','TH','VD','VD','VD'],tl:[]},
+  chuan:{name:'Chuẩn',nb:6,ds:['TH','TH','TH','VD'],tln:['TH','VD','VD','VD','VD','VD'],tl:[]},
+  nang_cao:{name:'Nâng cao',nb:4,ds:['TH','VD','VD','VD'],tln:['VD','VD','VD','VD','VDC','VDC'],tl:[]}
+};
+const dOf=(term,diff)=>{const b=BLUEPRINT[term];if(b.tn)return DIFFS_TN[diff];return b.grade===8?DIFFS[diff]:DIFFS11[diff]};
 /* Gán mức cho 12 câu phần I: nb câu nhận biết, còn lại thông hiểu; câu thông hiểu ưu tiên cuối mỗi nhóm chương. */
 function nlcLevels(chs,nb){
   const size={},idx=[];
@@ -12398,6 +12494,8 @@ function buildExam(term,base,diff,st){
   const make=(kind,t)=>{
     const rg=new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}${S}`);
     let q=t.gen(rg);
+    /* đề ôn thi tốt nghiệp: đáp án trả lời ngắn ghi không quá 4 kí tự (kể cả dấu − và dấu phẩy) */
+    if(bp.tn&&kind==='tln')for(let k=0;k<40&&fmt(q.ans).length>4;k++)q=t.gen(new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq}|${t.id}|re${k}${S}`));
     if(RELABEL_RE.test(t.id)){const L=G===11?PT_LETTERS11:PT_LETTERS,sh=rg.int(0,L.length-1);if(sh)q=relabelDeep(q,sh,L)}
     q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.ext)q.ext=t.ext;if(t.les)q.les=t.les;return q;
   };
@@ -12554,11 +12652,11 @@ if(!['mix','nlc','ds','tln','tl'].includes(state.wsk))state.wsk='mix';
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
 if(![7,8,10,11,12].includes(state.grade))state.grade=8;
-if(!['gk1','ck1','gk2','ck2'].includes(state.kind))state.kind='gk1';
+if(!['gk1','ck1','gk2','ck2','tn'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
 const termOf=(g,k)=>g===8?k:g+k;
-function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind.replace('2','1')}
+function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!BLUEPRINT[state.term])state.kind='gk1'}
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
@@ -12671,8 +12769,8 @@ function keyHTML(base,vs,bp){
   }
   const m=matrixOf(base);
   const cols=[['nlc','nN','(câu)',1],['ds','nD','(ý)',4],['tln','nT','(câu)',1],['tl','nL','(câu)',1]].filter(c=>P[c[1]]>0);
-  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">Chương</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
-  bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">Chương ${ROM10[c]}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
+  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
+  bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">${bp.tn?`Chủ đề ${c-100}`:`Chương ${ROM10[c]}`}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
   h+=`<tr class="hi"><td class="l"><b>Tổng</b></td>${cols.map(k=>`<td>${P[k[1]]*k[3]}</td>`).join('')}<td>${pts(tot)}</td><td>100%</td></tr></table>`;
   const lvTxt=['NB','TH','VD','VDC'].map(k=>`${LV_NAME[k]} ${pts(m.pt[k])} đ (${Math.round(m.pt[k]*10)}%)`).join(' · ');
   h+=`<p class="ksmall">Mức độ nhận thức (độ khó ${DIFFS[base.diff].name}): ${lvTxt}. Mức độ do người soạn gán cho từng dạng câu, có thể khác với phân loại của trường; “vận dụng cao” ở đây là bài hình học có thêm một bước suy luận, không phải bài thi học sinh giỏi.</p></section>`;
@@ -12710,6 +12808,7 @@ function histNote(ex){
 }
 
 const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
+const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, Phần III có câu vận dụng cao.'};
 const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 35–40% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
 const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 
@@ -12827,7 +12926,7 @@ function render(){
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#scopeHint').textContent=bp.scope+'.';
-  $('#diffHint').textContent=(bp.grade===8?DIFF_HINT:bp.grade===7?DIFF_HINT7:DIFF_HINT11)[state.diff];
+  $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===7?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
@@ -12835,7 +12934,10 @@ function render(){
   const sh=$('#structHint'),sw=$('#structWarn');
   sh.textContent=`${state.struct==='custom'?'Tự chọn':STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
-  $('#csBox').hidden=state.struct!=='custom';
+  $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
+  /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
+  $('#struct').disabled=!!bp.tn;
+  if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
   $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
@@ -12904,7 +13006,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2'}[state.kind]||state.kind;
+    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_Bai${wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}

@@ -14,11 +14,11 @@ if(!['mix','nlc','ds','tln','tl'].includes(state.wsk))state.wsk='mix';
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
 if(![7,8,10,11,12].includes(state.grade))state.grade=8;
-if(!['gk1','ck1','gk2','ck2'].includes(state.kind))state.kind='gk1';
+if(!['gk1','ck1','gk2','ck2','tn'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
 const termOf=(g,k)=>g===8?k:g+k;
-function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind.replace('2','1')}
+function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!BLUEPRINT[state.term])state.kind='gk1'}
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
@@ -131,8 +131,8 @@ function keyHTML(base,vs,bp){
   }
   const m=matrixOf(base);
   const cols=[['nlc','nN','(câu)',1],['ds','nD','(ý)',4],['tln','nT','(câu)',1],['tl','nL','(câu)',1]].filter(c=>P[c[1]]>0);
-  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">Chương</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
-  bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">Chương ${ROM10[c]}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
+  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
+  bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">${bp.tn?`Chủ đề ${c-100}`:`Chương ${ROM10[c]}`}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
   h+=`<tr class="hi"><td class="l"><b>Tổng</b></td>${cols.map(k=>`<td>${P[k[1]]*k[3]}</td>`).join('')}<td>${pts(tot)}</td><td>100%</td></tr></table>`;
   const lvTxt=['NB','TH','VD','VDC'].map(k=>`${LV_NAME[k]} ${pts(m.pt[k])} đ (${Math.round(m.pt[k]*10)}%)`).join(' · ');
   h+=`<p class="ksmall">Mức độ nhận thức (độ khó ${DIFFS[base.diff].name}): ${lvTxt}. Mức độ do người soạn gán cho từng dạng câu, có thể khác với phân loại của trường; “vận dụng cao” ở đây là bài hình học có thêm một bước suy luận, không phải bài thi học sinh giỏi.</p></section>`;
@@ -170,6 +170,7 @@ function histNote(ex){
 }
 
 const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
+const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, Phần III có câu vận dụng cao.'};
 const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 35–40% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
 const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 
@@ -287,7 +288,7 @@ function render(){
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#scopeHint').textContent=bp.scope+'.';
-  $('#diffHint').textContent=(bp.grade===8?DIFF_HINT:bp.grade===7?DIFF_HINT7:DIFF_HINT11)[state.diff];
+  $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===7?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
@@ -295,7 +296,10 @@ function render(){
   const sh=$('#structHint'),sw=$('#structWarn');
   sh.textContent=`${state.struct==='custom'?'Tự chọn':STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
-  $('#csBox').hidden=state.struct!=='custom';
+  $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
+  /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
+  $('#struct').disabled=!!bp.tn;
+  if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
   $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
@@ -364,7 +368,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2'}[state.kind]||state.kind;
+    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_Bai${wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}

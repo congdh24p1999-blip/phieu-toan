@@ -15,7 +15,16 @@ const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
 const CH10={1:'Mệnh đề và tập hợp',2:'Bất phương trình và hệ bất phương trình bậc nhất hai ẩn',3:'Hệ thức lượng trong tam giác',4:'Vectơ',5:'Các số đặc trưng của mẫu số liệu không ghép nhóm',6:'Hàm số, đồ thị và ứng dụng',7:'Phương pháp toạ độ trong mặt phẳng',8:'Đại số tổ hợp',9:'Tính xác suất theo định nghĩa cổ điển'};
 const G10={grade:10,school:'THPT',mon:'Toán 10',chName:CH10,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
+/* Ôn thi tốt nghiệp THPT: chủ đề gộp nội dung lớp 10, 11, 12 theo cấu trúc đề chính thức năm 2025 */
+const CHTN={101:'Ứng dụng đạo hàm, khảo sát hàm số (lớp 11, 12)',102:'Nguyên hàm, tích phân và ứng dụng',103:'Vectơ và phương pháp toạ độ trong không gian',104:'Hình học không gian: quan hệ song song, vuông góc (lớp 11)',
+  105:'Thống kê: mẫu số liệu ghép nhóm (lớp 11, 12)',106:'Đại số tổ hợp và xác suất (lớp 10, 11, 12)',107:'Hàm số lượng giác, phương trình lượng giác (lớp 11)',108:'Dãy số, cấp số cộng, cấp số nhân (lớp 11)',109:'Hàm số mũ và hàm số lôgarit (lớp 11)',110:'Bất phương trình, hệ bất phương trình bậc nhất hai ẩn; hàm số bậc hai (lớp 10)'};
+const TN_MIX={101:[[12,1],[11,9],['tn',101]],102:[[12,4],['tn',102]],103:[[12,2],[12,5],['tn',103]],104:[[11,4],[11,7],['tn',104]],105:[[11,3],[12,3]],106:[[10,8],[10,9],[11,8],[12,6],['tn',106]],107:[[11,1]],108:[[11,2]],109:[[11,6]],110:[[10,2],[10,6]]};
 const BLUEPRINT={
+  '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
+    scope:'Theo cấu trúc đề thi tốt nghiệp THPT năm 2025 (giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
+    chapters:[101,102,103,104,105,106,107,108,109,110],
+    nlc:[101,102,102,102,103,103,103,104,105,107,108,109],ds:[101,101,106,103],tln:[101,110,104,102,106,106],tl:[],
+    note:'Cấu trúc theo đề chính thức năm 2025: Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
   '10gk1':{...G10,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,2,3,3],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[3]}]},
@@ -114,7 +123,16 @@ function structNote(s){
 /* Câu mở rộng (t.ext): chỉ dùng khi bật ALLOW_EXT hoặc đang tạo đề mức Nâng cao (CUR_DIFF). */
 let ALLOW_EXT=false,CUR_DIFF='chuan';
 const extOK=()=>ALLOW_EXT||CUR_DIFF==='nang_cao';
-const poolOf=(bp,kind)=>Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
+/* Đề ôn thi tốt nghiệp: gom mẫu câu của nhiều lớp, gán mã chủ đề của BLUEPRINT['12tn'] */
+const MIX_CACHE={};
+/* dạng trả lời ngắn hầu như luôn có đáp án dài quá 4 kí tự: không dùng trong đề ôn thi tốt nghiệp */
+const TN_EXCL=new Set(['t12-12-profit','t11-6-compound']);
+function mixPool(bp,kind){
+  const ck=bp.title+'|'+kind;
+  if(!MIX_CACHE[ck]){MIX_CACHE[ck]=[];for(const [top,L] of Object.entries(bp.mix))for(const t of Object.values(T[kind]))if(!TN_EXCL.has(t.id)&&L.some(([g,ch])=>(t.g||8)===g&&t.ch===ch))MIX_CACHE[ck].push({...t,ch:+top})}
+  return MIX_CACHE[ck].filter(t=>!t.ext||extOK());
+}
+const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
 /* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
 function apportion(n,w,cap){
   const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};
@@ -139,7 +157,7 @@ const BP_CACHE={};
 /* Bản thiết kế đề theo cấu trúc đã chọn. Cấu trúc mặc định trả về đúng bản gốc, nên đề cũ không đổi. */
 function bpOf(term,st){
   const base=BLUEPRINT[term],s=st||STRUCTS.chuan,sk=structKey(s);
-  if(sk===DEF_SK)return base;
+  if(sk===DEF_SK||base.tn)return base;
   const ck=term+'|'+sk;if(BP_CACHE[ck])return BP_CACHE[ck];
   const w={};base.nlc.forEach(c=>w[c]=(w[c]||0)+1);
   const warn=[],lists={};
@@ -183,7 +201,13 @@ const DIFFS11={
   chuan:{name:'Chuẩn',nb:8,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:6,ds:['TH','VD'],tln:['VD','VD','VD','VD'],tl:['VD','VD','VDC']}
 };
-const dOf=(term,diff)=>{const g=BLUEPRINT[term].grade;return g===8?DIFFS[diff]:DIFFS11[diff]};
+/* Độ khó cho đề ôn thi tốt nghiệp: Phần I nhận biết – thông hiểu, Phần II tăng dần đến vận dụng, Phần III chủ yếu vận dụng (như đề 2025). */
+const DIFFS_TN={
+  co_ban:{name:'Cơ bản',nb:7,ds:['NB','TH','TH','TH'],tln:['TH','TH','TH','VD','VD','VD'],tl:[]},
+  chuan:{name:'Chuẩn',nb:6,ds:['TH','TH','TH','VD'],tln:['TH','VD','VD','VD','VD','VD'],tl:[]},
+  nang_cao:{name:'Nâng cao',nb:4,ds:['TH','VD','VD','VD'],tln:['VD','VD','VD','VD','VDC','VDC'],tl:[]}
+};
+const dOf=(term,diff)=>{const b=BLUEPRINT[term];if(b.tn)return DIFFS_TN[diff];return b.grade===8?DIFFS[diff]:DIFFS11[diff]};
 /* Gán mức cho 12 câu phần I: nb câu nhận biết, còn lại thông hiểu; câu thông hiểu ưu tiên cuối mỗi nhóm chương. */
 function nlcLevels(chs,nb){
   const size={},idx=[];
@@ -233,6 +257,8 @@ function buildExam(term,base,diff,st){
   const make=(kind,t)=>{
     const rg=new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq++}|${t.id}${S}`);
     let q=t.gen(rg);
+    /* đề ôn thi tốt nghiệp: đáp án trả lời ngắn ghi không quá 4 kí tự (kể cả dấu − và dấu phẩy) */
+    if(bp.tn&&kind==='tln')for(let k=0;k<40&&fmt(q.ans).length>4;k++)q=t.gen(new RNG(`gen|${term}|${base}|${diff}|${kind}|${seq}|${t.id}|re${k}${S}`));
     if(RELABEL_RE.test(t.id)){const L=G===11?PT_LETTERS11:PT_LETTERS,sh=rg.int(0,L.length-1);if(sh)q=relabelDeep(q,sh,L)}
     q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.ext)q.ext=t.ext;if(t.les)q.les=t.les;return q;
   };
