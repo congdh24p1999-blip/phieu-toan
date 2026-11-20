@@ -297,7 +297,7 @@ function render(){
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom';
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${bp.grade===10?'học kì I (học kì II sẽ thêm sau)':'học kì I và II'}. Các lớp khác sẽ thêm sau.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
 }
 function syncInputs(){

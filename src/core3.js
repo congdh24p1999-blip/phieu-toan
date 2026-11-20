@@ -12,7 +12,7 @@ const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
 const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm',4:'Nguyên hàm và tích phân',5:'Phương pháp toạ độ trong không gian',6:'Xác suất có điều kiện'};
 const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
-const CH10={1:'Mệnh đề và tập hợp',2:'Bất phương trình và hệ bất phương trình bậc nhất hai ẩn',3:'Hệ thức lượng trong tam giác',4:'Vectơ',5:'Các số đặc trưng của mẫu số liệu không ghép nhóm'};
+const CH10={1:'Mệnh đề và tập hợp',2:'Bất phương trình và hệ bất phương trình bậc nhất hai ẩn',3:'Hệ thức lượng trong tam giác',4:'Vectơ',5:'Các số đặc trưng của mẫu số liệu không ghép nhóm',6:'Hàm số, đồ thị và ứng dụng',7:'Phương pháp toạ độ trong mặt phẳng',8:'Đại số tổ hợp',9:'Tính xác suất theo định nghĩa cổ điển'};
 const G10={grade:10,school:'THPT',mon:'Toán 10',chName:CH10,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
 const BLUEPRINT={
@@ -22,6 +22,12 @@ const BLUEPRINT={
   '10ck1':{...G10,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
     nlc:[1,1,2,2,3,3,4,4,4,4,5,5],ds:[4,5],tln:[2,3,4,5],
     tl:[{role:'a',chs:[3]},{role:'b',chs:[4]},{role:'c',chs:[5]}]},
+  '10gk2':{...G10,hk:2,short:'Giữa học kì II',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ II',scope:'Chương VI và Chương VII (Kết nối tri thức)',chapters:[6,7],
+    nlc:[6,6,6,6,6,6,7,7,7,7,7,7],ds:[6,7],tln:[6,6,7,7],
+    tl:[{role:'a',chs:[6]},{role:'b',chs:[7]},{role:'c',chs:[6]}]},
+  '10ck2':{...G10,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – IX (Kết nối tri thức)',chapters:[6,7,8,9],
+    nlc:[6,6,6,7,7,7,8,8,8,9,9,9],ds:[8,9],tln:[6,7,8,9],
+    tl:[{role:'b',chs:[7]},{role:'a',chs:[8]},{role:'c',chs:[9]}]},
   '7gk1':{...G7,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,1,2,3],
     tl:[{role:'alg',chs:[1,2]},{role:'real',chs:[1,2]},{role:'geo',chs:[3]}]},
