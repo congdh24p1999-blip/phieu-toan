@@ -20,6 +20,7 @@ Cần Node.js (≥ 18) và Python 3.
 | `core1.js`, `core2.js` | Hàm dùng chung (số, đa thức, định dạng), Toán 8 học kì I |
 | `core11*.js` | Toán 11 (`core11k.js`: câu vận dụng cao bổ sung) |
 | `core12a.js` … `core12e.js` | Toán 12 học kì I (a: Bài 1–2 và hàm vẽ đồ thị, bảng biến thiên; b: Bài 3–5; c: Chương II vectơ, toạ độ; d: Chương III; e: dạng bổ sung) |
+| `core10a.js` … `core10c.js` | Toán 10 học kì I (a: Chương I mệnh đề, tập hợp và Chương II bất phương trình bậc nhất hai ẩn, hình miền nghiệm `hpFig()` gạch phần bỏ đi; b: Chương III hệ thức lượng, Chương IV vectơ; c: Chương V số đặc trưng của mẫu số liệu không ghép nhóm) |
 | `core12f.js` … `core12h.js` | Toán 12 học kì II (f: Chương IV nguyên hàm, tích phân, kí hiệu tích phân `ig()`; g: Chương V toạ độ không gian; h: Chương VI xác suất có điều kiện và tự luận thực tiễn) |
 | `core7*.js` | Toán 7 (`core7d.js`: dạng bổ sung theo bài tập SGK) |
 | `core-ds.js` | Câu đúng sai lớp 7 |
@@ -47,6 +48,7 @@ python3 pr8.py                    # in thử PDF A4 (lưu ở out/)
 python3 wordtest.py 8 ck2 101 2    # tải thử file Word đề và đáp án (lớp, kì, mã đề, số mã đề)
 python3 wstest.py                 # thử chế độ phiếu bài tập: mọi bài học đều tạo được phiếu, tải Word
 python3 ui12.py                   # thử lớp 12 qua giao diện (đề, đáp án, ma trận)
+python3 ui10.py                   # thử lớp 10 học kì I qua giao diện
 node hyph.js '12'                 # tìm dấu trừ ASCII "-" lọt vào nội dung
 node lv11.js 12gk1,12ck1          # tỉ lệ mức độ nhận thức theo độ khó
 ```

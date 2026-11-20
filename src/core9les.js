@@ -29,6 +29,8 @@ const LESSON_TITLES={
      28:'Biến cố hợp, biến cố giao, biến cố độc lập',29:'Công thức cộng xác suất',30:'Công thức nhân xác suất cho hai biến cố độc lập',
      31:'Định nghĩa và ý nghĩa của đạo hàm',32:'Các quy tắc tính đạo hàm',33:'Đạo hàm cấp hai'}
 };
+LESSON_TITLES[10]={1:'Mệnh đề',2:'Tập hợp và các phép toán trên tập hợp',3:'Bất phương trình bậc nhất hai ẩn',4:'Hệ bất phương trình bậc nhất hai ẩn',5:'Giá trị lượng giác của một góc từ 0° đến 180°',6:'Hệ thức lượng trong tam giác',
+  7:'Các khái niệm mở đầu',8:'Tổng và hiệu của hai vectơ',9:'Tích của một vectơ với một số',10:'Vectơ trong mặt phẳng toạ độ',11:'Tích vô hướng của hai vectơ',12:'Số gần đúng và sai số',13:'Các số đặc trưng đo xu thế trung tâm',14:'Các số đặc trưng đo độ phân tán'};
 LESSON_TITLES[12]={1:'Tính đơn điệu và cực trị của hàm số',2:'Giá trị lớn nhất và giá trị nhỏ nhất của hàm số',3:'Đường tiệm cận của đồ thị hàm số',4:'Khảo sát sự biến thiên và vẽ đồ thị của hàm số',5:'Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn',
   6:'Vectơ trong không gian',7:'Hệ trục toạ độ trong không gian',8:'Biểu thức toạ độ của các phép toán vectơ',9:'Khoảng biến thiên và khoảng tứ phân vị',10:'Phương sai và độ lệch chuẩn',
   11:'Nguyên hàm',12:'Tích phân',13:'Ứng dụng hình học của tích phân',14:'Phương trình mặt phẳng',15:'Phương trình đường thẳng trong không gian',16:'Công thức tính góc trong không gian',17:'Phương trình mặt cầu',18:'Xác suất có điều kiện',19:'Công thức xác suất toàn phần và công thức Bayes'};

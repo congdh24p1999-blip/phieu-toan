@@ -1,6 +1,6 @@
 /* ===== Phiếu bài tập theo bài học SGK =====
    Chọn các dạng câu gắn với bài học (t.les, xem core9les.js), xếp từ dễ đến khó. */
-const WS_CH_NAMES={7:CH7,8:CH_NAME,11:CH11,12:CH12};
+const WS_CH_NAMES={7:CH7,8:CH_NAME,10:CH10,11:CH11,12:CH12};
 /* Danh sách bài học có câu hỏi của một lớp: [{n, title, ch, hk, count}] */
 function wsLessons(g){
   const m={};
