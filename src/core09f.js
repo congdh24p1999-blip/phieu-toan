@@ -11,7 +11,7 @@ const polyN=n=>n===12?'đa giác đều 12 cạnh':`${POLY9[n]} đều`;
 /* ===================== Bài 27: Góc nội tiếp ===================== */
 N9b('k9-27-ins',9,'NB',[27],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120,130,140]);
-  return mkNum(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}° và ${I('C')} thuộc cung lớn ${I('AB')}. Số đo góc ${I('ACB')} bằng`,correct:a/2,f:dg9,cands:[a,180-a,90-a/2,2*a,180-a/2],ok:x=>x>0&&x<180,
+  return mkNum(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}° và ${I('C')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Ins(a)}Số đo góc ${I('ACB')} bằng`,correct:a/2,f:dg9,cands:[a,180-a,90-a/2,2*a,180-a/2],ok:x=>x>0&&x<180,
     sol:`Góc nội tiếp ACB chắn cung nhỏ AB nên ∠ACB = ${a}° : 2 = ${a/2}°.`,chk:()=>true});
 });
 N9b('k9-27-semi',9,'NB',[27],r=>{
@@ -21,9 +21,9 @@ N9b('k9-27-semi',9,'NB',[27],r=>{
 });
 N9b('k9-27-center',9,'TH',[27],r=>{
   const g=r.pick([60,70,80,90,100,110,120,130,140]),t=r.int(0,2);
-  if(t===0)return mkNum(r,{stem:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) có góc ${I('ACB')} = ${g/2}°. Số đo góc ở tâm ${I('AOB')} (chắn cung nhỏ ${I('AB')}) bằng`,correct:g,f:dg9,cands:[g/2,180-g/2,180-g,g/4],ok:x=>x>0&&x<360,sol:`Góc ở tâm và góc nội tiếp cùng chắn cung AB: ∠AOB = 2∠ACB = ${g}°.`,chk:()=>true});
-  if(t===1)return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('M')} thuộc cung lớn ${I('AB')}. Số đo góc ${I('AMB')} bằng`,correct:g/2,f:dg9,cands:[g,180-g/2,180-g,2*g],ok:x=>x>0&&x<180,sol:`∠AMB = ${fr(1,2)}∠AOB = ${g/2}°.`,chk:()=>true});
-  return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('N')} thuộc cung nhỏ ${I('AB')}. Số đo góc ${I('ANB')} bằng`,correct:180-g/2,f:dg9,cands:[g/2,g,180-g,360-g],ok:x=>x>0&&x<180,sol:`Cung lớn AB có số đo 360° − ${g}° = ${360-g}°; ∠ANB chắn cung lớn nên ∠ANB = ${360-g}° : 2 = ${180-g/2}°.`,chk:()=>true});
+  if(t===0)return mkNum(r,{stem:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) có góc ${I('ACB')} = ${g/2}° (hình vẽ).${fig9Ins(g)}Số đo góc ở tâm ${I('AOB')} (chắn cung nhỏ ${I('AB')}) bằng`,correct:g,f:dg9,cands:[g/2,180-g/2,180-g,g/4],ok:x=>x>0&&x<360,sol:`Góc ở tâm và góc nội tiếp cùng chắn cung AB: ∠AOB = 2∠ACB = ${g}°.`,chk:()=>true});
+  if(t===1)return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('M')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Ins(g,{cn:'M'})}Số đo góc ${I('AMB')} bằng`,correct:g/2,f:dg9,cands:[g,180-g/2,180-g,2*g],ok:x=>x>0&&x<180,sol:`∠AMB = ${fr(1,2)}∠AOB = ${g/2}°.`,chk:()=>true});
+  return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('N')} thuộc cung nhỏ ${I('AB')} (hình vẽ).${fig9Ins(g,{cn:'N',major:false})}Số đo góc ${I('ANB')} bằng`,correct:180-g/2,f:dg9,cands:[g/2,g,180-g,360-g],ok:x=>x>0&&x<180,sol:`Cung lớn AB có số đo 360° − ${g}° = ${360-g}°; ∠ANB chắn cung lớn nên ∠ANB = ${360-g}° : 2 = ${180-g/2}°.`,chk:()=>true});
 });
 /* ===================== Bài 28: Đường tròn ngoại tiếp và nội tiếp của tam giác ===================== */
 N9b('k9-28-circum',9,'NB',[28],r=>{
@@ -42,7 +42,7 @@ N9b('k9-28-R',9,'TH',[28],r=>{
 /* ===================== Bài 29: Tứ giác nội tiếp ===================== */
 N9b('k9-29-quad',9,'NB',[29],r=>{
   const a=r.pick([55,65,70,75,80,85,95,100,105,110,115,120,125]),t=r.chance(.5);
-  return mkNum(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ${t?`∠${I('A')} = ${a}°. Số đo góc ${I('C')}`:`∠${I('B')} = ${a}°. Số đo góc ${I('D')}`} bằng`,correct:180-a,f:dg9,cands:[a,90,190-a,170-a,a-10],ok:x=>x>0&&x<180&&x!==180-a,
+  return mkNum(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ${t?`∠${I('A')} = ${a}°. Số đo góc ${I('C')}`:`∠${I('B')} = ${a}°. Số đo góc ${I('D')}`} bằng${fig9Quad(t?[210,390-a,390,390+a]:[120+a,300,480-a,480])}`,correct:180-a,f:dg9,cands:[a,90,190-a,170-a,a-10],ok:x=>x>0&&x<180&&x!==180-a,
     sol:`Tứ giác nội tiếp có tổng hai góc đối bằng 180° nên góc cần tìm bằng 180° − ${a}° = ${180-a}°.`,chk:()=>true});
 });
 N9b('k9-29-which',9,'NB',[29],r=>{
@@ -61,23 +61,23 @@ N9b('k9-30-rot',9,'TH',[30],r=>{
 /* ===================== Bài 31 – 32: Hình trụ, hình nón, hình cầu ===================== */
 N9b('k9-31-cylV',10,'NB',[31],r=>{
   const R=r.int(2,8),h=r.int(3,12),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Thể tích của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([R*R*h,1])+' cm³',wrongs:[piH([2*R*h,1]),piH([R*h,1]),piH([2*R*R*h,1]),piH(Q(R*R*h,3))].map(x=>x+' cm³'),sol:`V = πr²h = π·${R}²·${h} = ${piH([R*R*h,1])} (cm³).`,chk:()=>true})
-    :mkTxt(r,{stem:`Thể tích của hình nón có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH(Q(R*R*h,3))+' cm³',wrongs:[piH([R*R*h,1]),piH(Q(R*h,3)),piH(Q(2*R*R*h,3)),piH(Q(R*R*h,2))].map(x=>x+' cm³'),sol:`V = ${fr(1,3)}πr²h = ${fr(1,3)}·π·${R}²·${h} = ${piH(Q(R*R*h,3))} (cm³).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Thể tích của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([R*R*h,1])+' cm³',wrongs:[piH([2*R*h,1]),piH([R*h,1]),piH([2*R*R*h,1]),piH(Q(R*R*h,3))].map(x=>x+' cm³'),sol:`V = πr²h = π·${R}²·${h} = ${piH([R*R*h,1])} (cm³).`,chk:()=>true})
+    :mkTxt(r,{stem:`Thể tích của hình nón có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cone(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH(Q(R*R*h,3))+' cm³',wrongs:[piH([R*R*h,1]),piH(Q(R*h,3)),piH(Q(2*R*R*h,3)),piH(Q(R*R*h,2))].map(x=>x+' cm³'),sol:`V = ${fr(1,3)}πr²h = ${fr(1,3)}·π·${R}²·${h} = ${piH(Q(R*R*h,3))} (cm³).`,chk:()=>true});
 });
 N9b('k9-31-cylS',10,'TH',[31],r=>{
   const R=r.int(2,8),h=R+r.int(1,6),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Diện tích xung quanh của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([2*R*h,1])+' cm²',wrongs:[piH([R*h,1]),piH([R*R*h,1]),piH([2*R*h+2*R*R,1]),piH([4*R*h,1])].map(x=>x+' cm²'),sol:`S_xq = 2πrh = 2π·${R}·${h} = ${piH([2*R*h,1])} (cm²).`,chk:()=>true})
-    :mkTxt(r,{stem:`Diện tích toàn phần của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([2*R*h+2*R*R,1])+' cm²',wrongs:[piH([2*R*h,1]),piH([2*R*h+R*R,1]),piH([R*h+2*R*R,1]),piH([R*R*h,1]),piH([4*R*h,1]),piH([R*h+R*R,1])].map(x=>x+' cm²'),sol:`S_tp = 2πrh + 2πr² = ${piH([2*R*h,1])} + ${piH([2*R*R,1])} = ${piH([2*R*h+2*R*R,1])} (cm²).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Diện tích xung quanh của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([2*R*h,1])+' cm²',wrongs:[piH([R*h,1]),piH([R*R*h,1]),piH([2*R*h+2*R*R,1]),piH([4*R*h,1])].map(x=>x+' cm²'),sol:`S_xq = 2πrh = 2π·${R}·${h} = ${piH([2*R*h,1])} (cm²).`,chk:()=>true})
+    :mkTxt(r,{stem:`Diện tích toàn phần của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([2*R*h+2*R*R,1])+' cm²',wrongs:[piH([2*R*h,1]),piH([2*R*h+R*R,1]),piH([R*h+2*R*R,1]),piH([R*R*h,1]),piH([4*R*h,1]),piH([R*h+R*R,1])].map(x=>x+' cm²'),sol:`S_tp = 2πrh + 2πr² = ${piH([2*R*h,1])} + ${piH([2*R*R,1])} = ${piH([2*R*h+2*R*R,1])} (cm²).`,chk:()=>true});
 });
 N9b('k9-31-cone',10,'TH',[31],r=>{
   const [p,q,h]=r.pick(PYT9.slice(0,4)),k=r.int(1,2),R=p*k,H=q*k,L=h*k;
-  return mkTxt(r,{stem:`Một hình nón có bán kính đáy ${R} cm và chiều cao ${H} cm. Diện tích xung quanh của hình nón là`,correct:piH([R*L,1])+' cm²',wrongs:[piH([R*H,1]),piH([2*R*L,1]),piH([R*L+R*R,1]),piH(Q(R*R*H,3))].map(x=>x+' cm²'),
+  return mkTxt(r,{stem:`Một hình nón có bán kính đáy ${R} cm và chiều cao ${H} cm. ${fig9Cone(R,H,{r:R+' cm',h:H+' cm'})}Diện tích xung quanh của hình nón là`,correct:piH([R*L,1])+' cm²',wrongs:[piH([R*H,1]),piH([2*R*L,1]),piH([R*L+R*R,1]),piH(Q(R*R*H,3))].map(x=>x+' cm²'),
     sol:`Đường sinh l = √(${R}² + ${H}²) = ${L} (cm); S_xq = πrl = π·${R}·${L} = ${piH([R*L,1])} (cm²).`,chk:()=>L*L===R*R+H*H});
 });
 N9b('k9-32-sph',10,'NB',[32],r=>{
   const R=r.int(2,9),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Diện tích mặt cầu bán kính ${R} cm là`,correct:piH([4*R*R,1])+' cm²',wrongs:[piH([R*R,1]),piH([2*R*R,1]),piH(Q(4*R**3,3)),piH([4*R,1])].map(x=>x+' cm²'),sol:`S = 4πR² = 4π·${R}² = ${piH([4*R*R,1])} (cm²).`,chk:()=>true})
-    :mkTxt(r,{stem:`Thể tích hình cầu bán kính ${R} cm là`,correct:piH(Q(4*R**3,3))+' cm³',wrongs:[piH([4*R*R,1]),piH([R**3,1]),piH(Q(R**3,3)),piH([4*R**3,1])].map(x=>x+' cm³'),sol:`V = ${fr(4,3)}πR³ = ${fr(4,3)}π·${R}³ = ${piH(Q(4*R**3,3))} (cm³).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Diện tích mặt cầu bán kính ${R} cm là${fig9Sph({r:R+' cm'})}`,correct:piH([4*R*R,1])+' cm²',wrongs:[piH([R*R,1]),piH([2*R*R,1]),piH(Q(4*R**3,3)),piH([4*R,1])].map(x=>x+' cm²'),sol:`S = 4πR² = 4π·${R}² = ${piH([4*R*R,1])} (cm²).`,chk:()=>true})
+    :mkTxt(r,{stem:`Thể tích hình cầu bán kính ${R} cm là${fig9Sph({r:R+' cm'})}`,correct:piH(Q(4*R**3,3))+' cm³',wrongs:[piH([4*R*R,1]),piH([R**3,1]),piH(Q(R**3,3)),piH([4*R**3,1])].map(x=>x+' cm³'),sol:`V = ${fr(4,3)}πR³ = ${fr(4,3)}π·${R}³ = ${piH(Q(4*R**3,3))} (cm³).`,chk:()=>true});
 });
 N9b('k9-32-real',10,'TH',[32],r=>{
   const d=r.pick([20,22,24,30,40,6,8,10,4]),R=d/2,t=r.chance(.5),u=d>=20?'cm':'cm';
@@ -88,7 +88,7 @@ N9b('k9-32-real',10,'TH',[32],r=>{
 /* ---------- Đúng/sai chương IX ---------- */
 DS9b('ds9-27-ang',9,'NB',[27],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120,130,140]);
-  return mkDS(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}°, ${I('C')} thuộc cung lớn ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}°, ${I('C')} thuộc cung lớn ${I('AB')}.${fig9Ins(a)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`∠${I('AOB')} = ${a}°.`,f:`∠${I('AOB')} = ${a/2}°.`,why:`Góc ở tâm có số đo bằng số đo cung bị chắn.`},
     {t:`∠${I('ACB')} = ${a/2}°.`,f:`∠${I('ACB')} = ${a}°.`,why:`Góc nội tiếp bằng nửa số đo cung bị chắn.`},
     {t:`Số đo cung lớn ${I('AB')} bằng ${360-a}°.`,f:`Số đo cung lớn ${I('AB')} bằng ${180-a}°.`,why:`360° − ${a}° = ${360-a}°.`},
@@ -96,7 +96,7 @@ DS9b('ds9-27-ang',9,'NB',[27],r=>{
 });
 DS9b('ds9-29-quad',9,'NB',[29],r=>{
   for(;;){const a=r.pick([60,65,70,75,80,85,95,100,105,110,115,120]),b=r.pick([60,70,80,100,110,120]);if(a===b||a+b===180)continue;
-    return mkDS(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn (${I('O')}) có ∠${I('A')} = ${a}°, ∠${I('B')} = ${b}°. Xét tính đúng sai của các khẳng định sau:`,items:[
+    return mkDS(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn (${I('O')}) có ∠${I('A')} = ${a}°, ∠${I('B')} = ${b}° (hình vẽ).${fig9QuadAB(a,b)}Xét tính đúng sai của các khẳng định sau:`,items:[
       {t:`∠${I('C')} = ${180-a}°.`,f:`∠${I('C')} = ${a}°.`,why:`∠A + ∠C = 180°.`},
       {t:`∠${I('D')} = ${180-b}°.`,f:`∠${I('D')} = ${180-a}°.`,why:`∠B + ∠D = 180°.`},
       {t:`Bốn đỉnh ${I('A')}, ${I('B')}, ${I('C')}, ${I('D')} cùng thuộc đường tròn (${I('O')}).`,f:`Đỉnh ${I('D')} nằm bên trong đường tròn (${I('O')}).`,why:`Tứ giác nội tiếp có bốn đỉnh thuộc một đường tròn.`},
@@ -112,7 +112,7 @@ DS9b('ds9-28-tri',9,'TH',[28],r=>{
 });
 DS9b('ds9-28-right',9,'TH',[28],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),BC=h*k;
-  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${p*k} cm, ${I('AC')} = ${q*k} cm. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${p*k} cm, ${I('AC')} = ${q*k} cm (hình vẽ).${fig9RtIn(p,q)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Tâm đường tròn ngoại tiếp tam giác ${I('ABC')} là trung điểm của ${I('BC')}.`,f:`Tâm đường tròn ngoại tiếp tam giác ${I('ABC')} là trung điểm của ${I('AB')}.`,why:`Góc BAC = 90° là góc nội tiếp chắn nửa đường tròn, nên BC là đường kính.`},
     {t:`Bán kính đường tròn ngoại tiếp bằng ${fmt(BC/2)} cm.`,f:`Bán kính đường tròn ngoại tiếp bằng ${BC} cm.`,why:`BC = ${BC}, R = BC/2 = ${fmt(BC/2)}.`},
     {t:`Độ dài đường tròn ngoại tiếp bằng ${piH([BC,1])} cm.`,f:`Độ dài đường tròn ngoại tiếp bằng ${piH([2*BC,1])} cm.`,why:`C = 2πR = ${piH([BC,1])}.`},
@@ -120,7 +120,7 @@ DS9b('ds9-28-right',9,'TH',[28],r=>{
 });
 DS9b('ds9-29-tan',9,'VD',[29],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120]);
-  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}) kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm) sao cho ∠${I('AMB')} = ${a}°. Lấy điểm ${I('C')} thuộc cung lớn ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}) kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm) sao cho ∠${I('AMB')} = ${a}°. Lấy điểm ${I('C')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Tan(1,1/Math.sin(a*Math.PI/360),{C:true,angs:[['A','M','B',a+'°']]})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Tứ giác ${I('MAOB')} nội tiếp được đường tròn.`,f:`Tứ giác ${I('MAOB')} không nội tiếp được đường tròn.`,why:`∠MAO + ∠MBO = 90° + 90° = 180°.`},
     {t:`∠${I('AOB')} = ${180-a}°.`,f:`∠${I('AOB')} = ${a}°.`,why:`Tứ giác MAOB nội tiếp nên ∠AOB = 180° − ∠AMB.`},
     {t:`Đường tròn ngoại tiếp tứ giác ${I('MAOB')} có đường kính là ${I('MO')}.`,f:`Đường tròn ngoại tiếp tứ giác ${I('MAOB')} có đường kính là ${I('AB')}.`,why:`∠MAO = ∠MBO = 90° nên A, B thuộc đường tròn đường kính MO.`},
@@ -147,7 +147,7 @@ DS9b('ds9-31-cyl',10,'TH',[31,32],r=>{
 /* ---------- Trả lời ngắn ---------- */
 TLN9b('t9-27-ang',9,'TH',[27],r=>{
   const g=r.pick([60,70,80,100,110,120,130,140]),t=r.chance(.5);
-  return{kind:'tln',stem:`Trên đường tròn (${I('O')}) lấy ba điểm ${I('A')}, ${I('B')}, ${I('C')} sao cho ∠${I('AOB')} = ${g}° và ${I('C')} thuộc cung ${t?'lớn':'nhỏ'} ${I('AB')}. Tính số đo góc ${I('ACB')} (đơn vị: độ).`,ans:t?g/2:180-g/2,unit:'°',
+  return{kind:'tln',stem:`Trên đường tròn (${I('O')}) lấy ba điểm ${I('A')}, ${I('B')}, ${I('C')} sao cho ∠${I('AOB')} = ${g}° và ${I('C')} thuộc cung ${t?'lớn':'nhỏ'} ${I('AB')} (hình vẽ).${fig9Ins(g,{major:t})}Tính số đo góc ${I('ACB')} (đơn vị: độ).`,ans:t?g/2:180-g/2,unit:'°',
     sol:t?`∠ACB chắn cung nhỏ AB: ∠ACB = ${g}° : 2 = ${g/2}°.`:`∠ACB chắn cung lớn AB có số đo ${360-g}°: ∠ACB = ${180-g/2}°.`,chk:()=>true};
 });
 TLN9b('t9-28-R',9,'TH',[28],r=>{
@@ -156,11 +156,11 @@ TLN9b('t9-28-R',9,'TH',[28],r=>{
 });
 TLN9b('t9-29-obc',9,'VD',[27,28],r=>{
   const a=r.int(35,80);
-  return{kind:'tln',stem:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}) có ∠${I('BAC')} = ${a}°. Tính số đo góc ${I('OBC')} (đơn vị: độ).`,ans:90-a,unit:'°',sol:`∠BOC = 2∠BAC = ${2*a}° (góc ở tâm và góc nội tiếp cùng chắn cung BC). Tam giác OBC cân tại O nên ∠OBC = (180° − ${2*a}°) : 2 = ${90-a}°.`,chk:()=>true};
+  return{kind:'tln',stem:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}) có ∠${I('BAC')} = ${a}° (hình vẽ).${fig9TriIn(a)}Tính số đo góc ${I('OBC')} (đơn vị: độ).`,ans:90-a,unit:'°',sol:`∠BOC = 2∠BAC = ${2*a}° (góc ở tâm và góc nội tiếp cùng chắn cung BC). Tam giác OBC cân tại O nên ∠OBC = (180° − ${2*a}°) : 2 = ${90-a}°.`,chk:()=>true};
 });
 TLN9b('t9-29-quad',9,'VD',[29],r=>{
   const b=r.int(25,60),c=r.int(25,60);
-  return{kind:'tln',stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ∠${I('ABD')} = ${b}° và ∠${I('DBC')} = ${c}°. Tính số đo góc ${I('ADC')} (đơn vị: độ).`,ans:180-b-c,unit:'°',sol:`∠ABC = ${b}° + ${c}° = ${b+c}°. Tứ giác ABCD nội tiếp nên ∠ADC = 180° − ${b+c}° = ${180-b-c}°.`,chk:()=>b+c<180};
+  return{kind:'tln',stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ∠${I('ABD')} = ${b}° và ∠${I('DBC')} = ${c}°. ${fig9Quad((()=>{const x=(360-2*b-2*c)/2,C=270+x,D=C+2*c;return[D+2*b,270,C,D]})(),[['B','D']])}Tính số đo góc ${I('ADC')} (đơn vị: độ).`,ans:180-b-c,unit:'°',sol:`∠ABC = ${b}° + ${c}° = ${b+c}°. Tứ giác ABCD nội tiếp nên ∠ADC = 180° − ${b+c}° = ${180-b-c}°.`,chk:()=>b+c<180};
 });
 TLN9b('t9-30-hex',9,'VD',[30],r=>{
   const a=r.int(2,12),t=r.chance(.5),v=rd9a(t?3*Math.sqrt(3)/2*a*a:a*Math.sqrt(3)/2);
@@ -177,7 +177,7 @@ TLN9b('t9-32-ball',10,'TH',[32],r=>{
 });
 TLN9b('t9-31-cone',10,'VD',[31],r=>{
   const [p,q,h]=r.pick(PYT9.slice(0,4)),k=r.pick([1,2,3]),R=p*k,H=q*k,L=h*k,v=rd9a(Math.PI*R*L);
-  return{kind:'tln',stem:`Một chiếc nón lá có dạng hình nón với đường kính vành nón ${2*R} cm và chiều cao ${H} cm. Tính diện tích lá cần dùng để phủ mặt xung quanh chiếc nón (đơn vị: cm², làm tròn kết quả đến hàng phần mười; bỏ qua phần chồng mép).`,ans:v,unit:'cm²',
+  return{kind:'tln',stem:`Một chiếc nón lá có dạng hình nón với đường kính vành nón ${2*R} cm và chiều cao ${H} cm. ${fig9Cone(R,H,{r:' ',h:H+' cm'})}Tính diện tích lá cần dùng để phủ mặt xung quanh chiếc nón (đơn vị: cm², làm tròn kết quả đến hàng phần mười; bỏ qua phần chồng mép).`,ans:v,unit:'cm²',
     sol:`r = ${R}, l = √(${R}² + ${H}²) = ${L}; S_xq = πrl = ${piH([R*L,1])} ≈ ${fmt(v)} (cm²).`,chk:()=>L*L===R*R+H*H&&v<10000};
 });
 TLN9b('t9-32-rise',10,'VD',[31,32],r=>{
@@ -219,12 +219,12 @@ TL9b('tl9-29-oc',9,'VDC','geo',[27,29],r=>{
 /* ---------- Tự luận thực tế (hình khối) ---------- */
 TL9b('tl9-31-tank',10,'TH','real',[31],r=>{
   const R=r.pick([.5,.6,.8,1]),h=r.pick([1.2,1.5,2]),V=rd9b(Math.PI*R*R*h),S=rd9b(2*Math.PI*R*h+2*Math.PI*R*R);
-  return{kind:'tl',title:'Bồn chứa hình trụ',parts:[{pts:.5,html:`Một bồn chứa nước bằng inox có dạng hình trụ với bán kính đáy ${fmt(R)} m và chiều cao ${fmt(h)} m. Tính thể tích của bồn (làm tròn đến hàng phần trăm của mét khối). Bồn chứa được khoảng bao nhiêu lít nước?`},{pts:.5,html:`Tính diện tích inox cần dùng để làm bồn (gồm cả hai đáy; làm tròn đến hàng phần trăm của mét vuông, bỏ qua mép nối).`}],
+  return{kind:'tl',title:'Bồn chứa hình trụ',parts:[{pts:.5,html:`Một bồn chứa nước bằng inox có dạng hình trụ với bán kính đáy ${fmt(R)} m và chiều cao ${fmt(h)} m.${fig9Cyl(R,h,{r:fmt(R)+' m',h:fmt(h)+' m'})}Tính thể tích của bồn (làm tròn đến hàng phần trăm của mét khối). Bồn chứa được khoảng bao nhiêu lít nước?`},{pts:.5,html:`Tính diện tích inox cần dùng để làm bồn (gồm cả hai đáy; làm tròn đến hàng phần trăm của mét vuông, bỏ qua mép nối).`}],
     sol:[ptxt([[`V = πr²h = π·${fmt(R)}²·${fmt(h)} ≈ ${fmt(V)} (m³).`,.25],[`1 m³ = 1000 lít nên bồn chứa được khoảng ${Math.round(Math.PI*R*R*h*1000)} lít.`,.25]]),ptxt([[`S_xq = 2πrh = ${fmt(rd9b(2*Math.PI*R*h))} m²; hai đáy 2πr² = ${fmt(rd9b(2*Math.PI*R*R))} m².`,.25],[`Diện tích inox cần dùng ≈ ${fmt(S)} m².`,.25]])],chk:()=>true};
 });
 TL9b('tl9-32-ice',10,'VD','real',[31,32],r=>{
   const R=r.pick([2,2.5,3]),H=r.pick([8,10,12]),V1=rd9a(Math.PI*R*R*H/3),V2=rd9a(2*Math.PI*R**3/3),V=rd9a(Math.PI*R*R*H/3+2*Math.PI*R**3/3);
-  return{kind:'tl',title:'Thể tích hình khối trong thực tế',parts:[{pts:.5,html:`Một chiếc kem ốc quế gồm phần vỏ bánh dạng hình nón có bán kính đáy ${fmt(R)} cm, chiều cao ${H} cm và phần kem phía trên dạng nửa hình cầu có bán kính ${fmt(R)} cm. Phần bên trong vỏ bánh chứa đầy kem. Tính thể tích phần kem nằm trong vỏ bánh (làm tròn đến hàng phần mười).`},{pts:.5,html:`Tính tổng thể tích kem của chiếc kem ốc quế (làm tròn đến hàng phần mười).`}],
+  return{kind:'tl',title:'Thể tích hình khối trong thực tế',parts:[{pts:.5,html:`Một chiếc kem ốc quế gồm phần vỏ bánh dạng hình nón có bán kính đáy ${fmt(R)} cm, chiều cao ${H} cm và phần kem phía trên dạng nửa hình cầu có bán kính ${fmt(R)} cm (hình vẽ).${fig9Ice(R,H)}Phần bên trong vỏ bánh chứa đầy kem. Tính thể tích phần kem nằm trong vỏ bánh (làm tròn đến hàng phần mười).`},{pts:.5,html:`Tính tổng thể tích kem của chiếc kem ốc quế (làm tròn đến hàng phần mười).`}],
     sol:[ptxt([[`Thể tích hình nón: V₁ = ${fr(1,3)}πr²h = ${fr(1,3)}π·${fmt(R)}²·${H}.`,.25],[`V₁ ≈ ${fmt(V1)} (cm³).`,.25]]),ptxt([[`Nửa hình cầu: V₂ = ${fr(2,3)}πR³ ≈ ${fmt(V2)} (cm³).`,.25],[`Tổng thể tích kem V = V₁ + V₂ ≈ ${fmt(V)} (cm³).`,.25]])],chk:()=>true};
 });
 /* ---------- Bổ sung Bài 30 ---------- */

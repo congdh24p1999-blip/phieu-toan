@@ -8409,7 +8409,7 @@ N9('k9-11-comp',4,'TH',[11],r=>{
 N9('k9-11-calc',4,'TH',[11],r=>{
   const [p,q,h]=r.pick(PYT9),fn=r.pick(['sin','cos','tan','cot']),ang=r.pick(['B','C']),AB=p,AC=q,BC=h,opp=ang==='B'?AC:AB,adj=ang==='B'?AB:AC;
   const v={sin:Q(opp,BC),cos:Q(adj,BC),tan:Q(opp,adj),cot:Q(adj,opp)}[fn];
-  return mkF(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm. Giá trị của ${fn} ${I(ang)} bằng`,correct:v,cands:[Q(v[1],v[0]),Q(opp,adj),Q(adj,BC),Q(opp,BC),Q(adj,opp)],
+  return mkF(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm (hình vẽ).${fig9Right(AB,AC,{lens:[['A','B',AB+' cm'],['A','C',AC+' cm']]})}Giá trị của ${fn} ${I(ang)} bằng`,correct:v,cands:[Q(v[1],v[0]),Q(opp,adj),Q(adj,BC),Q(opp,BC),Q(adj,opp)],
     sol:`BC = √(${AB}² + ${AC}²) = ${BC} cm. ${fn} ${ang} = ${qh(v)}.`,chk:()=>p*p+q*q===h*h});
 });
 
@@ -8419,17 +8419,17 @@ N9('k9-12-side',4,'TH',[12],r=>{
   const sv=svOf(Math.sin(a*Math.PI/180)),cv=svOf(Math.cos(a*Math.PI/180)),[ks,ms]=a===45?[1,2]:a===60?[1,3]:[1,1],[kc,mc]=a===45?[1,2]:a===30?[1,3]:[1,1];
   const hf=(k,m)=>m===1?String(BC*k/2):kr(BC/2,m);/* BC·(k√m)/2 */
   const cor=t?hf(kc,mc):hf(ks,ms),W=[t?hf(ks,ms):hf(kc,mc),String(BC),kr(BC,a===45?2:3),String(BC*2)].filter((x,i,A)=>x!==cor&&A.indexOf(x)===i);
-  return mkTxt(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${BC} cm và góc ${I('B')} = ${a}°. Độ dài cạnh ${I(t?'AB':'AC')} bằng`,correct:`${cor} cm`,wrongs:W.concat([kr(BC/2,a===45?3:2)]).filter(x=>x!==cor).map(x=>`${x} cm`),
+  return mkTxt(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${BC} cm và góc ${I('B')} = ${a}° (hình vẽ).${fig9Right(BC*Math.cos(a*Math.PI/180),BC*Math.sin(a*Math.PI/180),{lens:[['B','C',BC+' cm']],angs:[['C','B','A',a+'°']]})}Độ dài cạnh ${I(t?'AB':'AC')} bằng`,correct:`${cor} cm`,wrongs:W.concat([kr(BC/2,a===45?3:2)]).filter(x=>x!==cor).map(x=>`${x} cm`),
     sol:`${t?'AB = BC·cos B':'AC = BC·sin B'} = ${BC}·${t?cv[0]:sv[0]} = ${cor} (cm).`,chk:()=>true});
 });
 N9('k9-12-height',4,'VD',[12],r=>{
   for(;;){const d=r.int(10,40),a=r.int(25,60),h0=r.pick([0,1.5,1.6]),H=d*Math.tan(a*Math.PI/180)+h0,v=Math.round(H*10)/10;if(Math.abs(H*10-Math.round(H*10))>=.49)continue;
-  return mkNum(r,{stem:`Từ một điểm cách chân tháp ${d} m${h0?` (mắt người quan sát cao ${fmt(h0)} m so với mặt đất)`:''}, người ta nhìn thấy đỉnh tháp với góc nâng ${a}°. Chiều cao của tháp (làm tròn đến hàng phần mười của mét) là`,correct:v,f:x=>fmt(x)+' m',cands:[Math.round((d*Math.sin(a*Math.PI/180)+h0)*10)/10,Math.round((d/Math.tan(a*Math.PI/180)+h0)*10)/10,Math.round((d*Math.cos(a*Math.PI/180)+h0)*10)/10,v+1],
+  return mkNum(r,{stem:`Từ một điểm cách chân tháp ${d} m${h0?` (mắt người quan sát cao ${fmt(h0)} m so với mặt đất)`:''}, người ta nhìn thấy đỉnh tháp với góc nâng ${a}°.${h0?'':fig9Pole(H,d,{ang:a+'°',d:d+' m'})}Chiều cao của tháp (làm tròn đến hàng phần mười của mét) là`,correct:v,f:x=>fmt(x)+' m',cands:[Math.round((d*Math.sin(a*Math.PI/180)+h0)*10)/10,Math.round((d/Math.tan(a*Math.PI/180)+h0)*10)/10,Math.round((d*Math.cos(a*Math.PI/180)+h0)*10)/10,v+1],
     sol:`Chiều cao phần trên tầm mắt: ${d}·tan ${a}° ≈ ${fmt(Math.round(d*Math.tan(a*Math.PI/180)*100)/100)} m${h0?`; cộng thêm ${fmt(h0)} m`:''}. Chiều cao tháp ≈ ${fmt(v)} m.`,chk:()=>true})}
 });
 DS9('ds9-12-tri',4,'TH',[11,12],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),AB=p*k,AC=q*k,BC=h*k,AH=Q(AB*AC,BC);
-  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm (hình vẽ).${fig9Right(AB,AC,{lens:[['A','B',AB+' cm'],['A','C',AC+' cm']]})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`${I('BC')} = ${BC} cm.`,f:`${I('BC')} = ${AB+AC} cm.`,why:`BC = √(${AB}² + ${AC}²) = ${BC}.`},
     {t:`sin ${I('B')} = ${qh(Q(AC,BC))}.`,f:`sin ${I('B')} = ${qh(Q(AB,BC))}.`,why:`sin B = AC/BC.`},
     {t:`tan ${I('C')} = ${qh(Q(AB,AC))}.`,f:`tan ${I('C')} = ${qh(Q(AC,AB))}.`,why:`tan C = AB/AC.`},
@@ -8437,11 +8437,11 @@ DS9('ds9-12-tri',4,'TH',[11,12],r=>{
 });
 TLN9('t9-12-height',4,'VD',[12],r=>{
   for(;;){const d=r.int(10,60),a=r.int(20,65),H=d*Math.tan(a*Math.PI/180),v=Math.round(H*10)/10;if(Math.abs(H*10-Math.round(H*10))>.45||v>=100)continue;
-    return{kind:'tln',stem:`Bóng của một cột cờ trên mặt đất dài ${d} m, tia nắng mặt trời tạo với mặt đất một góc ${a}°. Tính chiều cao của cột cờ (đơn vị: mét, làm tròn kết quả đến hàng phần mười).`,ans:v,unit:'m',sol:`Chiều cao h = ${d}·tan ${a}° ≈ ${fmt(v)} (m).`,chk:()=>true}}
+    return{kind:'tln',stem:`Bóng của một cột cờ trên mặt đất dài ${d} m, tia nắng mặt trời tạo với mặt đất một góc ${a}°. ${fig9Pole(H,d,{ang:a+'°',d:d+' m'})}Tính chiều cao của cột cờ (đơn vị: mét, làm tròn kết quả đến hàng phần mười).`,ans:v,unit:'m',sol:`Chiều cao h = ${d}·tan ${a}° ≈ ${fmt(v)} (m).`,chk:()=>true}}
 });
 TLN9('t9-12-angle',4,'VD',[11,12],r=>{
   for(;;){const L=r.int(3,8),h=r.int(10,L*10-5)/10,a=Math.asin(h/L)*180/Math.PI,v=Math.round(a);if(Math.abs(a-v)>.45||v<15||v>75)continue;
-    return{kind:'tln',stem:`Một chiếc thang dài ${L} m dựng vào một bức tường thẳng đứng, đầu trên của thang chạm tường ở độ cao ${fmt(h)} m. Tính góc tạo bởi thang và mặt đất (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`sin α = ${fr(fmt(h),L)} ⇒ α ≈ ${v}°.`,chk:()=>true}}
+    return{kind:'tln',stem:`Một chiếc thang dài ${L} m dựng vào một bức tường thẳng đứng, đầu trên của thang chạm tường ở độ cao ${fmt(h)} m. ${fig9({A:[0,h],B:[0,0],C:[Math.sqrt(L*L-h*h),0]},{segs:[['A','B'],['B','C'],['A','C']],right:[['A','B','C']],angs:[['A','C','B','?']],lens:[['A','C',L+' m'],['A','B',fmt(h)+' m']],show:[],w:190,h:150})}Tính góc tạo bởi thang và mặt đất (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`sin α = ${fr(fmt(h),L)} ⇒ α ≈ ${v}°.`,chk:()=>true}}
 });
 TL9('tl9-12-tri',4,'TH','geo',[11,12],r=>{
   const a=r.pick([30,60]),BC=r.int(2,10)*2,AC=a===30?BC/2:null;
@@ -8471,9 +8471,9 @@ N9('k9-13-sym',5,'NB',[13],r=>{
 });
 N9('k9-14-chord',5,'TH',[14],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),R=h*k,half=q*k,d=p*k,ask=r.chance(.5);
-  if(ask)return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} = ${2*half} cm. Khoảng cách từ tâm ${I('O')} đến dây ${I('AB')} bằng`,correct:d,f:x=>x+' cm',cands:[half,R-half,R-d,2*d],
+  if(ask)return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} = ${2*half} cm (hình vẽ).${fig9Chord(R,d)}Khoảng cách từ tâm ${I('O')} đến dây ${I('AB')} bằng`,correct:d,f:x=>x+' cm',cands:[half,R-half,R-d,2*d],
     sol:`Kẻ OH ⊥ AB thì H là trung điểm AB, AH = ${half} cm. OH = √(${R}² − ${half}²) = ${d} cm.`,chk:()=>R*R===half*half+d*d});
-  return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm), dây ${I('AB')} cách tâm ${I('O')} một khoảng bằng ${d} cm. Độ dài dây ${I('AB')} bằng`,correct:2*half,f:x=>x+' cm',cands:[half,2*(R-d),R+d,2*d],
+  return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm), dây ${I('AB')} cách tâm ${I('O')} một khoảng bằng ${d} cm (hình vẽ).${fig9Chord(R,d)}Độ dài dây ${I('AB')} bằng`,correct:2*half,f:x=>x+' cm',cands:[half,2*(R-d),R+d,2*d],
     sol:`Kẻ OH ⊥ AB, OH = ${d}; AH = √(${R}² − ${d}²) = ${half}; AB = 2AH = ${2*half} cm.`,chk:()=>true});
 });
 N9('k9-14-arc',5,'NB',[14],r=>{
@@ -8512,8 +8512,8 @@ N9('k9-16-pos',5,'NB',[16],r=>{
 });
 N9('k9-16-tan',5,'TH',[16],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),R=p*k,MA=q*k,OM=h*k,ask=r.int(0,1);
-  if(ask)return mkNum(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ tiếp tuyến ${I('MA')} (${I('A')} là tiếp điểm). Độ dài ${I('MA')} bằng`,correct:MA,f:x=>x+' cm',cands:[OM-R,OM+R,R,MA+1],sol:`OA ⊥ MA nên MA = √(OM² − OA²) = √(${OM}² − ${R}²) = ${MA} cm.`,chk:()=>OM*OM===R*R+MA*MA});
-  return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm). Tiếp tuyến tại ${I('A')} của đường tròn cắt đường thẳng đi qua ${I('O')} tại ${I('M')} sao cho ${I('MA')} = ${MA} cm. Độ dài ${I('OM')} bằng`,correct:OM,f:x=>x+' cm',cands:[MA+R,MA-R,MA,OM+1].filter(x=>x>0),sol:`OA ⊥ MA nên OM = √(OA² + MA²) = √(${R}² + ${MA}²) = ${OM} cm.`,chk:()=>true});
+  if(ask)return mkNum(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ tiếp tuyến ${I('MA')} (${I('A')} là tiếp điểm) như hình vẽ.${fig9Tan1(R,OM)}Độ dài ${I('MA')} bằng`,correct:MA,f:x=>x+' cm',cands:[OM-R,OM+R,R,MA+1],sol:`OA ⊥ MA nên MA = √(OM² − OA²) = √(${OM}² − ${R}²) = ${MA} cm.`,chk:()=>OM*OM===R*R+MA*MA});
+  return mkNum(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm). Tiếp tuyến tại ${I('A')} của đường tròn cắt đường thẳng đi qua ${I('O')} tại ${I('M')} sao cho ${I('MA')} = ${MA} cm.${fig9Tan1(R,OM)}Độ dài ${I('OM')} bằng`,correct:OM,f:x=>x+' cm',cands:[MA+R,MA-R,MA,OM+1].filter(x=>x>0),sol:`OA ⊥ MA nên OM = √(OA² + MA²) = √(${R}² + ${MA}²) = ${OM} cm.`,chk:()=>true});
 });
 N9('k9-17-pos',5,'TH',[17],r=>{
   const R=r.int(5,10),rr=r.int(1,R-3),t=r.int(0,4),d=[R+rr+r.int(1,3),R+rr,r.int(R-rr+1,R+rr-1),R-rr,r.int(1,R-rr-1)][t];
@@ -8523,7 +8523,7 @@ N9('k9-17-pos',5,'TH',[17],r=>{
 });
 DS9('ds9-16-tan',5,'VD',[16],r=>{
   const [p,q,h]=r.pick(PYT9),R=p,MA=q,OM=h,AB=Q(2*MA*R,OM);
-  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm). Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm).${fig9Tan(R,OM,{ab:true})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`${I('MA')} = ${I('MB')} = ${MA} cm.`,f:`${I('MA')} = ${I('MB')} = ${OM-R} cm.`,why:`MA = √(OM² − R²) = ${MA}; hai tiếp tuyến cắt nhau thì MA = MB.`},
     {t:`${I('MO')} là tia phân giác của góc ${I('AMB')}.`,f:`${I('MA')} là tia phân giác của góc ${I('OMB')}.`,why:`Tính chất hai tiếp tuyến cắt nhau.`},
     {t:`${I('OM')} vuông góc với ${I('AB')}.`,f:`${I('OM')} song song với ${I('AB')}.`,why:`OA = OB, MA = MB nên OM là đường trung trực của AB.`},
@@ -8531,7 +8531,7 @@ DS9('ds9-16-tan',5,'VD',[16],r=>{
 });
 TLN9('t9-16-tan',5,'VD',[16],r=>{
   for(;;){const [p,q,h]=r.pick(PYT9),k=r.int(1,2),R=p*k,MA=q*k,OM=h*k,AB=2*MA*R/OM,ask=r.chance(.5),v=ask?Math.round(AB*100)/100:MA*R;if(ask&&Math.abs(AB*100-Math.round(AB*100))>.45)continue;
-    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm). Tính ${ask?`độ dài dây ${I('AB')} (đơn vị: cm, làm tròn kết quả đến hàng phần trăm)`:`diện tích tứ giác ${I('OAMB')} (đơn vị: cm²)`}.`,ans:v,unit:ask?'cm':'cm²',
+    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm) với ${I('OM')} = ${OM} cm, kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm).${fig9Tan(R,OM,{ab:ask})}Tính ${ask?`độ dài dây ${I('AB')} (đơn vị: cm, làm tròn kết quả đến hàng phần trăm)`:`diện tích tứ giác ${I('OAMB')} (đơn vị: cm²)`}.`,ans:v,unit:ask?'cm':'cm²',
       sol:`MA = √(${OM}² − ${R}²) = ${MA}. ${ask?`AB ⊥ OM tại H, AH = ${fr('MA·OA','OM')}; AB = 2AH = ${qh(Q(2*MA*R,OM))} ≈ ${fmt(v)}`:`S = 2S${sub('OAM')} = 2·½·OA·MA = ${MA*R}`}.`,chk:()=>true}}
 });
 TL9('tl9-16-tan',5,'VD','geo',[16],r=>{
@@ -8613,7 +8613,7 @@ DS9('ds9-11-val',4,'NB',[11],r=>{
 });
 DS9('ds9-12-real',4,'VD',[12],r=>{
   for(;;){const d=r.int(10,40),a=r.pick([...Array(36)].map((_,i)=>25+i).filter(v=>v!==45)),H=d*Math.tan(a*Math.PI/180),L=d/Math.cos(a*Math.PI/180),h1=Math.round(H*10)/10,l1=Math.round(L*10)/10;if(Math.abs(H*10-Math.round(H*10))>.45||Math.abs(L*10-Math.round(L*10))>.45)continue;
-    return mkDS(r,{stem:`Một cột đèn có bóng trên mặt đất dài ${d} m, tia nắng tạo với mặt đất góc ${a}°. Xét tính đúng sai của các khẳng định sau (độ dài làm tròn đến hàng phần mười của mét):`,items:[
+    return mkDS(r,{stem:`Một cột đèn có bóng trên mặt đất dài ${d} m, tia nắng tạo với mặt đất góc ${a}°.${fig9Pole(H,d,{ang:a+'°',d:d+' m'})}Xét tính đúng sai của các khẳng định sau (độ dài làm tròn đến hàng phần mười của mét):`,items:[
       {t:`Chiều cao cột đèn bằng ${d}·tan ${a}°.`,f:`Chiều cao cột đèn bằng ${d}·sin ${a}°.`,why:`Cạnh đối = cạnh kề · tan góc.`},
       {t:`Chiều cao cột đèn khoảng ${fmt(h1)} m.`,f:`Chiều cao cột đèn khoảng ${fmt(Math.round(d*Math.sin(a*Math.PI/180)*10)/10)} m.`,why:`${d}·tan ${a}° ≈ ${fmt(h1)}.`},
       {t:`Khoảng cách từ đỉnh cột đèn đến đầu bóng khoảng ${fmt(l1)} m.`,f:`Khoảng cách từ đỉnh cột đèn đến đầu bóng khoảng ${fmt(Math.round((d+H)*10)/10)} m.`,why:`Cạnh huyền = ${fr(d,`cos ${a}°`)} ≈ ${fmt(l1)}.`},
@@ -8663,7 +8663,7 @@ TLN9('t9-9-int',3,'VD',[9],r=>{
 });
 TLN9('t9-11-calc',4,'TH',[11,12],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,3),AB=p*k,BC=h*k,AC=q*k;
-  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm và sin ${I('C')} = ${qh(Q(p,h))}. Tính độ dài cạnh ${I('AC')} (đơn vị: cm).`,ans:AC,unit:'cm',sol:`sin C = ${fr('AB','BC')} ⇒ BC = AB : sin C = ${AB} : ${qh(Q(p,h))} = ${BC}; AC = √(${BC}² − ${AB}²) = ${AC} (cm).`,chk:()=>BC*BC===AB*AB+AC*AC};
+  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm và sin ${I('C')} = ${qh(Q(p,h))} (hình vẽ).${fig9Right(AB,AC,{lens:[['A','B',AB+' cm']]})}Tính độ dài cạnh ${I('AC')} (đơn vị: cm).`,ans:AC,unit:'cm',sol:`sin C = ${fr('AB','BC')} ⇒ BC = AB : sin C = ${AB} : ${qh(Q(p,h))} = ${BC}; AC = √(${BC}² − ${AB}²) = ${AC} (cm).`,chk:()=>BC*BC===AB*AB+AC*AC};
 });
 TLN9('t9-15-ring',5,'TH',[15],r=>{
   for(;;){const R=r.int(4,15),r1=r.int(2,R-1),v=Math.PI*(R*R-r1*r1),a=Math.round(v*10)/10;if(Math.abs(v*10-Math.round(v*10))>.45||a>=1000)continue;
@@ -8671,7 +8671,7 @@ TLN9('t9-15-ring',5,'TH',[15],r=>{
 });
 TLN9('t9-16-angle',5,'VD',[16],r=>{
   for(;;){const R=r.int(2,10),MA=r.int(3,20),ang=2*Math.atan(R/MA)*180/Math.PI,v=Math.round(ang);if(Math.abs(ang-v)>.45)continue;
-    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm), kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là tiếp điểm) với ${I('MA')} = ${MA} cm. Tính số đo góc ${I('AMB')} (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`tan ${'AMO'} = ${fr('OA','MA')} = ${fr(R,MA)} ⇒ góc AMO ≈ ${fmt(Math.round(ang/2*100)/100)}°; MO là phân giác nên góc AMB = 2·góc AMO ≈ ${v}°.`,chk:()=>true}}
+    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm), kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là tiếp điểm) với ${I('MA')} = ${MA} cm.${fig9Tan(R,Math.hypot(R,MA),{angs:[['A','M','B','?']]})}Tính số đo góc ${I('AMB')} (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`tan ${'AMO'} = ${fr('OA','MA')} = ${fr(R,MA)} ⇒ góc AMO ≈ ${fmt(Math.round(ang/2*100)/100)}°; MO là phân giác nên góc AMB = 2·góc AMO ≈ ${v}°.`,chk:()=>true}}
 });
 /* ---------- Tự luận ---------- */
 TL9('tl9-4-frac',2,'VD','alg',[4,6],r=>{
@@ -8702,7 +8702,7 @@ TL9('tl9-9-min',3,'VDC','rad',[9],r=>{
 });
 TL9('tl9-12-two',4,'VDC','geo',[12],r=>{
   for(;;){const a=r.pick([30,35,40]),b=r.pick([50,55,60]),d=r.int(10,40),ta=Math.tan(a*Math.PI/180),tb=Math.tan(b*Math.PI/180),h=d*ta*tb/(tb-ta),x=h/tb;
-    return{kind:'tl',title:'Đo chiều cao bằng hai lần quan sát',parts:[{pts:.5,html:`Để đo chiều cao ${I('h')} của một ngọn tháp, người ta đứng tại điểm ${I('A')} nhìn đỉnh tháp với góc nâng ${a}°, sau đó tiến thêm ${d} m về phía chân tháp đến điểm ${I('B')} thì nhìn đỉnh tháp với góc nâng ${b}° (${I('A')}, ${I('B')} và chân tháp thẳng hàng; bỏ qua chiều cao người quan sát). Gọi ${I('x')} là khoảng cách từ ${I('B')} đến chân tháp. Lập hai biểu thức tính ${I('h')} theo ${I('x')}.`},{pts:.5,html:`Tính chiều cao ${I('h')} của tháp (làm tròn đến hàng phần mười của mét).`}],
+    return{kind:'tl',title:'Đo chiều cao bằng hai lần quan sát',parts:[{pts:.5,html:`Để đo chiều cao ${I('h')} của một ngọn tháp, người ta đứng tại điểm ${I('A')} nhìn đỉnh tháp với góc nâng ${a}°, sau đó tiến thêm ${d} m về phía chân tháp đến điểm ${I('B')} thì nhìn đỉnh tháp với góc nâng ${b}° (${I('A')}, ${I('B')} và chân tháp thẳng hàng; bỏ qua chiều cao người quan sát).${fig9Tower(h,x,d,a,b)}Gọi ${I('x')} là khoảng cách từ ${I('B')} đến chân tháp. Lập hai biểu thức tính ${I('h')} theo ${I('x')}.`},{pts:.5,html:`Tính chiều cao ${I('h')} của tháp (làm tròn đến hàng phần mười của mét).`}],
       sol:[ptxt([[`h = x·tan ${b}°.`,.25],[`h = (x + ${d})·tan ${a}°.`,.25]]),ptxt([[`x·tan ${b}° = (x + ${d})·tan ${a}° ⇒ x = ${fr(`${d}·tan ${a}°`,`tan ${b}° − tan ${a}°`)} ≈ ${fmt(Math.round(x*100)/100)} (m).`,.25],[`h = x·tan ${b}° ≈ ${fmt(Math.round(h*10)/10)} (m).`,.25]])],chk:()=>h>0}}
 });
 /* ---------- Đúng/sai (bổ sung đợt 2) ---------- */
@@ -8749,7 +8749,7 @@ DS9('ds9-11-def',4,'NB',[11],r=>{
 });
 DS9('ds9-12-solve',4,'TH',[12],r=>{
   const k=r.int(1,5),a=4*k,be=r.pick([30,60]),AC=be===30?String(2*k):kr(2*k,3),AB=be===30?kr(2*k,3):String(2*k);
-  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${a} cm và góc ${I('B')} = ${be}°. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${a} cm và góc ${I('B')} = ${be}° (hình vẽ).${fig9Right(a*Math.cos(be*Math.PI/180),a*Math.sin(be*Math.PI/180),{lens:[['B','C',a+' cm']],angs:[['C','B','A',be+'°']]})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Góc ${I('C')} = ${90-be}°.`,f:`Góc ${I('C')} = ${90+be}°.`,why:`B + C = 90°.`},
     {t:`${I('AC')} = ${I('BC')}·sin ${I('B')}.`,f:`${I('AC')} = ${I('BC')}·cos ${I('B')}.`,why:`AC là cạnh đối của góc B.`},
     {t:`${I('AC')} = ${AC} cm.`,f:`${I('AC')} = ${AB} cm.`,why:`AC = ${a}·sin ${be}° = ${AC}.`},
@@ -8757,7 +8757,7 @@ DS9('ds9-12-solve',4,'TH',[12],r=>{
 });
 DS9('ds9-14-chord',5,'VD',[14],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),R=h*k,d=p*k,hc=q*k;
-  return mkDS(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} cách tâm ${I('O')} một khoảng ${d} cm. Gọi ${I('H')} là trung điểm của ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} cách tâm ${I('O')} một khoảng ${d} cm. Gọi ${I('H')} là trung điểm của ${I('AB')}.${fig9Chord(R,d)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`${I('OH')} vuông góc với ${I('AB')}.`,f:`${I('OH')} không vuông góc với ${I('AB')}.`,why:`Đường kính đi qua trung điểm của dây (không qua tâm) thì vuông góc với dây đó.`},
     {t:`${I('AB')} = ${2*hc} cm.`,f:`${I('AB')} = ${hc} cm.`,why:`AH = √(${R}² − ${d}²) = ${hc} ⇒ AB = ${2*hc}.`},
     {t:`Diện tích tam giác ${I('OAB')} bằng ${d*hc} cm².`,f:`Diện tích tam giác ${I('OAB')} bằng ${2*d*hc} cm².`,why:`S = ${fr(1,2)}·OH·AB = ${fr(1,2)}·${d}·${2*hc} = ${d*hc}.`},
@@ -9270,7 +9270,7 @@ const polyN=n=>n===12?'đa giác đều 12 cạnh':`${POLY9[n]} đều`;
 /* ===================== Bài 27: Góc nội tiếp ===================== */
 N9b('k9-27-ins',9,'NB',[27],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120,130,140]);
-  return mkNum(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}° và ${I('C')} thuộc cung lớn ${I('AB')}. Số đo góc ${I('ACB')} bằng`,correct:a/2,f:dg9,cands:[a,180-a,90-a/2,2*a,180-a/2],ok:x=>x>0&&x<180,
+  return mkNum(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}° và ${I('C')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Ins(a)}Số đo góc ${I('ACB')} bằng`,correct:a/2,f:dg9,cands:[a,180-a,90-a/2,2*a,180-a/2],ok:x=>x>0&&x<180,
     sol:`Góc nội tiếp ACB chắn cung nhỏ AB nên ∠ACB = ${a}° : 2 = ${a/2}°.`,chk:()=>true});
 });
 N9b('k9-27-semi',9,'NB',[27],r=>{
@@ -9280,9 +9280,9 @@ N9b('k9-27-semi',9,'NB',[27],r=>{
 });
 N9b('k9-27-center',9,'TH',[27],r=>{
   const g=r.pick([60,70,80,90,100,110,120,130,140]),t=r.int(0,2);
-  if(t===0)return mkNum(r,{stem:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) có góc ${I('ACB')} = ${g/2}°. Số đo góc ở tâm ${I('AOB')} (chắn cung nhỏ ${I('AB')}) bằng`,correct:g,f:dg9,cands:[g/2,180-g/2,180-g,g/4],ok:x=>x>0&&x<360,sol:`Góc ở tâm và góc nội tiếp cùng chắn cung AB: ∠AOB = 2∠ACB = ${g}°.`,chk:()=>true});
-  if(t===1)return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('M')} thuộc cung lớn ${I('AB')}. Số đo góc ${I('AMB')} bằng`,correct:g/2,f:dg9,cands:[g,180-g/2,180-g,2*g],ok:x=>x>0&&x<180,sol:`∠AMB = ${fr(1,2)}∠AOB = ${g/2}°.`,chk:()=>true});
-  return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('N')} thuộc cung nhỏ ${I('AB')}. Số đo góc ${I('ANB')} bằng`,correct:180-g/2,f:dg9,cands:[g/2,g,180-g,360-g],ok:x=>x>0&&x<180,sol:`Cung lớn AB có số đo 360° − ${g}° = ${360-g}°; ∠ANB chắn cung lớn nên ∠ANB = ${360-g}° : 2 = ${180-g/2}°.`,chk:()=>true});
+  if(t===0)return mkNum(r,{stem:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) có góc ${I('ACB')} = ${g/2}° (hình vẽ).${fig9Ins(g)}Số đo góc ở tâm ${I('AOB')} (chắn cung nhỏ ${I('AB')}) bằng`,correct:g,f:dg9,cands:[g/2,180-g/2,180-g,g/4],ok:x=>x>0&&x<360,sol:`Góc ở tâm và góc nội tiếp cùng chắn cung AB: ∠AOB = 2∠ACB = ${g}°.`,chk:()=>true});
+  if(t===1)return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('M')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Ins(g,{cn:'M'})}Số đo góc ${I('AMB')} bằng`,correct:g/2,f:dg9,cands:[g,180-g/2,180-g,2*g],ok:x=>x>0&&x<180,sol:`∠AMB = ${fr(1,2)}∠AOB = ${g/2}°.`,chk:()=>true});
+  return mkNum(r,{stem:`Trên đường tròn (${I('O')}) lấy hai điểm ${I('A')}, ${I('B')} sao cho ∠${I('AOB')} = ${g}°. Điểm ${I('N')} thuộc cung nhỏ ${I('AB')} (hình vẽ).${fig9Ins(g,{cn:'N',major:false})}Số đo góc ${I('ANB')} bằng`,correct:180-g/2,f:dg9,cands:[g/2,g,180-g,360-g],ok:x=>x>0&&x<180,sol:`Cung lớn AB có số đo 360° − ${g}° = ${360-g}°; ∠ANB chắn cung lớn nên ∠ANB = ${360-g}° : 2 = ${180-g/2}°.`,chk:()=>true});
 });
 /* ===================== Bài 28: Đường tròn ngoại tiếp và nội tiếp của tam giác ===================== */
 N9b('k9-28-circum',9,'NB',[28],r=>{
@@ -9301,7 +9301,7 @@ N9b('k9-28-R',9,'TH',[28],r=>{
 /* ===================== Bài 29: Tứ giác nội tiếp ===================== */
 N9b('k9-29-quad',9,'NB',[29],r=>{
   const a=r.pick([55,65,70,75,80,85,95,100,105,110,115,120,125]),t=r.chance(.5);
-  return mkNum(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ${t?`∠${I('A')} = ${a}°. Số đo góc ${I('C')}`:`∠${I('B')} = ${a}°. Số đo góc ${I('D')}`} bằng`,correct:180-a,f:dg9,cands:[a,90,190-a,170-a,a-10],ok:x=>x>0&&x<180&&x!==180-a,
+  return mkNum(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ${t?`∠${I('A')} = ${a}°. Số đo góc ${I('C')}`:`∠${I('B')} = ${a}°. Số đo góc ${I('D')}`} bằng${fig9Quad(t?[210,390-a,390,390+a]:[120+a,300,480-a,480])}`,correct:180-a,f:dg9,cands:[a,90,190-a,170-a,a-10],ok:x=>x>0&&x<180&&x!==180-a,
     sol:`Tứ giác nội tiếp có tổng hai góc đối bằng 180° nên góc cần tìm bằng 180° − ${a}° = ${180-a}°.`,chk:()=>true});
 });
 N9b('k9-29-which',9,'NB',[29],r=>{
@@ -9320,23 +9320,23 @@ N9b('k9-30-rot',9,'TH',[30],r=>{
 /* ===================== Bài 31 – 32: Hình trụ, hình nón, hình cầu ===================== */
 N9b('k9-31-cylV',10,'NB',[31],r=>{
   const R=r.int(2,8),h=r.int(3,12),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Thể tích của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([R*R*h,1])+' cm³',wrongs:[piH([2*R*h,1]),piH([R*h,1]),piH([2*R*R*h,1]),piH(Q(R*R*h,3))].map(x=>x+' cm³'),sol:`V = πr²h = π·${R}²·${h} = ${piH([R*R*h,1])} (cm³).`,chk:()=>true})
-    :mkTxt(r,{stem:`Thể tích của hình nón có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH(Q(R*R*h,3))+' cm³',wrongs:[piH([R*R*h,1]),piH(Q(R*h,3)),piH(Q(2*R*R*h,3)),piH(Q(R*R*h,2))].map(x=>x+' cm³'),sol:`V = ${fr(1,3)}πr²h = ${fr(1,3)}·π·${R}²·${h} = ${piH(Q(R*R*h,3))} (cm³).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Thể tích của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([R*R*h,1])+' cm³',wrongs:[piH([2*R*h,1]),piH([R*h,1]),piH([2*R*R*h,1]),piH(Q(R*R*h,3))].map(x=>x+' cm³'),sol:`V = πr²h = π·${R}²·${h} = ${piH([R*R*h,1])} (cm³).`,chk:()=>true})
+    :mkTxt(r,{stem:`Thể tích của hình nón có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cone(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH(Q(R*R*h,3))+' cm³',wrongs:[piH([R*R*h,1]),piH(Q(R*h,3)),piH(Q(2*R*R*h,3)),piH(Q(R*R*h,2))].map(x=>x+' cm³'),sol:`V = ${fr(1,3)}πr²h = ${fr(1,3)}·π·${R}²·${h} = ${piH(Q(R*R*h,3))} (cm³).`,chk:()=>true});
 });
 N9b('k9-31-cylS',10,'TH',[31],r=>{
   const R=r.int(2,8),h=R+r.int(1,6),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Diện tích xung quanh của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([2*R*h,1])+' cm²',wrongs:[piH([R*h,1]),piH([R*R*h,1]),piH([2*R*h+2*R*R,1]),piH([4*R*h,1])].map(x=>x+' cm²'),sol:`S_xq = 2πrh = 2π·${R}·${h} = ${piH([2*R*h,1])} (cm²).`,chk:()=>true})
-    :mkTxt(r,{stem:`Diện tích toàn phần của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là`,correct:piH([2*R*h+2*R*R,1])+' cm²',wrongs:[piH([2*R*h,1]),piH([2*R*h+R*R,1]),piH([R*h+2*R*R,1]),piH([R*R*h,1]),piH([4*R*h,1]),piH([R*h+R*R,1])].map(x=>x+' cm²'),sol:`S_tp = 2πrh + 2πr² = ${piH([2*R*h,1])} + ${piH([2*R*R,1])} = ${piH([2*R*h+2*R*R,1])} (cm²).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Diện tích xung quanh của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([2*R*h,1])+' cm²',wrongs:[piH([R*h,1]),piH([R*R*h,1]),piH([2*R*h+2*R*R,1]),piH([4*R*h,1])].map(x=>x+' cm²'),sol:`S_xq = 2πrh = 2π·${R}·${h} = ${piH([2*R*h,1])} (cm²).`,chk:()=>true})
+    :mkTxt(r,{stem:`Diện tích toàn phần của hình trụ có bán kính đáy ${R} cm và chiều cao ${h} cm là${fig9Cyl(R,h,{r:R+' cm',h:h+' cm'})}`,correct:piH([2*R*h+2*R*R,1])+' cm²',wrongs:[piH([2*R*h,1]),piH([2*R*h+R*R,1]),piH([R*h+2*R*R,1]),piH([R*R*h,1]),piH([4*R*h,1]),piH([R*h+R*R,1])].map(x=>x+' cm²'),sol:`S_tp = 2πrh + 2πr² = ${piH([2*R*h,1])} + ${piH([2*R*R,1])} = ${piH([2*R*h+2*R*R,1])} (cm²).`,chk:()=>true});
 });
 N9b('k9-31-cone',10,'TH',[31],r=>{
   const [p,q,h]=r.pick(PYT9.slice(0,4)),k=r.int(1,2),R=p*k,H=q*k,L=h*k;
-  return mkTxt(r,{stem:`Một hình nón có bán kính đáy ${R} cm và chiều cao ${H} cm. Diện tích xung quanh của hình nón là`,correct:piH([R*L,1])+' cm²',wrongs:[piH([R*H,1]),piH([2*R*L,1]),piH([R*L+R*R,1]),piH(Q(R*R*H,3))].map(x=>x+' cm²'),
+  return mkTxt(r,{stem:`Một hình nón có bán kính đáy ${R} cm và chiều cao ${H} cm. ${fig9Cone(R,H,{r:R+' cm',h:H+' cm'})}Diện tích xung quanh của hình nón là`,correct:piH([R*L,1])+' cm²',wrongs:[piH([R*H,1]),piH([2*R*L,1]),piH([R*L+R*R,1]),piH(Q(R*R*H,3))].map(x=>x+' cm²'),
     sol:`Đường sinh l = √(${R}² + ${H}²) = ${L} (cm); S_xq = πrl = π·${R}·${L} = ${piH([R*L,1])} (cm²).`,chk:()=>L*L===R*R+H*H});
 });
 N9b('k9-32-sph',10,'NB',[32],r=>{
   const R=r.int(2,9),t=r.chance(.5);
-  return t?mkTxt(r,{stem:`Diện tích mặt cầu bán kính ${R} cm là`,correct:piH([4*R*R,1])+' cm²',wrongs:[piH([R*R,1]),piH([2*R*R,1]),piH(Q(4*R**3,3)),piH([4*R,1])].map(x=>x+' cm²'),sol:`S = 4πR² = 4π·${R}² = ${piH([4*R*R,1])} (cm²).`,chk:()=>true})
-    :mkTxt(r,{stem:`Thể tích hình cầu bán kính ${R} cm là`,correct:piH(Q(4*R**3,3))+' cm³',wrongs:[piH([4*R*R,1]),piH([R**3,1]),piH(Q(R**3,3)),piH([4*R**3,1])].map(x=>x+' cm³'),sol:`V = ${fr(4,3)}πR³ = ${fr(4,3)}π·${R}³ = ${piH(Q(4*R**3,3))} (cm³).`,chk:()=>true});
+  return t?mkTxt(r,{stem:`Diện tích mặt cầu bán kính ${R} cm là${fig9Sph({r:R+' cm'})}`,correct:piH([4*R*R,1])+' cm²',wrongs:[piH([R*R,1]),piH([2*R*R,1]),piH(Q(4*R**3,3)),piH([4*R,1])].map(x=>x+' cm²'),sol:`S = 4πR² = 4π·${R}² = ${piH([4*R*R,1])} (cm²).`,chk:()=>true})
+    :mkTxt(r,{stem:`Thể tích hình cầu bán kính ${R} cm là${fig9Sph({r:R+' cm'})}`,correct:piH(Q(4*R**3,3))+' cm³',wrongs:[piH([4*R*R,1]),piH([R**3,1]),piH(Q(R**3,3)),piH([4*R**3,1])].map(x=>x+' cm³'),sol:`V = ${fr(4,3)}πR³ = ${fr(4,3)}π·${R}³ = ${piH(Q(4*R**3,3))} (cm³).`,chk:()=>true});
 });
 N9b('k9-32-real',10,'TH',[32],r=>{
   const d=r.pick([20,22,24,30,40,6,8,10,4]),R=d/2,t=r.chance(.5),u=d>=20?'cm':'cm';
@@ -9347,7 +9347,7 @@ N9b('k9-32-real',10,'TH',[32],r=>{
 /* ---------- Đúng/sai chương IX ---------- */
 DS9b('ds9-27-ang',9,'NB',[27],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120,130,140]);
-  return mkDS(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}°, ${I('C')} thuộc cung lớn ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho đường tròn (${I('O')}) và các điểm ${I('A')}, ${I('B')}, ${I('C')} thuộc đường tròn sao cho số đo cung nhỏ ${I('AB')} bằng ${a}°, ${I('C')} thuộc cung lớn ${I('AB')}.${fig9Ins(a)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`∠${I('AOB')} = ${a}°.`,f:`∠${I('AOB')} = ${a/2}°.`,why:`Góc ở tâm có số đo bằng số đo cung bị chắn.`},
     {t:`∠${I('ACB')} = ${a/2}°.`,f:`∠${I('ACB')} = ${a}°.`,why:`Góc nội tiếp bằng nửa số đo cung bị chắn.`},
     {t:`Số đo cung lớn ${I('AB')} bằng ${360-a}°.`,f:`Số đo cung lớn ${I('AB')} bằng ${180-a}°.`,why:`360° − ${a}° = ${360-a}°.`},
@@ -9355,7 +9355,7 @@ DS9b('ds9-27-ang',9,'NB',[27],r=>{
 });
 DS9b('ds9-29-quad',9,'NB',[29],r=>{
   for(;;){const a=r.pick([60,65,70,75,80,85,95,100,105,110,115,120]),b=r.pick([60,70,80,100,110,120]);if(a===b||a+b===180)continue;
-    return mkDS(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn (${I('O')}) có ∠${I('A')} = ${a}°, ∠${I('B')} = ${b}°. Xét tính đúng sai của các khẳng định sau:`,items:[
+    return mkDS(r,{stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn (${I('O')}) có ∠${I('A')} = ${a}°, ∠${I('B')} = ${b}° (hình vẽ).${fig9QuadAB(a,b)}Xét tính đúng sai của các khẳng định sau:`,items:[
       {t:`∠${I('C')} = ${180-a}°.`,f:`∠${I('C')} = ${a}°.`,why:`∠A + ∠C = 180°.`},
       {t:`∠${I('D')} = ${180-b}°.`,f:`∠${I('D')} = ${180-a}°.`,why:`∠B + ∠D = 180°.`},
       {t:`Bốn đỉnh ${I('A')}, ${I('B')}, ${I('C')}, ${I('D')} cùng thuộc đường tròn (${I('O')}).`,f:`Đỉnh ${I('D')} nằm bên trong đường tròn (${I('O')}).`,why:`Tứ giác nội tiếp có bốn đỉnh thuộc một đường tròn.`},
@@ -9371,7 +9371,7 @@ DS9b('ds9-28-tri',9,'TH',[28],r=>{
 });
 DS9b('ds9-28-right',9,'TH',[28],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),BC=h*k;
-  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${p*k} cm, ${I('AC')} = ${q*k} cm. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${p*k} cm, ${I('AC')} = ${q*k} cm (hình vẽ).${fig9RtIn(p,q)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Tâm đường tròn ngoại tiếp tam giác ${I('ABC')} là trung điểm của ${I('BC')}.`,f:`Tâm đường tròn ngoại tiếp tam giác ${I('ABC')} là trung điểm của ${I('AB')}.`,why:`Góc BAC = 90° là góc nội tiếp chắn nửa đường tròn, nên BC là đường kính.`},
     {t:`Bán kính đường tròn ngoại tiếp bằng ${fmt(BC/2)} cm.`,f:`Bán kính đường tròn ngoại tiếp bằng ${BC} cm.`,why:`BC = ${BC}, R = BC/2 = ${fmt(BC/2)}.`},
     {t:`Độ dài đường tròn ngoại tiếp bằng ${piH([BC,1])} cm.`,f:`Độ dài đường tròn ngoại tiếp bằng ${piH([2*BC,1])} cm.`,why:`C = 2πR = ${piH([BC,1])}.`},
@@ -9379,7 +9379,7 @@ DS9b('ds9-28-right',9,'TH',[28],r=>{
 });
 DS9b('ds9-29-tan',9,'VD',[29],r=>{
   const a=r.pick([40,50,60,70,80,100,110,120]);
-  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}) kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm) sao cho ∠${I('AMB')} = ${a}°. Lấy điểm ${I('C')} thuộc cung lớn ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}) kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là các tiếp điểm) sao cho ∠${I('AMB')} = ${a}°. Lấy điểm ${I('C')} thuộc cung lớn ${I('AB')} (hình vẽ).${fig9Tan(1,1/Math.sin(a*Math.PI/360),{C:true,angs:[['A','M','B',a+'°']]})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Tứ giác ${I('MAOB')} nội tiếp được đường tròn.`,f:`Tứ giác ${I('MAOB')} không nội tiếp được đường tròn.`,why:`∠MAO + ∠MBO = 90° + 90° = 180°.`},
     {t:`∠${I('AOB')} = ${180-a}°.`,f:`∠${I('AOB')} = ${a}°.`,why:`Tứ giác MAOB nội tiếp nên ∠AOB = 180° − ∠AMB.`},
     {t:`Đường tròn ngoại tiếp tứ giác ${I('MAOB')} có đường kính là ${I('MO')}.`,f:`Đường tròn ngoại tiếp tứ giác ${I('MAOB')} có đường kính là ${I('AB')}.`,why:`∠MAO = ∠MBO = 90° nên A, B thuộc đường tròn đường kính MO.`},
@@ -9406,7 +9406,7 @@ DS9b('ds9-31-cyl',10,'TH',[31,32],r=>{
 /* ---------- Trả lời ngắn ---------- */
 TLN9b('t9-27-ang',9,'TH',[27],r=>{
   const g=r.pick([60,70,80,100,110,120,130,140]),t=r.chance(.5);
-  return{kind:'tln',stem:`Trên đường tròn (${I('O')}) lấy ba điểm ${I('A')}, ${I('B')}, ${I('C')} sao cho ∠${I('AOB')} = ${g}° và ${I('C')} thuộc cung ${t?'lớn':'nhỏ'} ${I('AB')}. Tính số đo góc ${I('ACB')} (đơn vị: độ).`,ans:t?g/2:180-g/2,unit:'°',
+  return{kind:'tln',stem:`Trên đường tròn (${I('O')}) lấy ba điểm ${I('A')}, ${I('B')}, ${I('C')} sao cho ∠${I('AOB')} = ${g}° và ${I('C')} thuộc cung ${t?'lớn':'nhỏ'} ${I('AB')} (hình vẽ).${fig9Ins(g,{major:t})}Tính số đo góc ${I('ACB')} (đơn vị: độ).`,ans:t?g/2:180-g/2,unit:'°',
     sol:t?`∠ACB chắn cung nhỏ AB: ∠ACB = ${g}° : 2 = ${g/2}°.`:`∠ACB chắn cung lớn AB có số đo ${360-g}°: ∠ACB = ${180-g/2}°.`,chk:()=>true};
 });
 TLN9b('t9-28-R',9,'TH',[28],r=>{
@@ -9415,11 +9415,11 @@ TLN9b('t9-28-R',9,'TH',[28],r=>{
 });
 TLN9b('t9-29-obc',9,'VD',[27,28],r=>{
   const a=r.int(35,80);
-  return{kind:'tln',stem:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}) có ∠${I('BAC')} = ${a}°. Tính số đo góc ${I('OBC')} (đơn vị: độ).`,ans:90-a,unit:'°',sol:`∠BOC = 2∠BAC = ${2*a}° (góc ở tâm và góc nội tiếp cùng chắn cung BC). Tam giác OBC cân tại O nên ∠OBC = (180° − ${2*a}°) : 2 = ${90-a}°.`,chk:()=>true};
+  return{kind:'tln',stem:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}) có ∠${I('BAC')} = ${a}° (hình vẽ).${fig9TriIn(a)}Tính số đo góc ${I('OBC')} (đơn vị: độ).`,ans:90-a,unit:'°',sol:`∠BOC = 2∠BAC = ${2*a}° (góc ở tâm và góc nội tiếp cùng chắn cung BC). Tam giác OBC cân tại O nên ∠OBC = (180° − ${2*a}°) : 2 = ${90-a}°.`,chk:()=>true};
 });
 TLN9b('t9-29-quad',9,'VD',[29],r=>{
   const b=r.int(25,60),c=r.int(25,60);
-  return{kind:'tln',stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ∠${I('ABD')} = ${b}° và ∠${I('DBC')} = ${c}°. Tính số đo góc ${I('ADC')} (đơn vị: độ).`,ans:180-b-c,unit:'°',sol:`∠ABC = ${b}° + ${c}° = ${b+c}°. Tứ giác ABCD nội tiếp nên ∠ADC = 180° − ${b+c}° = ${180-b-c}°.`,chk:()=>b+c<180};
+  return{kind:'tln',stem:`Cho tứ giác ${I('ABCD')} nội tiếp đường tròn có ∠${I('ABD')} = ${b}° và ∠${I('DBC')} = ${c}°. ${fig9Quad((()=>{const x=(360-2*b-2*c)/2,C=270+x,D=C+2*c;return[D+2*b,270,C,D]})(),[['B','D']])}Tính số đo góc ${I('ADC')} (đơn vị: độ).`,ans:180-b-c,unit:'°',sol:`∠ABC = ${b}° + ${c}° = ${b+c}°. Tứ giác ABCD nội tiếp nên ∠ADC = 180° − ${b+c}° = ${180-b-c}°.`,chk:()=>b+c<180};
 });
 TLN9b('t9-30-hex',9,'VD',[30],r=>{
   const a=r.int(2,12),t=r.chance(.5),v=rd9a(t?3*Math.sqrt(3)/2*a*a:a*Math.sqrt(3)/2);
@@ -9436,7 +9436,7 @@ TLN9b('t9-32-ball',10,'TH',[32],r=>{
 });
 TLN9b('t9-31-cone',10,'VD',[31],r=>{
   const [p,q,h]=r.pick(PYT9.slice(0,4)),k=r.pick([1,2,3]),R=p*k,H=q*k,L=h*k,v=rd9a(Math.PI*R*L);
-  return{kind:'tln',stem:`Một chiếc nón lá có dạng hình nón với đường kính vành nón ${2*R} cm và chiều cao ${H} cm. Tính diện tích lá cần dùng để phủ mặt xung quanh chiếc nón (đơn vị: cm², làm tròn kết quả đến hàng phần mười; bỏ qua phần chồng mép).`,ans:v,unit:'cm²',
+  return{kind:'tln',stem:`Một chiếc nón lá có dạng hình nón với đường kính vành nón ${2*R} cm và chiều cao ${H} cm. ${fig9Cone(R,H,{r:' ',h:H+' cm'})}Tính diện tích lá cần dùng để phủ mặt xung quanh chiếc nón (đơn vị: cm², làm tròn kết quả đến hàng phần mười; bỏ qua phần chồng mép).`,ans:v,unit:'cm²',
     sol:`r = ${R}, l = √(${R}² + ${H}²) = ${L}; S_xq = πrl = ${piH([R*L,1])} ≈ ${fmt(v)} (cm²).`,chk:()=>L*L===R*R+H*H&&v<10000};
 });
 TLN9b('t9-32-rise',10,'VD',[31,32],r=>{
@@ -9478,12 +9478,12 @@ TL9b('tl9-29-oc',9,'VDC','geo',[27,29],r=>{
 /* ---------- Tự luận thực tế (hình khối) ---------- */
 TL9b('tl9-31-tank',10,'TH','real',[31],r=>{
   const R=r.pick([.5,.6,.8,1]),h=r.pick([1.2,1.5,2]),V=rd9b(Math.PI*R*R*h),S=rd9b(2*Math.PI*R*h+2*Math.PI*R*R);
-  return{kind:'tl',title:'Bồn chứa hình trụ',parts:[{pts:.5,html:`Một bồn chứa nước bằng inox có dạng hình trụ với bán kính đáy ${fmt(R)} m và chiều cao ${fmt(h)} m. Tính thể tích của bồn (làm tròn đến hàng phần trăm của mét khối). Bồn chứa được khoảng bao nhiêu lít nước?`},{pts:.5,html:`Tính diện tích inox cần dùng để làm bồn (gồm cả hai đáy; làm tròn đến hàng phần trăm của mét vuông, bỏ qua mép nối).`}],
+  return{kind:'tl',title:'Bồn chứa hình trụ',parts:[{pts:.5,html:`Một bồn chứa nước bằng inox có dạng hình trụ với bán kính đáy ${fmt(R)} m và chiều cao ${fmt(h)} m.${fig9Cyl(R,h,{r:fmt(R)+' m',h:fmt(h)+' m'})}Tính thể tích của bồn (làm tròn đến hàng phần trăm của mét khối). Bồn chứa được khoảng bao nhiêu lít nước?`},{pts:.5,html:`Tính diện tích inox cần dùng để làm bồn (gồm cả hai đáy; làm tròn đến hàng phần trăm của mét vuông, bỏ qua mép nối).`}],
     sol:[ptxt([[`V = πr²h = π·${fmt(R)}²·${fmt(h)} ≈ ${fmt(V)} (m³).`,.25],[`1 m³ = 1000 lít nên bồn chứa được khoảng ${Math.round(Math.PI*R*R*h*1000)} lít.`,.25]]),ptxt([[`S_xq = 2πrh = ${fmt(rd9b(2*Math.PI*R*h))} m²; hai đáy 2πr² = ${fmt(rd9b(2*Math.PI*R*R))} m².`,.25],[`Diện tích inox cần dùng ≈ ${fmt(S)} m².`,.25]])],chk:()=>true};
 });
 TL9b('tl9-32-ice',10,'VD','real',[31,32],r=>{
   const R=r.pick([2,2.5,3]),H=r.pick([8,10,12]),V1=rd9a(Math.PI*R*R*H/3),V2=rd9a(2*Math.PI*R**3/3),V=rd9a(Math.PI*R*R*H/3+2*Math.PI*R**3/3);
-  return{kind:'tl',title:'Thể tích hình khối trong thực tế',parts:[{pts:.5,html:`Một chiếc kem ốc quế gồm phần vỏ bánh dạng hình nón có bán kính đáy ${fmt(R)} cm, chiều cao ${H} cm và phần kem phía trên dạng nửa hình cầu có bán kính ${fmt(R)} cm. Phần bên trong vỏ bánh chứa đầy kem. Tính thể tích phần kem nằm trong vỏ bánh (làm tròn đến hàng phần mười).`},{pts:.5,html:`Tính tổng thể tích kem của chiếc kem ốc quế (làm tròn đến hàng phần mười).`}],
+  return{kind:'tl',title:'Thể tích hình khối trong thực tế',parts:[{pts:.5,html:`Một chiếc kem ốc quế gồm phần vỏ bánh dạng hình nón có bán kính đáy ${fmt(R)} cm, chiều cao ${H} cm và phần kem phía trên dạng nửa hình cầu có bán kính ${fmt(R)} cm (hình vẽ).${fig9Ice(R,H)}Phần bên trong vỏ bánh chứa đầy kem. Tính thể tích phần kem nằm trong vỏ bánh (làm tròn đến hàng phần mười).`},{pts:.5,html:`Tính tổng thể tích kem của chiếc kem ốc quế (làm tròn đến hàng phần mười).`}],
     sol:[ptxt([[`Thể tích hình nón: V₁ = ${fr(1,3)}πr²h = ${fr(1,3)}π·${fmt(R)}²·${H}.`,.25],[`V₁ ≈ ${fmt(V1)} (cm³).`,.25]]),ptxt([[`Nửa hình cầu: V₂ = ${fr(2,3)}πR³ ≈ ${fmt(V2)} (cm³).`,.25],[`Tổng thể tích kem V = V₁ + V₂ ≈ ${fmt(V)} (cm³).`,.25]])],chk:()=>true};
 });
 /* ---------- Bổ sung Bài 30 ---------- */
@@ -9495,6 +9495,108 @@ N9b('k9-30-def',9,'NB',[30],r=>{
 TLN9b('t9-30-ang',9,'TH',[30],r=>{
   const n=r.pick([5,6,8,9,10,12]),t=r.chance(.5),v=t?(n-2)*180/n:360/n;
   return{kind:'tln',stem:t?`Tính số đo mỗi góc của ${polyN(n)} (đơn vị: độ).`:`Cho ${polyN(n)} tâm ${I('O')}. Tính số đo góc ở tâm chắn một cạnh của đa giác (đơn vị: độ).`,ans:v,unit:'°',sol:t?`(${n} − 2)·180° : ${n} = ${fmt(v)}°.`:`360° : ${n} = ${fmt(v)}°.`,chk:()=>true};
+});
+/* ================================================================
+   LỚP 9 – Hình vẽ minh họa (SVG, in đen trắng vẫn rõ)
+   fig9(P, o): P = {tên: [x, y]} (y hướng lên)
+     o.segs, o.dashed: [[A, B]]       đoạn nét liền / nét đứt
+     o.circ: [[tâm hoặc [x,y], R]]    đường tròn
+     o.right: [[A, V, B]]            kí hiệu góc vuông tại V
+     o.angs: [[A, V, B, nhãn]]        cung đánh dấu góc tại V kèm nhãn
+     o.lens: [[A, B, nhãn]]           nhãn độ dài cạnh
+     o.ell: [[[x,y], rx, ry, kiểu]]   elip (kiểu 'full' | 'half': nửa sau nét đứt)
+     o.lc: tâm để đặt nhãn điểm ra phía ngoài (mặc định trọng tâm các điểm)
+   ================================================================ */
+function fig9(P,o={}){
+  const names=Object.keys(P),W=o.w||230,H=o.h||170,pad=o.pad||22,f=v=>v.toFixed(1);
+  const pt=c=>typeof c==='string'?P[c]:c;
+  const bx=[],by=[];names.forEach(n=>{bx.push(P[n][0]);by.push(P[n][1])});
+  [...(o.circ||[]),...(o.arcs||[])].forEach(([c,R])=>{const p=pt(c);bx.push(p[0]-R,p[0]+R);by.push(p[1]-R,p[1]+R)});
+  (o.ell||[]).forEach(([c,rx,ry])=>{bx.push(c[0]-rx,c[0]+rx);by.push(c[1]-ry,c[1]+ry)});
+  [...(o.segs||[]),...(o.dashed||[])].flat().forEach(p=>{if(Array.isArray(p)){bx.push(p[0]);by.push(p[1])}});
+  const mnx=Math.min(...bx),mxx=Math.max(...bx),mny=Math.min(...by),mxy=Math.max(...by);
+  const k=Math.min((W-2*pad)/((mxx-mnx)||1),(H-2*pad)/((mxy-mny)||1)),ox=(W-(mxx-mnx)*k)/2,oy=(H-(mxy-mny)*k)/2;
+  const S=p=>[ox+(p[0]-mnx)*k,H-oy-(p[1]-mny)*k],pts={};names.forEach(n=>pts[n]=S(P[n]));
+  const lc=o.lc?S(pt(o.lc)):[names.reduce((s,n)=>s+pts[n][0],0)/names.length,names.reduce((s,n)=>s+pts[n][1],0)/names.length];
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Hình vẽ">`;
+  (o.sector||[]).forEach(([c,R,a0,a1])=>{const C=S(pt(c)),r=R*k,p0=[C[0]+r*Math.cos(a0*Math.PI/180),C[1]-r*Math.sin(a0*Math.PI/180)],p1=[C[0]+r*Math.cos(a1*Math.PI/180),C[1]-r*Math.sin(a1*Math.PI/180)];
+    s+=`<path d="M${f(C[0])},${f(C[1])} L${f(p0[0])},${f(p0[1])} A${f(r)},${f(r)} 0 ${a1-a0>180?1:0} 0 ${f(p1[0])},${f(p1[1])} Z" fill="#d6d6d6" stroke="none"/>`});
+  (o.arcs||[]).forEach(([c,R,a0,a1])=>{const C=S(pt(c)),r=R*k,p0=[C[0]+r*Math.cos(a0*Math.PI/180),C[1]-r*Math.sin(a0*Math.PI/180)],p1=[C[0]+r*Math.cos(a1*Math.PI/180),C[1]-r*Math.sin(a1*Math.PI/180)];
+    s+=`<path d="M${f(p0[0])},${f(p0[1])} A${f(r)},${f(r)} 0 ${a1-a0>180?1:0} 0 ${f(p1[0])},${f(p1[1])}" fill="none" stroke="#000" stroke-width="1.1"/>`});
+  (o.circ||[]).forEach(([c,R])=>{const C=S(pt(c));s+=`<circle cx="${f(C[0])}" cy="${f(C[1])}" r="${f(R*k)}" fill="none" stroke="#000" stroke-width="1.1"/>`});
+  (o.ell||[]).forEach(([c,rx,ry,t])=>{const C=S(c),X=rx*k,Y=ry*k;
+    if(t==='half')s+=`<path d="M${f(C[0]-X)},${f(C[1])} A${f(X)},${f(Y)} 0 0 0 ${f(C[0]+X)},${f(C[1])}" fill="none" stroke="#000" stroke-width="1.1"/><path d="M${f(C[0]-X)},${f(C[1])} A${f(X)},${f(Y)} 0 0 1 ${f(C[0]+X)},${f(C[1])}" fill="none" stroke="#000" stroke-width="0.9" stroke-dasharray="4 3"/>`;
+    else s+=`<ellipse cx="${f(C[0])}" cy="${f(C[1])}" rx="${f(X)}" ry="${f(Y)}" fill="${t==='fill'?'#e2e2e2':'none'}" stroke="#000" stroke-width="1.1"/>`});
+  const line=([a,b],d)=>{const p=pts[a]||S(a),q=pts[b]||S(b);s+=`<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" stroke="#000" stroke-width="${d?0.9:1.1}"${d?' stroke-dasharray="4 3"':''}/>`};
+  (o.segs||[]).forEach(e=>line(e,0));(o.dashed||[]).forEach(e=>line(e,1));
+  (o.right||[]).forEach(([a,v,b])=>{const V=pts[v],A=pts[a],B=pts[b],ua=[A[0]-V[0],A[1]-V[1]],ub=[B[0]-V[0],B[1]-V[1]],la=Math.hypot(...ua)||1,lb=Math.hypot(...ub)||1,m=7,
+    p1=[V[0]+ua[0]/la*m,V[1]+ua[1]/la*m],p2=[p1[0]+ub[0]/lb*m,p1[1]+ub[1]/lb*m],p3=[V[0]+ub[0]/lb*m,V[1]+ub[1]/lb*m];
+    s+=`<polyline points="${f(p1[0])},${f(p1[1])} ${f(p2[0])},${f(p2[1])} ${f(p3[0])},${f(p3[1])}" fill="none" stroke="#000" stroke-width="0.9"/>`});
+  (o.angs||[]).forEach(([a,v,b,t,rr])=>{const V=pts[v],A=pts[a],B=pts[b];let ta=Math.atan2(A[1]-V[1],A[0]-V[0]),tb=Math.atan2(B[1]-V[1],B[0]-V[0]);
+    let d=tb-ta;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;const R0=rr||13,q0=[V[0]+R0*Math.cos(ta),V[1]+R0*Math.sin(ta)],q1=[V[0]+R0*Math.cos(ta+d),V[1]+R0*Math.sin(ta+d)];
+    s+=`<path d="M${f(q0[0])},${f(q0[1])} A${R0},${R0} 0 0 ${d>0?1:0} ${f(q1[0])},${f(q1[1])}" fill="none" stroke="#000" stroke-width="0.9"/>`;
+    if(t){const m=ta+d/2,L=R0+11;s+=`<text x="${f(V[0]+L*Math.cos(m))}" y="${f(V[1]+L*Math.sin(m)+3.5)}" font-size="10" text-anchor="middle">${t}</text>`}});
+  (o.lens||[]).forEach(([a,b,t])=>{const p=pts[a]||S(a),q=pts[b]||S(b),mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,dx=q[0]-p[0],dy=q[1]-p[1],l=Math.hypot(dx,dy)||1;let nx=-dy/l,ny=dx/l;if((mx-lc[0])*nx+(my-lc[1])*ny<0){nx=-nx;ny=-ny}
+    s+=`<text x="${f(mx+nx*10)}" y="${f(my+ny*10+3.5)}" font-size="10" text-anchor="middle">${t}</text>`});
+  (o.texts||[]).forEach(([p,t,dx,dy])=>{const q=S(p),it=/^[a-zA-Z]$/.test(t);s+=`<text x="${f(q[0]+(dx||0))}" y="${f(q[1]+(dy||0))}" font-size="${it?11:10}"${it?' font-style="italic"':''} text-anchor="middle">${t}</text>`});
+  const show=o.show||names.filter(n=>!(o.hide||[]).includes(n));
+  show.forEach(n=>{const p=pts[n],off=(o.off||{})[n];let lx,ly;
+    if(off){lx=p[0]+off[0];ly=p[1]+off[1]}else{const dx=p[0]-lc[0],dy=p[1]-lc[1],l=Math.hypot(dx,dy);lx=p[0]+(l<1?-9:dx/l*11);ly=p[1]+(l<1?-5:dy/l*11+4)}
+    s+=`${(o.nodot||[]).includes(n)?'':`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="1.7" fill="#000"/>`}<text x="${f(lx)}" y="${f(ly)}" font-size="11" font-style="italic" text-anchor="middle">${n.replace(/\d+$/,'')}</text>`});
+  return `<div class="figure">${s}</svg></div>`;
+}
+const onC=(R,deg,c=[0,0])=>[c[0]+R*Math.cos(deg*Math.PI/180),c[1]+R*Math.sin(deg*Math.PI/180)];
+/* tam giác ABC vuông tại A: A gốc, B trên trục hoành, C trên trục tung */
+const fig9Right=(AB,AC,o={})=>fig9({A:[0,0],B:[AB,0],C:[0,AC]},{segs:[['A','B'],['B','C'],['C','A']],right:[['B','A','C']],w:o.w||200,h:o.h||140,lens:o.lens||[],angs:o.angs||[]});
+/* góc nội tiếp: cung nhỏ AB có số đo a (độ), C trên cung lớn (major = true) hoặc cung nhỏ */
+const fig9Ins=(a,o={})=>{const A=onC(1,270-a/2),B=onC(1,270+a/2),C=o.major===false?onC(1,270):onC(1,90+(o.cs||15)),P={O:[0,0],A,B};P[o.cn||'C']=C;
+  const segs=[[o.cn||'C','A'],[o.cn||'C','B']];if(o.oab!==false){segs.push(['O','A'],['O','B'])}if(o.ab)segs.push(['A','B']);
+  return fig9(P,{circ:[['O',1]],segs,lc:'O',w:170,h:170,angs:o.angs||[]})};
+/* hai tiếp tuyến MA, MB từ M; OM = d·R */
+const fig9Tan=(R,OM,o={})=>{const t=Math.acos(R/OM)*180/Math.PI,P={O:[0,0],M:[OM,0],A:onC(R,t),B:onC(R,-t)};if(o.C)P.C=onC(R,180);if(o.H)P.H=[R*R/OM,0];
+  const segs=[['M','A'],['M','B'],['O','A'],['O','B']];if(o.C)segs.push(['C','A'],['C','B']);if(o.ab)segs.push(['A','B']);
+  return fig9(P,{circ:[['O',R]],segs,dashed:[['O','M']],right:[['O','A','M'],['O','B','M']],lc:[OM*0.45,0],w:230,h:150,angs:o.angs||[]})};
+/* dây AB cách tâm O một khoảng d, H là trung điểm */
+const fig9Chord=(R,d)=>{const h=Math.sqrt(R*R-d*d);return fig9({O:[0,0],A:[-h,-d],B:[h,-d],H:[0,-d]},{circ:[['O',R]],segs:[['A','B'],['O','A']],dashed:[['O','H']],right:[['O','H','B']],lc:'O',off:{H:[0,13]},w:170,h:170})};
+/* tứ giác nội tiếp với các đỉnh ở các góc cho trước (độ, đo trên đường tròn) */
+const fig9Quad=(ds=[200,290,350,110],ex=[])=>{const P={O:[0,0]};['A','B','C','D'].forEach((n,i)=>P[n]=onC(1,ds[i]));
+  return fig9(P,{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','D'],['D','A'],...ex],lc:'O',show:['A','B','C','D'],w:170,h:170})};
+/* cột (A đỉnh, B chân), bóng BC, góc tại C */
+const fig9Pole=(h,d,lab)=>fig9({A:[0,h],B:[0,0],C:[d,0]},{segs:[['A','B'],['B','C']],dashed:[['A','C']],right:[['A','B','C']],angs:[['A','C','B',lab.ang]],lens:[['B','C',lab.d]].concat(lab.h?[['A','B',lab.h]]:[]),w:210,h:150});
+/* hình trụ */
+const fig9Cyl=(R,h,lab={})=>{const ry=R*.28;return fig9({},{ell:[[[0,h],R,ry,'full'],[[0,0],R,ry,'half']],segs:[[[-R,0],[-R,h]],[[R,0],[R,h]]],dashed:[[[0,0],[R,0]],[[0,0],[0,h]]],
+  texts:[[[R/2,0],lab.r||'r',0,-4],[[0,h/2],lab.h||'h',-10,3]],w:150,h:150})};
+/* hình nón */
+const fig9Cone=(R,h,lab={})=>{const ry=R*.28;return fig9({},{ell:[[[0,0],R,ry,'half']],segs:[[[-R,0],[0,h]],[[R,0],[0,h]]],dashed:[[[0,0],[R,0]],[[0,0],[0,h]]],
+  texts:[[[R/2,0],lab.r||'r',0,-4],[[0,h/2],lab.h||'h',-9,3]].concat(lab.l?[[[R/2,h/2],lab.l,12,0]]:[]),w:150,h:150})};
+/* hình cầu */
+const fig9Sph=(lab={})=>fig9({},{circ:[[[0,0],1]],ell:[[[0,0],1,.3,'half']],dashed:[[[0,0],[1,0]]],texts:[[[.5,0],lab.r||'R',0,-4]],w:130,h:130});
+/* parabol y = a·x² có đánh dấu điểm */
+const fig9Par=(a,mk)=>{const xm=Math.abs(mk[0])+1.2,Y=Math.abs(mk[1]);return graphSVG(x=>a*x*x,{x:[-xm,xm],y:a>0?[-1,Y+1.5]:[-Y-1.5,1],marks:[mk],w:190,h:180})};
+/* một tiếp tuyến MA */
+const fig9Tan1=(R,OM)=>{const t=Math.acos(R/OM)*180/Math.PI;return fig9({O:[0,0],A:onC(R,t),M:[OM,0]},{circ:[['O',R]],segs:[['O','A'],['A','M'],['O','M']],right:[['O','A','M']],lc:[OM*.4,0],w:220,h:150})};
+/* tam giác nhọn ABC nội tiếp (O), góc BAC = a */
+const fig9TriIn=a=>fig9({O:[0,0],A:onC(1,90),B:onC(1,270-a),C:onC(1,270+a)},{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','A'],['O','B'],['O','C']],lc:'O',w:170,h:170});
+/* tam giác ABC vuông tại A nội tiếp đường tròn đường kính BC */
+const fig9RtIn=(AB,AC)=>fig9({O:[0,0],B:[-1,0],C:[1,0],A:onC(1,2*Math.atan(AC/AB)*180/Math.PI)},{circ:[['O',1]],segs:[['A','B'],['A','C'],['B','C']],right:[['B','A','C']],lc:'O',w:170,h:170});
+/* tứ giác nội tiếp biết ∠A = a, ∠B = b */
+const fig9QuadAB=(a,b)=>{const lo=Math.max(0,360-2*a-2*b),hi=Math.min(360-2*b,360-2*a),u=(lo+hi)/2,B=180+u;return fig9Quad([180,B,540-2*b,B+2*a])};
+/* tháp đo bằng hai điểm quan sát */
+const fig9Tower=(h,x,d,a,b)=>fig9({C:[0,h],H:[0,0],B:[x,0],A:[x+d,0]},{segs:[['C','H'],['H','A']],dashed:[['C','B'],['C','A']],right:[['C','H','B']],angs:[['C','A','H',a+'°',16],['C','B','H',b+'°',13]],lens:[['B','A',d+' m'],['H','B','x'],['C','H','h']],w:240,h:150});
+/* kem ốc quế: nón úp ngược và nửa hình cầu */
+const fig9Ice=(R,H)=>fig9({},{arcs:[[[0,0],R,0,180]],ell:[[[0,0],R,R*.28,'full']],segs:[[[-R,0],[0,-H]],[[R,0],[0,-H]]],dashed:[[[0,0],[0,-H]],[[0,0],[R,0]]],texts:[[[0,-H/2],'h',-8,3],[[R/2,0],'r',0,-4]],w:140,h:170});
+
+/* ===================== Đọc đồ thị hàm số y = ax² ===================== */
+const PAR9=[[1,2],[-1,2],[2,1],[-2,1],[2,2],[-2,2],[.5,2],[-.5,2],[1.5,2],[-1.5,2],[3,1],[-3,1],[.25,2],[1,1],[-1,1]];
+N9b('k9-18-graph',6,'TH',[18],r=>{
+  const [A,x0]=r.pick(PAR9),xx=(r.chance(.5)?1:-1)*x0,y0=A*x0*x0,q=Q(Math.round(A*4),4);
+  return mkF(r,{stem:`Đường cong trong hình vẽ là đồ thị của hàm số ${I('y')} = ${I('a')}${I('x')}${sup(2)}. Giá trị của ${I('a')} bằng${fig9Par(A,[xx,y0])}`,correct:q,cands:[Q(-q[0],q[1]),Q(q[1],q[0]),Q(y0,xx),Q(2*q[0],q[1]),Q(q[0],2*q[1])],
+    sol:`Đồ thị đi qua điểm (${sg(xx)}; ${fmt(y0)}) nên ${fmt(y0)} = a·(${sg(xx)})² ⇒ a = ${qh(q)}.`,chk:()=>isInt(y0)});
+});
+TLN9b('t9-18-graph',6,'TH',[18],r=>{
+  for(;;){const [a,x0]=r.pick([[1,2],[-1,2],[2,1],[-2,1],[.5,2],[-.5,2],[2,2],[-2,2],[3,1],[-3,1]]),s=r.chance(.5)?1:-1,y0=a*x0*x0,x1=r.pick([3,4,-3,-4,5]),v=a*x1*x1;if(Math.abs(x1)===x0)continue;
+    return{kind:'tln',stem:`Đường cong trong hình vẽ là đồ thị của hàm số ${I('y')} = ${I('a')}${I('x')}${sup(2)}.${fig9Par(a,[s*x0,y0])}Tính giá trị của hàm số tại ${I('x')} = ${sg(x1)}.`,ans:v,unit:'',
+      sol:`Đồ thị đi qua (${sg(s*x0)}; ${fmt(y0)}) nên a = ${fmt(y0)} : ${x0*x0} = ${fmt(a)}. Tại x = ${sg(x1)}: y = ${fmt(a)}·(${sg(x1)})² = ${fmt(v)}.`,chk:()=>isInt(v*100)}}
 });
 /* ================================================================
    ÔN THI TỐT NGHIỆP THPT – các dạng câu riêng theo kiểu đề chính thức 2025

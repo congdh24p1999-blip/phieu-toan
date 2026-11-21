@@ -44,7 +44,7 @@ DS9('ds9-11-val',4,'NB',[11],r=>{
 });
 DS9('ds9-12-real',4,'VD',[12],r=>{
   for(;;){const d=r.int(10,40),a=r.pick([...Array(36)].map((_,i)=>25+i).filter(v=>v!==45)),H=d*Math.tan(a*Math.PI/180),L=d/Math.cos(a*Math.PI/180),h1=Math.round(H*10)/10,l1=Math.round(L*10)/10;if(Math.abs(H*10-Math.round(H*10))>.45||Math.abs(L*10-Math.round(L*10))>.45)continue;
-    return mkDS(r,{stem:`Một cột đèn có bóng trên mặt đất dài ${d} m, tia nắng tạo với mặt đất góc ${a}°. Xét tính đúng sai của các khẳng định sau (độ dài làm tròn đến hàng phần mười của mét):`,items:[
+    return mkDS(r,{stem:`Một cột đèn có bóng trên mặt đất dài ${d} m, tia nắng tạo với mặt đất góc ${a}°.${fig9Pole(H,d,{ang:a+'°',d:d+' m'})}Xét tính đúng sai của các khẳng định sau (độ dài làm tròn đến hàng phần mười của mét):`,items:[
       {t:`Chiều cao cột đèn bằng ${d}·tan ${a}°.`,f:`Chiều cao cột đèn bằng ${d}·sin ${a}°.`,why:`Cạnh đối = cạnh kề · tan góc.`},
       {t:`Chiều cao cột đèn khoảng ${fmt(h1)} m.`,f:`Chiều cao cột đèn khoảng ${fmt(Math.round(d*Math.sin(a*Math.PI/180)*10)/10)} m.`,why:`${d}·tan ${a}° ≈ ${fmt(h1)}.`},
       {t:`Khoảng cách từ đỉnh cột đèn đến đầu bóng khoảng ${fmt(l1)} m.`,f:`Khoảng cách từ đỉnh cột đèn đến đầu bóng khoảng ${fmt(Math.round((d+H)*10)/10)} m.`,why:`Cạnh huyền = ${fr(d,`cos ${a}°`)} ≈ ${fmt(l1)}.`},
@@ -94,7 +94,7 @@ TLN9('t9-9-int',3,'VD',[9],r=>{
 });
 TLN9('t9-11-calc',4,'TH',[11,12],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,3),AB=p*k,BC=h*k,AC=q*k;
-  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm và sin ${I('C')} = ${qh(Q(p,h))}. Tính độ dài cạnh ${I('AC')} (đơn vị: cm).`,ans:AC,unit:'cm',sol:`sin C = ${fr('AB','BC')} ⇒ BC = AB : sin C = ${AB} : ${qh(Q(p,h))} = ${BC}; AC = √(${BC}² − ${AB}²) = ${AC} (cm).`,chk:()=>BC*BC===AB*AB+AC*AC};
+  return{kind:'tln',stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('AB')} = ${AB} cm và sin ${I('C')} = ${qh(Q(p,h))} (hình vẽ).${fig9Right(AB,AC,{lens:[['A','B',AB+' cm']]})}Tính độ dài cạnh ${I('AC')} (đơn vị: cm).`,ans:AC,unit:'cm',sol:`sin C = ${fr('AB','BC')} ⇒ BC = AB : sin C = ${AB} : ${qh(Q(p,h))} = ${BC}; AC = √(${BC}² − ${AB}²) = ${AC} (cm).`,chk:()=>BC*BC===AB*AB+AC*AC};
 });
 TLN9('t9-15-ring',5,'TH',[15],r=>{
   for(;;){const R=r.int(4,15),r1=r.int(2,R-1),v=Math.PI*(R*R-r1*r1),a=Math.round(v*10)/10;if(Math.abs(v*10-Math.round(v*10))>.45||a>=1000)continue;
@@ -102,7 +102,7 @@ TLN9('t9-15-ring',5,'TH',[15],r=>{
 });
 TLN9('t9-16-angle',5,'VD',[16],r=>{
   for(;;){const R=r.int(2,10),MA=r.int(3,20),ang=2*Math.atan(R/MA)*180/Math.PI,v=Math.round(ang);if(Math.abs(ang-v)>.45)continue;
-    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm), kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là tiếp điểm) với ${I('MA')} = ${MA} cm. Tính số đo góc ${I('AMB')} (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`tan ${'AMO'} = ${fr('OA','MA')} = ${fr(R,MA)} ⇒ góc AMO ≈ ${fmt(Math.round(ang/2*100)/100)}°; MO là phân giác nên góc AMB = 2·góc AMO ≈ ${v}°.`,chk:()=>true}}
+    return{kind:'tln',stem:`Từ điểm ${I('M')} nằm ngoài đường tròn (${I('O')}; ${R} cm), kẻ hai tiếp tuyến ${I('MA')}, ${I('MB')} (${I('A')}, ${I('B')} là tiếp điểm) với ${I('MA')} = ${MA} cm.${fig9Tan(R,Math.hypot(R,MA),{angs:[['A','M','B','?']]})}Tính số đo góc ${I('AMB')} (đơn vị: độ, làm tròn kết quả đến hàng đơn vị).`,ans:v,unit:'°',sol:`tan ${'AMO'} = ${fr('OA','MA')} = ${fr(R,MA)} ⇒ góc AMO ≈ ${fmt(Math.round(ang/2*100)/100)}°; MO là phân giác nên góc AMB = 2·góc AMO ≈ ${v}°.`,chk:()=>true}}
 });
 /* ---------- Tự luận ---------- */
 TL9('tl9-4-frac',2,'VD','alg',[4,6],r=>{
@@ -133,7 +133,7 @@ TL9('tl9-9-min',3,'VDC','rad',[9],r=>{
 });
 TL9('tl9-12-two',4,'VDC','geo',[12],r=>{
   for(;;){const a=r.pick([30,35,40]),b=r.pick([50,55,60]),d=r.int(10,40),ta=Math.tan(a*Math.PI/180),tb=Math.tan(b*Math.PI/180),h=d*ta*tb/(tb-ta),x=h/tb;
-    return{kind:'tl',title:'Đo chiều cao bằng hai lần quan sát',parts:[{pts:.5,html:`Để đo chiều cao ${I('h')} của một ngọn tháp, người ta đứng tại điểm ${I('A')} nhìn đỉnh tháp với góc nâng ${a}°, sau đó tiến thêm ${d} m về phía chân tháp đến điểm ${I('B')} thì nhìn đỉnh tháp với góc nâng ${b}° (${I('A')}, ${I('B')} và chân tháp thẳng hàng; bỏ qua chiều cao người quan sát). Gọi ${I('x')} là khoảng cách từ ${I('B')} đến chân tháp. Lập hai biểu thức tính ${I('h')} theo ${I('x')}.`},{pts:.5,html:`Tính chiều cao ${I('h')} của tháp (làm tròn đến hàng phần mười của mét).`}],
+    return{kind:'tl',title:'Đo chiều cao bằng hai lần quan sát',parts:[{pts:.5,html:`Để đo chiều cao ${I('h')} của một ngọn tháp, người ta đứng tại điểm ${I('A')} nhìn đỉnh tháp với góc nâng ${a}°, sau đó tiến thêm ${d} m về phía chân tháp đến điểm ${I('B')} thì nhìn đỉnh tháp với góc nâng ${b}° (${I('A')}, ${I('B')} và chân tháp thẳng hàng; bỏ qua chiều cao người quan sát).${fig9Tower(h,x,d,a,b)}Gọi ${I('x')} là khoảng cách từ ${I('B')} đến chân tháp. Lập hai biểu thức tính ${I('h')} theo ${I('x')}.`},{pts:.5,html:`Tính chiều cao ${I('h')} của tháp (làm tròn đến hàng phần mười của mét).`}],
       sol:[ptxt([[`h = x·tan ${b}°.`,.25],[`h = (x + ${d})·tan ${a}°.`,.25]]),ptxt([[`x·tan ${b}° = (x + ${d})·tan ${a}° ⇒ x = ${fr(`${d}·tan ${a}°`,`tan ${b}° − tan ${a}°`)} ≈ ${fmt(Math.round(x*100)/100)} (m).`,.25],[`h = x·tan ${b}° ≈ ${fmt(Math.round(h*10)/10)} (m).`,.25]])],chk:()=>h>0}}
 });
 /* ---------- Đúng/sai (bổ sung đợt 2) ---------- */
@@ -180,7 +180,7 @@ DS9('ds9-11-def',4,'NB',[11],r=>{
 });
 DS9('ds9-12-solve',4,'TH',[12],r=>{
   const k=r.int(1,5),a=4*k,be=r.pick([30,60]),AC=be===30?String(2*k):kr(2*k,3),AB=be===30?kr(2*k,3):String(2*k);
-  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${a} cm và góc ${I('B')} = ${be}°. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} có ${I('BC')} = ${a} cm và góc ${I('B')} = ${be}° (hình vẽ).${fig9Right(a*Math.cos(be*Math.PI/180),a*Math.sin(be*Math.PI/180),{lens:[['B','C',a+' cm']],angs:[['C','B','A',be+'°']]})}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`Góc ${I('C')} = ${90-be}°.`,f:`Góc ${I('C')} = ${90+be}°.`,why:`B + C = 90°.`},
     {t:`${I('AC')} = ${I('BC')}·sin ${I('B')}.`,f:`${I('AC')} = ${I('BC')}·cos ${I('B')}.`,why:`AC là cạnh đối của góc B.`},
     {t:`${I('AC')} = ${AC} cm.`,f:`${I('AC')} = ${AB} cm.`,why:`AC = ${a}·sin ${be}° = ${AC}.`},
@@ -188,7 +188,7 @@ DS9('ds9-12-solve',4,'TH',[12],r=>{
 });
 DS9('ds9-14-chord',5,'VD',[14],r=>{
   const [p,q,h]=r.pick(PYT9),k=r.int(1,2),R=h*k,d=p*k,hc=q*k;
-  return mkDS(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} cách tâm ${I('O')} một khoảng ${d} cm. Gọi ${I('H')} là trung điểm của ${I('AB')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+  return mkDS(r,{stem:`Cho đường tròn (${I('O')}; ${R} cm) và dây ${I('AB')} cách tâm ${I('O')} một khoảng ${d} cm. Gọi ${I('H')} là trung điểm của ${I('AB')}.${fig9Chord(R,d)}Xét tính đúng sai của các khẳng định sau:`,items:[
     {t:`${I('OH')} vuông góc với ${I('AB')}.`,f:`${I('OH')} không vuông góc với ${I('AB')}.`,why:`Đường kính đi qua trung điểm của dây (không qua tâm) thì vuông góc với dây đó.`},
     {t:`${I('AB')} = ${2*hc} cm.`,f:`${I('AB')} = ${hc} cm.`,why:`AH = √(${R}² − ${d}²) = ${hc} ⇒ AB = ${2*hc}.`},
     {t:`Diện tích tam giác ${I('OAB')} bằng ${d*hc} cm².`,f:`Diện tích tam giác ${I('OAB')} bằng ${2*d*hc} cm².`,why:`S = ${fr(1,2)}·OH·AB = ${fr(1,2)}·${d}·${2*hc} = ${d*hc}.`},
