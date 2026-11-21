@@ -9,6 +9,8 @@ const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
   note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
 const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
 const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
+const CH9={1:'Phương trình và hệ hai phương trình bậc nhất hai ẩn',2:'Phương trình và bất phương trình bậc nhất một ẩn',3:'Căn bậc hai và căn bậc ba',4:'Hệ thức lượng trong tam giác vuông',5:'Đường tròn'};
+const G9={...G8,grade:9,mon:'Toán 9',chName:CH9};
 const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm',4:'Nguyên hàm và tích phân',5:'Phương pháp toạ độ trong không gian',6:'Xác suất có điều kiện'};
 const G12={grade:12,school:'THPT',mon:'Toán 12',chName:CH12,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
@@ -20,6 +22,12 @@ const CHTN={101:'Ứng dụng đạo hàm, khảo sát hàm số (lớp 11, 12)'
   105:'Thống kê: mẫu số liệu ghép nhóm (lớp 11, 12)',106:'Đại số tổ hợp và xác suất (lớp 10, 11, 12)',107:'Hàm số lượng giác, phương trình lượng giác (lớp 11)',108:'Dãy số, cấp số cộng, cấp số nhân (lớp 11)',109:'Hàm số mũ và hàm số lôgarit (lớp 11)',110:'Bất phương trình, hệ bất phương trình bậc nhất hai ẩn; hàm số bậc hai (lớp 10)'};
 const TN_MIX={101:[[12,1],[11,9],['tn',101]],102:[[12,4],['tn',102]],103:[[12,2],[12,5],['tn',103]],104:[[11,4],[11,7],['tn',104]],105:[[11,3],[12,3]],106:[[10,8],[10,9],[11,8],[12,6],['tn',106]],107:[[11,1]],108:[[11,2]],109:[[11,6]],110:[[10,2],[10,6],['tn',110]]};
 const BLUEPRINT={
+  '9gk1':{...G9,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
+    nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,2,3,3],
+    tl:[{role:'alg',chs:[1,2]},{role:'real',chs:[1,2]},{role:'rad',chs:[3]}]},
+  '9ck1':{...G9,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
+    nlc:[1,1,2,2,3,3,4,4,4,5,5,5],ds:[4,5],tln:[1,3,4,5],
+    tl:[{role:'rad',chs:[3]},{role:'real',chs:[1,2,4]},{role:'geo',chs:[4,5]}]},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
     chapters:[101,102,103,104,105,106,107,108,109,110],

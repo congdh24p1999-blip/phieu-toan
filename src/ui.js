@@ -13,7 +13,7 @@ if(![10,15,20,30].includes(+state.wsn))state.wsn=10;state.wsn=+state.wsn;
 if(!['mix','nlc','ds','tln','tl'].includes(state.wsk))state.wsk='mix';
 if(state.term&&!loadState().kind){state.kind=/ck1/.test(state.term)?'ck1':'gk1'}   /* tương thích bản cũ */
 delete state.term;
-if(![7,8,10,11,12].includes(state.grade))state.grade=8;
+if(![7,8,9,10,11,12].includes(state.grade))state.grade=8;
 if(!['gk1','ck1','gk2','ck2','tn'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
@@ -291,7 +291,7 @@ function render(){
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#scopeHint').textContent=bp.scope+'.';
-  $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===7?DIFF_HINT7:DIFF_HINT11)[state.diff];
+  $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
@@ -304,7 +304,7 @@ function render(){
   $('#struct').disabled=!!bp.tn;
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, học kì I và II. Các lớp khác sẽ thêm sau.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${bp.grade===9?'học kì I (học kì II sẽ thêm sau)':'học kì I và II'}. Các lớp khác sẽ thêm sau.`;
   document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
 }
 function syncInputs(){
