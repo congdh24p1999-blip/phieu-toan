@@ -96,6 +96,11 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .tab{font:inherit;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 16px;border-radius:999px;cursor:pointer}
 .tab[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
 .meta{color:var(--muted);font-size:.85rem}
+.buglink{margin-left:auto;font-size:.85rem;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--surface)}
+.buglink:hover{text-decoration:underline}
+.footsep{margin-left:auto}
+.bugtoast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:min(92vw,620px);background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font-size:.88rem;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.bugtoast.on{opacity:1}
 [data-tab=exam] #keyOut{display:none}
 [data-tab=key] #examOut{display:none}
 
