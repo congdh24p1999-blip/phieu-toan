@@ -9,7 +9,7 @@ with sync_playwright() as p:
     pg.goto('file://'+os.path.join(HERE,'..','index.html'));pg.evaluate("localStorage.clear()");pg.reload();pg.wait_for_timeout(400)
     pg.check('input[name=grade][value="9"]',force=True);pg.wait_for_timeout(400)
     print('term disabled:',[pg.is_disabled(f'input[name=term][value={v}]') for v in ['gk1','ck1','gk2','ck2']],'|',pg.inner_text('#gradeHint'))
-    for t in ['gk1','ck1']:
+    for t in ['gk1','ck1','gk2','ck2']:
         pg.check(f'input[name=term][value={t}]',force=True);pg.wait_for_timeout(500)
         print(t,pg.inner_text('#meta')[:100],'|',pg.inner_text('#scopeHint')[:140])
         pg.screenshot(path=OUT+f'u9-{t}.png',full_page=True)
