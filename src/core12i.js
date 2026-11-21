@@ -137,3 +137,63 @@ TLNT('tn-t-stand',102,'VD',r=>{
     return{kind:'tln',stem:`Một chân đế đồ lưu niệm có dạng khối chóp cụt tứ giác đều, cạnh hai đáy là ${fmt(a)} cm và ${fmt(b)} cm, bề dày (chiều cao) ${fmt(h)} cm. Trên mặt đáy nhỏ người ta khoét đi phần ${I('H')} có dạng chỏm cầu, nhận được khi cắt khối cầu bán kính ${fmt(R)} cm bởi một mặt phẳng, mặt cắt là hình tròn bán kính ${fmt(rr)} cm nằm trên mặt đáy nhỏ (phần bị khoét là chỏm cầu nhỏ hơn). Tính thể tích khối chân đế (đơn vị: cm³, làm tròn kết quả đến hàng phần mười).`,ans:Math.round(V*10)/10,unit:'cm³',
       sol:`V${sub('chóp cụt')} = ${fr('h',3)}(S + S′ + √(SS′)) = ${fr(fmt(h),3)}(${fmt(Math.round(a*a*100)/100)} + ${fmt(Math.round(b*b*100)/100)} + ${fmt(Math.round(a*b*100)/100)}) ≈ ${fmt(Math.round(Vf*100)/100)}. Chiều cao chỏm cầu h′ = R − √(R² − r²) ≈ ${fmt(Math.round(hc*1000)/1000)}; V${sub('chỏm')} = πh′²(R − ${fr("h′",3)}) ≈ ${fmt(Math.round(Vc*100)/100)}. Thể tích chân đế ≈ ${fmt(Math.round(V*10)/10)} cm³.`,chk:()=>true}}
 });
+
+/* ======== Câu vận dụng cao (VDC) – xác suất, dùng ở câu cuối Phần III (mức Chuẩn) và hai câu cuối (mức Nâng cao) ======== */
+const qvTN=q=>q[0]/q[1];
+/* chuyển bi giữa hai hộp rồi lấy bi, tính xác suất có điều kiện (công thức Bayes) */
+TLNT('tn-v-transfer',106,'VDC',r=>{
+  for(;;){const a=r.int(3,7),b=r.int(2,6),c=r.int(2,6),d=r.int(2,6),k=r.pick([2,2,1]),pk=[0,1,2].map(i=>Q(nC10(a,i)*nC10(b,2-i),nC10(a+b,2))),rk=[0,1,2].map(i=>Q(c+i,c+d+2));
+    const PR=pk.reduce((s,p,i)=>qadd(s,qmul(p,rk[i])),Q(0)),post=qdiv(qmul(pk[k],rk[k]),PR),v=qvTN(post);if(!okR2(v)||v<.01)continue;
+    return{kind:'tln',stem:`Hộp thứ nhất có ${a} viên bi đỏ và ${b} viên bi xanh; hộp thứ hai có ${c} viên bi đỏ và ${d} viên bi xanh (các viên bi có cùng kích thước). Lấy ngẫu nhiên đồng thời 2 viên bi từ hộp thứ nhất bỏ sang hộp thứ hai, sau đó lấy ngẫu nhiên 1 viên bi từ hộp thứ hai. Biết viên bi lấy ra từ hộp thứ hai là bi đỏ, tính xác suất để ${k===2?'cả 2 viên bi':'đúng 1 trong 2 viên bi'} đã chuyển sang là bi đỏ (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`Gọi H${sub('i')} là biến cố "chuyển sang i viên đỏ" (i = 0, 1, 2): P(H₀) = ${qh(pk[0])}, P(H₁) = ${qh(pk[1])}, P(H₂) = ${qh(pk[2])}. Gọi D là biến cố "bi lấy từ hộp thứ hai màu đỏ": P(D | H${sub('i')}) = ${fr(`${c} + i`,c+d+2)}. Công thức xác suất toàn phần: P(D) = ${qh(PR)}. Công thức Bayes: P(H${sub(k)} | D) = ${fr(`P(H${sub(k)})·P(D | H${sub(k)})`,'P(D)')} = ${qh(post)} ≈ ${fmt(r2tn(v))}.`,chk:()=>Math.abs(pk.reduce((s,p)=>s+qvTN(p),0)-1)<1e-12}}
+});
+/* xét nghiệm hai lần (Bayes với hai phép thử độc lập) */
+TLNT('tn-v-test2',106,'VDC',r=>{
+  for(;;){const p=r.pick([1,2,3,4,5]),s=r.pick([90,92,95,98]),f=r.pick([3,4,5,6,8,10]),pat=r.int(0,1);
+    const P=p/100,S=s/100,F=f/100,num=P*(pat?S*(1-S):S*S),den=num+(1-P)*(pat?F*(1-F):F*F),v=num/den;if(!okR2(v)||v<.02||v>.98)continue;
+    return{kind:'tln',stem:`Tỉ lệ người mắc một bệnh trong cộng đồng là ${p}%. Một loại xét nghiệm cho kết quả dương tính với ${s}% người mắc bệnh và cho kết quả dương tính (sai) với ${f}% người không mắc bệnh. Một người được xét nghiệm hai lần, kết quả hai lần độc lập với nhau khi biết người đó có bệnh hay không. Biết ${pat?'lần thứ nhất dương tính và lần thứ hai âm tính':'cả hai lần đều dương tính'}, tính xác suất người đó mắc bệnh (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`Gọi B là biến cố "mắc bệnh", K là biến cố về kết quả hai lần xét nghiệm. P(K | B) = ${pat?`${fmt(S)}·${fmt(Math.round((1-S)*100)/100)}`:`${fmt(S)}²`}, P(K | B̄) = ${pat?`${fmt(F)}·${fmt(Math.round((1-F)*100)/100)}`:`${fmt(F)}²`}. Theo công thức Bayes: P(B | K) = ${fr(`${fmt(P)}·P(K | B)`,`${fmt(P)}·P(K | B) + ${fmt(Math.round((1-P)*100)/100)}·P(K | B̄)`)} ≈ ${fmt(r2tn(v))}.`,chk:()=>true}}
+});
+/* xác suất có điều kiện trong bài toán chọn người */
+TLNT('tn-v-cond',106,'VDC',r=>{
+  for(;;){const m=r.int(5,12),f=r.int(4,10),k=r.pick([3,4]),need=r.pick([1,2]),j=r.int(need,Math.min(k,f));if(j===need&&need===1&&r.chance(.5))continue;
+    let den=0;for(let i=need;i<=Math.min(k,f);i++)den+=nC10(f,i)*nC10(m,k-i);const num=nC10(f,j)*nC10(m,k-j),v=num/den;if(!num||!okR2(v)||v>.98)continue;
+    return{kind:'tln',stem:`Một lớp có ${m} học sinh nam và ${f} học sinh nữ. Giáo viên chọn ngẫu nhiên ${k} học sinh tham gia đội văn nghệ. Biết rằng trong ${k} học sinh được chọn có ít nhất ${need} học sinh nữ, tính xác suất để trong đó có đúng ${j} học sinh nữ (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`Gọi A: "có ít nhất ${need} nữ", B: "có đúng ${j} nữ"; B ⊂ A nên P(B | A) = ${fr('n(B)','n(A)')}. n(B) = ${CH(f,j)}·${CH(m,k-j)} = ${num}; n(A) = ${[...Array(Math.min(k,f)-need+1).keys()].map(i=>`${CH(f,need+i)}·${CH(m,k-need-i)}`).join(' + ')} = ${den}. P(B | A) = ${fr(num,den)} ≈ ${fmt(r2tn(v))}.`,chk:()=>true}}
+});
+/* xếp các cặp vợ chồng thành hàng: không cặp nào đứng cạnh nhau (đếm bằng liệt kê) */
+const PERM10={};
+/* trả về [số cách không cặp nào cạnh nhau, tổng số cách]; alt: chỉ xét các cách nam nữ xen kẽ */
+function permCount(n,alt){const key=n+'|'+alt;if(PERM10[key])return PERM10[key];const N=2*n,used=Array(N).fill(false),cur=[];let ok=0,tot=0;
+  const rec=()=>{if(cur.length===N){if(alt)for(let i=0;i<N-1;i++)if((cur[i]&1)===(cur[i+1]&1))return;tot++;for(let i=0;i<N-1;i++)if((cur[i]>>1)===(cur[i+1]>>1))return;ok++;return}
+    for(let x=0;x<N;x++)if(!used[x]){used[x]=true;cur.push(x);rec();cur.pop();used[x]=false}};rec();return PERM10[key]=[ok,tot]}
+TLNT('tn-v-couple',106,'VDC',r=>{
+  for(;;){const n=r.pick([3,4]),alt=r.chance(.45),[ok,tot]=permCount(n,alt),v=ok/tot;if(!okR2(v)||v<.05)continue;
+    return{kind:'tln',stem:`Có ${n} cặp vợ chồng được xếp ngẫu nhiên vào ${2*n} ghế kê thành một hàng ngang. ${alt?'Biết rằng nam và nữ ngồi xen kẽ nhau, tính':'Tính'} xác suất để không có cặp vợ chồng nào ngồi cạnh nhau (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:alt?`Số cách xếp nam, nữ xen kẽ: 2·${n}!·${n}! = ${tot}. Trong đó, đếm các cách không cặp vợ chồng nào ngồi cạnh nhau (cố định thứ tự nam rồi xếp nữ vào các vị trí xen kẽ, loại các vị trí kề chồng mình): ${ok} cách. P = ${fr(ok,tot)} ≈ ${fmt(r2tn(v))}.`
+        :`n(Ω) = ${2*n}! = ${tot}. Theo quy tắc bù trừ, số cách có ít nhất một cặp ngồi cạnh nhau là Σ(−1)${sup('k+1')}${CH(n,'k')}·2${sup('k')}·(${2*n} − k)!; suy ra số cách không cặp nào ngồi cạnh nhau là ${ok}. P = ${fr(ok,tot)} ≈ ${fmt(r2tn(v))}.`,chk:()=>alt||ok===[...Array(n+1).keys()].reduce((S,k)=>S+(-1)**k*nC10(n,k)*2**k*fact10(2*n-k),0)}}
+});
+/* chọn ngẫu nhiên một số có 4 chữ số đôi một khác nhau */
+const D4=(()=>{const L=[];for(let n=1000;n<=9999;n++){const s=String(n);if(new Set(s).size===4)L.push(n)}return L})();
+const D4C=[['các chữ số tăng dần từ trái sang phải',n=>{const s=String(n);return s[0]<s[1]&&s[1]<s[2]&&s[2]<s[3]}],['số đó chia hết cho 11',n=>n%11===0],['tổng các chữ số của số đó bằng 18',n=>String(n).split('').reduce((a,c)=>a+ +c,0)===18],
+  ['số đó có đúng hai chữ số chẵn',n=>String(n).split('').filter(c=>c%2===0).length===2],['chữ số hàng đơn vị lớn hơn chữ số hàng chục và chữ số hàng chục lớn hơn chữ số hàng trăm',n=>{const s=String(n);return s[3]>s[2]&&s[2]>s[1]}],['số đó chia hết cho 9',n=>n%9===0],['số đó chia hết cho 25',n=>n%25===0]];
+TLNT('tn-v-digits',106,'VDC',r=>{
+  for(;;){const [txt,f]=r.pick(D4C),c=D4.filter(f).length,v=c/D4.length;if(!okR2(v)||v<.01)continue;
+    return{kind:'tln',stem:`Gọi ${I('S')} là tập hợp các số tự nhiên có 4 chữ số đôi một khác nhau. Chọn ngẫu nhiên một số từ ${I('S')}. Tính xác suất để ${txt} (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`n(S) = 9·${AH(9,3)} = ${D4.length}. Đếm các số thoả mãn yêu cầu (chia trường hợp theo chữ số đầu hoặc theo điều kiện chia hết): có ${c} số. P = ${fr(c,D4.length)} ≈ ${fmt(r2tn(v))}.`,chk:()=>D4.length===4536}}
+});
+/* trò chơi gieo xúc xắc luân phiên (tổng cấp số nhân) */
+TLNT('tn-v-game',106,'VDC',r=>{
+  for(;;){const n=r.int(2,5),t=r.pick([[6,'mặt 6 chấm',1/6],[5,'mặt có số chấm lớn hơn 4',1/3],[4,'mặt có số chấm chia hết cho 3',1/3],[1,'mặt 1 chấm hoặc mặt 6 chấm',1/3]]),p=t[2],q=1-p,who=r.chance(.6);
+    const pa=p*(1-(q*q)**n)/(1-q*q),pb=p*q*(1-(q*q)**n)/(1-q*q),v=who?pa:pb;if(!okR2(v))continue;
+    return{kind:'tln',stem:`Hai bạn An và Bình chơi một trò chơi: hai bạn lần lượt gieo một con xúc xắc cân đối, An gieo trước. Người đầu tiên gieo được ${t[1]} là người thắng và trò chơi kết thúc; nếu sau ${n} lượt gieo của mỗi bạn mà chưa ai thắng thì hai bạn hoà. Tính xác suất để ${who?'An':'Bình'} thắng (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`Mỗi lần gieo, xác suất "thắng" là p = ${qh(Q(Math.round(p*6),6))}, không thắng là q = ${qh(Q(Math.round(q*6),6))}. ${who?`An thắng ở lượt gieo thứ i của mình (i = 1, ..., ${n}) với xác suất (q²)${sup('i − 1')}·p`:`Bình thắng ở lượt gieo thứ i của mình với xác suất (q²)${sup('i − 1')}·q·p`}. Tổng ${n} số hạng của cấp số nhân: P = ${who?'p':'qp'}·${fr(`1 − (q²)${sup(n)}`,'1 − q²')} ≈ ${fmt(r2tn(v))}.`,chk:()=>pa+pb<1}}
+});
+/* con châu chấu nhảy trên các đỉnh của đa giác đều (quy hoạch theo số bước) */
+TLNT('tn-v-walk',106,'VDC',r=>{
+  for(;;){const k=r.pick([4,5,6]),t=r.int(4,8),tgt=r.pick([0,Math.floor(k/2)]);let P=Array(k).fill(0);P[0]=1;
+    for(let s=0;s<t;s++){const N=Array(k).fill(0);for(let i=0;i<k;i++){N[(i+1)%k]+=P[i]/2;N[(i+k-1)%k]+=P[i]/2}P=N}const v=P[tgt];if(!v||!okR2(v))continue;
+    const nm=['','','','','hình vuông','ngũ giác đều','lục giác đều'][k],L='ABCDEF'.slice(0,k);
+    return{kind:'tln',stem:`Một con châu chấu đứng ở đỉnh ${I('A')} của ${nm} ${I(L)}. Mỗi lần, nó nhảy ngẫu nhiên sang một trong hai đỉnh kề với đỉnh đang đứng (xác suất mỗi đỉnh bằng ${fr(1,2)}), các lần nhảy độc lập. Tính xác suất để sau ${t} lần nhảy con châu chấu đứng ở đỉnh ${I(L[tgt])} (làm tròn kết quả đến hàng phần trăm).`,ans:r2tn(v),unit:'',
+      sol:`Mỗi cách nhảy ${t} lần ứng với một dãy ${t} bước "sang phải" hoặc "sang trái", có 2${sup(t)} = ${2**t} dãy đồng khả năng. Con châu chấu ở đỉnh ${L[tgt]} khi số bước sang phải trừ số bước sang trái chia ${k} dư ${tgt}; đếm (hoặc lập bảng xác suất theo từng bước) được ${Math.round(v*2**t)} dãy. P = ${fr(Math.round(v*2**t),2**t)} ≈ ${fmt(r2tn(v))}.`,chk:()=>Math.abs(v*2**t-Math.round(v*2**t))<1e-9}}
+});

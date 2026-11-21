@@ -170,7 +170,7 @@ function histNote(ex){
 }
 
 const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
-const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, Phần III có câu vận dụng cao.'};
+const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng, câu cuối là câu xác suất vận dụng cao.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, hai câu cuối Phần III là câu xác suất vận dụng cao.'};
 const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 35–40% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
 const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 

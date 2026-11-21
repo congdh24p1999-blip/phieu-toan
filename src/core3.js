@@ -207,7 +207,7 @@ const DIFFS11={
 /* Độ khó cho đề ôn thi tốt nghiệp: Phần I nhận biết – thông hiểu, Phần II tăng dần đến vận dụng, Phần III chủ yếu vận dụng (như đề 2025). */
 const DIFFS_TN={
   co_ban:{name:'Cơ bản',nb:7,ds:['NB','TH','TH','TH'],tln:['TH','TH','TH','VD','VD','VD'],tl:[]},
-  chuan:{name:'Chuẩn',nb:6,ds:['TH','TH','TH','VD'],tln:['TH','VD','VD','VD','VD','VD'],tl:[]},
+  chuan:{name:'Chuẩn',nb:6,ds:['TH','TH','TH','VD'],tln:['TH','VD','VD','VD','VD','VDC'],tl:[]},
   nang_cao:{name:'Nâng cao',nb:4,ds:['TH','VD','VD','VD'],tln:['VD','VD','VD','VD','VDC','VDC'],tl:[]}
 };
 const dOf=(term,diff)=>{const b=BLUEPRINT[term];if(b.tn)return DIFFS_TN[diff];return b.grade===8?DIFFS[diff]:DIFFS11[diff]};
@@ -244,7 +244,7 @@ function buildExam(term,base,diff,st){
   const pickT=(kind,pred,want,pref)=>{
     const all=poolOf(bp,kind).filter(pred);
     if(!all.length)throw new Error('không có mẫu câu cho '+kind);
-    if(pref&&pref.length){const pp=all.filter(t=>pref.includes(t.id)&&!usedId.has(t.id)),rp=new RNG(`pref|${term}|${base}|${diff}|${kind}|${used.size}${S}`);
+    if(pref&&pref.length&&!(want==='VDC'&&all.some(t=>t.lv==='VDC'))){const pp=all.filter(t=>pref.includes(t.id)&&!usedId.has(t.id)),rp=new RNG(`pref|${term}|${base}|${diff}|${kind}|${used.size}${S}`);
       if(pp.length&&rp.chance(diff==='co_ban'?.35:.6)){const t=pp[rp.int(0,pp.length-1)];used.add(t.grp);usedId.add(t.id);return t}}
     /* Chọn như cũ (đúng mức, ưu tiên chủ đề chưa dùng). Nếu trúng một dạng đã dùng trong đề thì chọn lại: đúng mức mà chưa dùng dạng, rồi khác mức mà chưa dùng dạng. */
     const w=LV_RANK[want],dist=t=>Math.abs(LV_RANK[t.lv]-w),best=Math.min(...all.map(dist));
