@@ -1,12 +1,25 @@
 /* ===== Phiếu bài tập theo bài học SGK =====
    Chọn các dạng câu gắn với bài học (t.les, xem core9les.js), xếp từ dễ đến khó. */
 const WS_CH_NAMES={7:CH7,8:CH_NAME,10:CH10,11:CH11,12:CH12};
+/* Chuyên đề ôn thi tốt nghiệp THPT (chỉ ở lớp 12): 101 – 110 là các chủ đề của đề 12tn,
+   111 là các dạng bám sát đề chính thức 2025, 112 là các câu xác suất vận dụng cao. Không có tự luận, đúng hình thức đề thi. */
+const TN_WS_KINDS=['nlc','ds','tln'];
+function tnWsPool(n,k){
+  const bp=BLUEPRINT['12tn'];if(!TN_WS_KINDS.includes(k))return[];
+  let P=mixPool(bp,k);
+  if(n<=110)P=P.filter(t=>t.ch===n);
+  else if(n===111){const ids=new Set([...bp.prefer.ds.flat(),...bp.prefer.tln.flat()]);P=P.filter(t=>ids.has(t.id)||(t.g==='tn'&&t.lv!=='VDC'))}
+  else P=P.filter(t=>t.g==='tn'&&t.lv==='VDC');
+  return P.map(t=>({...t,les:[n]}));
+}
 /* Danh sách bài học có câu hỏi của một lớp: [{n, title, ch, hk, count}] */
 function wsLessons(g){
   const m={};
   for(const k in T)for(const id in T[k]){const t=T[k][id];if((t.g||8)!==g||!t.les)continue;
     for(const l of t.les){const o=m[l]=m[l]||{n:l,title:LESSON_TITLES[g][l],chs:{},hk:t.hk||1,count:0};o.count++;o.chs[t.ch]=(o.chs[t.ch]||0)+1}}
-  return Object.values(m).map(o=>({...o,ch:+Object.entries(o.chs).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>a.n-b.n);
+  const L=Object.values(m).map(o=>({...o,ch:+Object.entries(o.chs).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>a.n-b.n);
+  if(g===12)for(let n=101;n<=112;n++)L.push({n,title:LESSON_TITLES[12][n],ch:100,hk:'tn',count:TN_WS_KINDS.reduce((s,k)=>s+tnWsPool(n,k).length,0)});
+  return L;
 }
 const WS_LV={co_ban:['NB','TH'],chuan:['NB','TH','VD'],nang_cao:['TH','VD','VDC']};
 const WS_KINDS=['nlc','ds','tln','tl'];
@@ -16,7 +29,7 @@ function buildWS(o){
   const g=o.grade,les=[...o.lessons].sort((a,b)=>a-b),S=`ws|${g}|${les.join(',')}|${o.kind}|${o.diff}|${o.code}|${o.n}`;
   ALLOW_EXT=!!o.ext;CUR_DIFF=o.diff==='nang_cao'?'nang_cao':'chuan';
   const lvOK=WS_LV[o.diff]||WS_LV.chuan;
-  const base=k=>Object.values(T[k]).filter(t=>(t.g||8)===g&&t.les&&t.les.some(l=>les.includes(l))&&(!t.ext||extOK()));
+  const base=k=>Object.values(T[k]).filter(t=>(t.g||8)===g&&t.les&&t.les.some(l=>les.includes(l))&&(!t.ext||extOK())).concat(g===12?les.filter(l=>l>100).flatMap(l=>tnWsPool(l,k)):[]);
   const pools={};for(const k of WS_KINDS)pools[k]=base(k);
   /* số câu mỗi loại */
   const want={nlc:0,ds:0,tln:0,tl:0};

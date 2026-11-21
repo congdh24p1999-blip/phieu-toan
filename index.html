@@ -12327,7 +12327,8 @@ LESSON_TITLES[10]={1:'Mệnh đề',2:'Tập hợp và các phép toán trên t�
   15:'Hàm số',16:'Hàm số bậc hai',17:'Dấu của tam thức bậc hai',18:'Phương trình quy về phương trình bậc hai',19:'Phương trình đường thẳng',20:'Vị trí tương đối giữa hai đường thẳng. Góc và khoảng cách',21:'Đường tròn trong mặt phẳng toạ độ',22:'Ba đường conic',23:'Quy tắc đếm',24:'Hoán vị, chỉnh hợp và tổ hợp',25:'Nhị thức Newton',26:'Biến cố và định nghĩa cổ điển của xác suất',27:'Thực hành tính xác suất theo định nghĩa cổ điển'};
 LESSON_TITLES[12]={1:'Tính đơn điệu và cực trị của hàm số',2:'Giá trị lớn nhất và giá trị nhỏ nhất của hàm số',3:'Đường tiệm cận của đồ thị hàm số',4:'Khảo sát sự biến thiên và vẽ đồ thị của hàm số',5:'Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn',
   6:'Vectơ trong không gian',7:'Hệ trục toạ độ trong không gian',8:'Biểu thức toạ độ của các phép toán vectơ',9:'Khoảng biến thiên và khoảng tứ phân vị',10:'Phương sai và độ lệch chuẩn',
-  11:'Nguyên hàm',12:'Tích phân',13:'Ứng dụng hình học của tích phân',14:'Phương trình mặt phẳng',15:'Phương trình đường thẳng trong không gian',16:'Công thức tính góc trong không gian',17:'Phương trình mặt cầu',18:'Xác suất có điều kiện',19:'Công thức xác suất toàn phần và công thức Bayes'};
+  11:'Nguyên hàm',12:'Tích phân',13:'Ứng dụng hình học của tích phân',14:'Phương trình mặt phẳng',15:'Phương trình đường thẳng trong không gian',16:'Công thức tính góc trong không gian',17:'Phương trình mặt cầu',18:'Xác suất có điều kiện',19:'Công thức xác suất toàn phần và công thức Bayes',
+  101:'Ứng dụng đạo hàm, khảo sát hàm số',102:'Nguyên hàm, tích phân và ứng dụng',103:'Vectơ và phương pháp toạ độ trong không gian',104:'Hình học không gian: song song, vuông góc, khoảng cách, thể tích',105:'Thống kê: mẫu số liệu ghép nhóm',106:'Đại số tổ hợp và xác suất',107:'Lượng giác',108:'Dãy số, cấp số cộng, cấp số nhân',109:'Hàm số mũ và hàm số lôgarit',110:'Bất phương trình bậc nhất hai ẩn, hàm số bậc hai (lớp 10)',111:'Các dạng bám sát đề chính thức 2025 (Phần II, III)',112:'Câu xác suất vận dụng cao'};
 const LESSON_MAP=(()=>{const src=`
 m7-1-set:1 m7-1-opp:1 m7-1-cmp:1 m7-1-add:2 m7-1-muldiv:2 m7-1-pow:3 m7-1-powval:3 m7-1-solve:4 ds7-q:2 ds7-pow:3 ds7-abs:1,2 t7-1-expr:4 t7-1-x:4 t7-1-pow:3 tl7-alg1:2,4 tl7-alg2:3 tl7-shop:2,4 tl7-road:2,4 tl7-6-scale:20,21 ds7-7-coef:25 ds7-7-div:28 t7-8-prime:30 t7-8-more:30 ds8-6-def:21 t8-6-cond:21 t8-7-lin:25 t8-7-fx:27,28 t8-8-out:30 ds8-9-ratio:33 t8-10-cost:39 ds1-formula:2 tl1-val:1,2 tl1-wheel:3,4 tl2-csc2:6 tl2-seats:6 ds4-box:12,13 ds4-sec:11,12 ds5-par:16,17 ds11-6-num:18,19 t11-7-lp:24 t11-8-two:29,30 t11-9-par:31,32 ds11-9-tan:31,32 tl11-7-dih:23,25 ds7-1-calc:2,4 t7-1-move:4 t7-1-shop:2 t7-2-count:6,7 t7-2-prec:5 tl7-2-abs:6,7 t7-3-perp:10 t7-3-same:10 ds7-3-perp:10 tl7-3-perp:10 t7-4-iso:12,16 m7-5-choose:18,19 m7-5-valid:17 t7-5-diff:18 t7-5-trend:19
 m7-2-irr:6 m7-2-sqrt:6 m7-2-abs:7 m7-2-round:5 m7-2-repeat:5 m7-2-absx:7 m7-2-order:7 ds7-real:6,7 ds7-sqrt:6 ds7-round:5 t7-2-abs:7 t7-2-sq:6 t7-2-sqrt:6,7 tl7-alg3:5,6,7
@@ -12719,12 +12720,25 @@ function pickFreshCode(term,diff,hist,tries,rnd,st){
 /* ===== Phiếu bài tập theo bài học SGK =====
    Chọn các dạng câu gắn với bài học (t.les, xem core9les.js), xếp từ dễ đến khó. */
 const WS_CH_NAMES={7:CH7,8:CH_NAME,10:CH10,11:CH11,12:CH12};
+/* Chuyên đề ôn thi tốt nghiệp THPT (chỉ ở lớp 12): 101 – 110 là các chủ đề của đề 12tn,
+   111 là các dạng bám sát đề chính thức 2025, 112 là các câu xác suất vận dụng cao. Không có tự luận, đúng hình thức đề thi. */
+const TN_WS_KINDS=['nlc','ds','tln'];
+function tnWsPool(n,k){
+  const bp=BLUEPRINT['12tn'];if(!TN_WS_KINDS.includes(k))return[];
+  let P=mixPool(bp,k);
+  if(n<=110)P=P.filter(t=>t.ch===n);
+  else if(n===111){const ids=new Set([...bp.prefer.ds.flat(),...bp.prefer.tln.flat()]);P=P.filter(t=>ids.has(t.id)||(t.g==='tn'&&t.lv!=='VDC'))}
+  else P=P.filter(t=>t.g==='tn'&&t.lv==='VDC');
+  return P.map(t=>({...t,les:[n]}));
+}
 /* Danh sách bài học có câu hỏi của một lớp: [{n, title, ch, hk, count}] */
 function wsLessons(g){
   const m={};
   for(const k in T)for(const id in T[k]){const t=T[k][id];if((t.g||8)!==g||!t.les)continue;
     for(const l of t.les){const o=m[l]=m[l]||{n:l,title:LESSON_TITLES[g][l],chs:{},hk:t.hk||1,count:0};o.count++;o.chs[t.ch]=(o.chs[t.ch]||0)+1}}
-  return Object.values(m).map(o=>({...o,ch:+Object.entries(o.chs).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>a.n-b.n);
+  const L=Object.values(m).map(o=>({...o,ch:+Object.entries(o.chs).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>a.n-b.n);
+  if(g===12)for(let n=101;n<=112;n++)L.push({n,title:LESSON_TITLES[12][n],ch:100,hk:'tn',count:TN_WS_KINDS.reduce((s,k)=>s+tnWsPool(n,k).length,0)});
+  return L;
 }
 const WS_LV={co_ban:['NB','TH'],chuan:['NB','TH','VD'],nang_cao:['TH','VD','VDC']};
 const WS_KINDS=['nlc','ds','tln','tl'];
@@ -12734,7 +12748,7 @@ function buildWS(o){
   const g=o.grade,les=[...o.lessons].sort((a,b)=>a-b),S=`ws|${g}|${les.join(',')}|${o.kind}|${o.diff}|${o.code}|${o.n}`;
   ALLOW_EXT=!!o.ext;CUR_DIFF=o.diff==='nang_cao'?'nang_cao':'chuan';
   const lvOK=WS_LV[o.diff]||WS_LV.chuan;
-  const base=k=>Object.values(T[k]).filter(t=>(t.g||8)===g&&t.les&&t.les.some(l=>les.includes(l))&&(!t.ext||extOK()));
+  const base=k=>Object.values(T[k]).filter(t=>(t.g||8)===g&&t.les&&t.les.some(l=>les.includes(l))&&(!t.ext||extOK())).concat(g===12?les.filter(l=>l>100).flatMap(l=>tnWsPool(l,k)):[]);
   const pools={};for(const k of WS_KINDS)pools[k]=base(k);
   /* số câu mỗi loại */
   const want={nlc:0,ds:0,tln:0,tl:0};
@@ -12911,7 +12925,7 @@ function keyHTML(base,vs,bp){
   /* Đối chiếu câu hỏi với bài học trong SGK (theo mã đề đầu tiên) */
   const byL={};[...v0.nlc.map((q,i)=>[i+1,q]),...v0.ds.map((q,i)=>[P.s2+i,q]),...v0.tln.map((q,i)=>[P.s3+i,q]),...v0.tl.map((q,i)=>[P.s4+i,q])].forEach(([n,q])=>(q.les||[]).forEach(l=>{(byL[l]=byL[l]||[]).push(n)}));
   const ls=Object.keys(byL).map(Number).sort((a,b)=>a-b);
-  if(ls.length&&typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[bp.grade])h+=`<section class="ksec"><h3>Đối chiếu với bài học trong SGK Toán ${bp.grade} (Kết nối tri thức với cuộc sống)</h3><p class="ksmall">Theo mã đề ${esc(v0.code)}; một câu có thể dùng kiến thức của nhiều bài.</p><table class="kt mx"><tr class="hi"><th class="l">Bài học</th><th class="l">Câu</th></tr>${ls.map(l=>`<tr><td class="l">Bài ${l}. ${LESSON_TITLES[bp.grade][l]}</td><td class="l">${[...new Set(byL[l])].join(', ')}</td></tr>`).join('')}</table></section>`;
+  if(!bp.tn&&ls.length&&typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[bp.grade])h+=`<section class="ksec"><h3>Đối chiếu với bài học trong SGK Toán ${bp.grade} (Kết nối tri thức với cuộc sống)</h3><p class="ksmall">Theo mã đề ${esc(v0.code)}; một câu có thể dùng kiến thức của nhiều bài.</p><table class="kt mx"><tr class="hi"><th class="l">Bài học</th><th class="l">Câu</th></tr>${ls.map(l=>`<tr><td class="l">Bài ${l}. ${LESSON_TITLES[bp.grade][l]}</td><td class="l">${[...new Set(byL[l])].join(', ')}</td></tr>`).join('')}</table></section>`;
   return h+'</article>';
 }
 
@@ -12958,10 +12972,12 @@ function renderLessonBox(){
   const L=wsLessons(state.grade),sel=new Set(wsSel()),names=WS_CH_NAMES[state.grade];
   const chs=[...new Set(L.map(l=>l.ch))];
   $('#lesBox').innerHTML=chs.map(c=>{const ls=L.filter(l=>l.ch===c),on=ls.some(l=>sel.has(l.n));
-    return`<details${on?' open':''}><summary>Chương ${ROM10[c]}. ${esc(names[c])}</summary>${ls.map(l=>`<label><input type="checkbox" value="${l.n}"${sel.has(l.n)?' checked':''}><span>Bài ${l.n}. ${esc(l.title)} <span class="cnt">(${l.count} dạng)</span></span></label>`).join('')}</details>`}).join('');
+    return`<details${on?' open':''}><summary>${c===100?'Ôn thi tốt nghiệp THPT (theo đề chính thức 2025)':`Chương ${ROM10[c]}. ${esc(names[c])}`}</summary>${ls.map(l=>`<label><input type="checkbox" value="${l.n}"${sel.has(l.n)?' checked':''}><span>${lesLb(l.n)}. ${esc(l.title)} <span class="cnt">(${l.count} dạng)</span></span></label>`).join('')}</details>`}).join('');
 }
+const lesLb=n=>n>100?`Chuyên đề ${n-100}`:`Bài ${n}`;
+const wsIsTN=les=>les.length&&les.every(n=>n>100);
 function wsTitleLes(g,les){
-  return les.length<=2?les.map(n=>`Bài ${n}. ${LESSON_TITLES[g][n]}`).join('; '):`Bài ${les.join(', ')}`;
+  return les.length<=2?les.map(n=>`${lesLb(n)}. ${LESSON_TITLES[g][n]}`).join('; '):(wsIsTN(les)?`Chuyên đề ${les.map(n=>n-100).join(', ')}`:les.map(lesLb).join(', '));
 }
 function wsHTML(w){
   const g=w.grade;let n=0;
@@ -12972,7 +12988,7 @@ function wsHTML(w){
     <div class="rule"></div>
     <div class="code">Mã phiếu: ${esc(w.code)}</div>
   </div><div class="r">
-    <div class="title">PHIẾU BÀI TẬP</div>
+    <div class="title">${wsIsTN(w.lessons)?'PHIẾU ÔN THI TỐT NGHIỆP THPT':'PHIẾU BÀI TẬP'}</div>
     <div class="sub">MÔN: TOÁN – LỚP ${g}</div>
     <div><i>${esc(wsTitleLes(g,w.lessons))}</i></div>
   </div></header>
@@ -13013,7 +13029,7 @@ function wsKeyHTML(w){
   /* phân bố theo bài và mức độ */
   const all=[...w.nlc,...w.ds,...w.tln,...w.tl],byL={},lv={NB:0,TH:0,VD:0,VDC:0};
   all.forEach(q=>{lv[q.lv]++;q.les.filter(l=>w.lessons.includes(l)).forEach(l=>byL[l]=(byL[l]||0)+1)});
-  h+=`<section class="ksec"><h3>Thống kê phiếu</h3><p class="ksmall">${w.lessons.map(l=>`Bài ${l}: ${byL[l]||0} câu`).join(' · ')}.</p><p class="ksmall">Mức độ: ${['NB','TH','VD','VDC'].filter(k=>lv[k]).map(k=>`${LV_NAME[k]} ${lv[k]} câu`).join(' · ')}.</p></section>`;
+  h+=`<section class="ksec"><h3>Thống kê phiếu</h3><p class="ksmall">${w.lessons.map(l=>`${lesLb(l)}: ${byL[l]||0} câu`).join(' · ')}.</p><p class="ksmall">Mức độ: ${['NB','TH','VD','VDC'].filter(k=>lv[k]).map(k=>`${LV_NAME[k]} ${lv[k]} câu`).join(' · ')}.</p></section>`;
   return h+'</article>';
 }
 function renderWS(){
@@ -13027,14 +13043,15 @@ function renderWS(){
   $('#examOut').innerHTML=prettyMath(wsHTML(w));
   $('#keyOut').innerHTML=prettyMath(wsKeyHTML(w));
   const got=w.nlc.length+w.ds.length+w.tln.length+w.tl.length,tot=Object.values(w.pools).reduce((a,b)=>a+b,0);
-  $('#lesHint').textContent=`Đang chọn ${les.length} bài: ${les.map(n=>'Bài '+n).join(', ')}. Có ${tot} dạng câu.`;
+  $('#lesHint').textContent=`Đang chọn ${les.length} mục: ${les.map(lesLb).join(', ')}. Có ${tot} dạng câu.`;
   const ww=[];
   if(got<state.wsn)ww.push(`Chỉ tạo được ${got} câu với lựa chọn này.`);
   if(w.repeats)ww.push(`Các bài đã chọn chưa đủ dạng câu khác nhau nên có ${w.repeats} câu cùng dạng với câu khác (khác số liệu). Chọn thêm bài${state.wsk==='mix'?' hoặc giảm số câu':', giảm số câu hoặc chọn “Trộn các loại”'} để ít lặp hơn.`);
   $('#wsWarn').textContent=ww.join(' ');
   $('#diffHint').textContent={co_ban:'Ưu tiên câu nhận biết, thông hiểu.',chuan:'Ưu tiên câu nhận biết, thông hiểu, vận dụng.',nang_cao:'Ưu tiên câu thông hiểu, vận dụng, vận dụng cao.'}[state.diff]+' Câu xếp từ dễ đến khó trong mỗi phần.';
-  $('#meta').textContent=`Phiếu bài tập Toán ${state.grade} · ${got} câu · mã phiếu ${state.code}`;
-  document.title=`Phiếu bài tập Toán ${state.grade} – mã ${state.code}`;
+  const wsName=wsIsTN(les)?'Phiếu ôn thi TN THPT':`Phiếu bài tập Toán ${state.grade}`;
+  $('#meta').textContent=`${wsName} · ${got} câu · mã phiếu ${state.code}`;
+  document.title=`${wsName} – mã ${state.code}`;
   $('#tagline').textContent='Tạo phiếu bài tập Toán theo từng bài học trong SGK, có đáp án và lời giải. Mỗi mã phiếu là một phiếu khác.';
   $('#noteTxt').textContent='Phiếu do thuật toán sinh ra từ các dạng câu gắn với bài học đã chọn; thầy cô nên đọc lướt trước khi phát cho học sinh.';
   $('#gradeHint').textContent=`Lớp ${state.grade}, sách Kết nối tri thức. Các lớp khác sẽ thêm sau.`;
@@ -13141,7 +13158,7 @@ async function doWord(what,btn){
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
     const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
-    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_Bai${wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
+    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}
   finally{btn.disabled=false;btn.textContent=old}
