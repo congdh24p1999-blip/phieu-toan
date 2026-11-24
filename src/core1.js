@@ -184,7 +184,10 @@ function distinctInts(r,n,lo,hi){const s=new Set();while(s.size<n)s.add(r.int(lo
 
 /* ================= Đăng ký mẫu câu ================= */
 const T={nlc:{},ds:{},tln:{},tl:{}};
-function reg(kind,id,ch,lv,gen,extra){T[kind][id]=Object.assign({id,ch,lv,gen,grp:id},extra||{})}
+/* Đổi dấu gạch nối "-" đứng trước chữ số thành dấu trừ "−" trong phần chữ hiển thị (giữ nguyên thẻ HTML và hình SVG) */
+const fixMinus=s=>s.indexOf('-')<0?s:s.split(/(<svg[\s\S]*?<\/svg>|<[^>]*>)/).map((p,i)=>i%2?p:p.replace(/(^|[^\w.\-−&;])-(?=\d)/g,'$1−')).join('');
+const deepFixMinus=o=>{if(typeof o==='string')return fixMinus(o);if(Array.isArray(o))return o.map(deepFixMinus);if(o&&typeof o==='object'&&Object.getPrototypeOf(o)===Object.prototype){for(const k in o)if(typeof o[k]!=='function')o[k]=deepFixMinus(o[k]);}return o};
+function reg(kind,id,ch,lv,gen,extra){T[kind][id]=Object.assign({id,ch,lv,gen:r=>deepFixMinus(gen(r)),grp:id},extra||{})}
 const NLC=(id,ch,lv,gen,grp)=>reg('nlc',id,ch,lv,gen,grp?{grp}:null);
 
 /* ---------- Chương I: Đa thức nhiều biến ---------- */
