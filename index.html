@@ -9848,6 +9848,14 @@ TLN9b('t9-24-hist',7,'TH',[24],r=>{
   const g=r.pick(GRP9),N=r.pick([20,25,40,50]),ns=nsOf(r,g.k,N),i=r.int(0,g.k-1),v=ns[i]*100/N;
   return{kind:'tln',stem:`Biểu đồ tần số ghép nhóm dưới đây biểu diễn ${g.what}.<div class="figure">${barSVG(ns.map((_,k)=>grpH(g,k)),ns)}</div>Tính tần số tương đối (theo %) của nhóm ${grpH(g,i)}.`,ans:v,unit:'%',sol:`Cỡ mẫu ${ns.join(' + ')} = ${N}; ${fr(ns[i],N)}·100% = ${pctH(v)}.`,chk:()=>isInt(v*100)};
 });
+DS9('ds9-17-tan',5,'VD',[17],r=>{
+  const R=r.int(4,10),rr=r.int(2,R-1);
+  return mkDS(r,{stem:`Cho hai đường tròn (${I('O')}; ${R} cm) và (${I('O′')}; ${rr} cm) tiếp xúc ngoài tại ${I('A')}. Xét tính đúng sai của các khẳng định sau:`,items:[
+    {t:`${I('OO′')} = ${R+rr} cm.`,f:`${I('OO′')} = ${R-rr} cm.`,why:`Tiếp xúc ngoài: OO′ = R + r.`},
+    {t:`Ba điểm ${I('O')}, ${I('A')}, ${I('O′')} thẳng hàng.`,f:`Ba điểm ${I('O')}, ${I('A')}, ${I('O′')} không thẳng hàng.`,why:`Tiếp điểm nằm trên đường nối tâm.`},
+    {t:`Hai đường tròn có đúng một điểm chung.`,f:`Hai đường tròn có hai điểm chung.`,why:`Hai đường tròn tiếp xúc có một điểm chung.`},
+    {t:`Nếu giữ nguyên bán kính và giảm ${I('OO′')} đi 1 cm thì hai đường tròn cắt nhau.`,f:`Nếu giữ nguyên bán kính và giảm ${I('OO′')} đi 1 cm thì hai đường tròn ở ngoài nhau.`,why:`Khi đó ${R-rr} < OO′ = ${R+rr-1} < ${R+rr}.`}],chk:()=>R+rr-1>R-rr});
+});
 /* ================================================================
    ÔN THI TỐT NGHIỆP THPT – các dạng câu riêng theo kiểu đề chính thức 2025
    (chỉ dùng trong đề "Ôn thi TN THPT"; g:'tn', ch là mã chủ đề 101 – 108 của BLUEPRINT['12tn'])
