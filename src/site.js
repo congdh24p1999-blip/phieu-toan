@@ -8,7 +8,7 @@ const SITE_CFG={
   /* Mã ô "Thông tin đề" trong link điền sẵn, ví dụ entry.123456789 */
   formInfo:'entry.1958293446',
   /* Tên tài khoản GoatCounter, ví dụ "xuongdetoan" ứng với https://xuongdetoan.goatcounter.com */
-  goat:''
+  goat:'xuongdetoan1'
 };
 /* ---------- Báo lỗi ---------- */
 function bugInfo(){
