@@ -1,6 +1,6 @@
 /* ===== Phiếu bài tập theo bài học SGK =====
    Chọn các dạng câu gắn với bài học (t.les, xem core9les.js), xếp từ dễ đến khó. */
-const WS_CH_NAMES={7:CH7,8:CH_NAME,9:CH9,10:CH10,11:CH11,12:CH12};
+const WS_CH_NAMES={6:CH6,7:CH7,8:CH_NAME,9:CH9,10:CH10,11:CH11,12:CH12};
 /* Chuyên đề ôn thi tốt nghiệp THPT (chỉ ở lớp 12): 101 – 110 là các chủ đề của đề 12tn,
    111 là các dạng bám sát đề chính thức 2025, 112 là các câu xác suất vận dụng cao. Không có tự luận, đúng hình thức đề thi. */
 const TN_WS_KINDS=['nlc','ds','tln'];

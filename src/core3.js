@@ -9,6 +9,8 @@ const G11={grade:11,school:'THPT',mon:'Toán 11',chName:CH11,tlQ:[1,1,1],
   note:'Cấu trúc theo khung đề cương ôn tập Toán 11 năm học 2026–2027: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý).'};
 const CH7={1:'Số hữu tỉ',2:'Số thực',3:'Góc và đường thẳng song song',4:'Tam giác bằng nhau',5:'Thu thập và biểu diễn dữ liệu',6:'Tỉ lệ thức và đại lượng tỉ lệ',7:'Biểu thức đại số và đa thức một biến',8:'Làm quen với biến cố và xác suất của biến cố',9:'Quan hệ giữa các yếu tố trong một tam giác',10:'Một số hình khối trong thực tiễn'};
 const G7={...G8,grade:7,mon:'Toán 7',chName:CH7};
+const CH6={1:'Tập hợp các số tự nhiên',2:'Tính chia hết trong tập hợp các số tự nhiên',3:'Số nguyên',4:'Một số hình phẳng trong thực tiễn',5:'Tính đối xứng của hình phẳng trong tự nhiên',6:'Phân số',7:'Số thập phân',8:'Những hình hình học cơ bản',9:'Dữ liệu và xác suất thực nghiệm'};
+const G6={...G8,grade:6,mon:'Toán 6',chName:CH6};
 const CH9={1:'Phương trình và hệ hai phương trình bậc nhất hai ẩn',2:'Phương trình và bất phương trình bậc nhất một ẩn',3:'Căn bậc hai và căn bậc ba',4:'Hệ thức lượng trong tam giác vuông',5:'Đường tròn',6:'Hàm số y = ax² (a ≠ 0). Phương trình bậc hai một ẩn',7:'Tần số và tần số tương đối',8:'Xác suất của biến cố trong một số mô hình xác suất đơn giản',9:'Đường tròn ngoại tiếp và đường tròn nội tiếp',10:'Một số hình khối trong thực tiễn'};
 const G9={...G8,grade:9,mon:'Toán 9',chName:CH9};
 const CH12={1:'Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số',2:'Vectơ và hệ trục toạ độ trong không gian',3:'Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm',4:'Nguyên hàm và tích phân',5:'Phương pháp toạ độ trong không gian',6:'Xác suất có điều kiện'};
@@ -54,6 +56,12 @@ const BLUEPRINT={
   '10ck2':{...G10,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – IX (Kết nối tri thức)',chapters:[6,7,8,9],
     nlc:[6,6,6,7,7,7,8,8,8,9,9,9],ds:[8,9],tln:[6,7,8,9],
     tl:[{role:'b',chs:[7]},{role:'a',chs:[8]},{role:'c',chs:[9]}]},
+  '6gk1':{...G6,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – II (Kết nối tri thức)',chapters:[1,2],
+    nlc:[1,1,1,1,1,1,2,2,2,2,2,2],ds:[1,2],tln:[1,1,2,2],
+    tl:[{role:'alg',chs:[1]},{role:'real',chs:[1,2]},{role:'num',chs:[2]}]},
+  '6ck1':{...G6,hk:1,short:'Cuối học kì I',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ I',scope:'Chương I – V (Kết nối tri thức)',chapters:[1,2,3,4,5],
+    nlc:[1,1,2,2,3,3,3,4,4,4,5,5],ds:[2,3],tln:[1,3,4,4],
+    tl:[{role:'alg',chs:[3]},{role:'real',chs:[2,4]},{role:'num',chs:[1,2,3]}]},
   '7gk1':{...G7,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,1,2,3],
     tl:[{role:'alg',chs:[1,2]},{role:'real',chs:[1,2]},{role:'geo',chs:[3]}]},
