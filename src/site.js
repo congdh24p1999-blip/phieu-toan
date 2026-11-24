@@ -4,9 +4,9 @@
    ================================================================ */
 const SITE_CFG={
   /* Link form Google: phần trước "?" của link điền sẵn, ví dụ https://docs.google.com/forms/d/e/1FAIpQL.../viewform */
-  form:'',
+  form:'https://docs.google.com/forms/d/e/1FAIpQLScG0zNoYADPOzP44gIzj9ZEDqCIFE1xIKhIAtqUeOQQf_vBPw/viewform',
   /* Mã ô "Thông tin đề" trong link điền sẵn, ví dụ entry.123456789 */
-  formInfo:'',
+  formInfo:'entry.1958293446',
   /* Tên tài khoản GoatCounter, ví dụ "xuongdetoan" ứng với https://xuongdetoan.goatcounter.com */
   goat:''
 };
