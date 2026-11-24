@@ -114,7 +114,7 @@ TL9('tl9-3-word',1,'VD','real',[3],r=>{
     sol:[ptxt([[`Gọi x là ${w.vx}, y là ${w.vy} (điều kiện phù hợp với thực tế).`,.25],[`Lập được hệ ${sys9(...w.sys)}.`,.25],[`Giải hệ được x = ${w.x}, y = ${w.y}.`,.25],[`Đối chiếu điều kiện và kết luận.`,.25]])],chk:()=>true};
 });
 TL9('tl9-3-work',1,'VD','real',[3],r=>{
-  for(;;){const a=r.int(6,40),b=r.int(6,40);if(a===b)continue;const T=a*b/(a+b);if(!isInt(T)||T<2)continue;const t=r.int(1,a-1),d2=(1-t/a)*b;if(!isInt(d2)||d2<1)continue;
+  for(;;){const a=r.int(6,40),b=r.int(6,40);if(a===b)continue;const T=a*b/(a+b);if(!isInt(T)||T<2)continue;const t=r.int(1,a-1);if(((a-t)*b)%a)continue;const d2=(a-t)*b/a;if(d2<1)continue;
     return{kind:'tl',title:'Bài toán làm chung, làm riêng',parts:[{pts:1,html:`Hai đội công nhân cùng làm một con đường thì sau ${T} ngày xong. Nếu đội thứ nhất làm một mình trong ${t} ngày rồi đội thứ hai làm tiếp một mình trong ${d2} ngày thì xong con đường. Hỏi mỗi đội làm một mình thì sau bao nhiêu ngày xong con đường?`}],
       sol:[ptxt([[`Gọi x, y (ngày) là thời gian đội I, đội II làm một mình xong con đường (x, y > ${T}). Mỗi ngày đội I làm được ${fr(1,'x')}, đội II làm được ${fr(1,'y')} công việc.`,.25],[`Ta có hệ ${cases(`${fr(1,I('x'))} + ${fr(1,I('y'))} = ${fr(1,T)}`,`${fr(t,I('x'))} + ${fr(d2,I('y'))} = 1`)}.`,.25],[`Đặt u = ${fr(1,'x')}, v = ${fr(1,'y')}, giải hệ bậc nhất được u = ${fr(1,a)}, v = ${fr(1,b)}.`,.25],[`Vậy đội I làm một mình hết ${a} ngày, đội II hết ${b} ngày.`,.25]])],chk:()=>Math.abs(1/a+1/b-1/T)<1e-12&&Math.abs(t/a+d2/b-1)<1e-12}}
 });

@@ -8,7 +8,7 @@ const DS6=(id,ch,lv,les,gen)=>reg('ds',id,ch,lv,gen,{g:6,hk:1,les});
 const TLN6=(id,ch,lv,les,gen)=>reg('tln',id,ch,lv,gen,{g:6,hk:1,les});
 const TL6=(id,ch,lv,role,les,gen)=>reg('tl',id,ch,lv,gen,{role,g:6,hk:1,les});
 /* số có dấu chấm phân cách hàng nghìn: 12.345 */
-const nv=n=>(n<0?MINUS:'')+String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const nv=n=>{if(Math.abs(n-Math.round(n))<1e-6)n=Math.round(n);return (n<0?MINUS:'')+String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')};
 const set6=xs=>`{${xs.map(nv).join('; ')}}`;
 const pw6=(a,m)=>`${a}${sup(m)}`;
 const lcm6=(a,b)=>a/gcd(a,b)*b;

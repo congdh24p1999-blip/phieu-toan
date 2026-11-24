@@ -694,7 +694,7 @@ N7b('m7-10-stpbox',10,'TH',r=>{
 });
 N7b('m7-10-prismvol',10,'TH',r=>{
   const [p,q]=r.pick([[3,4],[6,8],[5,12],[4,6],[6,10],[8,10],[5,8],[10,12]]),h=r.int(3,12);
-  return mkNum(r,{stem:`Hình lăng trụ đứng có đáy là tam giác vuông với hai cạnh góc vuông ${p} cm và ${q} cm, chiều cao lăng trụ là ${h} cm. Thể tích của lăng trụ là`,correct:p*q*h/2,f:v=>v+' cm³',cands:[p*q*h,(p+q)*h,p*q/2,p*q*h/3],
+  return mkNum(r,{stem:`Hình lăng trụ đứng có đáy là tam giác vuông với hai cạnh góc vuông ${p} cm và ${q} cm, chiều cao lăng trụ là ${h} cm. Thể tích của lăng trụ là`,correct:p*q*h/2,f:v=>v+' cm³',cands:[p*q*h,(p+q)*h,p*q/2,p*q*h/3].filter(isInt),
     sol:`Diện tích đáy = ${p}·${q} : 2 = ${p*q/2} (cm²); V = S_đáy · h = ${p*q/2}·${h} = ${p*q*h/2} (cm³).`,chk:()=>(p*q)%2===0});
 });
 N7b('m7-10-prismsxq',10,'TH',r=>{
