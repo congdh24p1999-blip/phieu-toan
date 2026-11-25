@@ -198,7 +198,7 @@ function wsHTML(w){
   const g=w.grade;let n=0;
   let h=`<article class="sheet exam ws">`;
   h+=`<header class="eh"><div class="l">
-    <div>${state.dept?esc(state.dept.toUpperCase()):bp.v10?'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
     <div class="school">${state.school?'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã phiếu: ${esc(w.code)}</div>

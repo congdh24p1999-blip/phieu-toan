@@ -1,6 +1,7 @@
 /* ================================================================
    Đề ôn thi tuyển sinh vào lớp 10 – cấu trúc chung (100% tự luận, 10 điểm, 120 phút)
-   Ghép từ các dạng tự luận Toán 9 đã có; mỗi ý lớn là một dạng (1 điểm, hai ý nhỏ a, b).
+   Ghép từ các dạng tự luận Toán 9 đã có; mỗi ý lớn là một dạng (1 điểm, hai ý nhỏ a, b);
+   riêng bài hình học phẳng là một bài hoàn chỉnh một hình, ba ý a, b, c (2 điểm).
    Khung đề theo dạng phổ biến của nhiều tỉnh: biểu thức chứa căn; phương trình, hệ phương trình,
    định lí Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học
    (hình khối thực tế và hình học phẳng với đường tròn); bài toán thực tế.
@@ -13,7 +14,7 @@ const V10={
     {t:'Phương trình, hệ phương trình',items:[['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac'],['tl9-20-m','tl9-20-new','tl9-20-min','tl9-20-abs']]},
     {t:'Giải bài toán bằng cách lập phương trình hoặc hệ phương trình',items:[['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree']]},
     {t:'Thống kê và xác suất',items:[['tl9-22-tab','tl9-26-coin','tl9-24-grp','tl9-26-dice','tl9-26-ball']]},
-    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan'],['tl9-27-semi','tl9-28-tri','tl9-29-alt','tl9-29-tan','tl9-29-semi','tl9-29-oc'],['tl9-12-tri','tl9-14-chord','tl9-16-tan','tl9-16-two']]},
+    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan'],['tl9-g3-tan','tl9-g3-alt','tl9-g3-diam','tl9-g3-sec','tl9-g3-semi','tl9-g3-rect']]},   /* ý 2: bài hình một hình, 3 ý (core09i.js) */
     {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two']]}
   ]
 };
