@@ -168,7 +168,7 @@ const nf=n=>Number(n||0).toLocaleString('vi-VN');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dm=d=>{const [y,m,dd]=d.split('-');return `${+dd}/${+m}`};
 
-const ACT={'in-de':'In đề','in-dap-an':'In đáp án','word-de':'Tải Word đề','word-dap-an':'Tải Word đáp án','bao-loi':'Gửi báo lỗi'};
+const ACT={'in-de':'In đề','in-dap-an':'In đáp án','word-de':'Tải Word đề','word-dap-an':'Tải Word đáp án','in-ma-tran':'In ma trận','word-ma-tran':'Tải Word ma trận','bao-loi':'Gửi báo lỗi'};
 const KIND={gk1:'Giữa học kì I',ck1:'Cuối học kì I',gk2:'Giữa học kì II',ck2:'Cuối học kì II',tn:'Ôn thi tốt nghiệp',phieu:'Phiếu bài tập theo bài'};
 
 /* Đường dẫn sự kiện: "word-de/9-ck2" hoặc "in-de/phieu-6-gk1" */

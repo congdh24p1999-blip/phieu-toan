@@ -109,7 +109,46 @@ const DOCX=(()=>{
   const para=(content,o={})=>`<w:p>${pPr(o)}${content}</w:p>`;
   const BLOCK=new Set(['div','p','h1','h2','h3','h4','section','article','header','ol','ul','li','table','figure','main']);
   const isBlock=el=>BLOCK.has(el.tagName.toLowerCase())||['block','flex','grid','list-item','table'].includes(cs(el).display)&&el.tagName.toLowerCase()!=='span'||(el.tagName.toLowerCase()==='small'&&cs(el).display==='block');
-  const TW=9638;/* bề rộng vùng in (twips) với lề 2 cm trên giấy A4 */
+  let TW=9638;/* bề rộng vùng in (twips): A4 dọc lề 2 cm; khổ ngang lề 1,5 cm thì 14570 */
+  /* Bảng có ô gộp (colspan/rowspan): dựng lưới cột rồi đổi sang gridSpan/vMerge của Word.
+     Bề rộng cột lấy theo tỉ lệ ghi ở data-w của bảng; các hàng trong <thead> lặp lại đầu mỗi trang. */
+  function spanTbl(el){
+    const trs=[...el.querySelectorAll('tr')];
+    const n=[...trs[0].children].reduce((a,c)=>a+(+c.getAttribute('colspan')||1),0);
+    const rel=(el.dataset.w||'').split(',').map(Number).filter(x=>x>0);
+    const raw=rel.length===n?rel:Array(n).fill(1),sum=raw.reduce((a,b)=>a+b,0);
+    const ws=raw.map(x=>Math.floor(TW*x/sum));
+    const pend=Array(n).fill(null);
+    let xml='';
+    trs.forEach(tr=>{
+      const head=tr.parentElement&&tr.parentElement.tagName==='THEAD';
+      const cells=[...tr.children];let col=0,k=0,row='';
+      while(col<n){
+        const pd=pend[col];
+        if(pd&&pd.rem>0){
+          const w=ws.slice(col,col+pd.span).reduce((a,b)=>a+b,0);
+          row+=`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${pd.span>1?`<w:gridSpan w:val="${pd.span}"/>`:''}<w:vMerge/>${pd.shade?'<w:shd w:val="clear" w:color="auto" w:fill="EEEEEE"/>':''}<w:vAlign w:val="center"/></w:tcPr>${para('',{after:0})}</w:tc>`;
+          pd.rem--;col+=pd.span;continue;
+        }
+        const td=cells[k++];if(!td)break;
+        const cs=+td.getAttribute('colspan')||1,rs=+td.getAttribute('rowspan')||1;
+        const shade=head||tr.classList.contains('hi')||td.tagName==='TH';
+        const w=ws.slice(col,col+cs).reduce((a,b)=>a+b,0);
+        const left=cs_(td).textAlign==='left';
+        /* ô có nhiều dòng (<br>) thì mỗi dòng một đoạn để Word căn lề đẹp */
+        const parts=td.innerHTML.split(/<br\s*\/?>/i);
+        let inner='';
+        if(parts.length>1){const tmp=td.cloneNode(false);parts.forEach(ph=>{tmp.innerHTML=ph;td.parentElement.appendChild(tmp);inner+=para(inline(tmp),{jc:left?'':'center',after:0,line:240});tmp.remove()})}
+        else inner=para(inline(td),{jc:left?'':'center',after:0,line:240});
+        row+=`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${cs>1?`<w:gridSpan w:val="${cs}"/>`:''}${rs>1?'<w:vMerge w:val="restart"/>':''}${shade?'<w:shd w:val="clear" w:color="auto" w:fill="EEEEEE"/>':''}<w:vAlign w:val="center"/></w:tcPr>${inner}</w:tc>`;
+        if(rs>1)pend[col]={rem:rs-1,span:cs,shade};
+        col+=cs;
+      }
+      xml+=`<w:tr>${head?'<w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>':'<w:trPr><w:cantSplit/></w:trPr>'}${row}</w:tr>`;
+    });
+    return`<w:tbl><w:tblPr><w:tblW w:w="${TW}" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(k=>`<w:${k} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="40" w:type="dxa"/><w:right w:w="40" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${xml}</w:tbl>`;
+  }
+  const cs_=el=>getComputedStyle(el);
   function tbl(rows,{border=true,widths}={}){
     const n=Math.max(...rows.map(r=>r.length)),ws=widths||Array(n).fill(Math.floor(TW/n));
     const b=border?'single':'nil';
@@ -117,7 +156,7 @@ const DOCX=(()=>{
   }
   function blocks(el,o={}){/* chuyển một phần tử khối thành chuỗi XML các đoạn/bảng */
     const tag=el.tagName.toLowerCase(),st=cs(el);
-    if(st.display==='none')return'';
+    if(st.display==='none'||has(el,'noprint'))return'';
     const jc=st.textAlign==='center'?'center':st.textAlign==='right'?'right':'';
     /* các bố cục riêng */
     if(tag==='header'&&has(el,'eh')){
@@ -130,6 +169,7 @@ const DOCX=(()=>{
       for(let i=0;i<items.length;i+=k)rows.push(items.slice(i,i+k).map(x=>({xml:para(inline(x),{after:20})})));
       return tbl(rows,{border:false});
     }
+    if(tag==='table'&&(el.querySelector('[colspan],[rowspan]')||el.dataset.w))return spanTbl(el)+para('',{after:40});
     if(tag==='table'){
       const rows=[...el.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>({xml:para(inline(td),{jc:cs(td).textAlign==='left'?'':'center',after:0,line:240}),shade:tr.classList.contains('hi')})));
       return tbl(rows,{border:true})+para('',{after:40});
@@ -155,14 +195,15 @@ const DOCX=(()=>{
     return out;
   }
   /* ---------- Tạo file ---------- */
-  async function build(root){
+  async function build(root,opt={}){
+    const land=!!opt.landscape;TW=land?14570:9638;
     const sheets=[...root.querySelectorAll('.sheet')];
     BASE=parseFloat(cs(sheets[0]||root).fontSize)||16;
     IMGS=[];imgMap=new Map();
     let n=0;for(const svg of root.querySelectorAll('svg')){try{const im=await rasterize(svg);im.n=++n;IMGS.push(im);imgMap.set(svg,im)}catch(e){}}
     let body='';
     sheets.forEach((sh,i)=>{if(i>0)body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';body+=blocks(sh)});
-    const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="1021" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+    const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr>${land?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="851" w:right="1134" w:bottom="851" w:left="1134"':'<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="1021" w:left="1134"'} w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
     const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr>${FONT}<w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="vi-VN"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="40" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
     const settings=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"><w:defaultTabStop w:val="1134"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat><m:mathPr><m:mathFont m:val="Cambria Math"/><m:dispDef/></m:mathPr></w:settings>`;
     const ct=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>`;
@@ -172,8 +213,8 @@ const DOCX=(()=>{
     const core=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Đề Toán</dc:title><dc:creator>Xưởng đề Toán – Thầy Công</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`;
     return zip([{name:'[Content_Types].xml',data:enc(ct)},{name:'_rels/.rels',data:enc(rels)},{name:'word/document.xml',data:enc(doc)},{name:'word/styles.xml',data:enc(styles)},{name:'word/settings.xml',data:enc(settings)},{name:'word/_rels/document.xml.rels',data:enc(drels)},{name:'docProps/core.xml',data:enc(core)},...IMGS.map(im=>({name:`word/media/hinh${im.n}.png`,data:im.bytes}))]);
   }
-  async function save(root,name){
-    const blob=await build(root),a=document.createElement('a');
+  async function save(root,name,opt){
+    const blob=await build(root,opt),a=document.createElement('a');
     a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
     setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
   }

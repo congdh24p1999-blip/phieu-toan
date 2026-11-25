@@ -44,5 +44,5 @@ function track(name){
   if(!SITE_CFG.goat)return;
   const s=document.createElement('script');s.async=true;s.src='https://gc.zgo.at/count.js';
   s.dataset.goatcounter=`https://${SITE_CFG.goat}.goatcounter.com/count`;document.head.appendChild(s);
-  [['#printExam','in-de'],['#printKey','in-dap-an'],['#wordExam','word-de'],['#wordKey','word-dap-an']].forEach(([id,n])=>{const b=$(id);if(b)b.addEventListener('click',()=>track(n))});
+  [['#printExam','in-de'],['#printKey','in-dap-an'],['#wordExam','word-de'],['#wordKey','word-dap-an'],['#printMx','in-ma-tran'],['#wordMx','word-ma-tran']].forEach(([id,n])=>{const b=$(id);if(b)b.addEventListener('click',()=>track(n))});
 })();

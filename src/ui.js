@@ -35,7 +35,7 @@ function curStruct(){
 state.code=String(state.code||'').replace(/\D/g,'').slice(0,3)||'101';
 state.nv=Math.min(4,Math.max(1,+state.nv||1));
 state.time=Math.min(180,Math.max(15,+state.time||90));
-if(state.tab!=='key')state.tab='exam';
+if(!['key','mx'].includes(state.tab))state.tab='exam';
 
 const pts=n=>String(Math.round(n*100)/100).replace('.',',');
 const LET='ABCD';
@@ -131,7 +131,7 @@ function keyHTML(base,vs,bp){
   }
   const m=matrixOf(base);
   const cols=[['nlc','nN','(câu)',1],['ds','nD','(ý)',4],['tln','nT','(câu)',1],['tl','nL','(câu)',1]].filter(c=>P[c[1]]>0);
-  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
+  h+=`<section class="ksec"><h3>Tóm tắt ma trận của đề này</h3><p class="ksmall noprint">Ma trận và bản đặc tả đầy đủ theo mẫu Công văn 7991 ở thẻ <b>Ma trận</b>.</p><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
   bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">${bp.tn?`Chủ đề ${c-100}`:`Chương ${ROM10[c]}`}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
   h+=`<tr class="hi"><td class="l"><b>Tổng</b></td>${cols.map(k=>`<td>${P[k[1]]*k[3]}</td>`).join('')}<td>${pts(tot)}</td><td>100%</td></tr></table>`;
   const lvTxt=['NB','TH','VD','VDC'].map(k=>`${LV_NAME[k]} ${pts(m.pt[k])} đ (${Math.round(m.pt[k]*10)}%)`).join(' · ');
@@ -290,6 +290,7 @@ function render(){
   const vs=[...Array(state.nv).keys()].map(v=>makeVariant(ex,v));
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
+  $('#mxOut').innerHTML=prettyMath(mxHTML(ex,vs[0],bp));
   $('#scopeHint').textContent=bp.scope+'.';
   $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===6||bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
@@ -322,8 +323,9 @@ function syncInputs(){
   $('#cs_p1').value=String(state.cs.p1);$('#cs_p3').value=String(state.cs.p3);
 }
 function setTab(t){
+  if(t==='mx'&&state.mode==='ws')t='exam';
   state.tab=t;document.body.dataset.tab=t;document.body.dataset.print=t;
-  $('#tabExam').setAttribute('aria-selected',t==='exam');$('#tabKey').setAttribute('aria-selected',t==='key');
+  $('#tabExam').setAttribute('aria-selected',t==='exam');$('#tabKey').setAttribute('aria-selected',t==='key');$('#tabMx').setAttribute('aria-selected',t==='mx');
   saveState();
 }
 function update(){saveState();render()}
@@ -357,6 +359,7 @@ $('#newBtn').addEventListener('click',()=>{
 $('#clearHist').addEventListener('click',()=>{if(confirm('Xoá lịch sử các đề đã tạo trong trình duyệt này? Các mã đề vẫn tái tạo được.')){saveHist([]);update()}});
 $('#tabExam').addEventListener('click',()=>setTab('exam'));
 $('#tabKey').addEventListener('click',()=>setTab('key'));
+$('#tabMx').addEventListener('click',()=>setTab('mx'));
 function doPrint(what){
   if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
   document.body.dataset.print=what;
@@ -366,20 +369,22 @@ function doPrint(what){
 }
 $('#printExam').addEventListener('click',()=>doPrint('exam'));
 $('#printKey').addEventListener('click',()=>doPrint('key'));
+$('#printMx').addEventListener('click',()=>doPrint('mx'));
 /* Tải file Word: dùng đúng nội dung đang hiển thị */
 async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
     const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
-    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
-    await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
+    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
+    await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}
   finally{btn.disabled=false;btn.textContent=old}
 }
 $('#wordExam').addEventListener('click',e=>doWord('exam',e.currentTarget));
 $('#wordKey').addEventListener('click',e=>doWord('key',e.currentTarget));
-document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>{state.mode=i.value;update()}));
+$('#wordMx').addEventListener('click',e=>doWord('mx',e.currentTarget));
+document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>{state.mode=i.value;if(state.mode==='ws'&&state.tab==='mx')setTab('exam');update()}));
 document.querySelectorAll('input[name=wsn]').forEach(i=>i.addEventListener('change',()=>{state.wsn=+i.value;update()}));
 $('#wsk').addEventListener('change',e=>{state.wsk=e.target.value;update()});
 $('#lesBox').addEventListener('change',e=>{

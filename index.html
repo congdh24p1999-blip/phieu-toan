@@ -114,8 +114,8 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .footsep{margin-left:auto}
 .bugtoast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:min(92vw,620px);background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font-size:.88rem;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 .bugtoast.on{opacity:1}
-[data-tab=exam] #keyOut{display:none}
-[data-tab=key] #examOut{display:none}
+[data-tab=exam] #keyOut,[data-tab=exam] #mxOut,[data-tab=key] #mxOut{display:none}
+[data-tab=key] #examOut,[data-tab=mx] #examOut,[data-tab=mx] #keyOut{display:none}
 
 /* ===== Tờ giấy đề thi (luôn trắng/đen) ===== */
 .sheet{background:#fff;color:#000;max-width:210mm;margin:0 auto 18px;padding:14mm 15mm 12mm;border:1px solid #bbb;box-shadow:0 2px 10px rgba(0,0,0,.12);
@@ -202,9 +202,29 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .lg .why.small{font-size:.94em}
 .ksmall{font-size:.9em;margin:2px 0}
 .mx td,.mx th{font-size:.92em}
+/* ===== Ma trận, bản đặc tả (khổ ngang) ===== */
+.sheet.mxs{max-width:297mm;padding:10mm 10mm 8mm}
+.mxh{text-align:center;margin-bottom:6px}
+.mxh h2{font-size:13pt;margin:0 0 2px}
+.mxh p{margin:1px 0}
+.mxsc{font-weight:700}
+.mxn{font-size:.9em;font-style:italic}
+.mxs h3{font-size:12pt;margin:12px 0 6px}
+.mxwrap{overflow-x:auto}
+.mxt{border-collapse:collapse;width:100%;min-width:760px}
+.mxt th,.mxt td{border:1px solid #000;padding:2px 3px;text-align:center;vertical-align:middle;font-size:.82em;line-height:1.25}
+.mxt th{font-weight:700;background:#eee}
+.mxt tr.hi td{background:#f3f3f3}
+.mxt td.l{text-align:left}
+.mxt td.yc{font-size:.8em}
+.mxt small{font-size:.82em;color:#222}
+.mxnote{font-size:.86em;margin-top:8px}
+.mxnote p{margin:0}
+.mxnote ul{margin:2px 0 0;padding-left:18px}
 
 /* ===== In ===== */
 @page{size:A4;margin:13mm 14mm}
+@page land{size:A4 landscape;margin:10mm}
 @media print{
   html,body{background:#fff!important}
   body{padding:0!important}
@@ -214,9 +234,15 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
   .sheet{max-width:none;width:auto;margin:0;padding:0;border:0;box-shadow:none;font-size:12pt}
   .sheet.pb{break-before:page;page-break-before:always}
   .sheet.pb:first-child{break-before:auto;page-break-before:auto}
-  body[data-print=exam] #keyOut{display:none!important}
-  body[data-print=key] #examOut{display:none!important}
-  body[data-print=exam] #examOut,body[data-print=key] #keyOut{display:block!important}
+  body[data-print=exam] #keyOut,body[data-print=exam] #mxOut,body[data-print=key] #mxOut{display:none!important}
+  body[data-print=key] #examOut,body[data-print=mx] #examOut,body[data-print=mx] #keyOut{display:none!important}
+  body[data-print=exam] #examOut,body[data-print=key] #keyOut,body[data-print=mx] #mxOut{display:block!important}
+  .sheet.mxs{page:land;font-size:11pt}
+  .mxwrap{overflow:visible}
+  .mxt{min-width:0}
+  .mxt thead{display:table-header-group}
+  .mxt tr{break-inside:avoid}
+  .mxpb{break-before:page}
   #examOut .sheet.pb:first-child,#keyOut .sheet.pb:first-child{break-before:auto}
 }
 </style>
@@ -348,6 +374,8 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
         <button class="btn alt" id="printKey" type="button">In đáp án</button>
         <button class="btn alt" id="wordExam" type="button" title="Tải đề thi dạng file Word (.docx) để chỉnh sửa">Word – đề</button>
         <button class="btn alt" id="wordKey" type="button" title="Tải đáp án dạng file Word (.docx)">Word – đáp án</button>
+        <button class="btn alt only-exam" id="printMx" type="button">In ma trận</button>
+        <button class="btn alt only-exam" id="wordMx" type="button" title="Tải ma trận và bản đặc tả theo Công văn 7991 dạng file Word (.docx), khổ ngang">Word – ma trận</button>
       </div>
     </aside>
     <main class="stage">
@@ -355,11 +383,13 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
         <div class="tabs" role="tablist">
           <button class="tab" role="tab" id="tabExam" aria-selected="true">Đề thi</button>
           <button class="tab" role="tab" id="tabKey" aria-selected="false">Đáp án</button>
+          <button class="tab only-exam" role="tab" id="tabMx" aria-selected="false">Ma trận</button>
         </div>
         <span class="meta" id="meta"></span>
       </div>
       <div id="examOut"></div>
       <div id="keyOut"></div>
+      <div id="mxOut"></div>
     </main>
   </div>
   <footer class="foot"><span>Dành cho phụ huynh có con học tiểu học:</span><a href="phieu-lop-1.html">Phiếu luyện Toán lớp 1 cho bé, in kèm đáp án →</a></footer>
@@ -15855,6 +15885,132 @@ function buildWS(o){
   }
   return{...out,grade:g,lessons:les,code:o.code,diff:o.diff,repeats,want,pools:Object.fromEntries(WS_KINDS.map(k=>[k,pools[k].length]))};
 }
+/* ================================================================
+   Ma trận và bản đặc tả đề kiểm tra định kì
+   Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024:
+   – cột: TNKQ (Nhiều lựa chọn, "Đúng – Sai", Trả lời ngắn) và Tự luận, mỗi dạng chia 3 mức Biết / Hiểu / Vận dụng;
+   – hàng: Chủ đề/Chương → Nội dung/đơn vị kiến thức (ở đây là bài học SGK);
+   – mỗi ô: số câu (Đúng – Sai tính theo ý) và số thứ tự câu trong đề.
+   Chỉ dùng khai báo function (được nâng lên đầu) để ui.js gọi được ngay khi tải trang.
+   ================================================================ */
+function mxLvl(lv){return lv==='NB'?0:lv==='TH'?1:2}            /* Biết / Hiểu / Vận dụng (gộp cả vận dụng cao) */
+function mxKinds(){return['nlc','ds','tln','tl']}
+function mxLow(s){return s?s.charAt(0).toLowerCase()+s.slice(1):s}
+/* Năng lực chủ yếu (gợi ý): TD – tư duy và lập luận; MH – mô hình hoá; GQVĐ – giải quyết vấn đề toán học */
+function mxNL(q,l){
+  if(l<2)return 'TD';
+  return q.role==='real'||/real|wp|thuc|cost|garden|pond|ladder|shadow|tower|price|money|bank|rent|trip|tank|field/.test(q.id||'')?'MH':'GQVĐ';
+}
+/* Yêu cầu cần đạt viết khái quát theo tên bài; giáo viên chỉnh lại theo chương trình và kế hoạch dạy học */
+function mxYC(title,l){
+  const t=mxLow(title);
+  return [`Nhận biết được các khái niệm, kí hiệu, tính chất cơ bản về ${t}.`,
+          `Hiểu và thực hiện được các tính toán, biến đổi hoặc suy luận trực tiếp về ${t}.`,
+          `Vận dụng được kiến thức về ${t} để giải bài toán nhiều bước hoặc gắn với thực tiễn.`][l];
+}
+function mxPctTxt(x){return (Math.round(x*10)/10).toLocaleString('vi-VN')}
+
+/* Gom các câu của một mã đề theo chương → bài, đếm theo dạng và mức độ */
+function mxData(v,bp){
+  const P=partTitles(bp),items=[];
+  const push=(q,kind,n,cnt,p)=>items.push({q,kind,n,cnt,pts:p,l:mxLvl(q.lv)});
+  v.nlc.forEach((q,i)=>push(q,'nlc',i+1,1,bp.pn));
+  v.ds.forEach((q,i)=>push(q,'ds',P.s2+i,4,4*PTS.dsItem));
+  v.tln.forEach((q,i)=>push(q,'tln',P.s3+i,1,bp.pt));
+  v.tl.forEach((q,i)=>push(q,'tl',P.s4+i,1,qPts(q)));
+  const LT=(typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[bp.grade])||{};
+  const chs=bp.chapters.map(c=>({c,name:bp.tn?`Chủ đề ${c-100}. ${bp.chName[c]}`:`Chương ${ROM10[c]||c}. ${bp.chName[c]}`,rows:{}}));
+  const byC=Object.fromEntries(chs.map(x=>[x.c,x]));
+  const blank=()=>({cell:Object.fromEntries(mxKinds().map(k=>[k,[0,1,2].map(()=>({n:0,qs:[],nl:new Set()}))])),pts:0,lv:[0,0,0]});
+  items.forEach(it=>{
+    const ch=byC[it.q.ch];if(!ch)return;
+    /* đề ôn thi tốt nghiệp: câu lấy từ dạng của lớp 10, 11, 12 nên tra tên bài theo lớp của dạng câu */
+    const tg=bp.tn?(T[it.kind]&&T[it.kind][it.q.id]&&T[it.kind][it.q.id].g):bp.grade;
+    const LTg=bp.tn?(typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[tg])||{}:LT;
+    const ln=it.q.les&&it.q.les.length&&LTg[it.q.les[0]]?it.q.les[0]:0;
+    const les=ln?(bp.tn?(+tg)*100+ln:ln):0;
+    const r=ch.rows[les]=ch.rows[les]||Object.assign(blank(),{les,title:ln?`Bài ${ln}. ${LTg[ln]}${bp.tn?` (Toán ${tg})`:''}`:bp.chName[it.q.ch]});
+    const c=r.cell[it.kind][it.l];c.n+=it.cnt;c.qs.push(it.n);c.nl.add(mxNL(it.q,it.l));
+    r.pts+=it.pts;r.lv[it.l]+=it.cnt;
+  });
+  chs.forEach(ch=>{ch.list=Object.values(ch.rows).sort((a,b)=>a.les-b.les)});
+  const used=chs.filter(ch=>ch.list.length);
+  /* tổng theo cột */
+  const tot={cnt:Object.fromEntries(mxKinds().map(k=>[k,[0,0,0]])),kpts:{nlc:0,ds:0,tln:0,tl:0},lpts:[0,0,0],lcnt:[0,0,0],all:0};
+  items.forEach(it=>{tot.cnt[it.kind][it.l]+=it.cnt;tot.kpts[it.kind]+=it.pts;tot.lpts[it.l]+=it.pts;tot.lcnt[it.l]+=it.cnt;tot.all+=it.pts});
+  return{used,tot,P};
+}
+
+/* Phần đầu bảng dùng chung cho ma trận và bản đặc tả */
+function mxHead(first,extraLast){
+  const sub=['Biết','Hiểu','Vận dụng'].map(x=>`<th>${x}</th>`).join('');
+  const nTop=first.length;
+  return `<thead>
+<tr class="hi">${first.map(h=>`<th rowspan="4">${h}</th>`).join('')}<th colspan="12">${extraLast?'Số câu hỏi ở các mức độ đánh giá':'Mức độ đánh giá'}</th>${extraLast?'':'<th colspan="3" rowspan="3">Tổng</th><th rowspan="4">Tỉ lệ % điểm</th>'}</tr>
+<tr class="hi"><th colspan="9">TNKQ</th><th colspan="3" rowspan="2">Tự luận</th></tr>
+<tr class="hi"><th colspan="3">Nhiều lựa chọn</th><th colspan="3">“Đúng – Sai”</th><th colspan="3">Trả lời ngắn</th></tr>
+<tr class="hi">${sub.repeat(extraLast?4:5)}</tr></thead>`;
+}
+function mxCell(c,withNL){
+  if(!c.n)return '<td></td>';
+  const qs=c.qs.map(n=>'C'+n).join(', ');
+  return `<td><b>${c.n}</b><br><small>${qs}</small>${withNL?`<br><small>${[...c.nl].join(', ')}</small>`:''}</td>`;
+}
+function mxFoot(d,withTotals){
+  const {tot}=d,K=mxKinds();
+  const cnt=K.map(k=>tot.cnt[k].map(n=>`<td><b>${n||''}</b></td>`).join('')).join('');
+  const kp=K.map(k=>`<td colspan="3"><b>${pts(tot.kpts[k])}</b></td>`).join('');
+  const kr=K.map(k=>`<td colspan="3"><b>${mxPctTxt(tot.kpts[k]*100/(tot.all||1))}</b></td>`).join('');
+  const lc=withTotals?tot.lcnt.map(n=>`<td><b>${n}</b></td>`).join('')+'<td></td>':'';
+  const lp=withTotals?tot.lpts.map(p=>`<td><b>${pts(p)}</b></td>`).join('')+`<td><b>${pts(tot.all)}</b></td>`:'';
+  const lr=withTotals?tot.lpts.map(p=>`<td><b>${mxPctTxt(p*100/(tot.all||1))}</b></td>`).join('')+'<td><b>100</b></td>':'';
+  const span=withTotals?3:4;
+  return `<tr class="hi"><td class="l" colspan="${span}"><b>Tổng số câu</b></td>${cnt}${lc}</tr>
+<tr class="hi"><td class="l" colspan="${span}"><b>Tổng số điểm</b></td>${kp}${lp}</tr>
+<tr class="hi"><td class="l" colspan="${span}"><b>Tỉ lệ %</b></td>${kr}${lr}</tr>`;
+}
+
+function mxHTML(base,v0,bp){
+  const d=mxData(v0,bp),K=mxKinds(),tot=d.tot.all||1;
+  const school=state.school?esc(state.school).toUpperCase():'';
+  let h=`<article class="sheet mxs"><header class="mxh">${school?`<p class="mxsc">${school}</p>`:''}
+<h2>MA TRẬN VÀ BẢN ĐẶC TẢ ${esc(bp.title)}</h2>
+<p><b>MÔN: TOÁN – LỚP ${bp.grade} – NĂM HỌC ${esc(state.year)}</b></p>
+<p class="mxn">Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ GDĐT. Số thứ tự câu ghi theo mã đề ${esc(v0.code)}; thời gian làm bài ${esc(state.time)} phút.</p></header>`;
+
+  /* ---------- I. Ma trận ---------- */
+  h+=`<h3>I. Ma trận đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,9,14,${Array(15).fill(3.6).join(',')},5">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức'],false)}<tbody>`;
+  d.used.forEach((ch,ci)=>ch.list.forEach((r,ri)=>{
+    h+='<tr>';
+    if(ri===0)h+=`<td rowspan="${ch.list.length}">${ci+1}</td><td class="l" rowspan="${ch.list.length}">${esc(ch.name)}</td>`;
+    h+=`<td class="l">${esc(r.title)}</td>${K.map(k=>r.cell[k].map(c=>mxCell(c,false)).join('')).join('')}`;
+    h+=r.lv.map(n=>`<td>${n||''}</td>`).join('')+`<td>${mxPctTxt(r.pts*100/tot)}</td></tr>`;
+  }));
+  h+=mxFoot(d,true)+'</tbody></table></div>';
+
+  /* ---------- II. Bản đặc tả ---------- */
+  h+=`<h3 class="mxpb">II. Bản đặc tả đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,8,11,26,${Array(12).fill(3.6).join(',')}">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức','Yêu cầu cần đạt'],true)}<tbody>`;
+  d.used.forEach((ch,ci)=>ch.list.forEach((r,ri)=>{
+    const lv=[0,1,2].filter(l=>K.some(k=>r.cell[k][l].n));
+    const yc=lv.map(l=>`<b>– ${['Biết','Hiểu','Vận dụng'][l]}:</b> ${esc(mxYC(r.title.replace(/^Bài \d+\.\s*/,'').replace(/\s*\((Toán \d+|lớp[^)]*)\)\s*$/,''),l))}`).join('<br>');
+    h+='<tr>';
+    if(ri===0)h+=`<td rowspan="${ch.list.length}">${ci+1}</td><td class="l" rowspan="${ch.list.length}">${esc(ch.name)}</td>`;
+    h+=`<td class="l">${esc(r.title)}</td><td class="l yc">${yc}</td>${K.map(k=>r.cell[k].map(c=>mxCell(c,true)).join('')).join('')}</tr>`;
+  }));
+  h+=mxFoot(d,false)+'</tbody></table></div>';
+
+  /* ---------- Ghi chú ---------- */
+  const lvTxt=['Biết','Hiểu','Vận dụng'].map((x,l)=>`${x} ${mxPctTxt(d.tot.lpts[l]*100/tot)}%`).join(', ');
+  const kTxt=[['nlc','nhiều lựa chọn'],['ds','đúng – sai'],['tln','trả lời ngắn'],['tl','tự luận']].map(([k,x])=>`${x} ${mxPctTxt(d.tot.kpts[k]*100/tot)}%`).join(', ');
+  h+=`<section class="mxnote"><p><b>Ghi chú</b></p><ul>
+<li>Mỗi ô ghi số câu hỏi (phần “Đúng – Sai” ghi số ý, mỗi câu gồm 4 ý); dòng dưới là số thứ tự câu trong đề, ví dụ C5 là câu 5.</li>
+<li>Tỉ lệ điểm của đề này theo mức độ: ${lvTxt}; theo dạng câu: ${kTxt}. Mẫu của Bộ gợi ý khoảng 40% – 30% – 30% theo mức độ và 30% – 20% – 20% – 30% theo dạng câu; nhà trường được điều chỉnh cho phù hợp.</li>
+<li>Mức “Vận dụng” gồm cả các câu vận dụng cao. Mức độ do người soạn gán cho từng dạng câu, có thể khác cách phân loại của tổ chuyên môn.</li>
+<li>Dòng cuối mỗi ô của bản đặc tả ghi năng lực chủ yếu (gợi ý): TD – tư duy và lập luận toán học; MH – mô hình hoá toán học; GQVĐ – giải quyết vấn đề toán học.</li>
+<li>Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.</li>
+</ul></section>`;
+  return h+'</article>';
+}
 
 /* ================= Giao diện ================= */
 const LS_KEY='xuong-de-thi-v1';
@@ -15892,7 +16048,7 @@ function curStruct(){
 state.code=String(state.code||'').replace(/\D/g,'').slice(0,3)||'101';
 state.nv=Math.min(4,Math.max(1,+state.nv||1));
 state.time=Math.min(180,Math.max(15,+state.time||90));
-if(state.tab!=='key')state.tab='exam';
+if(!['key','mx'].includes(state.tab))state.tab='exam';
 
 const pts=n=>String(Math.round(n*100)/100).replace('.',',');
 const LET='ABCD';
@@ -15988,7 +16144,7 @@ function keyHTML(base,vs,bp){
   }
   const m=matrixOf(base);
   const cols=[['nlc','nN','(câu)',1],['ds','nD','(ý)',4],['tln','nT','(câu)',1],['tl','nL','(câu)',1]].filter(c=>P[c[1]]>0);
-  h+=`<section class="ksec"><h3>Ma trận đặc tả sơ bộ của đề này</h3><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
+  h+=`<section class="ksec"><h3>Tóm tắt ma trận của đề này</h3><p class="ksmall noprint">Ma trận và bản đặc tả đầy đủ theo mẫu Công văn 7991 ở thẻ <b>Ma trận</b>.</p><table class="kt mx"><tr class="hi"><th class="l">${bp.tn?'Chủ đề':'Chương'}</th>${cols.map(c=>`<th>Phần ${P.rom[c[0]]}<br>${c[2]}</th>`).join('')}<th>Điểm</th><th>Tỉ lệ</th></tr>`;
   bp.chapters.forEach(c=>{const r=m.rows[c];h+=`<tr><td class="l">${bp.tn?`Chủ đề ${c-100}`:`Chương ${ROM10[c]}`}. ${bp.chName[c]}</td>${cols.map(k=>`<td>${r[k[0]]}</td>`).join('')}<td>${pts(r.pts)}</td><td>${Math.round(r.pts*10)}%</td></tr>`});
   h+=`<tr class="hi"><td class="l"><b>Tổng</b></td>${cols.map(k=>`<td>${P[k[1]]*k[3]}</td>`).join('')}<td>${pts(tot)}</td><td>100%</td></tr></table>`;
   const lvTxt=['NB','TH','VD','VDC'].map(k=>`${LV_NAME[k]} ${pts(m.pt[k])} đ (${Math.round(m.pt[k]*10)}%)`).join(' · ');
@@ -16147,6 +16303,7 @@ function render(){
   const vs=[...Array(state.nv).keys()].map(v=>makeVariant(ex,v));
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
+  $('#mxOut').innerHTML=prettyMath(mxHTML(ex,vs[0],bp));
   $('#scopeHint').textContent=bp.scope+'.';
   $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===6||bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
@@ -16179,8 +16336,9 @@ function syncInputs(){
   $('#cs_p1').value=String(state.cs.p1);$('#cs_p3').value=String(state.cs.p3);
 }
 function setTab(t){
+  if(t==='mx'&&state.mode==='ws')t='exam';
   state.tab=t;document.body.dataset.tab=t;document.body.dataset.print=t;
-  $('#tabExam').setAttribute('aria-selected',t==='exam');$('#tabKey').setAttribute('aria-selected',t==='key');
+  $('#tabExam').setAttribute('aria-selected',t==='exam');$('#tabKey').setAttribute('aria-selected',t==='key');$('#tabMx').setAttribute('aria-selected',t==='mx');
   saveState();
 }
 function update(){saveState();render()}
@@ -16214,6 +16372,7 @@ $('#newBtn').addEventListener('click',()=>{
 $('#clearHist').addEventListener('click',()=>{if(confirm('Xoá lịch sử các đề đã tạo trong trình duyệt này? Các mã đề vẫn tái tạo được.')){saveHist([]);update()}});
 $('#tabExam').addEventListener('click',()=>setTab('exam'));
 $('#tabKey').addEventListener('click',()=>setTab('key'));
+$('#tabMx').addEventListener('click',()=>setTab('mx'));
 function doPrint(what){
   if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
   document.body.dataset.print=what;
@@ -16223,20 +16382,22 @@ function doPrint(what){
 }
 $('#printExam').addEventListener('click',()=>doPrint('exam'));
 $('#printKey').addEventListener('click',()=>doPrint('key'));
+$('#printMx').addEventListener('click',()=>doPrint('mx'));
 /* Tải file Word: dùng đúng nội dung đang hiển thị */
 async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
     const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
-    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${what==='exam'?'De':'DapAn'}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
-    await DOCX.save($(what==='exam'?'#examOut':'#keyOut'),nm);
+    const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
+    await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}
   finally{btn.disabled=false;btn.textContent=old}
 }
 $('#wordExam').addEventListener('click',e=>doWord('exam',e.currentTarget));
 $('#wordKey').addEventListener('click',e=>doWord('key',e.currentTarget));
-document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>{state.mode=i.value;update()}));
+$('#wordMx').addEventListener('click',e=>doWord('mx',e.currentTarget));
+document.querySelectorAll('input[name=mode]').forEach(i=>i.addEventListener('change',()=>{state.mode=i.value;if(state.mode==='ws'&&state.tab==='mx')setTab('exam');update()}));
 document.querySelectorAll('input[name=wsn]').forEach(i=>i.addEventListener('change',()=>{state.wsn=+i.value;update()}));
 $('#wsk').addEventListener('change',e=>{state.wsk=e.target.value;update()});
 $('#lesBox').addEventListener('change',e=>{
@@ -16357,7 +16518,46 @@ const DOCX=(()=>{
   const para=(content,o={})=>`<w:p>${pPr(o)}${content}</w:p>`;
   const BLOCK=new Set(['div','p','h1','h2','h3','h4','section','article','header','ol','ul','li','table','figure','main']);
   const isBlock=el=>BLOCK.has(el.tagName.toLowerCase())||['block','flex','grid','list-item','table'].includes(cs(el).display)&&el.tagName.toLowerCase()!=='span'||(el.tagName.toLowerCase()==='small'&&cs(el).display==='block');
-  const TW=9638;/* bề rộng vùng in (twips) với lề 2 cm trên giấy A4 */
+  let TW=9638;/* bề rộng vùng in (twips): A4 dọc lề 2 cm; khổ ngang lề 1,5 cm thì 14570 */
+  /* Bảng có ô gộp (colspan/rowspan): dựng lưới cột rồi đổi sang gridSpan/vMerge của Word.
+     Bề rộng cột lấy theo tỉ lệ ghi ở data-w của bảng; các hàng trong <thead> lặp lại đầu mỗi trang. */
+  function spanTbl(el){
+    const trs=[...el.querySelectorAll('tr')];
+    const n=[...trs[0].children].reduce((a,c)=>a+(+c.getAttribute('colspan')||1),0);
+    const rel=(el.dataset.w||'').split(',').map(Number).filter(x=>x>0);
+    const raw=rel.length===n?rel:Array(n).fill(1),sum=raw.reduce((a,b)=>a+b,0);
+    const ws=raw.map(x=>Math.floor(TW*x/sum));
+    const pend=Array(n).fill(null);
+    let xml='';
+    trs.forEach(tr=>{
+      const head=tr.parentElement&&tr.parentElement.tagName==='THEAD';
+      const cells=[...tr.children];let col=0,k=0,row='';
+      while(col<n){
+        const pd=pend[col];
+        if(pd&&pd.rem>0){
+          const w=ws.slice(col,col+pd.span).reduce((a,b)=>a+b,0);
+          row+=`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${pd.span>1?`<w:gridSpan w:val="${pd.span}"/>`:''}<w:vMerge/>${pd.shade?'<w:shd w:val="clear" w:color="auto" w:fill="EEEEEE"/>':''}<w:vAlign w:val="center"/></w:tcPr>${para('',{after:0})}</w:tc>`;
+          pd.rem--;col+=pd.span;continue;
+        }
+        const td=cells[k++];if(!td)break;
+        const cs=+td.getAttribute('colspan')||1,rs=+td.getAttribute('rowspan')||1;
+        const shade=head||tr.classList.contains('hi')||td.tagName==='TH';
+        const w=ws.slice(col,col+cs).reduce((a,b)=>a+b,0);
+        const left=cs_(td).textAlign==='left';
+        /* ô có nhiều dòng (<br>) thì mỗi dòng một đoạn để Word căn lề đẹp */
+        const parts=td.innerHTML.split(/<br\s*\/?>/i);
+        let inner='';
+        if(parts.length>1){const tmp=td.cloneNode(false);parts.forEach(ph=>{tmp.innerHTML=ph;td.parentElement.appendChild(tmp);inner+=para(inline(tmp),{jc:left?'':'center',after:0,line:240});tmp.remove()})}
+        else inner=para(inline(td),{jc:left?'':'center',after:0,line:240});
+        row+=`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${cs>1?`<w:gridSpan w:val="${cs}"/>`:''}${rs>1?'<w:vMerge w:val="restart"/>':''}${shade?'<w:shd w:val="clear" w:color="auto" w:fill="EEEEEE"/>':''}<w:vAlign w:val="center"/></w:tcPr>${inner}</w:tc>`;
+        if(rs>1)pend[col]={rem:rs-1,span:cs,shade};
+        col+=cs;
+      }
+      xml+=`<w:tr>${head?'<w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>':'<w:trPr><w:cantSplit/></w:trPr>'}${row}</w:tr>`;
+    });
+    return`<w:tbl><w:tblPr><w:tblW w:w="${TW}" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(k=>`<w:${k} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="40" w:type="dxa"/><w:right w:w="40" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${xml}</w:tbl>`;
+  }
+  const cs_=el=>getComputedStyle(el);
   function tbl(rows,{border=true,widths}={}){
     const n=Math.max(...rows.map(r=>r.length)),ws=widths||Array(n).fill(Math.floor(TW/n));
     const b=border?'single':'nil';
@@ -16365,7 +16565,7 @@ const DOCX=(()=>{
   }
   function blocks(el,o={}){/* chuyển một phần tử khối thành chuỗi XML các đoạn/bảng */
     const tag=el.tagName.toLowerCase(),st=cs(el);
-    if(st.display==='none')return'';
+    if(st.display==='none'||has(el,'noprint'))return'';
     const jc=st.textAlign==='center'?'center':st.textAlign==='right'?'right':'';
     /* các bố cục riêng */
     if(tag==='header'&&has(el,'eh')){
@@ -16378,6 +16578,7 @@ const DOCX=(()=>{
       for(let i=0;i<items.length;i+=k)rows.push(items.slice(i,i+k).map(x=>({xml:para(inline(x),{after:20})})));
       return tbl(rows,{border:false});
     }
+    if(tag==='table'&&(el.querySelector('[colspan],[rowspan]')||el.dataset.w))return spanTbl(el)+para('',{after:40});
     if(tag==='table'){
       const rows=[...el.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>({xml:para(inline(td),{jc:cs(td).textAlign==='left'?'':'center',after:0,line:240}),shade:tr.classList.contains('hi')})));
       return tbl(rows,{border:true})+para('',{after:40});
@@ -16403,14 +16604,15 @@ const DOCX=(()=>{
     return out;
   }
   /* ---------- Tạo file ---------- */
-  async function build(root){
+  async function build(root,opt={}){
+    const land=!!opt.landscape;TW=land?14570:9638;
     const sheets=[...root.querySelectorAll('.sheet')];
     BASE=parseFloat(cs(sheets[0]||root).fontSize)||16;
     IMGS=[];imgMap=new Map();
     let n=0;for(const svg of root.querySelectorAll('svg')){try{const im=await rasterize(svg);im.n=++n;IMGS.push(im);imgMap.set(svg,im)}catch(e){}}
     let body='';
     sheets.forEach((sh,i)=>{if(i>0)body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';body+=blocks(sh)});
-    const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="1021" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+    const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr>${land?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="851" w:right="1134" w:bottom="851" w:left="1134"':'<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="1021" w:left="1134"'} w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
     const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr>${FONT}<w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="vi-VN"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="40" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
     const settings=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"><w:defaultTabStop w:val="1134"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat><m:mathPr><m:mathFont m:val="Cambria Math"/><m:dispDef/></m:mathPr></w:settings>`;
     const ct=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>`;
@@ -16420,8 +16622,8 @@ const DOCX=(()=>{
     const core=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Đề Toán</dc:title><dc:creator>Xưởng đề Toán – Thầy Công</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`;
     return zip([{name:'[Content_Types].xml',data:enc(ct)},{name:'_rels/.rels',data:enc(rels)},{name:'word/document.xml',data:enc(doc)},{name:'word/styles.xml',data:enc(styles)},{name:'word/settings.xml',data:enc(settings)},{name:'word/_rels/document.xml.rels',data:enc(drels)},{name:'docProps/core.xml',data:enc(core)},...IMGS.map(im=>({name:`word/media/hinh${im.n}.png`,data:im.bytes}))]);
   }
-  async function save(root,name){
-    const blob=await build(root),a=document.createElement('a');
+  async function save(root,name,opt){
+    const blob=await build(root,opt),a=document.createElement('a');
     a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
     setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
   }
@@ -16473,7 +16675,7 @@ function track(name){
   if(!SITE_CFG.goat)return;
   const s=document.createElement('script');s.async=true;s.src='https://gc.zgo.at/count.js';
   s.dataset.goatcounter=`https://${SITE_CFG.goat}.goatcounter.com/count`;document.head.appendChild(s);
-  [['#printExam','in-de'],['#printKey','in-dap-an'],['#wordExam','word-de'],['#wordKey','word-dap-an']].forEach(([id,n])=>{const b=$(id);if(b)b.addEventListener('click',()=>track(n))});
+  [['#printExam','in-de'],['#printKey','in-dap-an'],['#wordExam','word-de'],['#wordKey','word-dap-an'],['#printMx','in-ma-tran'],['#wordMx','word-ma-tran']].forEach(([id,n])=>{const b=$(id);if(b)b.addEventListener('click',()=>track(n))});
 })();
 
 </script>
