@@ -81,7 +81,7 @@ function v10HTML(ex){
     b.items.forEach((q,ii)=>{h+=v10Item(q,b.items.length>1?ii:-1,false)});
     h+='</div>';
   });
-  h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Thầy Công · Mã đề ${esc(ex.code)}</div></article>`;
+  h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Mã đề ${esc(ex.code)}</div></article>`;
   return h;
 }
 function v10KeyHTML(ex){

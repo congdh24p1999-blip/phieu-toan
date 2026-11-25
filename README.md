@@ -11,6 +11,7 @@ Trang đáp án có bảng đối chiếu mỗi câu với bài học trong SGK 
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
 - `index.html`: Xưởng đề Toán (trang chính).
+- `can-cu.html`: Căn cứ và phương pháp (văn bản căn cứ, cách tạo và kiểm tra đề, giới hạn, nhật ký cập nhật).
 - `phieu-lop-1.html`: Phiếu luyện Toán lớp 1 cho bé (phần nhỏ của trang, dành cho phụ huynh).
 - `de-thi.html`: chỉ chuyển hướng về trang chính, để link cũ vẫn dùng được.
 - Toàn bộ chạy trên trình duyệt (HTML, CSS, JavaScript thuần), không cần máy chủ; bài tập tự soạn, không sao chép SGK.

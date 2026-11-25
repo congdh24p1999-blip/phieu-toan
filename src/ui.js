@@ -92,7 +92,7 @@ function examHTML(v,bp,idx){
     q.parts.forEach((p,j)=>{const ph=j===0&&sp?sp.slice(1).join('<br>'):p.html;h+=q.parts.length>1?`<div class="tl-part"><b>${'abc'[j]})</b> ${ph} <i>(${pts(p.pts)} điểm)</i></div>`:`<div class="tl-part">${ph}</div>`});
     h+='</div>';
   });
-  h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Thầy Công · Mã đề ${esc(v.code)}</div></article>`;
+  h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Mã đề ${esc(v.code)}</div></article>`;
   return h;
 }
 const UNIT_TXT=u=>u&&/^[A-Za-zÀ-ỹĐđ]/.test(u)?' '+u:(u||'');
@@ -221,7 +221,7 @@ function wsHTML(w){
       h+=`<div class="q"><div class="qs"><b>Câu ${n}.</b>${sp?' '+sp[0]:''}</div>`;
       q.parts.forEach((p,j)=>{const ph=j===0&&sp?sp.slice(1).join('<br>'):p.html;h+=q.parts.length>1?`<div class="tl-part"><b>${'abc'[j]})</b> ${ph}</div>`:`<div class="tl-part">${ph}</div>`});
       h+='</div>'})}
-  h+=`<div class="endmark">— HẾT —</div><div class="brandline">Xưởng đề Toán · Thầy Công · Phiếu ${esc(w.code)}</div></article>`;
+  h+=`<div class="endmark">— HẾT —</div><div class="brandline">Xưởng đề Toán · Phiếu ${esc(w.code)}</div></article>`;
   return h;
 }
 function wsKeyHTML(w){
