@@ -104,6 +104,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .foot{margin-top:18px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--muted);font-size:.88rem;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .foot a{color:var(--accent);font-weight:600;text-decoration:none}
 .foot a:hover{text-decoration:underline}
+.copy{margin:8px 0 0;text-align:center;font-size:.7rem;color:var(--muted);opacity:.85}
 .stagehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;position:sticky;top:0;z-index:5;background:var(--bg);padding:4px 0}
 .tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
 .tab{font:inherit;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 16px;border-radius:999px;cursor:pointer}
@@ -230,7 +231,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 @media print{
   html,body{background:#fff!important}
   body{padding:0!important}
-  .topbar,.panel,.stagehead,.foot,.noprint{display:none!important}
+  .topbar,.panel,.stagehead,.foot,.copy,.noprint{display:none!important}
   .layout{display:block}
   .app{max-width:none;display:block}
   .sheet{max-width:none;width:auto;margin:0;padding:0;border:0;box-shadow:none;font-size:12pt}
@@ -395,5 +396,6 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
     </main>
   </div>
   <footer class="foot"><span>Dành cho phụ huynh có con học tiểu học:</span><a href="phieu-lop-1.html">Phiếu luyện Toán lớp 1 cho bé, in kèm đáp án →</a></footer>
+  <p class="copy">© 2026 Xưởng đề Toán · Bảo lưu mọi quyền. Không sao chép mã nguồn, phát hành lại khi chưa được đồng ý.</p>
 </div>
 <script>

@@ -14,3 +14,7 @@ Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 - `phieu-lop-1.html`: Phiếu luyện Toán lớp 1 cho bé (phần nhỏ của trang, dành cho phụ huynh).
 - `de-thi.html`: chỉ chuyển hướng về trang chính, để link cũ vẫn dùng được.
 - Toàn bộ chạy trên trình duyệt (HTML, CSS, JavaScript thuần), không cần máy chủ; bài tập tự soạn, không sao chép SGK.
+
+## Bản quyền
+
+© 2026 Xưởng đề Toán. Bảo lưu mọi quyền – mã nguồn công khai để xem, **không phải mã nguồn mở**. Không sao chép, chỉnh sửa, phát hành lại hay dựng trang khác khi chưa được đồng ý; xem [LICENSE](LICENSE). Giáo viên, học sinh được tự do dùng trang để tạo và in đề.

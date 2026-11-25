@@ -12,4 +12,7 @@ h=open('../index.html',encoding='utf-8').read()
 m=re.search(r'<script>\n(.*)</script>',h,re.S)
 open('page.js','w',encoding='utf-8').write(m.group(1))
 PY
-node --check page.js && echo "page ok" && wc -c ../index.html
+node --check page.js && echo "page ok"
+# nén mã khi xuất bản (bản dễ đọc vẫn là các file trong src/)
+node minify.mjs ../index.html
+wc -c ../index.html
