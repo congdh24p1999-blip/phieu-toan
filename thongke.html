@@ -169,12 +169,12 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const dm=d=>{const [y,m,dd]=d.split('-');return `${+dd}/${+m}`};
 
 const ACT={'in-de':'In đề','in-dap-an':'In đáp án','word-de':'Tải Word đề','word-dap-an':'Tải Word đáp án','in-ma-tran':'In ma trận','word-ma-tran':'Tải Word ma trận','bao-loi':'Gửi báo lỗi'};
-const KIND={gk1:'Giữa học kì I',ck1:'Cuối học kì I',gk2:'Giữa học kì II',ck2:'Cuối học kì II',tn:'Ôn thi tốt nghiệp',phieu:'Phiếu bài tập theo bài'};
+const KIND={gk1:'Giữa học kì I',ck1:'Cuối học kì I',gk2:'Giữa học kì II',ck2:'Cuối học kì II',tn:'Ôn thi tốt nghiệp THPT',v10:'Ôn thi vào lớp 10',phieu:'Phiếu bài tập theo bài'};
 
 /* Đường dẫn sự kiện: "word-de/9-ck2" hoặc "in-de/phieu-6-gk1" */
 function parseEv(p){
   const m=/^\/?([a-z-]+)\/(phieu-)?(\d+)-(\w+)/.exec(p||'');
-  return m?{act:m[1],grade:+m[3],kind:m[2]?'phieu':m[4]}:null;
+  return m?{act:m[1],grade:+m[3],kind:m[2]?'phieu':(+m[3]===9&&m[4]==='tn'?'v10':m[4])}:null;   /* lớp 9 + tn là đề ôn thi vào 10 */
 }
 function rows(el,list,{max=8,empty='Chưa có số liệu.'}={}){
   const tot=list.reduce((a,x)=>a+x.n,0),top=Math.max(1,...list.map(x=>x.n));
