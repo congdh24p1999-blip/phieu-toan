@@ -64,12 +64,17 @@ const DOCX=(()=>{
       if(c.nodeType===3){const t=c.nodeValue.replace(/\s+/g,' ');if(t)out.push(mr(t,f));continue}
       if(!isEl(c))continue;
       const tag=c.tagName.toLowerCase();
+      if(has(c,'ss')){const base=out.length?out.pop():'<m:r><m:t></m:t></m:r>';out.push(ssXml(base,c,f));continue}
       if(tag==='sup'||tag==='sub'){const base=out.length?out.pop():'<m:r><m:t></m:t></m:r>',g={...f};const inner=mathOf(c,g);
         out.push(tag==='sup'?`<m:sSup>${ME([base])}<m:sup>${inner.join('')}</m:sup></m:sSup>`:`<m:sSub>${ME([base])}<m:sub>${inner.join('')}</m:sub></m:sSub>`);continue}
       out.push(...mathEl(c,f));
     }
     return out;
   }
+  const ssXml=(base,ss,f)=>`<m:sSubSup>${ME([base])}<m:sub>${mathOf(ss.querySelector('sub'),f).join('')}</m:sub><m:sup>${mathOf(ss.querySelector('sup'),f).join('')}</m:sup></m:sSubSup>`;
+  /* phần tử đứng ngay trước một .ss (như <i>A</i><span class="ss">) thì gộp thành một công thức */
+  const SKIP=new WeakSet();
+  const ssMath=c=>{const nx=c.nextSibling;if(!isEl(c)||!has(nx,'ss'))return'';SKIP.add(nx);const f=fmtOf(c);return`<m:oMath>${ssXml(mathEl(c,f).join(''),nx,f)}</m:oMath>`};
   const isMath=el=>has(el,'fr')||has(el,'rt')||has(el,'lm')||has(el,'cs')||has(el,'hw')||has(el,'vc')||has(el,'ig')||has(el,'ol');
   /* ---------- Hình vẽ ---------- */
   let IMGS=[],imgMap=new Map();
@@ -77,27 +82,28 @@ const DOCX=(()=>{
     const vb=svg.viewBox&&svg.viewBox.baseVal,w=+svg.getAttribute('width')||(vb&&vb.width)||300,h=+svg.getAttribute('height')||(vb&&vb.height)||200;
     const cl=svg.cloneNode(true);cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',w);cl.setAttribute('height',h);
     cl.setAttribute('style','font-family:"Times New Roman","Liberation Serif",serif;font-size:14px');
-    const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(cl));
+    const xml=new XMLSerializer().serializeToString(cl),url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
     const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
     const k=3,cv=document.createElement('canvas');cv.width=Math.round(w*k);cv.height=Math.round(h*k);
     const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(img,0,0,cv.width,cv.height);
     const blob=await new Promise(ok=>cv.toBlob(ok,'image/png'));
-    return{bytes:new Uint8Array(await blob.arrayBuffer()),w,h};
+    return{bytes:new Uint8Array(await blob.arrayBuffer()),svg:enc('<?xml version="1.0" encoding="UTF-8"?>'+xml),w,h};
   }
   function drawing(svg){
     const im=imgMap.get(svg);if(!im)return'';
     const maxW=6000000,cx0=Math.round(im.w*9525),sc=Math.min(1,maxW/cx0),cx=Math.round(cx0*sc),cy=Math.round(im.h*9525*sc),id=im.n;
-    return`<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${id}" name="Hinh ${id}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${id}" name="hinh${id}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg${id}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+    return`<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${id}" name="Hinh ${id}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${id}" name="hinh${id}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg${id}"><a:extLst><a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}"><asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main" r:embed="rIdSvg${id}"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
   }
   /* ---------- Chữ trong đoạn ---------- */
   function inline(node){/* trả về chuỗi các w:r / m:oMath của nội dung inline */
     let s='';
     for(const c of node.childNodes){
       if(c.nodeType===3){let t=c.nodeValue.replace(/\s+/g,' ');if(t)s+=run(t,fmtOf(c.parentElement));continue}
-      if(!isEl(c))continue;
+      if(!isEl(c)||SKIP.has(c))continue;
       const tag=c.tagName.toLowerCase();
       if(cs(c).display==='none')continue;
       if(tag==='br'){s+='<w:r><w:br/></w:r>';continue}
+      {const m=ssMath(c);if(m){s+=m;continue}}
       if(tag==='svg'){s+=drawing(c);continue}
       if(isMath(c)){s+=`<m:oMath>${mathEl(c,fmtOf(c)).join('')}</m:oMath>`;continue}
       s+=inline(c);
@@ -182,10 +188,11 @@ const DOCX=(()=>{
     const flush=()=>{if(buf.replace(/<[^>]+>/g,'').trim()||/<w:drawing|<m:oMath/.test(buf)){out+=para((out?'':pre)+buf,{jc,ind,keep:has(el,'part')||has(el,'qs')||/^h[1-4]$/.test(tag),before:has(el,'part')||/^h[23]$/.test(tag)?120:0,after:has(el,'qs')?20:40})}buf=''};
     for(const c of el.childNodes){
       if(c.nodeType===3){const t=c.nodeValue.replace(/\s+/g,' ');if(t.trim()||buf)buf+=t?run(t,fmtOf(el)):'';continue}
-      if(!isEl(c))continue;
+      if(!isEl(c)||SKIP.has(c))continue;
       if(cs(c).display==='none')continue;
       const t=c.tagName.toLowerCase();
       if(t==='br'){buf+='<w:r><w:br/></w:r>';continue}
+      {const m=ssMath(c);if(m){buf+=m;continue}}
       if(t==='svg'){flush();out+=para(drawing(c),{jc:'center',after:60,keep:true});continue}
       if(isMath(c)){buf+=`<m:oMath>${mathEl(c,fmtOf(c)).join('')}</m:oMath>`;continue}
       if(isBlock(c)){flush();out+=blocks(c,{ind});continue}
@@ -206,12 +213,12 @@ const DOCX=(()=>{
     const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr>${land?'<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="851" w:right="1134" w:bottom="851" w:left="1134"':'<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="1021" w:left="1134"'} w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
     const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr>${FONT}<w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="vi-VN"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="40" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
     const settings=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"><w:defaultTabStop w:val="1134"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat><m:mathPr><m:mathFont m:val="Cambria Math"/><m:dispDef/></m:mathPr></w:settings>`;
-    const ct=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>`;
+    const ct=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="svg" ContentType="image/svg+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>`;
     const rels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>`;
-    const drels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdSt" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdSe" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>${IMGS.map(im=>`<Relationship Id="rIdImg${im.n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/hinh${im.n}.png"/>`).join('')}</Relationships>`;
+    const drels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdSt" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdSe" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>${IMGS.map(im=>`<Relationship Id="rIdImg${im.n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/hinh${im.n}.png"/><Relationship Id="rIdSvg${im.n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/hinh${im.n}.svg"/>`).join('')}</Relationships>`;
     const now=new Date().toISOString().replace(/\.\d+Z$/,'Z');
     const core=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Đề Toán</dc:title><dc:creator>Xưởng đề Toán</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`;
-    return zip([{name:'[Content_Types].xml',data:enc(ct)},{name:'_rels/.rels',data:enc(rels)},{name:'word/document.xml',data:enc(doc)},{name:'word/styles.xml',data:enc(styles)},{name:'word/settings.xml',data:enc(settings)},{name:'word/_rels/document.xml.rels',data:enc(drels)},{name:'docProps/core.xml',data:enc(core)},...IMGS.map(im=>({name:`word/media/hinh${im.n}.png`,data:im.bytes}))]);
+    return zip([{name:'[Content_Types].xml',data:enc(ct)},{name:'_rels/.rels',data:enc(rels)},{name:'word/document.xml',data:enc(doc)},{name:'word/styles.xml',data:enc(styles)},{name:'word/settings.xml',data:enc(settings)},{name:'word/_rels/document.xml.rels',data:enc(drels)},{name:'docProps/core.xml',data:enc(core)},...IMGS.flatMap(im=>[{name:`word/media/hinh${im.n}.png`,data:im.bytes},{name:`word/media/hinh${im.n}.svg`,data:im.svg}])]);
   }
   async function save(root,name,opt){
     const blob=await build(root,opt),a=document.createElement('a');
