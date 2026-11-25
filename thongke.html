@@ -218,7 +218,7 @@ function chart(days){
   for(let v=0;v<=ymax;v+=step)s+=`<text class="axis" x="${P.l-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
   const lastI=days.length-1;
   days.forEach((d,i)=>{
-    const h=ih*d.n/ymax,x=P.l+i*bw+bw*.18,w=Math.max(2,bw*.64);
+    const h=ih*d.n/ymax,w=Math.max(2,Math.min(44,bw*.64)),x=P.l+i*bw+(bw-w)/2;   /* ít ngày thì cột không quá to */
     s+=`<rect class="bar${i===lastI?' today':''}" x="${x.toFixed(1)}" y="${(P.t+ih-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${dm(d.day)}: ${d.n} lượt xem${i===lastI?' (hôm nay, chưa hết ngày)':''}</title></rect>`;
     const every=Math.max(1,Math.ceil(46/bw));
     if((i%every===0&&lastI-i>=every*.8)||i===lastI)s+=`<text class="axis" x="${(P.l+i*bw+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${i===lastI?'hôm nay':dm(d.day)}</text>`;
@@ -227,7 +227,7 @@ function chart(days){
   /* Lời phê bút đỏ: khoanh ngày đông nhất */
   const bi=days.reduce((b,d,i)=>d.n>days[b].n?i:b,0),best=days[bi];
   if(best.n>0){
-    const cx=P.l+bi*bw+bw/2,cy=y(best.n)-10,rx=Math.max(13,bw*.6);
+    const cx=P.l+bi*bw+bw/2,cy=y(best.n)-10,rx=Math.min(24,Math.max(13,bw*.6));
     s+=`<ellipse class="pen" cx="${cx}" cy="${cy}" rx="${rx}" ry="11" transform="rotate(-6 ${cx} ${cy})"/>`;
     s+=`<text class="tip" x="${cx}" y="${cy+4}" text-anchor="middle">${best.n}</text>`;
     const right=cx<W*.6,tx=right?cx+rx+10:cx-rx-10;
