@@ -10002,16 +10002,16 @@ G3('tl9-g3-semi',9,'VD',[29,17,12],r=>{
 
 /* 6. Đường tròn đường kính là đường cao của tam giác vuông */
 G3('tl9-g3-rect',9,'VDC',[27,29,12],r=>{
-  const [p,q,h]=r.pick([[3,4,5],[6,8,10],[9,12,15],[7,24,25],[12,16,20]]),AB=p,AC=q,BC=h,AH=Q(p*q,h);
+  const [p,q,h]=r.pick([[3,4,5],[6,8,10],[9,12,15],[7,24,25],[12,16,20]]),AB=p,AC=q,BC=h,AH=Q(p*q,h),KR=Q(p*q,h*h);
   const A=[0,0],B=[AB,0],C=[0,AC],Hh=g3foot(A,B,C),D=[Hh[0],0],E=[0,Hh[1]],K=[Hh[0]/2,Hh[1]/2],rr=Math.hypot(Hh[0],Hh[1])/2;
   const fig=fig9({A,B,C,H:Hh,D,E},{circ:[[K,rr]],segs:[['A','B'],['B','C'],['C','A'],['A','H'],['H','D'],['H','E'],['D','E']],right:[['B','A','C'],['A','H','B']],w:220,h:180});
   return{kind:'tl',title:'Đường tròn đường kính là đường cao',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} (${I('AB')} < ${I('AC')}), đường cao ${I('AH')}. Đường tròn đường kính ${I('AH')} cắt ${I('AB')}, ${I('AC')} lần lượt tại ${I('D')} và ${I('E')} (khác ${I('A')}).<br>Chứng minh tứ giác ${I('ADHE')} là hình chữ nhật. Tính ${I('DE')} biết ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm.`},
     {pts:.75,html:`Chứng minh ${I('AD')}·${I('AB')} = ${I('AE')}·${I('AC')}.`},
-    {pts:.5,html:`Chứng minh tứ giác ${I('BDEC')} nội tiếp đường tròn.`}],
+    {pts:.5,html:`Chứng minh tứ giác ${I('BDEC')} nội tiếp đường tròn và tính tỉ số diện tích của tam giác ${I('ADE')} và tam giác ${I('ABC')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠ADH = ∠AEH = 90° (góc nội tiếp chắn nửa đường tròn đường kính AH) và ∠DAE = 90°, nên ADHE là hình chữ nhật.`,.25],[`BC = √(AB² + AC²) = ${BC} cm; AH = ${fr('AB·AC','BC')} = ${g3n(AH[0]/AH[1])} cm.`,.25],[`ADHE là hình chữ nhật nên DE = AH = ${g3n(AH[0]/AH[1])} cm.`,.25]]),
       ptxt([[`Tam giác AHB vuông tại H có đường cao HD nên AH² = AD·AB.`,.25],[`Tam giác AHC vuông tại H có đường cao HE nên AH² = AE·AC.`,.25],[`Suy ra AD·AB = AE·AC.`,.25]]),
-      ptxt([[`Từ AD·AB = AE·AC có ${fr('AD','AC')} = ${fr('AE','AB')}, kết hợp ∠DAE chung nên ΔADE ∽ ΔACB (c.g.c), suy ra ∠ADE = ∠ACB.`,.25],[`Do đó ∠BDE + ∠ECB = ∠BDE + ∠ADE = 180°, nên tứ giác BDEC nội tiếp.`,.25]])],
+      ptxt([[`Từ AD·AB = AE·AC có ${fr('AD','AC')} = ${fr('AE','AB')}, kết hợp ∠DAE chung nên ΔADE ∽ ΔACB (c.g.c), suy ra ∠ADE = ∠ACB; do đó ∠BDE + ∠ECB = ∠BDE + ∠ADE = 180°, tứ giác BDEC nội tiếp.`,.25],[`Tỉ số đồng dạng ${fr('DE','CB')} = ${fr('AH','BC')} = ${qh(KR)}, nên ${fr('S(ADE)','S(ABC)')} = (${qh(KR)})² = ${qh(Q(KR[0]*KR[0],KR[1]*KR[1]))}.`,.25]])],
     chk:()=>AB<AC&&AB*AB+AC*AC===BC*BC};
 });
 
@@ -10037,7 +10037,7 @@ G3('tl9-g3-chord',9,'VD',[14,27,12],r=>{
 
 /* 8. Tia phân giác cắt đường tròn tại điểm chính giữa cung */
 G3('tl9-g3-bis',9,'VDC',[27,28,29],r=>{
-  const al=r.pick([50,60,70,80]),dA=r.pick([-28,-14,14,28]);
+  const al=r.pick([50,60,70,80]),dA=r.pick([-28,-14,14,28]),R=r.pick([3,4,5,6,8,10]),DB=2*R*Math.sin(al*Math.PI/360);
   const P={A:onC(1,90+dA),B:onC(1,270-al),C:onC(1,270+al),D:onC(1,270),O:[0,0]};
   const la=Math.hypot(P.B[0]-P.C[0],P.B[1]-P.C[1]),lb=Math.hypot(P.A[0]-P.C[0],P.A[1]-P.C[1]),lc=Math.hypot(P.A[0]-P.B[0],P.A[1]-P.B[1]),s=la+lb+lc;
   P.I=[(la*P.A[0]+lb*P.B[0]+lc*P.C[0])/s,(la*P.A[1]+lb*P.B[1]+lc*P.C[1])/s];
@@ -10045,11 +10045,11 @@ G3('tl9-g3-bis',9,'VDC',[27,28,29],r=>{
   return{kind:'tl',title:'Tia phân giác và điểm chính giữa cung',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) (${I('AB')} ≠ ${I('AC')}). Tia phân giác của góc ${I('BAC')} cắt đường tròn tại ${I('D')} (${I('D')} khác ${I('A')}).<br>Chứng minh ${I('D')} là điểm chính giữa của cung ${I('BC')} không chứa ${I('A')} và ${I('OD')} ⊥ ${I('BC')}.`},
     {pts:.75,html:`Biết ∠${I('BAC')} = ${al}°. Tính số đo các góc ${I('BOC')}, ${I('BDC')} và ${I('BOD')}.`},
-    {pts:.5,html:`Gọi ${I('I')} là giao điểm của các đường phân giác trong của tam giác ${I('ABC')}. Chứng minh ${I('DB')} = ${I('DI')}.`}],
+    {pts:.5,html:`Gọi ${I('I')} là giao điểm của các đường phân giác trong của tam giác ${I('ABC')}. Chứng minh ${I('DB')} = ${I('DI')}. Cho bán kính đường tròn bằng ${R} cm, tính độ dài ${I('DI')} (làm tròn đến hàng phần mười).`}],
     sol:[g3fig(fig)+ptxt([[`∠BAD = ∠CAD (AD là phân giác) nên hai cung BD và CD (không chứa A) bằng nhau.`,.25],[`Vậy D là điểm chính giữa của cung BC không chứa A, suy ra DB = DC.`,.25],[`Lại có OB = OC nên OD là đường trung trực của BC, do đó OD ⊥ BC.`,.25]]),
       ptxt([[`∠BOC = 2∠BAC = ${2*al}° (góc ở tâm và góc nội tiếp cùng chắn cung BC).`,.25],[`Tứ giác ABDC nội tiếp nên ∠BDC = 180° − ∠BAC = ${180-al}°.`,.25],[`D là điểm chính giữa cung BC nên ∠BOD = ${fr(1,2)}∠BOC = ${al}°.`,.25]]),
-      ptxt([[`∠DBI = ∠DBC + ∠CBI, mà ∠DBC = ∠DAC (cùng chắn cung DC) = ∠BAI và ∠CBI = ∠ABI.`,.25],[`Nên ∠DBI = ∠BAI + ∠ABI = ∠BID (góc ngoài của tam giác ABI); tam giác DBI cân tại D, do đó DB = DI.`,.25]])],
-    chk:()=>true};
+      ptxt([[`∠DBI = ∠DBC + ∠CBI = ∠DAC + ∠ABI (∠DBC = ∠DAC cùng chắn cung DC) = ∠BAI + ∠ABI = ∠BID (góc ngoài của tam giác ABI); tam giác DBI cân tại D nên DB = DI.`,.25],[`Tam giác OBD cân tại O có ∠BOD = ${al}°; kẻ OK ⊥ BD thì ∠BOK = ${al/2}°, BK = R·sin ${al/2}°, nên DI = DB = 2·${R}·sin ${al/2}° ≈ ${String(Math.round(DB*10)/10).replace('.',',')} (cm).`,.25]])],
+    chk:()=>DB>0};
 });
 
 /* 9. Đường tròn đường kính một cạnh góc vuông */
@@ -10084,17 +10084,17 @@ G3('tl9-g3-square',9,'VD',[29,27],r=>{
 
 /* 11. Trực tâm và đường kính qua một đỉnh */
 G3('tl9-g3-orth',9,'VD',[29,27],r=>{
-  const g=r.pick([50,55,60,65,70,75]),sh=r.pick([0,8,-8]);
+  const g=r.pick([50,55,60,65,70,75]),sh=r.pick([0,8,-8]),[Rv,hb,OMv]=r.pick([[5,4,3],[5,3,4],[10,8,6],[10,6,8],[13,12,5],[13,5,12],[17,15,8],[17,8,15]]);
   const A=onC(1,100+sh),B=onC(1,215),C=onC(1,325),D=g3foot(A,B,C),E=g3foot(B,A,C),H=g3x(A,D,B,E),K=[-A[0],-A[1]];
   const fig=fig9({A,B,C,D,E,H,K,O:[0,0]},{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','A'],['A','D'],['B','E'],['B','K'],['C','K'],['C','H']],dashed:[['A','K']],right:[['A','D','C'],['B','E','C']],lc:'O',w:210,h:210});
   return{kind:'tl',title:'Trực tâm và tứ giác nội tiếp',parts:[
     {pts:.75,html:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}). Các đường cao ${I('AD')}, ${I('BE')} cắt nhau tại ${I('H')}.<br>Chứng minh tứ giác ${I('CDHE')} nội tiếp. Biết ∠${I('ACB')} = ${g}°, tính số đo ∠${I('DHE')}.`},
     {pts:.75,html:`Chứng minh tứ giác ${I('ABDE')} nội tiếp và ${I('CD')}·${I('CB')} = ${I('CE')}·${I('CA')}.`},
-    {pts:.5,html:`Kẻ đường kính ${I('AK')} của đường tròn (${I('O')}). Chứng minh tứ giác ${I('BHCK')} là hình bình hành.`}],
+    {pts:.5,html:`Kẻ đường kính ${I('AK')} của đường tròn (${I('O')}). Chứng minh tứ giác ${I('BHCK')} là hình bình hành. Cho bán kính ${I('R')} = ${Rv} cm và ${I('BC')} = ${2*hb} cm, tính độ dài ${I('AH')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠HDC = ∠HEC = 90° (AD, BE là các đường cao).`,.25],[`∠HDC + ∠HEC = 180° nên tứ giác CDHE nội tiếp.`,.25],[`Suy ra ∠DHE = 180° − ∠DCE = 180° − ${g}° = ${180-g}°.`,.25]]),
       ptxt([[`∠ADB = ∠AEB = 90° nên D, E cùng thuộc đường tròn đường kính AB; tứ giác ABDE nội tiếp.`,.25],[`Tam giác CDA và tam giác CEB có ∠C chung, ∠CDA = ∠CEB = 90° nên ΔCDA ∽ ΔCEB (g.g).`,.25],[`Suy ra ${fr('CD','CE')} = ${fr('CA','CB')}, tức CD·CB = CE·CA.`,.25]]),
-      ptxt([[`∠ABK = 90° (góc nội tiếp chắn nửa đường tròn) nên BK ⊥ AB; H là trực tâm nên CH ⊥ AB. Do đó BK ∥ CH. Tương tự ∠ACK = 90° nên CK ⊥ AC, mà BH ⊥ AC, do đó CK ∥ BH.`,.25],[`Tứ giác BHCK có các cặp cạnh đối song song nên là hình bình hành.`,.25]])],
-    chk:()=>true};
+      ptxt([[`∠ABK = 90° (góc nội tiếp chắn nửa đường tròn) nên BK ⊥ AB, mà CH ⊥ AB (H là trực tâm) nên BK ∥ CH; tương tự CK ⊥ AC, BH ⊥ AC nên CK ∥ BH. Vậy BHCK là hình bình hành.`,.25],[`Gọi M là trung điểm BC thì M là trung điểm HK và OM ⊥ BC; OM là đường trung bình của tam giác AHK nên AH = 2OM. OM = √(R² − BM²) = √(${Rv*Rv} − ${hb*hb}) = ${OMv} (cm), nên AH = ${2*OMv} cm.`,.25]])],
+    chk:()=>Rv*Rv===hb*hb+OMv*OMv};
 });
 
 /* 12. Hai tiếp tuyến khi OA = 2R: tam giác đều, diện tích phần giới hạn */
@@ -10145,33 +10145,33 @@ G3('tl9-g3-isos',9,'VD',[28,27,12],r=>{
 
 /* 15. Đường tròn đường kính MC trong tam giác vuông */
 G3('tl9-g3-mc',9,'VDC',[29,27],r=>{
-  const [AB,AM,BM]=r.pick([[4,3,5],[3,4,5],[8,6,10],[6,8,10],[12,5,13],[12,9,15]]),MC=r.int(3,8),AC=AM+MC;
+  const [AB,AM,BM]=r.pick([[4,3,5],[3,4,5],[8,6,10],[6,8,10],[12,9,15]]),MC=r.int(3,8),AC=AM+MC,ME=AM*MC/BM,BE=BM+ME;
   const A=[0,0],B=[0,AB],M=[AM,0],C=[AC,0],K=[(AM+AC)/2,0],D=g3foot(M,B,C),E=g3foot(C,B,M);
   const fig=fig9({A,B,C,M,D,E},{circ:[[K,MC/2]],segs:[['A','B'],['B','C'],['C','A'],['B','E'],['M','D'],['C','E']],dashed:[['A','E']],right:[['B','A','C'],['M','D','C'],['M','E','C']],w:230,h:180});
   return{kind:'tl',title:'Đường tròn đường kính MC',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}. Trên cạnh ${I('AC')} lấy điểm ${I('M')} (${I('M')} khác ${I('A')}, ${I('C')}). Đường tròn đường kính ${I('MC')} cắt ${I('BC')} tại ${I('D')} (${I('D')} khác ${I('C')}) và cắt tia ${I('BM')} tại ${I('E')} (${I('E')} khác ${I('M')}).<br>Chứng minh tứ giác ${I('ABDM')} nội tiếp. Tính ${I('BM')} biết ${I('AB')} = ${AB} cm, ${I('AM')} = ${AM} cm.`},
     {pts:.75,html:`Chứng minh tứ giác ${I('ABCE')} nội tiếp.`},
-    {pts:.5,html:`Chứng minh ${I('BM')}·${I('BE')} = ${I('BD')}·${I('BC')}.`}],
+    {pts:.5,html:`Chứng minh ${I('BM')}·${I('BE')} = ${I('BD')}·${I('BC')}. Biết ${I('MC')} = ${MC} cm, tính độ dài ${I('BE')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠BAM = 90°; ∠MDC = 90° (góc nội tiếp chắn nửa đường tròn đường kính MC) nên ∠BDM = 90°.`,.25],[`∠BAM + ∠BDM = 180° nên tứ giác ABDM nội tiếp.`,.25],[`BM = √(AB² + AM²) = √(${AB*AB} + ${AM*AM}) = ${BM} (cm).`,.25]]),
       ptxt([[`∠MEC = 90° (góc nội tiếp chắn nửa đường tròn) nên ∠BEC = 90°.`,.25],[`∠BAC = 90°.`,.25],[`A và E cùng nhìn đoạn BC dưới góc vuông nên tứ giác ABCE nội tiếp (đường tròn đường kính BC).`,.25]]),
-      ptxt([[`Tam giác BDM và tam giác BEC có ∠B chung, ∠BDM = ∠BEC = 90° nên ΔBDM ∽ ΔBEC (g.g).`,.25],[`Suy ra ${fr('BD','BE')} = ${fr('BM','BC')}, do đó BM·BE = BD·BC.`,.25]])],
-    chk:()=>AB*AB+AM*AM===BM*BM};
+      ptxt([[`Tam giác BDM và tam giác BEC có ∠B chung, ∠BDM = ∠BEC = 90° nên ΔBDM ∽ ΔBEC (g.g), suy ra ${fr('BD','BE')} = ${fr('BM','BC')}, do đó BM·BE = BD·BC.`,.25],[`ΔAMB ∽ ΔEMC (∠BAM = ∠CEM = 90°, ∠AMB = ∠EMC đối đỉnh) nên ${fr('ME','AM')} = ${fr('MC','BM')}, ME = ${fr(`${AM}·${MC}`,BM)} = ${g3n(ME)} cm; BE = BM + ME = ${g3n(BE)} (cm).`,.25]])],
+    chk:()=>AB*AB+AM*AM===BM*BM&&Math.abs(ME*100-Math.round(ME*100))<1e-9};
 });
 
 /* 16. Tam giác đều nội tiếp: MA = MB + MC */
 G3('tl9-g3-ptol',9,'VDC',[28,27,29],r=>{
-  const a=r.pick([3,6,9,12,15]),dm=r.pick([-30,-18,18,30]);
+  const [xb,yc,a]=r.pick([[3,5,7],[5,3,7],[7,8,13],[8,7,13],[5,16,19],[16,5,19],[6,10,14],[10,6,14]]),dm=r.pick([-30,-18,18,30]);
   const A=onC(1,90),B=onC(1,210),C=onC(1,330),M=onC(1,270+dm),MB=Math.hypot(M[0]-B[0],M[1]-B[1]),MA=Math.hypot(M[0]-A[0],M[1]-A[1]),D=[M[0]+(A[0]-M[0])*MB/MA,M[1]+(A[1]-M[1])*MB/MA];
   const fig=fig9({A,B,C,M,D,O:[0,0]},{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','A'],['A','M'],['B','M'],['C','M'],['B','D']],lc:'O',w:210,h:210});
   const Rt=a%3?fr(`${a}√3`,3):`${a/3}√3`;
   return{kind:'tl',title:'Tam giác đều nội tiếp đường tròn',parts:[
     {pts:.75,html:`Cho tam giác đều ${I('ABC')} cạnh ${a} cm nội tiếp đường tròn (${I('O')}; ${I('R')}). Lấy điểm ${I('M')} thuộc cung nhỏ ${I('BC')} (${I('M')} khác ${I('B')}, ${I('C')}).<br>Tính bán kính ${I('R')} và số đo góc ${I('BMC')}.`},
     {pts:.75,html:`Trên đoạn ${I('MA')} lấy điểm ${I('D')} sao cho ${I('MD')} = ${I('MB')}. Chứng minh tam giác ${I('BMD')} đều.`},
-    {pts:.5,html:`Chứng minh ${I('MA')} = ${I('MB')} + ${I('MC')}.`}],
+    {pts:.5,html:`Chứng minh ${I('MA')} = ${I('MB')} + ${I('MC')}. Áp dụng: biết ${I('MB')} = ${xb} cm, ${I('MC')} = ${yc} cm, tính ${I('MA')} và chu vi tứ giác ${I('ABMC')}.`}],
     sol:[g3fig(fig)+ptxt([[`Tam giác đều cạnh a có đường cao bằng ${fr('a√3',2)} = ${a%2?fr(`${a}√3`,2):`${a/2}√3`} cm.`,.25],[`O là trọng tâm của tam giác đều nên R = ${fr(2,3)} đường cao = ${Rt} (cm).`,.25],[`Tứ giác ABMC nội tiếp nên ∠BMC = 180° − ∠BAC = 120°.`,.25]]),
       ptxt([[`∠BMA = ∠BCA = 60° (hai góc nội tiếp cùng chắn cung AB).`,.25],[`Tam giác BMD có MB = MD nên cân tại M.`,.25],[`Tam giác cân có một góc 60° nên tam giác BMD đều.`,.25]]),
-      ptxt([[`BA = BC, BD = BM, ∠ABD = ∠CBM (cùng cộng với ∠DBC được 60°) nên ΔABD = ΔCBM (c.g.c), suy ra AD = CM.`,.25],[`Vậy MA = MD + DA = MB + MC.`,.25]])],
-    chk:()=>MB<MA};
+      ptxt([[`BA = BC, BD = BM, ∠ABD = ∠CBM (cùng cộng với ∠DBC được 60°) nên ΔABD = ΔCBM (c.g.c), suy ra AD = CM.`,.25],[`Vậy MA = MD + DA = MB + MC. Áp dụng: MA = ${xb} + ${yc} = ${xb+yc} (cm); chu vi ABMC = AB + BM + MC + CA = ${a} + ${xb} + ${yc} + ${a} = ${2*a+xb+yc} (cm).`,.25]])],
+    chk:()=>MB<MA&&xb*xb+yc*yc+xb*yc===a*a};
 });
 /* ================================================================
    LỚP 6 – Toán 6 Kết nối tri thức, học kì I
@@ -15936,16 +15936,16 @@ const tlTotal=bp=>bp.tlQ.reduce((a,b)=>a+b,0);
 const LV_RANK={NB:0,TH:1,VD:2,VDC:3};
 const LV_NAME={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng',VDC:'Vận dụng cao'};
 /* Ba mức độ khó. Mỗi mức quy định mức nhận thức mong muốn cho từng vị trí câu trong đề.
-   Chuẩn ≈ 30/40/20/10 (NB/TH/VD/VDC), theo một khung đề cuối kì I Toán 8 đăng trên cổng giáo dục VNPT. */
+   Chuẩn ≈ 40/30/30 (Biết/Hiểu/Vận dụng) theo mẫu ma trận kèm Công văn 7991/BGDĐT-GDTrH (17/12/2024). */
 const DIFFS={
   co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH'],gk2:['NB','TH','TH','TH'],ck2:['TH','NB','TH','TH']},tl:['TH','VD','VD']},
-  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
+  chuan:{name:'Chuẩn',nb:10,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH'],gk2:['TH','VD','VD','VD'],ck2:['VD','TH','VD','VD']},tl:['TH','VD','VDC']}
 };
 /* Độ khó cho lớp 11 (cấu trúc 12 + 3 + 4 + 3 tự luận 0,5 / 0,5 / 1,0). */
 const DIFFS11={
   co_ban:{name:'Cơ bản',nb:10,ds:['NB','TH'],tln:['TH','TH','TH','VD'],tl:['TH','TH','VD']},
-  chuan:{name:'Chuẩn',nb:8,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
+  chuan:{name:'Chuẩn',nb:12,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:6,ds:['TH','VD'],tln:['VD','VD','VD','VD'],tl:['VD','VD','VDC']}
 };
 /* Độ khó cho đề ôn thi tốt nghiệp: Phần I nhận biết – thông hiểu, Phần II tăng dần đến vận dụng, Phần III chủ yếu vận dụng (như đề 2025). */
@@ -16020,7 +16020,20 @@ function buildExam(term,base,diff,st){
   const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,lvProp(byT(D.ds),bp.ds.length)[i],PF.ds&&PF.ds[i])));
   const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,lvProp(byT(D.tln),bp.tln.length)[i],PF.tln&&PF.tln[i])));
   const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),lvTL(byT(D.tl),bp.tl.length)[i])));
-  return{term,base,diff,grade:G,nlc,ds,tln,tl,bp,sk:bp.sk};
+  /* Ôn thi vào 10 có từ 4 câu tự luận: gộp hai câu 1 điểm (ưu tiên câu hình) thành một bài hình học
+     hoàn chỉnh 3 ý, 2 điểm (core09i.js), giống phần hình trong đề thật. Khung đề trả về theo đề này. */
+  let tlOut=tl,bpx=bp;
+  if(bp.v10&&tl.length>=4){
+    const pool=Object.values(T.tl).filter(t=>t.role==='geo3'&&(!t.ext||extOK())),cand=pool.filter(t=>diff==='nang_cao'||t.lv!=='VDC');
+    const g3=make('tl',cand[new RNG(`g3|${term}|${base}|${diff}${S}`).int(0,cand.length-1)]);
+    const rm=[];bp.tl.forEach((sl,i)=>{if(sl.role==='geo'&&rm.length<2)rm.push(i)});
+    for(let i=bp.tl.length-1;i>=0&&rm.length<2;i--)if(!rm.includes(i)&&bp.tl[i].role!=='rad')rm.push(i);
+    const at=Math.min(...rm);
+    tlOut=[];const slots=[],tq=[];
+    bp.tl.forEach((sl,i)=>{if(i===at){tlOut.push(g3);slots.push({role:'geo3'});tq.push(2)}if(!rm.includes(i)){tlOut.push(tl[i]);slots.push(sl);tq.push(1)}});
+    bpx={...bp,tl:slots,tlQ:tq,g3:true};
+  }
+  return{term,base,diff,grade:G,nlc,ds,tln,tl:tlOut,bp:bpx,sk:bp.sk};
 }
 /* Hoán vị mã đề: đảo thứ tự câu và đáp án phần I, đảo thứ tự ý phần II. */
 function makeVariant(exam,v){
@@ -16163,6 +16176,109 @@ function buildWS(o){
   return{...out,grade:g,lessons:les,code:o.code,diff:o.diff,repeats,want,pools:Object.fromEntries(WS_KINDS.map(k=>[k,pools[k].length]))};
 }
 /* ================================================================
+   Yêu cầu cần đạt Toán 9 theo từng bài (SGK Kết nối tri thức), chia ba mức Biết / Hiểu / Vận dụng.
+   Viết dựa trên yêu cầu cần đạt lớp 9 của Chương trình môn Toán 2018 (Thông tư 32/2018/TT-BGDĐT),
+   cắt theo phạm vi từng bài. Dùng cho cột "Yêu cầu cần đạt" của bản đặc tả (mx.js).
+   ================================================================ */
+const YCCD={9:{
+  1:['Nhận biết được khái niệm phương trình bậc nhất hai ẩn, hệ hai phương trình bậc nhất hai ẩn và nghiệm của hệ.',
+     'Kiểm tra được một cặp số có là nghiệm của phương trình, hệ phương trình bậc nhất hai ẩn hay không.',
+     'Viết được phương trình, hệ phương trình bậc nhất hai ẩn biểu thị một tình huống thực tiễn.'],
+  2:['Nhận biết được các bước giải hệ hai phương trình bậc nhất hai ẩn bằng phương pháp thế, phương pháp cộng đại số.',
+     'Giải được hệ hai phương trình bậc nhất hai ẩn; tìm được nghiệm của hệ bằng máy tính cầm tay.',
+     'Giải được hệ phương trình có tham số hoặc đưa được về hệ hai phương trình bậc nhất hai ẩn.'],
+  3:['Nhận biết được các bước giải bài toán bằng cách lập hệ phương trình.',
+     'Lập được hệ phương trình biểu thị các dữ kiện của bài toán.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với hệ hai phương trình bậc nhất hai ẩn.'],
+  4:['Nhận biết được phương trình tích dạng (a₁x + b₁)(a₂x + b₂) = 0 và điều kiện xác định của phương trình chứa ẩn ở mẫu.',
+     'Giải được phương trình tích và phương trình chứa ẩn ở mẫu quy về phương trình bậc nhất.',
+     'Vận dụng được việc giải phương trình quy về phương trình bậc nhất để giải quyết bài toán thực tiễn.'],
+  5:['Nhận biết được thứ tự trên tập hợp các số thực, bất đẳng thức.',
+     'Mô tả và vận dụng được các tính chất cơ bản của bất đẳng thức: tính chất bắc cầu, liên hệ với phép cộng, phép nhân.',
+     'Chứng minh được bất đẳng thức đơn giản bằng các tính chất của bất đẳng thức.'],
+  6:['Nhận biết được bất phương trình bậc nhất một ẩn và nghiệm của nó.',
+     'Giải được bất phương trình bậc nhất một ẩn.',
+     'Giải quyết được một số vấn đề thực tiễn dẫn đến bất phương trình bậc nhất một ẩn.'],
+  7:['Nhận biết được khái niệm căn bậc hai của số thực không âm, căn thức bậc hai của biểu thức đại số.',
+     'Tính được giá trị (đúng hoặc gần đúng) của căn bậc hai bằng máy tính cầm tay; tìm được điều kiện xác định của căn thức bậc hai.',
+     'Vận dụng được hằng đẳng thức √(A²) = |A| để tính toán, rút gọn biểu thức.'],
+  8:['Nhận biết được quy tắc khai căn bậc hai của một tích, một thương.',
+     'Thực hiện được các phép tính đơn giản về căn bậc hai: căn bậc hai của một tích, một thương.',
+     'Vận dụng được các quy tắc khai căn để tính nhanh, tính hợp lí.'],
+  9:['Nhận biết được các phép biến đổi đơn giản: đưa thừa số ra ngoài, vào trong dấu căn, trục căn thức ở mẫu.',
+     'Thực hiện được các phép biến đổi đơn giản để rút gọn biểu thức chứa căn thức bậc hai.',
+     'Rút gọn được biểu thức chứa căn và giải được bài toán liên quan (tính giá trị, tìm x, so sánh, giá trị lớn nhất, nhỏ nhất).'],
+  10:['Nhận biết được khái niệm căn bậc ba của số thực, căn thức bậc ba của biểu thức đại số.',
+     'Tính được căn bậc ba (đúng hoặc gần đúng) bằng máy tính cầm tay; thực hiện được phép tính đơn giản với căn bậc ba.',
+     'Vận dụng được căn bậc ba để giải quyết bài toán thực tiễn (thể tích hình lập phương…).'],
+  11:['Nhận biết được các tỉ số lượng giác sin, côsin, tang, côtang của góc nhọn.',
+     'Giải thích được tỉ số lượng giác của các góc đặc biệt 30°, 45°, 60° và của hai góc phụ nhau; tính được tỉ số lượng giác bằng máy tính cầm tay.',
+     'Vận dụng được tỉ số lượng giác để tính độ dài, số đo góc.'],
+  12:['Nhận biết được các hệ thức giữa cạnh và góc trong tam giác vuông.',
+     'Giải thích được các hệ thức về cạnh và góc; giải được tam giác vuông.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với tỉ số lượng giác của góc nhọn (tính chiều cao, khoảng cách, góc nâng…).'],
+  13:['Nhận biết được tâm đối xứng, trục đối xứng của đường tròn.',
+     'Xác định được vị trí tương đối của một điểm với đường tròn.',
+     'Vận dụng được tính đối xứng của đường tròn để giải bài toán.'],
+  14:['Nhận biết được cung, dây, góc ở tâm; so sánh được độ dài của đường kính và dây.',
+     'Giải thích được liên hệ giữa đường kính và dây, giữa số đo cung và góc ở tâm.',
+     'Vận dụng được liên hệ giữa đường kính và dây để tính độ dài, chứng minh.'],
+  15:['Nhận biết được công thức tính độ dài cung tròn, diện tích hình quạt tròn, hình vành khuyên.',
+     'Tính được độ dài cung tròn, diện tích hình quạt tròn, diện tích hình vành khuyên.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với độ dài cung tròn, diện tích hình quạt tròn, hình vành khuyên.'],
+  16:['Mô tả được ba vị trí tương đối của đường thẳng và đường tròn; nhận biết được tiếp tuyến.',
+     'Giải thích được dấu hiệu nhận biết tiếp tuyến và tính chất của hai tiếp tuyến cắt nhau.',
+     'Vận dụng được tính chất tiếp tuyến để tính toán, chứng minh.'],
+  17:['Mô tả được ba vị trí tương đối của hai đường tròn (cắt nhau, tiếp xúc nhau, không giao nhau).',
+     'Xác định được vị trí tương đối của hai đường tròn dựa vào bán kính và khoảng cách giữa hai tâm.',
+     'Vận dụng được vị trí tương đối của hai đường tròn để giải bài toán.'],
+  18:['Nhận biết được hàm số y = ax² (a ≠ 0), tính đối xứng (trục đối xứng) của đồ thị.',
+     'Thiết lập được bảng giá trị và vẽ được đồ thị hàm số y = ax² (a ≠ 0); tìm được hệ số a, điểm thuộc đồ thị.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với hàm số y = ax² (chuyển động rơi tự do…).'],
+  19:['Nhận biết được khái niệm phương trình bậc hai một ẩn.',
+     'Giải được phương trình bậc hai một ẩn; tính được nghiệm bằng máy tính cầm tay.',
+     'Giải được phương trình bậc hai có chứa tham số trong trường hợp đơn giản.'],
+  20:['Nhận biết được định lí Viète.',
+     'Giải thích được định lí Viète; tính nhẩm được nghiệm, tìm được hai số khi biết tổng và tích.',
+     'Vận dụng được định lí Viète để tính giá trị biểu thức đối xứng của các nghiệm, tìm tham số thoả mãn điều kiện.'],
+  21:['Nhận biết được các bước giải bài toán bằng cách lập phương trình bậc hai.',
+     'Lập được phương trình bậc hai biểu thị các dữ kiện của bài toán.',
+     'Vận dụng được phương trình bậc hai vào giải quyết bài toán thực tiễn.'],
+  22:['Nhận biết được tần số của một giá trị trong mẫu dữ liệu.',
+     'Lập được bảng tần số và biểu đồ tần số (dạng cột, đoạn thẳng).',
+     'Giải thích được ý nghĩa của tần số trong thực tiễn; phát hiện được số liệu không chính xác dựa trên mối liên hệ toán học đơn giản.'],
+  23:['Nhận biết được tần số tương đối của một giá trị.',
+     'Lập được bảng tần số tương đối, biểu đồ tần số tương đối (dạng cột, hình quạt tròn).',
+     'Chuyển đổi được dữ liệu giữa các dạng biểu diễn và rút ra kết luận từ bảng, biểu đồ.'],
+  24:['Nhận biết được bảng tần số, tần số tương đối ghép nhóm.',
+     'Lập được bảng tần số, tần số tương đối ghép nhóm và biểu đồ tần số tương đối ghép nhóm (histogram).',
+     'Phân tích được mẫu số liệu ghép nhóm để rút ra kết luận trong tình huống thực tiễn.'],
+  25:['Nhận biết được phép thử ngẫu nhiên và không gian mẫu.',
+     'Mô tả được không gian mẫu và các kết quả thuận lợi cho một biến cố.',
+     'Xác định được không gian mẫu của phép thử trong tình huống thực tiễn.'],
+  26:['Nhận biết được cách tính xác suất của biến cố bằng tỉ số giữa số kết quả thuận lợi và số kết quả có thể.',
+     'Tính được xác suất của biến cố bằng cách kiểm đếm số trường hợp có thể và số trường hợp thuận lợi trong một số mô hình đơn giản.',
+     'Vận dụng được xác suất để giải quyết bài toán thực tiễn (gieo xúc xắc, rút thẻ, lấy bóng…).'],
+  27:['Nhận biết được góc nội tiếp.',
+     'Giải thích được mối liên hệ giữa số đo của góc nội tiếp, góc ở tâm và số đo cung bị chắn.',
+     'Vận dụng được tính chất góc nội tiếp để tính góc, chứng minh hai góc bằng nhau, hai đường thẳng vuông góc.'],
+  28:['Nhận biết được đường tròn ngoại tiếp, đường tròn nội tiếp của một tam giác.',
+     'Xác định được tâm và bán kính đường tròn ngoại tiếp tam giác vuông, tam giác đều; đường tròn nội tiếp tam giác đều.',
+     'Vận dụng được đường tròn ngoại tiếp, nội tiếp tam giác để tính toán, chứng minh.'],
+  29:['Nhận biết được tứ giác nội tiếp đường tròn.',
+     'Giải thích được định lí về tổng hai góc đối của tứ giác nội tiếp bằng 180°; xác định được tâm, bán kính đường tròn ngoại tiếp hình chữ nhật, hình vuông.',
+     'Chứng minh được tứ giác nội tiếp và vận dụng tính chất tứ giác nội tiếp để chứng minh hệ thức, tính toán.'],
+  30:['Nhận dạng được đa giác đều; nhận biết được phép quay.',
+     'Mô tả được các phép quay giữ nguyên hình đa giác đều; tính được số đo góc của đa giác đều.',
+     'Nhận biết được vẻ đẹp của hình đều trong tự nhiên, nghệ thuật, kiến trúc và vận dụng để giải bài toán.'],
+  31:['Mô tả được hình trụ, hình nón và các yếu tố: đường sinh, chiều cao, bán kính đáy.',
+     'Tính được diện tích xung quanh, thể tích của hình trụ, hình nón.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với hình trụ, hình nón.'],
+  32:['Mô tả được hình cầu, mặt cầu; nhận biết được phần chung của mặt phẳng và hình cầu.',
+     'Tính được diện tích mặt cầu, thể tích hình cầu.',
+     'Giải quyết được một số vấn đề thực tiễn gắn với hình cầu.']
+}};
+/* ================================================================
    Ma trận và bản đặc tả đề kiểm tra định kì
    Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024:
    – cột: TNKQ (Nhiều lựa chọn, "Đúng – Sai", Trả lời ngắn) và Tự luận, mỗi dạng chia 3 mức Biết / Hiểu / Vận dụng;
@@ -16269,7 +16385,9 @@ function mxHTML(base,v0,bp){
   h+=`<h3 class="mxpb">II. Bản đặc tả đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,8,11,26,${Array(12).fill(3.6).join(',')}">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức','Yêu cầu cần đạt'],true)}<tbody>`;
   d.used.forEach((ch,ci)=>ch.list.forEach((r,ri)=>{
     const lv=[0,1,2].filter(l=>K.some(k=>r.cell[k][l].n));
-    const yc=lv.map(l=>`<b>– ${['Biết','Hiểu','Vận dụng'][l]}:</b> ${esc(mxYC(r.title.replace(/^Bài \d+\.\s*/,'').replace(/\s*\((Toán \d+|lớp[^)]*)\)\s*$/,''),l))}`).join('<br>');
+    /* lớp có bảng yêu cầu cần đạt theo từng bài (yccd9.js) thì dùng bảng đó, các lớp khác viết khái quát theo tên bài */
+    const YT=!bp.tn&&typeof YCCD!=='undefined'&&YCCD[bp.grade]&&YCCD[bp.grade][r.les];
+    const yc=lv.map(l=>`<b>– ${['Biết','Hiểu','Vận dụng'][l]}:</b> ${esc(YT?YT[l]:mxYC(r.title.replace(/^Bài \d+\.\s*/,'').replace(/\s*\((Toán \d+|lớp[^)]*)\)\s*$/,''),l))}`).join('<br>');
     h+='<tr>';
     if(ri===0)h+=`<td rowspan="${ch.list.length}">${ci+1}</td><td class="l" rowspan="${ch.list.length}">${esc(ch.name)}</td>`;
     h+=`<td class="l">${esc(r.title)}</td><td class="l yc">${yc}</td>${K.map(k=>r.cell[k].map(c=>mxCell(c,true)).join('')).join('')}</tr>`;
@@ -16284,7 +16402,7 @@ function mxHTML(base,v0,bp){
 <li>Tỉ lệ điểm của đề này theo mức độ: ${lvTxt}; theo dạng câu: ${kTxt}. Mẫu của Bộ gợi ý khoảng 40% – 30% – 30% theo mức độ và 30% – 20% – 20% – 30% theo dạng câu; nhà trường được điều chỉnh cho phù hợp.</li>
 <li>Mức “Vận dụng” gồm cả các câu vận dụng cao. Mức độ do người soạn gán cho từng dạng câu, có thể khác cách phân loại của tổ chuyên môn.</li>
 <li>Dòng cuối mỗi ô của bản đặc tả ghi năng lực chủ yếu (gợi ý): TD – tư duy và lập luận toán học; MH – mô hình hoá toán học; GQVĐ – giải quyết vấn đề toán học.</li>
-<li>Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.</li>
+<li>${typeof YCCD!=='undefined'&&YCCD[bp.grade]&&!bp.tn?'Cột “Yêu cầu cần đạt” viết theo từng bài, dựa trên yêu cầu cần đạt lớp '+bp.grade+' của Chương trình môn Toán 2018; thầy cô có thể chỉnh cho khớp kế hoạch dạy học của trường (tải bản Word để sửa).':'Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.'}</li>
 </ul></section>`;
   return h+'</article>';
 }
@@ -16562,10 +16680,10 @@ function histNote(ex){
   return `So với ${all.length} đề ${ex.bp.short} đã tạo: ${o.exact===0?'không có câu nào trùng nguyên văn':o.exact+'/'+o.n+' câu trùng nguyên văn'}; ${o.kind}/${o.n} câu cùng dạng bài (khác số liệu hoặc tên điểm)${o.kind>=o.n-2?`. Lặp dạng bài là bình thường khi đã tạo nhiều đề, vì ngân hàng hiện có ${Object.values(T).reduce((a,k)=>a+Object.keys(k).length,0)} dạng`:''}.`;
 }
 
-const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
+const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Theo mẫu Công văn 7991: khoảng 40% nhận biết, 30% thông hiểu, 30% vận dụng (trong đó 10% vận dụng cao).',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
 const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng, câu cuối là câu xác suất vận dụng cao.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, hai câu cuối Phần III là câu xác suất vận dụng cao.'};
-const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Khoảng 30% nhận biết, 35–40% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
-const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Khoảng 30% nhận biết, 40% thông hiểu, 20% vận dụng, 10% vận dụng cao.',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
+const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Gần mẫu Công văn 7991: khoảng 40% nhận biết (lớp 10 khoảng 30%), 30% thông hiểu, 30% vận dụng (tối đa 10% vận dụng cao).',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
+const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Theo mẫu Công văn 7991: khoảng 40% nhận biết, 30% thông hiểu, 30% vận dụng (trong đó 10% vận dụng cao).',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
 
 /* ================= Phiếu bài tập theo bài học ================= */
 function wsSel(){/* các bài đang chọn của lớp hiện tại (hợp lệ) */
@@ -16682,6 +16800,7 @@ function render(){
   ALLOW_EXT=!!state.ext;CUR_DIFF=state.diff;
   try{bp=bpOf(state.term,st);ex=buildExam(state.term,base,state.diff,st)}
   catch(e){st=STRUCTS.chuan;lastGoodStruct=st;bp=bpOf(state.term,st);ex=buildExam(state.term,base,state.diff,st)}
+  if(ex.bp)bp=ex.bp;   /* đề ôn thi vào 10 có thể thay hai câu tự luận bằng một bài hình 2 điểm */
   const vs=[...Array(state.nv).keys()].map(v=>makeVariant(ex,v));
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
@@ -16693,7 +16812,7 @@ function render(){
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
-  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
+  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm${bp.g3?'; riêng bài hình học (3 ý) 2 điểm, thay cho hai câu tự luận':''}.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */

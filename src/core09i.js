@@ -96,16 +96,16 @@ G3('tl9-g3-semi',9,'VD',[29,17,12],r=>{
 
 /* 6. Đường tròn đường kính là đường cao của tam giác vuông */
 G3('tl9-g3-rect',9,'VDC',[27,29,12],r=>{
-  const [p,q,h]=r.pick([[3,4,5],[6,8,10],[9,12,15],[7,24,25],[12,16,20]]),AB=p,AC=q,BC=h,AH=Q(p*q,h);
+  const [p,q,h]=r.pick([[3,4,5],[6,8,10],[9,12,15],[7,24,25],[12,16,20]]),AB=p,AC=q,BC=h,AH=Q(p*q,h),KR=Q(p*q,h*h);
   const A=[0,0],B=[AB,0],C=[0,AC],Hh=g3foot(A,B,C),D=[Hh[0],0],E=[0,Hh[1]],K=[Hh[0]/2,Hh[1]/2],rr=Math.hypot(Hh[0],Hh[1])/2;
   const fig=fig9({A,B,C,H:Hh,D,E},{circ:[[K,rr]],segs:[['A','B'],['B','C'],['C','A'],['A','H'],['H','D'],['H','E'],['D','E']],right:[['B','A','C'],['A','H','B']],w:220,h:180});
   return{kind:'tl',title:'Đường tròn đường kính là đường cao',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')} (${I('AB')} < ${I('AC')}), đường cao ${I('AH')}. Đường tròn đường kính ${I('AH')} cắt ${I('AB')}, ${I('AC')} lần lượt tại ${I('D')} và ${I('E')} (khác ${I('A')}).<br>Chứng minh tứ giác ${I('ADHE')} là hình chữ nhật. Tính ${I('DE')} biết ${I('AB')} = ${AB} cm, ${I('AC')} = ${AC} cm.`},
     {pts:.75,html:`Chứng minh ${I('AD')}·${I('AB')} = ${I('AE')}·${I('AC')}.`},
-    {pts:.5,html:`Chứng minh tứ giác ${I('BDEC')} nội tiếp đường tròn.`}],
+    {pts:.5,html:`Chứng minh tứ giác ${I('BDEC')} nội tiếp đường tròn và tính tỉ số diện tích của tam giác ${I('ADE')} và tam giác ${I('ABC')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠ADH = ∠AEH = 90° (góc nội tiếp chắn nửa đường tròn đường kính AH) và ∠DAE = 90°, nên ADHE là hình chữ nhật.`,.25],[`BC = √(AB² + AC²) = ${BC} cm; AH = ${fr('AB·AC','BC')} = ${g3n(AH[0]/AH[1])} cm.`,.25],[`ADHE là hình chữ nhật nên DE = AH = ${g3n(AH[0]/AH[1])} cm.`,.25]]),
       ptxt([[`Tam giác AHB vuông tại H có đường cao HD nên AH² = AD·AB.`,.25],[`Tam giác AHC vuông tại H có đường cao HE nên AH² = AE·AC.`,.25],[`Suy ra AD·AB = AE·AC.`,.25]]),
-      ptxt([[`Từ AD·AB = AE·AC có ${fr('AD','AC')} = ${fr('AE','AB')}, kết hợp ∠DAE chung nên ΔADE ∽ ΔACB (c.g.c), suy ra ∠ADE = ∠ACB.`,.25],[`Do đó ∠BDE + ∠ECB = ∠BDE + ∠ADE = 180°, nên tứ giác BDEC nội tiếp.`,.25]])],
+      ptxt([[`Từ AD·AB = AE·AC có ${fr('AD','AC')} = ${fr('AE','AB')}, kết hợp ∠DAE chung nên ΔADE ∽ ΔACB (c.g.c), suy ra ∠ADE = ∠ACB; do đó ∠BDE + ∠ECB = ∠BDE + ∠ADE = 180°, tứ giác BDEC nội tiếp.`,.25],[`Tỉ số đồng dạng ${fr('DE','CB')} = ${fr('AH','BC')} = ${qh(KR)}, nên ${fr('S(ADE)','S(ABC)')} = (${qh(KR)})² = ${qh(Q(KR[0]*KR[0],KR[1]*KR[1]))}.`,.25]])],
     chk:()=>AB<AC&&AB*AB+AC*AC===BC*BC};
 });
 
@@ -131,7 +131,7 @@ G3('tl9-g3-chord',9,'VD',[14,27,12],r=>{
 
 /* 8. Tia phân giác cắt đường tròn tại điểm chính giữa cung */
 G3('tl9-g3-bis',9,'VDC',[27,28,29],r=>{
-  const al=r.pick([50,60,70,80]),dA=r.pick([-28,-14,14,28]);
+  const al=r.pick([50,60,70,80]),dA=r.pick([-28,-14,14,28]),R=r.pick([3,4,5,6,8,10]),DB=2*R*Math.sin(al*Math.PI/360);
   const P={A:onC(1,90+dA),B:onC(1,270-al),C:onC(1,270+al),D:onC(1,270),O:[0,0]};
   const la=Math.hypot(P.B[0]-P.C[0],P.B[1]-P.C[1]),lb=Math.hypot(P.A[0]-P.C[0],P.A[1]-P.C[1]),lc=Math.hypot(P.A[0]-P.B[0],P.A[1]-P.B[1]),s=la+lb+lc;
   P.I=[(la*P.A[0]+lb*P.B[0]+lc*P.C[0])/s,(la*P.A[1]+lb*P.B[1]+lc*P.C[1])/s];
@@ -139,11 +139,11 @@ G3('tl9-g3-bis',9,'VDC',[27,28,29],r=>{
   return{kind:'tl',title:'Tia phân giác và điểm chính giữa cung',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} nội tiếp đường tròn (${I('O')}) (${I('AB')} ≠ ${I('AC')}). Tia phân giác của góc ${I('BAC')} cắt đường tròn tại ${I('D')} (${I('D')} khác ${I('A')}).<br>Chứng minh ${I('D')} là điểm chính giữa của cung ${I('BC')} không chứa ${I('A')} và ${I('OD')} ⊥ ${I('BC')}.`},
     {pts:.75,html:`Biết ∠${I('BAC')} = ${al}°. Tính số đo các góc ${I('BOC')}, ${I('BDC')} và ${I('BOD')}.`},
-    {pts:.5,html:`Gọi ${I('I')} là giao điểm của các đường phân giác trong của tam giác ${I('ABC')}. Chứng minh ${I('DB')} = ${I('DI')}.`}],
+    {pts:.5,html:`Gọi ${I('I')} là giao điểm của các đường phân giác trong của tam giác ${I('ABC')}. Chứng minh ${I('DB')} = ${I('DI')}. Cho bán kính đường tròn bằng ${R} cm, tính độ dài ${I('DI')} (làm tròn đến hàng phần mười).`}],
     sol:[g3fig(fig)+ptxt([[`∠BAD = ∠CAD (AD là phân giác) nên hai cung BD và CD (không chứa A) bằng nhau.`,.25],[`Vậy D là điểm chính giữa của cung BC không chứa A, suy ra DB = DC.`,.25],[`Lại có OB = OC nên OD là đường trung trực của BC, do đó OD ⊥ BC.`,.25]]),
       ptxt([[`∠BOC = 2∠BAC = ${2*al}° (góc ở tâm và góc nội tiếp cùng chắn cung BC).`,.25],[`Tứ giác ABDC nội tiếp nên ∠BDC = 180° − ∠BAC = ${180-al}°.`,.25],[`D là điểm chính giữa cung BC nên ∠BOD = ${fr(1,2)}∠BOC = ${al}°.`,.25]]),
-      ptxt([[`∠DBI = ∠DBC + ∠CBI, mà ∠DBC = ∠DAC (cùng chắn cung DC) = ∠BAI và ∠CBI = ∠ABI.`,.25],[`Nên ∠DBI = ∠BAI + ∠ABI = ∠BID (góc ngoài của tam giác ABI); tam giác DBI cân tại D, do đó DB = DI.`,.25]])],
-    chk:()=>true};
+      ptxt([[`∠DBI = ∠DBC + ∠CBI = ∠DAC + ∠ABI (∠DBC = ∠DAC cùng chắn cung DC) = ∠BAI + ∠ABI = ∠BID (góc ngoài của tam giác ABI); tam giác DBI cân tại D nên DB = DI.`,.25],[`Tam giác OBD cân tại O có ∠BOD = ${al}°; kẻ OK ⊥ BD thì ∠BOK = ${al/2}°, BK = R·sin ${al/2}°, nên DI = DB = 2·${R}·sin ${al/2}° ≈ ${String(Math.round(DB*10)/10).replace('.',',')} (cm).`,.25]])],
+    chk:()=>DB>0};
 });
 
 /* 9. Đường tròn đường kính một cạnh góc vuông */
@@ -178,17 +178,17 @@ G3('tl9-g3-square',9,'VD',[29,27],r=>{
 
 /* 11. Trực tâm và đường kính qua một đỉnh */
 G3('tl9-g3-orth',9,'VD',[29,27],r=>{
-  const g=r.pick([50,55,60,65,70,75]),sh=r.pick([0,8,-8]);
+  const g=r.pick([50,55,60,65,70,75]),sh=r.pick([0,8,-8]),[Rv,hb,OMv]=r.pick([[5,4,3],[5,3,4],[10,8,6],[10,6,8],[13,12,5],[13,5,12],[17,15,8],[17,8,15]]);
   const A=onC(1,100+sh),B=onC(1,215),C=onC(1,325),D=g3foot(A,B,C),E=g3foot(B,A,C),H=g3x(A,D,B,E),K=[-A[0],-A[1]];
   const fig=fig9({A,B,C,D,E,H,K,O:[0,0]},{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','A'],['A','D'],['B','E'],['B','K'],['C','K'],['C','H']],dashed:[['A','K']],right:[['A','D','C'],['B','E','C']],lc:'O',w:210,h:210});
   return{kind:'tl',title:'Trực tâm và tứ giác nội tiếp',parts:[
     {pts:.75,html:`Cho tam giác nhọn ${I('ABC')} nội tiếp đường tròn (${I('O')}). Các đường cao ${I('AD')}, ${I('BE')} cắt nhau tại ${I('H')}.<br>Chứng minh tứ giác ${I('CDHE')} nội tiếp. Biết ∠${I('ACB')} = ${g}°, tính số đo ∠${I('DHE')}.`},
     {pts:.75,html:`Chứng minh tứ giác ${I('ABDE')} nội tiếp và ${I('CD')}·${I('CB')} = ${I('CE')}·${I('CA')}.`},
-    {pts:.5,html:`Kẻ đường kính ${I('AK')} của đường tròn (${I('O')}). Chứng minh tứ giác ${I('BHCK')} là hình bình hành.`}],
+    {pts:.5,html:`Kẻ đường kính ${I('AK')} của đường tròn (${I('O')}). Chứng minh tứ giác ${I('BHCK')} là hình bình hành. Cho bán kính ${I('R')} = ${Rv} cm và ${I('BC')} = ${2*hb} cm, tính độ dài ${I('AH')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠HDC = ∠HEC = 90° (AD, BE là các đường cao).`,.25],[`∠HDC + ∠HEC = 180° nên tứ giác CDHE nội tiếp.`,.25],[`Suy ra ∠DHE = 180° − ∠DCE = 180° − ${g}° = ${180-g}°.`,.25]]),
       ptxt([[`∠ADB = ∠AEB = 90° nên D, E cùng thuộc đường tròn đường kính AB; tứ giác ABDE nội tiếp.`,.25],[`Tam giác CDA và tam giác CEB có ∠C chung, ∠CDA = ∠CEB = 90° nên ΔCDA ∽ ΔCEB (g.g).`,.25],[`Suy ra ${fr('CD','CE')} = ${fr('CA','CB')}, tức CD·CB = CE·CA.`,.25]]),
-      ptxt([[`∠ABK = 90° (góc nội tiếp chắn nửa đường tròn) nên BK ⊥ AB; H là trực tâm nên CH ⊥ AB. Do đó BK ∥ CH. Tương tự ∠ACK = 90° nên CK ⊥ AC, mà BH ⊥ AC, do đó CK ∥ BH.`,.25],[`Tứ giác BHCK có các cặp cạnh đối song song nên là hình bình hành.`,.25]])],
-    chk:()=>true};
+      ptxt([[`∠ABK = 90° (góc nội tiếp chắn nửa đường tròn) nên BK ⊥ AB, mà CH ⊥ AB (H là trực tâm) nên BK ∥ CH; tương tự CK ⊥ AC, BH ⊥ AC nên CK ∥ BH. Vậy BHCK là hình bình hành.`,.25],[`Gọi M là trung điểm BC thì M là trung điểm HK và OM ⊥ BC; OM là đường trung bình của tam giác AHK nên AH = 2OM. OM = √(R² − BM²) = √(${Rv*Rv} − ${hb*hb}) = ${OMv} (cm), nên AH = ${2*OMv} cm.`,.25]])],
+    chk:()=>Rv*Rv===hb*hb+OMv*OMv};
 });
 
 /* 12. Hai tiếp tuyến khi OA = 2R: tam giác đều, diện tích phần giới hạn */
@@ -239,31 +239,31 @@ G3('tl9-g3-isos',9,'VD',[28,27,12],r=>{
 
 /* 15. Đường tròn đường kính MC trong tam giác vuông */
 G3('tl9-g3-mc',9,'VDC',[29,27],r=>{
-  const [AB,AM,BM]=r.pick([[4,3,5],[3,4,5],[8,6,10],[6,8,10],[12,5,13],[12,9,15]]),MC=r.int(3,8),AC=AM+MC;
+  const [AB,AM,BM]=r.pick([[4,3,5],[3,4,5],[8,6,10],[6,8,10],[12,9,15]]),MC=r.int(3,8),AC=AM+MC,ME=AM*MC/BM,BE=BM+ME;
   const A=[0,0],B=[0,AB],M=[AM,0],C=[AC,0],K=[(AM+AC)/2,0],D=g3foot(M,B,C),E=g3foot(C,B,M);
   const fig=fig9({A,B,C,M,D,E},{circ:[[K,MC/2]],segs:[['A','B'],['B','C'],['C','A'],['B','E'],['M','D'],['C','E']],dashed:[['A','E']],right:[['B','A','C'],['M','D','C'],['M','E','C']],w:230,h:180});
   return{kind:'tl',title:'Đường tròn đường kính MC',parts:[
     {pts:.75,html:`Cho tam giác ${I('ABC')} vuông tại ${I('A')}. Trên cạnh ${I('AC')} lấy điểm ${I('M')} (${I('M')} khác ${I('A')}, ${I('C')}). Đường tròn đường kính ${I('MC')} cắt ${I('BC')} tại ${I('D')} (${I('D')} khác ${I('C')}) và cắt tia ${I('BM')} tại ${I('E')} (${I('E')} khác ${I('M')}).<br>Chứng minh tứ giác ${I('ABDM')} nội tiếp. Tính ${I('BM')} biết ${I('AB')} = ${AB} cm, ${I('AM')} = ${AM} cm.`},
     {pts:.75,html:`Chứng minh tứ giác ${I('ABCE')} nội tiếp.`},
-    {pts:.5,html:`Chứng minh ${I('BM')}·${I('BE')} = ${I('BD')}·${I('BC')}.`}],
+    {pts:.5,html:`Chứng minh ${I('BM')}·${I('BE')} = ${I('BD')}·${I('BC')}. Biết ${I('MC')} = ${MC} cm, tính độ dài ${I('BE')}.`}],
     sol:[g3fig(fig)+ptxt([[`∠BAM = 90°; ∠MDC = 90° (góc nội tiếp chắn nửa đường tròn đường kính MC) nên ∠BDM = 90°.`,.25],[`∠BAM + ∠BDM = 180° nên tứ giác ABDM nội tiếp.`,.25],[`BM = √(AB² + AM²) = √(${AB*AB} + ${AM*AM}) = ${BM} (cm).`,.25]]),
       ptxt([[`∠MEC = 90° (góc nội tiếp chắn nửa đường tròn) nên ∠BEC = 90°.`,.25],[`∠BAC = 90°.`,.25],[`A và E cùng nhìn đoạn BC dưới góc vuông nên tứ giác ABCE nội tiếp (đường tròn đường kính BC).`,.25]]),
-      ptxt([[`Tam giác BDM và tam giác BEC có ∠B chung, ∠BDM = ∠BEC = 90° nên ΔBDM ∽ ΔBEC (g.g).`,.25],[`Suy ra ${fr('BD','BE')} = ${fr('BM','BC')}, do đó BM·BE = BD·BC.`,.25]])],
-    chk:()=>AB*AB+AM*AM===BM*BM};
+      ptxt([[`Tam giác BDM và tam giác BEC có ∠B chung, ∠BDM = ∠BEC = 90° nên ΔBDM ∽ ΔBEC (g.g), suy ra ${fr('BD','BE')} = ${fr('BM','BC')}, do đó BM·BE = BD·BC.`,.25],[`ΔAMB ∽ ΔEMC (∠BAM = ∠CEM = 90°, ∠AMB = ∠EMC đối đỉnh) nên ${fr('ME','AM')} = ${fr('MC','BM')}, ME = ${fr(`${AM}·${MC}`,BM)} = ${g3n(ME)} cm; BE = BM + ME = ${g3n(BE)} (cm).`,.25]])],
+    chk:()=>AB*AB+AM*AM===BM*BM&&Math.abs(ME*100-Math.round(ME*100))<1e-9};
 });
 
 /* 16. Tam giác đều nội tiếp: MA = MB + MC */
 G3('tl9-g3-ptol',9,'VDC',[28,27,29],r=>{
-  const a=r.pick([3,6,9,12,15]),dm=r.pick([-30,-18,18,30]);
+  const [xb,yc,a]=r.pick([[3,5,7],[5,3,7],[7,8,13],[8,7,13],[5,16,19],[16,5,19],[6,10,14],[10,6,14]]),dm=r.pick([-30,-18,18,30]);
   const A=onC(1,90),B=onC(1,210),C=onC(1,330),M=onC(1,270+dm),MB=Math.hypot(M[0]-B[0],M[1]-B[1]),MA=Math.hypot(M[0]-A[0],M[1]-A[1]),D=[M[0]+(A[0]-M[0])*MB/MA,M[1]+(A[1]-M[1])*MB/MA];
   const fig=fig9({A,B,C,M,D,O:[0,0]},{circ:[['O',1]],segs:[['A','B'],['B','C'],['C','A'],['A','M'],['B','M'],['C','M'],['B','D']],lc:'O',w:210,h:210});
   const Rt=a%3?fr(`${a}√3`,3):`${a/3}√3`;
   return{kind:'tl',title:'Tam giác đều nội tiếp đường tròn',parts:[
     {pts:.75,html:`Cho tam giác đều ${I('ABC')} cạnh ${a} cm nội tiếp đường tròn (${I('O')}; ${I('R')}). Lấy điểm ${I('M')} thuộc cung nhỏ ${I('BC')} (${I('M')} khác ${I('B')}, ${I('C')}).<br>Tính bán kính ${I('R')} và số đo góc ${I('BMC')}.`},
     {pts:.75,html:`Trên đoạn ${I('MA')} lấy điểm ${I('D')} sao cho ${I('MD')} = ${I('MB')}. Chứng minh tam giác ${I('BMD')} đều.`},
-    {pts:.5,html:`Chứng minh ${I('MA')} = ${I('MB')} + ${I('MC')}.`}],
+    {pts:.5,html:`Chứng minh ${I('MA')} = ${I('MB')} + ${I('MC')}. Áp dụng: biết ${I('MB')} = ${xb} cm, ${I('MC')} = ${yc} cm, tính ${I('MA')} và chu vi tứ giác ${I('ABMC')}.`}],
     sol:[g3fig(fig)+ptxt([[`Tam giác đều cạnh a có đường cao bằng ${fr('a√3',2)} = ${a%2?fr(`${a}√3`,2):`${a/2}√3`} cm.`,.25],[`O là trọng tâm của tam giác đều nên R = ${fr(2,3)} đường cao = ${Rt} (cm).`,.25],[`Tứ giác ABMC nội tiếp nên ∠BMC = 180° − ∠BAC = 120°.`,.25]]),
       ptxt([[`∠BMA = ∠BCA = 60° (hai góc nội tiếp cùng chắn cung AB).`,.25],[`Tam giác BMD có MB = MD nên cân tại M.`,.25],[`Tam giác cân có một góc 60° nên tam giác BMD đều.`,.25]]),
-      ptxt([[`BA = BC, BD = BM, ∠ABD = ∠CBM (cùng cộng với ∠DBC được 60°) nên ΔABD = ΔCBM (c.g.c), suy ra AD = CM.`,.25],[`Vậy MA = MD + DA = MB + MC.`,.25]])],
-    chk:()=>MB<MA};
+      ptxt([[`BA = BC, BD = BM, ∠ABD = ∠CBM (cùng cộng với ∠DBC được 60°) nên ΔABD = ΔCBM (c.g.c), suy ra AD = CM.`,.25],[`Vậy MA = MD + DA = MB + MC. Áp dụng: MA = ${xb} + ${yc} = ${xb+yc} (cm); chu vi ABMC = AB + BM + MC + CA = ${a} + ${xb} + ${yc} + ${a} = ${2*a+xb+yc} (cm).`,.25]])],
+    chk:()=>MB<MA&&xb*xb+yc*yc+xb*yc===a*a};
 });

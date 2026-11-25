@@ -226,16 +226,16 @@ const tlTotal=bp=>bp.tlQ.reduce((a,b)=>a+b,0);
 const LV_RANK={NB:0,TH:1,VD:2,VDC:3};
 const LV_NAME={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng',VDC:'Vận dụng cao'};
 /* Ba mức độ khó. Mỗi mức quy định mức nhận thức mong muốn cho từng vị trí câu trong đề.
-   Chuẩn ≈ 30/40/20/10 (NB/TH/VD/VDC), theo một khung đề cuối kì I Toán 8 đăng trên cổng giáo dục VNPT. */
+   Chuẩn ≈ 40/30/30 (Biết/Hiểu/Vận dụng) theo mẫu ma trận kèm Công văn 7991/BGDĐT-GDTrH (17/12/2024). */
 const DIFFS={
   co_ban:{name:'Cơ bản',nb:12,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['TH','TH','TH','TH'],ck1:['TH','TH','TH','TH'],gk2:['NB','TH','TH','TH'],ck2:['TH','NB','TH','TH']},tl:['TH','VD','VD']},
-  chuan:{name:'Chuẩn',nb:6,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
+  chuan:{name:'Chuẩn',nb:10,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','NB','TH'],ck1:['VD','VD','TH','NB'],gk2:['NB','VD','TH','VD'],ck2:['VD','NB','VD','TH']},tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:4,ds:{gk1:['TH','NB'],ck1:['TH','NB'],gk2:['NB','TH'],ck2:['TH','NB']},tln:{gk1:['VD','VD','VD','TH'],ck1:['VD','VD','TH','TH'],gk2:['TH','VD','VD','VD'],ck2:['VD','TH','VD','VD']},tl:['TH','VD','VDC']}
 };
 /* Độ khó cho lớp 11 (cấu trúc 12 + 3 + 4 + 3 tự luận 0,5 / 0,5 / 1,0). */
 const DIFFS11={
   co_ban:{name:'Cơ bản',nb:10,ds:['NB','TH'],tln:['TH','TH','TH','VD'],tl:['TH','TH','VD']},
-  chuan:{name:'Chuẩn',nb:8,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
+  chuan:{name:'Chuẩn',nb:12,ds:['NB','TH'],tln:['TH','VD','TH','VD'],tl:['TH','VD','VDC']},
   nang_cao:{name:'Nâng cao',nb:6,ds:['TH','VD'],tln:['VD','VD','VD','VD'],tl:['VD','VD','VDC']}
 };
 /* Độ khó cho đề ôn thi tốt nghiệp: Phần I nhận biết – thông hiểu, Phần II tăng dần đến vận dụng, Phần III chủ yếu vận dụng (như đề 2025). */
@@ -310,7 +310,20 @@ function buildExam(term,base,diff,st){
   const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,lvProp(byT(D.ds),bp.ds.length)[i],PF.ds&&PF.ds[i])));
   const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,lvProp(byT(D.tln),bp.tln.length)[i],PF.tln&&PF.tln[i])));
   const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),lvTL(byT(D.tl),bp.tl.length)[i])));
-  return{term,base,diff,grade:G,nlc,ds,tln,tl,bp,sk:bp.sk};
+  /* Ôn thi vào 10 có từ 4 câu tự luận: gộp hai câu 1 điểm (ưu tiên câu hình) thành một bài hình học
+     hoàn chỉnh 3 ý, 2 điểm (core09i.js), giống phần hình trong đề thật. Khung đề trả về theo đề này. */
+  let tlOut=tl,bpx=bp;
+  if(bp.v10&&tl.length>=4){
+    const pool=Object.values(T.tl).filter(t=>t.role==='geo3'&&(!t.ext||extOK())),cand=pool.filter(t=>diff==='nang_cao'||t.lv!=='VDC');
+    const g3=make('tl',cand[new RNG(`g3|${term}|${base}|${diff}${S}`).int(0,cand.length-1)]);
+    const rm=[];bp.tl.forEach((sl,i)=>{if(sl.role==='geo'&&rm.length<2)rm.push(i)});
+    for(let i=bp.tl.length-1;i>=0&&rm.length<2;i--)if(!rm.includes(i)&&bp.tl[i].role!=='rad')rm.push(i);
+    const at=Math.min(...rm);
+    tlOut=[];const slots=[],tq=[];
+    bp.tl.forEach((sl,i)=>{if(i===at){tlOut.push(g3);slots.push({role:'geo3'});tq.push(2)}if(!rm.includes(i)){tlOut.push(tl[i]);slots.push(sl);tq.push(1)}});
+    bpx={...bp,tl:slots,tlQ:tq,g3:true};
+  }
+  return{term,base,diff,grade:G,nlc,ds,tln,tl:tlOut,bp:bpx,sk:bp.sk};
 }
 /* Hoán vị mã đề: đảo thứ tự câu và đáp án phần I, đảo thứ tự ý phần II. */
 function makeVariant(exam,v){

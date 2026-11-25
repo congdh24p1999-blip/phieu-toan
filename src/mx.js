@@ -105,7 +105,9 @@ function mxHTML(base,v0,bp){
   h+=`<h3 class="mxpb">II. Bản đặc tả đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,8,11,26,${Array(12).fill(3.6).join(',')}">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức','Yêu cầu cần đạt'],true)}<tbody>`;
   d.used.forEach((ch,ci)=>ch.list.forEach((r,ri)=>{
     const lv=[0,1,2].filter(l=>K.some(k=>r.cell[k][l].n));
-    const yc=lv.map(l=>`<b>– ${['Biết','Hiểu','Vận dụng'][l]}:</b> ${esc(mxYC(r.title.replace(/^Bài \d+\.\s*/,'').replace(/\s*\((Toán \d+|lớp[^)]*)\)\s*$/,''),l))}`).join('<br>');
+    /* lớp có bảng yêu cầu cần đạt theo từng bài (yccd9.js) thì dùng bảng đó, các lớp khác viết khái quát theo tên bài */
+    const YT=!bp.tn&&typeof YCCD!=='undefined'&&YCCD[bp.grade]&&YCCD[bp.grade][r.les];
+    const yc=lv.map(l=>`<b>– ${['Biết','Hiểu','Vận dụng'][l]}:</b> ${esc(YT?YT[l]:mxYC(r.title.replace(/^Bài \d+\.\s*/,'').replace(/\s*\((Toán \d+|lớp[^)]*)\)\s*$/,''),l))}`).join('<br>');
     h+='<tr>';
     if(ri===0)h+=`<td rowspan="${ch.list.length}">${ci+1}</td><td class="l" rowspan="${ch.list.length}">${esc(ch.name)}</td>`;
     h+=`<td class="l">${esc(r.title)}</td><td class="l yc">${yc}</td>${K.map(k=>r.cell[k].map(c=>mxCell(c,true)).join('')).join('')}</tr>`;
@@ -120,7 +122,7 @@ function mxHTML(base,v0,bp){
 <li>Tỉ lệ điểm của đề này theo mức độ: ${lvTxt}; theo dạng câu: ${kTxt}. Mẫu của Bộ gợi ý khoảng 40% – 30% – 30% theo mức độ và 30% – 20% – 20% – 30% theo dạng câu; nhà trường được điều chỉnh cho phù hợp.</li>
 <li>Mức “Vận dụng” gồm cả các câu vận dụng cao. Mức độ do người soạn gán cho từng dạng câu, có thể khác cách phân loại của tổ chuyên môn.</li>
 <li>Dòng cuối mỗi ô của bản đặc tả ghi năng lực chủ yếu (gợi ý): TD – tư duy và lập luận toán học; MH – mô hình hoá toán học; GQVĐ – giải quyết vấn đề toán học.</li>
-<li>Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.</li>
+<li>${typeof YCCD!=='undefined'&&YCCD[bp.grade]&&!bp.tn?'Cột “Yêu cầu cần đạt” viết theo từng bài, dựa trên yêu cầu cần đạt lớp '+bp.grade+' của Chương trình môn Toán 2018; thầy cô có thể chỉnh cho khớp kế hoạch dạy học của trường (tải bản Word để sửa).':'Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.'}</li>
 </ul></section>`;
   return h+'</article>';
 }

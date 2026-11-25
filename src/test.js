@@ -39,7 +39,7 @@ for(const term of (process.argv[4]||'gk1,ck1,11gk1,11ck1').split(',')){
       const orig=new Set(ex.nlc.map(q=>q.stem+'|'+q.opts[q.ans]));
       vr.nlc.forEach(q=>{ if(!orig.has(q.stem+'|'+q.opts[q.ans]))bad('variant đáp án lệch '+q.id)});
     }
-    if(ex.nlc.length!==ST.n1||ex.ds.length!==ST.n2||ex.tln.length!==ST.n3||ex.tl.length!==ST.n4)bad(term+' '+base+' sai số câu');
+    if(ex.nlc.length!==ST.n1||ex.ds.length!==ST.n2||ex.tln.length!==ST.n3||ex.tl.length!==(ex.bp&&ex.bp.g3?ST.n4-1:ST.n4))bad(term+' '+base+' sai số câu');
     const m=matrixOf(ex);
     const tot=Object.values(m.rows).reduce((a,r)=>a+r.pts,0);
     if(Math.abs(tot-10)>1e-9)bad(term+' '+base+' tổng điểm '+tot);
