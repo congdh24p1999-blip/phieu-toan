@@ -276,8 +276,9 @@ function setModeLabels(){
   $('#codeLbl').textContent=ws?'Mã phiếu':'Mã đề';
   $('#newBtn').textContent=ws?'Đổi phiếu khác':'Đổi đề khác';
   $('#tabExam').textContent=ws?'Phiếu':'Đề thi';
-  $('#printExam').textContent=ws?'In phiếu':'In đề thi';
-  $('#wordExam').textContent=ws?'Word – phiếu':'Word – đề';
+  $('#printExam').textContent=$('#wordExam').textContent=ws?'Phiếu':'Đề thi';
+  $('#printExam').setAttribute('aria-label',ws?'In phiếu':'In đề thi');
+  $('#wordExam').setAttribute('aria-label',ws?'Tải Word phiếu':'Tải Word đề thi');
 }
 
 function render(){
@@ -354,6 +355,16 @@ function setTab(t){
   saveState();
 }
 function update(){saveState();render()}
+/* Thanh in/tải: nhắc lại đề đang chọn (lấy từ dòng #meta) + tóm tắt phần Thông tin đầu đề khi thu gọn */
+new MutationObserver(()=>{const m=$('#meta').textContent;$('#pick').textContent=(/Toán|lớp/i.test(m)?'':'Toán '+state.grade+' · ')+m}).observe($('#meta'),{childList:true,characterData:true,subtree:true});
+function hdSum(){const a=[state.school&&('Trường '+state.school),state.year,state.time&&(state.time+' phút')].filter(Boolean);$('#hdSum').textContent=a.join(', ')}
+['#dept','#school','#year','#time'].forEach(id=>$(id).addEventListener('input',hdSum));
+$('#hdDet').open=!!state.hdOpen;
+/* Màn rộng: khung thiết lập luôn vừa chiều cao còn lại của cửa sổ để thanh In/Word ở đáy luôn nhìn thấy */
+(function(){const pn=$('.panel');let q=0;
+  function fit(){q=0;if(innerWidth<960){pn.style.maxHeight='';return}const t=Math.max(12,pn.getBoundingClientRect().top);pn.style.maxHeight=Math.max(320,innerHeight-t-12)+'px'}
+  const req=()=>{if(!q)q=requestAnimationFrame(fit)};addEventListener('scroll',req,{passive:true});addEventListener('resize',req);fit()})();
+$('#hdDet').addEventListener('toggle',()=>{state.hdOpen=$('#hdDet').open;saveState()});
 document.querySelectorAll('input[name=grade]:not([disabled])').forEach(i=>i.addEventListener('change',()=>{state.grade=+i.value;fixKind();update();syncInputs()}));
 document.querySelectorAll('input[name=term]').forEach(i=>i.addEventListener('change',()=>{state.kind=i.value;update()}));
 document.querySelectorAll('input[name=diff]').forEach(i=>i.addEventListener('change',()=>{state.diff=i.value;update()}));
@@ -407,7 +418,7 @@ $('#printKey').addEventListener('click',()=>doPrint('key'));
 $('#printMx').addEventListener('click',()=>doPrint('mx'));
 /* Tải file Word: dùng đúng nội dung đang hiển thị */
 async function doWord(what,btn){
-  const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
+  const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
     const kindTxt=isVao10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
@@ -428,4 +439,4 @@ $('#lesBox').addEventListener('change',e=>{
   saveState();renderWS();/* không vẽ lại danh sách để giữ nguyên các chương đang mở */
 });
 $('#lesNone').addEventListener('click',()=>{document.querySelectorAll('#lesBox input').forEach(i=>i.checked=false);state.les[state.grade]=[];saveState();renderLessonBox();renderWS()});
-syncInputs();setTab(state.tab);render();
+syncInputs();setTab(state.tab);render();hdSum();

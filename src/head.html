@@ -61,7 +61,19 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body)
   .layout{grid-template-columns:340px minmax(0,1fr);align-items:start}
   .panel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
 }
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:grid;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px 0;display:grid;gap:14px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;overscroll-behavior:contain;scroll-padding-bottom:120px}
+.grp{display:grid;gap:12px;min-width:0}
+.grp+.grp{border-top:1px solid var(--line);padding-top:14px}
+.sec{display:flex;align-items:center;gap:8px;margin:0;font-size:.95rem;font-weight:700;font-family:var(--font-display)}
+.sec b{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:.75rem;font-family:var(--font-body)}
+.switch .hint{display:block;margin-top:2px}
+.more{border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.more>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:8px;padding:8px 10px;font-weight:600;font-size:.88rem}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary::after{content:"";margin-left:auto;flex:none;width:7px;height:7px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.more[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.more .sum{color:var(--muted);font-weight:500;font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.more>.field{padding:0 10px 10px}
 .field{display:grid;gap:6px;min-width:0}
 .field>label,.field>.lbl{font-weight:600;font-size:.88rem}
 .hint{color:var(--muted);font-size:.82rem;margin:0}
@@ -97,7 +109,21 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .btn:hover{filter:brightness(1.07)}
 .switch{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;cursor:pointer}
 .switch input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:sticky;bottom:0;background:var(--surface);padding-top:6px}
+.btn.sm{min-height:32px;padding:5px 10px;font-size:.84rem;font-weight:600;border-radius:8px}
+.codebox .btn.sm{min-height:0}
+.actions{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:6px;align-items:center;position:sticky;bottom:0;z-index:2;margin:0 -16px;padding:10px 16px 12px;background:var(--surface);border-top:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius);box-shadow:0 -8px 14px -12px rgba(0,0,0,.35)}
+body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
+.actions .ak{font-size:.8rem;font-weight:600;color:var(--muted);padding-right:4px;min-width:38px}
+.actions .btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick{grid-column:1/-1;margin:0 0 2px;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick:empty{display:none}
+@media (max-width:959px){
+  body{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+  .actions{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;
+    padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-shadow:0 -6px 16px -8px rgba(0,0,0,.3)}
+  .actions .btn{min-height:36px}
+  .panel{padding-bottom:14px}
+}
 .note{background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:9px 11px;font-size:.84rem;margin:0}
 
 .stage{min-width:0;display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}   /* bảng ma trận rộng cuộn ngang trong khung, không đẩy cả trang */
@@ -260,6 +286,8 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
   </header>
   <div class="layout">
     <aside class="panel" aria-label="Thiết lập đề">
+      <section class="grp" aria-labelledby="sec1">
+      <h2 class="sec" id="sec1"><b>1</b>Chọn đề</h2>
       <div class="field">
         <span class="lbl">Loại tài liệu</span>
         <div class="seg" id="modeSeg">
@@ -329,19 +357,24 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
         <p class="hint" id="structHint"></p>
         <p class="hint warn" id="structWarn"></p>
       </div>
+      </section>
+      <section class="grp" aria-labelledby="sec2">
+      <h2 class="sec" id="sec2"><b>2</b>Độ khó</h2>
       <div class="field">
-        <span class="lbl">Độ khó</span>
-        <div class="seg" id="diffSeg">
+        <div class="seg" id="diffSeg" aria-label="Độ khó">
           <label><input type="radio" name="diff" value="co_ban">Cơ bản</label>
           <label><input type="radio" name="diff" value="chuan">Chuẩn</label>
           <label><input type="radio" name="diff" value="nang_cao">Nâng cao</label>
         </div>
         <p class="hint" id="diffHint"></p>
-        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng (ngoài SGK của khối lớp)</span></label>
-        <p class="hint">Ở mức Nâng cao luôn được phép. Trang đáp án ghi rõ câu nào là câu mở rộng.</p>
+        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng (ngoài SGK của khối lớp)<small class="hint">Mức Nâng cao luôn bật. Đáp án ghi rõ câu nào mở rộng.</small></span></label>
       </div>
-      <div class="field">
-        <span class="lbl">Thông tin đầu đề (không bắt buộc)</span>
+      </section>
+      <section class="grp" aria-labelledby="sec3">
+      <h2 class="sec" id="sec3"><b>3</b>Trình bày khi in</h2>
+      <details class="more" id="hdDet">
+        <summary><span>Thông tin đầu đề</span><span class="sum" id="hdSum"></span></summary>
+        <div class="field">
         <input type="text" id="dept" placeholder="Phòng/Sở GD&ĐT, ví dụ: Phòng GD&ĐT Quận 1" autocomplete="off">
         <input type="text" id="school" placeholder="Tên trường, ví dụ: Nguyễn Du" autocomplete="off">
         <div class="row2">
@@ -349,14 +382,15 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
           <input type="number" id="time" min="15" max="180" step="5" aria-label="Thời gian làm bài (phút)">
         </div>
         <p class="hint">Ô bên phải: thời gian làm bài (phút).</p>
-      </div>
+        </div>
+      </details>
       <div class="field">
         <label for="code" id="codeLbl">Mã đề</label>
         <div class="codebox">
           <input type="text" id="code" inputmode="numeric" maxlength="3" autocomplete="off">
-          <button class="btn alt" id="newBtn" type="button">Đổi đề khác</button>
+          <button class="btn alt sm" id="newBtn" type="button">Đổi đề khác</button>
         </div>
-        <p class="hint">Cùng mã đề thì ra cùng một đề, nên có thể in lại bất cứ lúc nào.</p>
+        <p class="hint">Cùng mã thì ra cùng một đề, in lại lúc nào cũng được.</p>
         <p class="hint" id="histHint"></p>
         <button type="button" class="linkbtn" id="clearHist">Xoá lịch sử đề đã tạo</button>
       </div>
@@ -368,17 +402,21 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
           <label><input type="radio" name="nv" value="3">3</label>
           <label><input type="radio" name="nv" value="4">4</label>
         </div>
-        <p class="hint">Các mã đề cùng nội dung, đảo thứ tự câu và đáp án phần I, đảo ý phần II để hạn chế chép bài.</p>
+        <p class="hint">Cùng nội dung, đảo thứ tự câu và phương án để hạn chế chép bài.</p>
       </div>
       <label class="switch"><input type="checkbox" id="sol"><span>Kèm lời giải chi tiết ở trang đáp án</span></label>
+      </section>
       <p class="note" id="noteTxt"></p>
-      <div class="actions">
-        <button class="btn" id="printExam" type="button">In đề thi</button>
-        <button class="btn alt" id="printKey" type="button">In đáp án</button>
-        <button class="btn alt" id="wordExam" type="button" title="Tải đề thi dạng file Word (.docx) để chỉnh sửa">Word – đề</button>
-        <button class="btn alt" id="wordKey" type="button" title="Tải đáp án dạng file Word (.docx)">Word – đáp án</button>
-        <button class="btn alt only-exam" id="printMx" type="button">In ma trận</button>
-        <button class="btn alt only-exam" id="wordMx" type="button" title="Tải ma trận và bản đặc tả theo Công văn 7991 dạng file Word (.docx), khổ ngang">Word – ma trận</button>
+      <div class="actions" role="group" aria-label="In và tải về">
+        <p class="pick" id="pick" aria-live="polite"></p>
+        <span class="ak">In</span>
+        <button class="btn sm" id="printExam" type="button" aria-label="In đề thi">Đề thi</button>
+        <button class="btn alt sm" id="printKey" type="button" aria-label="In đáp án">Đáp án</button>
+        <button class="btn alt sm only-exam" id="printMx" type="button" aria-label="In ma trận và bản đặc tả">Ma trận</button>
+        <span class="ak">Word</span>
+        <button class="btn alt sm" id="wordExam" type="button" aria-label="Tải Word đề thi" title="Tải đề thi dạng file Word (.docx) để chỉnh sửa">Đề thi</button>
+        <button class="btn alt sm" id="wordKey" type="button" aria-label="Tải Word đáp án" title="Tải đáp án dạng file Word (.docx)">Đáp án</button>
+        <button class="btn alt sm only-exam" id="wordMx" type="button" aria-label="Tải Word ma trận" title="Tải ma trận và bản đặc tả theo Công văn 7991 dạng file Word (.docx), khổ ngang">Ma trận</button>
       </div>
     </aside>
     <main class="stage">
