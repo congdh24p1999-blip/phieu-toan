@@ -36,6 +36,11 @@ const BLUEPRINT={
   '9ck2':{...G9,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – X (Kết nối tri thức)',chapters:[6,7,8,9,10],
     nlc:[6,6,6,7,7,8,8,9,9,9,10,10],ds:[6,9],tln:[6,8,9,10],
     tl:[{role:'alg',chs:[6]},{role:'real',chs:[6,10]},{role:'geo',chs:[9]}]},
+  /* Ôn thi vào lớp 10: cả năm lớp 9; cấu trúc chọn được (mặc định kiểu Khánh Hòa 2026 = khung Công văn 7991) */
+  '9tn':{...G9,hk:0,v10:true,short:'Ôn thi vào lớp 10',title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',scope:'Cả chương trình Toán 9, Chương I – X (Kết nối tri thức)',chapters:[1,2,3,4,5,6,7,8,9,10],
+    nlc:[1,2,3,3,4,5,6,6,7,8,9,10],ds:[6,7],tln:[1,4,6,10],
+    tl:[{role:'rad',chs:[3]},{role:'real',chs:[1,2,6]},{role:'geo',chs:[5,9]}],
+    note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
     chapters:[101,102,103,104,105,106,107,108,109,110],
@@ -126,9 +131,10 @@ const STRUCTS={
   tn:{name:'Kiểu thi tốt nghiệp THPT: 12 + 4 đúng/sai + 6 trả lời ngắn',n1:12,p1:.25,n2:4,n3:6,p3:.5,n4:0},
   tn46:{name:'Trắc nghiệm 4 đ + tự luận 6 đ (16 câu + 6 câu)',n1:16,p1:.25,n2:0,n3:0,p3:.5,n4:6},
   tn55:{name:'Trắc nghiệm 5 đ + tự luận 5 đ (20 câu + 5 câu)',n1:20,p1:.25,n2:0,n3:0,p3:.5,n4:5},
-  tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7}
+  tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7},
+  ct:{name:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận',n1:20,p1:.2,n2:2,n3:0,p3:.5,n4:4}
 };
-const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37'];
+const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37','ct'];
 const structKey=s=>[s.n1,s.p1,s.n2,s.n3,s.p3,s.n4].join('-');
 const structTotal=s=>Math.round((s.n1*s.p1+s.n2*4*PTS.dsItem+s.n3*s.p3+s.n4)*1000)/1000;
 const DEF_SK=structKey(STRUCTS.chuan);
@@ -136,7 +142,7 @@ const fmtP=x=>String(Math.round(x*100)/100).replace('.',',');
 function structCheck(s){
   if(![s.n1,s.n2,s.n3,s.n4].every(x=>Number.isInteger(x)&&x>=0))return'Số câu phải là số nguyên không âm.';
   if(s.n1>40||s.n2>8||s.n3>16||s.n4>10)return'Số câu quá lớn (tối đa 40, 8, 16 và 10 câu theo từng phần).';
-  if(![.25,.5].includes(s.p1))return'Điểm mỗi câu nhiều lựa chọn chỉ nhận 0,25 hoặc 0,5.';
+  if(![.2,.25,.5].includes(s.p1))return'Điểm mỗi câu nhiều lựa chọn chỉ nhận 0,2; 0,25 hoặc 0,5.';
   if(![.25,.5,1].includes(s.p3))return'Điểm mỗi câu trả lời ngắn chỉ nhận 0,25; 0,5 hoặc 1.';
   if(s.n1+s.n2+s.n3+s.n4===0)return'Đề cần có ít nhất một câu.';
   const t=structTotal(s);
@@ -163,7 +169,7 @@ function mixPool(bp,kind){
   if(!MIX_CACHE[ck]){MIX_CACHE[ck]=[];for(const [top,L] of Object.entries(bp.mix))for(const t of Object.values(T[kind]))if(!TN_EXCL.has(t.id)&&L.some(([g,ch])=>(t.g||8)===g&&t.ch===ch))MIX_CACHE[ck].push({...t,ch:+top})}
   return MIX_CACHE[ck].filter(t=>!t.ext||extOK());
 }
-const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
+const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||!bp.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
 /* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
 function apportion(n,w,cap){
   const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};

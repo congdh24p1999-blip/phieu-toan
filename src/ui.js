@@ -23,13 +23,13 @@ function fixKind(){if(!termOK(state.term))state.kind=state.kind==='tn'?'ck1':sta
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
-if(!(state.struct==='custom'||STRUCTS[state.struct]))state.struct='chuan';
+if(!(state.struct==='custom'||state.struct==='tl100'||STRUCTS[state.struct]))state.struct='chuan';
 if(!state.cs||typeof state.cs!=='object')state.cs={...STRUCTS.chuan};
 ['n1','n2','n3','n4','p1','p3'].forEach(k=>state.cs[k]=+state.cs[k]);
 let lastGoodStruct=STRUCTS.chuan;
 /* Cấu trúc đang dùng; nếu ô tuỳ chỉnh chưa hợp lệ thì giữ khung hợp lệ gần nhất. */
 function curStruct(){
-  const s=state.struct==='custom'?state.cs:STRUCTS[state.struct];
+  const s=state.struct==='custom'?state.cs:STRUCTS[state.struct]||STRUCTS.chuan;
   if(!structCheck(s)){lastGoodStruct={...s};return lastGoodStruct}
   return lastGoodStruct;
 }
@@ -58,15 +58,15 @@ function examHTML(v,bp,idx){
   const P=partTitles(bp);
   let n=0,h=`<article class="sheet exam${idx>0?' pb':''}">`;
   h+=`<header class="eh"><div class="l">
-    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div>${state.dept?esc(state.dept.toUpperCase()):bp.v10?'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
     <div class="school">${state.school?'TRƯỜNG '+bp.school+' '+esc(state.school):'TRƯỜNG '+bp.school+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã đề: ${esc(v.code)}</div>
   </div><div class="r">
     <div class="title">${bp.title}</div>
     <div class="sub">NĂM HỌC ${esc(state.year||dots(8))}</div>
-    <div class="sub">MÔN: TOÁN – LỚP ${bp.grade}</div>
-    <div><i>Thời gian làm bài: ${state.time} phút (không kể thời gian phát đề)</i></div>
+    <div class="sub">${bp.v10?'MÔN: TOÁN':'MÔN: TOÁN – LỚP '+bp.grade}</div>
+    <div><i>Thời gian làm bài: ${bp.v10&&state.time===90?120:state.time} phút (không kể thời gian phát đề)</i></div>
   </div></header>
   <div class="nameline"><span>Họ và tên: ${dots(18)}</span><span>Lớp: ${dots(6)}</span><span>SBD: ${dots(6)}</span></div>`;
   if(P.nN)h+=`<div class="part">PHẦN ${P.rom.nlc}. Câu trắc nghiệm nhiều phương án lựa chọn. (${pts(P.p1)} điểm)<small>Thí sinh trả lời từ câu 1 đến câu ${P.nN}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</small></div>`;
@@ -198,7 +198,7 @@ function wsHTML(w){
   const g=w.grade;let n=0;
   let h=`<article class="sheet exam ws">`;
   h+=`<header class="eh"><div class="l">
-    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div>${state.dept?esc(state.dept.toUpperCase()):bp.v10?'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
     <div class="school">${state.school?'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã phiếu: ${esc(w.code)}</div>
@@ -282,6 +282,7 @@ function setModeLabels(){
 
 function render(){
   setModeLabels();
+  structOpts();
   if(state.mode==='ws'){renderLessonBox();renderWS();return}
   if(isV10()){renderV10();return}
   const err=state.struct==='custom'?structCheck(state.cs):'';
@@ -300,14 +301,14 @@ function render(){
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
-  sh.textContent=`${state.struct==='custom'?'Tự chọn':STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
+  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
   $('#struct').disabled=!!bp.tn;
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}${bp.grade===9?'; có đề ôn thi vào lớp 10':''}.`;
   termRadios();
 }
 function termRadios(){
@@ -325,8 +326,8 @@ function renderV10(){
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
-  $('#structHint').textContent='Đề ôn thi vào lớp 10 theo cấu trúc chung: 100% tự luận, 6 bài, 10 điểm, 120 phút.';$('#structWarn').textContent='';
-  $('#csBox').hidden=true;$('#struct').disabled=true;
+  $('#structHint').textContent='100% tự luận, 6 bài, 10 điểm, 120 phút. Có thể chọn cấu trúc có trắc nghiệm như nhiều tỉnh năm 2026.';$('#structWarn').textContent='';
+  $('#csBox').hidden=true;$('#struct').disabled=false;
   $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh, không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
   $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
@@ -338,7 +339,7 @@ function syncInputs(){
   document.querySelectorAll('input[name=nv]').forEach(i=>i.checked=+i.value===state.nv);
   $('#dept').value=state.dept;$('#school').value=state.school;$('#year').value=state.year;$('#time').value=state.time;
   $('#code').value=state.code;$('#sol').checked=!!state.sol;$('#ext').checked=!!state.ext;
-  $('#struct').value=state.struct;
+  structOpts();
   document.querySelectorAll('input[name=mode]').forEach(i=>i.checked=i.value===state.mode);
   document.querySelectorAll('input[name=wsn]').forEach(i=>i.checked=+i.value===state.wsn);
   $('#wsk').value=state.wsk;
@@ -364,7 +365,17 @@ $('#code').addEventListener('input',e=>{const c=e.target.value.replace(/\D/g,'')
 $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.value=state.code});
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
 $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
-$('#struct').innerHTML=STRUCT_ORDER.map(k=>`<option value="${k}">${esc(STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+/* Danh sách cấu trúc; với đề ôn thi vào lớp 10 ghi kèm tỉnh đã dùng cấu trúc đó (năm 2026) và thêm lựa chọn 100% tự luận */
+const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như đề thi thử Hải Phòng 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)'};
+function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
+function structOpts(){
+  const v=isVao10();
+  if(!v&&state.struct==='tl100')state.struct='chuan';
+  const html=(v?'<option value="tl100">100% tự luận, 6 bài (gần kiểu Hà Nội, TP.HCM)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+  const el=$('#struct');if(el.dataset.v!==String(v)){el.innerHTML=html;el.dataset.v=String(v)}
+  el.value=state.struct;
+}
+structOpts();
 $('#struct').addEventListener('change',e=>{
   const v=e.target.value;
   if(v==='custom'&&state.struct!=='custom')state.cs={...curStruct()};
@@ -398,7 +409,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt=isV10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
+    const kindTxt=isVao10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}

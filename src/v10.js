@@ -19,7 +19,7 @@ const V10={
 };
 const V10_ROM=['I','II','III','IV','V','VI'];
 const v10P=n=>(Math.round(n*100)/100).toFixed(n*10%1?2:1).replace('.',',');   /* 2 → 2,0; 1,5; 0,25 */
-function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
+function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'&&state.struct==='tl100'}
 /* chọn một dạng trong nhóm theo độ khó: cơ bản lấy mức thấp nhất, chuẩn bỏ vận dụng cao, nâng cao lấy hai mức cao nhất */
 function v10Pick(ids,diff,rng,used){
   const R={NB:0,TH:1,VD:2,VDC:3};

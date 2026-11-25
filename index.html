@@ -319,7 +319,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
         <select id="struct"></select>
         <div class="sbox" id="csBox" hidden>
           <label>Nhiều lựa chọn: số câu<input type="number" id="cs_n1" min="0" max="40" step="1"></label>
-          <label>Điểm mỗi câu<select id="cs_p1"><option value="0.25">0,25</option><option value="0.5">0,5</option></select></label>
+          <label>Điểm mỗi câu<select id="cs_p1"><option value="0.2">0,2</option><option value="0.25">0,25</option><option value="0.5">0,5</option></select></label>
           <label>Đúng/sai: số câu (1 đ/câu)<input type="number" id="cs_n2" min="0" max="8" step="1"></label>
           <label>Trả lời ngắn: số câu<input type="number" id="cs_n3" min="0" max="16" step="1"></label>
           <label>Điểm mỗi câu<select id="cs_p3"><option value="0.25">0,25</option><option value="0.5">0,5</option><option value="1">1</option></select></label>
@@ -15477,6 +15477,11 @@ const BLUEPRINT={
   '9ck2':{...G9,hk:2,short:'Cuối học kì II',title:'ĐỀ KIỂM TRA CUỐI HỌC KÌ II',scope:'Chương VI – X (Kết nối tri thức)',chapters:[6,7,8,9,10],
     nlc:[6,6,6,7,7,8,8,9,9,9,10,10],ds:[6,9],tln:[6,8,9,10],
     tl:[{role:'alg',chs:[6]},{role:'real',chs:[6,10]},{role:'geo',chs:[9]}]},
+  /* Ôn thi vào lớp 10: cả năm lớp 9; cấu trúc chọn được (mặc định kiểu Khánh Hòa 2026 = khung Công văn 7991) */
+  '9tn':{...G9,hk:0,v10:true,short:'Ôn thi vào lớp 10',title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',scope:'Cả chương trình Toán 9, Chương I – X (Kết nối tri thức)',chapters:[1,2,3,4,5,6,7,8,9,10],
+    nlc:[1,2,3,3,4,5,6,6,7,8,9,10],ds:[6,7],tln:[1,4,6,10],
+    tl:[{role:'rad',chs:[3]},{role:'real',chs:[1,2,6]},{role:'geo',chs:[5,9]}],
+    note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
     chapters:[101,102,103,104,105,106,107,108,109,110],
@@ -15567,9 +15572,10 @@ const STRUCTS={
   tn:{name:'Kiểu thi tốt nghiệp THPT: 12 + 4 đúng/sai + 6 trả lời ngắn',n1:12,p1:.25,n2:4,n3:6,p3:.5,n4:0},
   tn46:{name:'Trắc nghiệm 4 đ + tự luận 6 đ (16 câu + 6 câu)',n1:16,p1:.25,n2:0,n3:0,p3:.5,n4:6},
   tn55:{name:'Trắc nghiệm 5 đ + tự luận 5 đ (20 câu + 5 câu)',n1:20,p1:.25,n2:0,n3:0,p3:.5,n4:5},
-  tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7}
+  tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7},
+  ct:{name:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận',n1:20,p1:.2,n2:2,n3:0,p3:.5,n4:4}
 };
-const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37'];
+const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37','ct'];
 const structKey=s=>[s.n1,s.p1,s.n2,s.n3,s.p3,s.n4].join('-');
 const structTotal=s=>Math.round((s.n1*s.p1+s.n2*4*PTS.dsItem+s.n3*s.p3+s.n4)*1000)/1000;
 const DEF_SK=structKey(STRUCTS.chuan);
@@ -15577,7 +15583,7 @@ const fmtP=x=>String(Math.round(x*100)/100).replace('.',',');
 function structCheck(s){
   if(![s.n1,s.n2,s.n3,s.n4].every(x=>Number.isInteger(x)&&x>=0))return'Số câu phải là số nguyên không âm.';
   if(s.n1>40||s.n2>8||s.n3>16||s.n4>10)return'Số câu quá lớn (tối đa 40, 8, 16 và 10 câu theo từng phần).';
-  if(![.25,.5].includes(s.p1))return'Điểm mỗi câu nhiều lựa chọn chỉ nhận 0,25 hoặc 0,5.';
+  if(![.2,.25,.5].includes(s.p1))return'Điểm mỗi câu nhiều lựa chọn chỉ nhận 0,2; 0,25 hoặc 0,5.';
   if(![.25,.5,1].includes(s.p3))return'Điểm mỗi câu trả lời ngắn chỉ nhận 0,25; 0,5 hoặc 1.';
   if(s.n1+s.n2+s.n3+s.n4===0)return'Đề cần có ít nhất một câu.';
   const t=structTotal(s);
@@ -15604,7 +15610,7 @@ function mixPool(bp,kind){
   if(!MIX_CACHE[ck]){MIX_CACHE[ck]=[];for(const [top,L] of Object.entries(bp.mix))for(const t of Object.values(T[kind]))if(!TN_EXCL.has(t.id)&&L.some(([g,ch])=>(t.g||8)===g&&t.ch===ch))MIX_CACHE[ck].push({...t,ch:+top})}
   return MIX_CACHE[ck].filter(t=>!t.ext||extOK());
 }
-const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
+const poolOf=(bp,kind)=>bp.mix?mixPool(bp,kind):Object.values(T[kind]).filter(t=>(t.g||8)===bp.grade&&(!t.hk||!bp.hk||t.hk===bp.hk)&&!(bp.excl&&bp.excl.includes(t.sec))&&(!t.ext||extOK()));
 /* Chia n câu cho các chương theo tỉ trọng, không vượt số dạng câu khác nhau của chương nếu còn chỗ ở chương khác. */
 function apportion(n,w,cap){
   const chs=Object.keys(cap).map(Number).filter(c=>cap[c]>0),out={};
@@ -16034,7 +16040,7 @@ const V10={
 };
 const V10_ROM=['I','II','III','IV','V','VI'];
 const v10P=n=>(Math.round(n*100)/100).toFixed(n*10%1?2:1).replace('.',',');   /* 2 → 2,0; 1,5; 0,25 */
-function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
+function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'&&state.struct==='tl100'}
 /* chọn một dạng trong nhóm theo độ khó: cơ bản lấy mức thấp nhất, chuẩn bỏ vận dụng cao, nâng cao lấy hai mức cao nhất */
 function v10Pick(ids,diff,rng,used){
   const R={NB:0,TH:1,VD:2,VDC:3};
@@ -16139,13 +16145,13 @@ function fixKind(){if(!termOK(state.term))state.kind=state.kind==='tn'?'ck1':sta
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
-if(!(state.struct==='custom'||STRUCTS[state.struct]))state.struct='chuan';
+if(!(state.struct==='custom'||state.struct==='tl100'||STRUCTS[state.struct]))state.struct='chuan';
 if(!state.cs||typeof state.cs!=='object')state.cs={...STRUCTS.chuan};
 ['n1','n2','n3','n4','p1','p3'].forEach(k=>state.cs[k]=+state.cs[k]);
 let lastGoodStruct=STRUCTS.chuan;
 /* Cấu trúc đang dùng; nếu ô tuỳ chỉnh chưa hợp lệ thì giữ khung hợp lệ gần nhất. */
 function curStruct(){
-  const s=state.struct==='custom'?state.cs:STRUCTS[state.struct];
+  const s=state.struct==='custom'?state.cs:STRUCTS[state.struct]||STRUCTS.chuan;
   if(!structCheck(s)){lastGoodStruct={...s};return lastGoodStruct}
   return lastGoodStruct;
 }
@@ -16174,15 +16180,15 @@ function examHTML(v,bp,idx){
   const P=partTitles(bp);
   let n=0,h=`<article class="sheet exam${idx>0?' pb':''}">`;
   h+=`<header class="eh"><div class="l">
-    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div>${state.dept?esc(state.dept.toUpperCase()):bp.v10?'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
     <div class="school">${state.school?'TRƯỜNG '+bp.school+' '+esc(state.school):'TRƯỜNG '+bp.school+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã đề: ${esc(v.code)}</div>
   </div><div class="r">
     <div class="title">${bp.title}</div>
     <div class="sub">NĂM HỌC ${esc(state.year||dots(8))}</div>
-    <div class="sub">MÔN: TOÁN – LỚP ${bp.grade}</div>
-    <div><i>Thời gian làm bài: ${state.time} phút (không kể thời gian phát đề)</i></div>
+    <div class="sub">${bp.v10?'MÔN: TOÁN':'MÔN: TOÁN – LỚP '+bp.grade}</div>
+    <div><i>Thời gian làm bài: ${bp.v10&&state.time===90?120:state.time} phút (không kể thời gian phát đề)</i></div>
   </div></header>
   <div class="nameline"><span>Họ và tên: ${dots(18)}</span><span>Lớp: ${dots(6)}</span><span>SBD: ${dots(6)}</span></div>`;
   if(P.nN)h+=`<div class="part">PHẦN ${P.rom.nlc}. Câu trắc nghiệm nhiều phương án lựa chọn. (${pts(P.p1)} điểm)<small>Thí sinh trả lời từ câu 1 đến câu ${P.nN}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</small></div>`;
@@ -16314,7 +16320,7 @@ function wsHTML(w){
   const g=w.grade;let n=0;
   let h=`<article class="sheet exam ws">`;
   h+=`<header class="eh"><div class="l">
-    <div>${state.dept?esc(state.dept.toUpperCase()):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
+    <div>${state.dept?esc(state.dept.toUpperCase()):bp.v10?'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8):'PHÒNG GD&amp;ĐT '+dots(12)}</div>
     <div class="school">${state.school?'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+esc(state.school):'TRƯỜNG '+(g>=10?'THPT':'THCS')+' '+dots(12)}</div>
     <div class="rule"></div>
     <div class="code">Mã phiếu: ${esc(w.code)}</div>
@@ -16398,6 +16404,7 @@ function setModeLabels(){
 
 function render(){
   setModeLabels();
+  structOpts();
   if(state.mode==='ws'){renderLessonBox();renderWS();return}
   if(isV10()){renderV10();return}
   const err=state.struct==='custom'?structCheck(state.cs):'';
@@ -16416,14 +16423,14 @@ function render(){
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
-  sh.textContent=`${state.struct==='custom'?'Tự chọn':STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
+  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
   $('#struct').disabled=!!bp.tn;
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}.`;
+  $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}${bp.grade===9?'; có đề ôn thi vào lớp 10':''}.`;
   termRadios();
 }
 function termRadios(){
@@ -16441,8 +16448,8 @@ function renderV10(){
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
-  $('#structHint').textContent='Đề ôn thi vào lớp 10 theo cấu trúc chung: 100% tự luận, 6 bài, 10 điểm, 120 phút.';$('#structWarn').textContent='';
-  $('#csBox').hidden=true;$('#struct').disabled=true;
+  $('#structHint').textContent='100% tự luận, 6 bài, 10 điểm, 120 phút. Có thể chọn cấu trúc có trắc nghiệm như nhiều tỉnh năm 2026.';$('#structWarn').textContent='';
+  $('#csBox').hidden=true;$('#struct').disabled=false;
   $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh, không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
   $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
@@ -16454,7 +16461,7 @@ function syncInputs(){
   document.querySelectorAll('input[name=nv]').forEach(i=>i.checked=+i.value===state.nv);
   $('#dept').value=state.dept;$('#school').value=state.school;$('#year').value=state.year;$('#time').value=state.time;
   $('#code').value=state.code;$('#sol').checked=!!state.sol;$('#ext').checked=!!state.ext;
-  $('#struct').value=state.struct;
+  structOpts();
   document.querySelectorAll('input[name=mode]').forEach(i=>i.checked=i.value===state.mode);
   document.querySelectorAll('input[name=wsn]').forEach(i=>i.checked=+i.value===state.wsn);
   $('#wsk').value=state.wsk;
@@ -16480,7 +16487,17 @@ $('#code').addEventListener('input',e=>{const c=e.target.value.replace(/\D/g,'')
 $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.value=state.code});
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
 $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
-$('#struct').innerHTML=STRUCT_ORDER.map(k=>`<option value="${k}">${esc(STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+/* Danh sách cấu trúc; với đề ôn thi vào lớp 10 ghi kèm tỉnh đã dùng cấu trúc đó (năm 2026) và thêm lựa chọn 100% tự luận */
+const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như đề thi thử Hải Phòng 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)'};
+function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
+function structOpts(){
+  const v=isVao10();
+  if(!v&&state.struct==='tl100')state.struct='chuan';
+  const html=(v?'<option value="tl100">100% tự luận, 6 bài (gần kiểu Hà Nội, TP.HCM)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+  const el=$('#struct');if(el.dataset.v!==String(v)){el.innerHTML=html;el.dataset.v=String(v)}
+  el.value=state.struct;
+}
+structOpts();
 $('#struct').addEventListener('change',e=>{
   const v=e.target.value;
   if(v==='custom'&&state.struct!=='custom')state.cs={...curStruct()};
@@ -16514,7 +16531,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt=isV10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
+    const kindTxt=isVao10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}
