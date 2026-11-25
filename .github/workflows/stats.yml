@@ -11,15 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Kiểm tra khóa GoatCounter
+        id: key
+        env:
+          GOATCOUNTER_KEY: ${{ secrets.GOATCOUNTER_KEY }}
+        run: |
+          if [ -z "$GOATCOUNTER_KEY" ]; then
+            echo "::warning::Chưa có secret GOATCOUNTER_KEY (Settings → Secrets and variables → Actions). Bỏ qua lần chạy này."
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
       - name: Lấy số liệu GoatCounter
+        if: steps.key.outputs.ok == '1'
         env:
           GOATCOUNTER_KEY: ${{ secrets.GOATCOUNTER_KEY }}
           GOATCOUNTER_SITE: xuongdetoan1
         run: node tools/fetch-stats.mjs out/stats.json
       - name: Ghi vào nhánh stats (một commit duy nhất, không làm rối lịch sử main)
+        if: steps.key.outputs.ok == '1'
         run: |
           cd out
           git init -q -b stats

@@ -51,8 +51,11 @@ while (more && guard++ < 10) {
   for (const h of r.hits || []) { hits.push({ path: h.path, title: h.title, event: !!h.event, n: h.count }); exclude.push(h.path_id); }
   more = r.more;
 }
-const top = async (page, limit = 12) => ((await api('/stats/' + page, { ...rng(SINCE), limit })).stats || [])
-  .map(s => ({ name: s.name || '(không rõ)', n: s.count }));
+/* Một mục lỗi (ví dụ GoatCounter đổi tên mục) không làm hỏng cả lần cập nhật */
+const top = async (page, limit = 12) => {
+  try { return ((await api('/stats/' + page, { ...rng(SINCE), limit })).stats || []).map(s => ({ name: s.name || '(không rõ)', n: s.count })); }
+  catch (e) { console.warn('Bỏ qua mục', page, '-', e.message); return []; }
+};
 
 const out = {
   site: SITE, since: SINCE, updated: new Date().toISOString(),
