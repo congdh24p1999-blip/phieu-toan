@@ -107,7 +107,7 @@ TLN9('t9-16-angle',5,'VD',[16],r=>{
 /* ---------- Tự luận ---------- */
 TL9('tl9-4-frac',2,'VD','alg',[4,6],r=>{
   const F=frac9(r),c=r.int(2,5),a=r.pick([2,3,4,5,6].filter(v=>v!==c+1)),x0=r.int(-4,5),b=-a*x0;
-  return{kind:'tl',title:'Phương trình và bất phương trình',parts:[{pts:.5,html:`Giải phương trình ${frac9H(F)}.`},{pts:.5,html:`Giải bất phương trình ${fr(xlin(a,b),c)} ≥ ${fr(xlin(1,-x0),c)} + ${I('x')} ${MINUS} ${x0>=0?x0:'('+sg(x0)+')'}.`}],
+  return{kind:'tl',title:'Phương trình và bất phương trình',parts:[{pts:.5,html:`Giải phương trình ${frac9H(F)}.`},{pts:.5,html:`Giải bất phương trình ${fr(xlin(a,b),c)} ≥ ${fr(xlin(1,-x0),c)} + ${xlin(1,-x0)}.`}],
     sol:[ptxt([[`ĐKXĐ: x ≠ ${sg(F.p)}, x ≠ ${sg(F.q)}; quy đồng và khử mẫu được ${xquad(F.A,F.B,F.C)} = 0.`,.25],[`Đối chiếu điều kiện: S = {${F.sols.map(sg).join('; ')}}.`,.25]]),
       ptxt([[`Nhân hai vế với ${c} > 0: ${xlin(a,b)} ≥ ${xlin(1,-x0)} + ${c}(${xlin(1,-x0)}) ⟺ ${a}(${xlin(1,-x0)}) ≥ ${c+1}(${xlin(1,-x0)}).`,.25],[`⟺ ${a-c-1===1?'':a-c-1===-1?MINUS:sg(a-c-1)}(${xlin(1,-x0)}) ≥ 0 ⟺ ${xlin(1,-x0)} ${a-c-1>0?'≥':'≤'} 0 ⟺ x ${a-c-1>0?'≥':'≤'} ${sg(x0)}.`,.25]])],chk:()=>a!==c+1};
 });

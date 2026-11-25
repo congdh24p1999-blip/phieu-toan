@@ -20,6 +20,7 @@ Cần Node.js (≥ 18) và Python 3.
 | `core1.js`, `core2.js` | Hàm dùng chung (số, đa thức, định dạng), Toán 8 học kì I |
 | `core11*.js` | Toán 11 (`core11k.js`: câu vận dụng cao bổ sung) |
 | `core12a.js` … `core12e.js` | Toán 12 học kì I (a: Bài 1–2 và hàm vẽ đồ thị, bảng biến thiên; b: Bài 3–5; c: Chương II vectơ, toạ độ; d: Chương III; e: dạng bổ sung) |
+| `v10.js` | Đề ôn thi vào lớp 10 (lớp 9, chọn "Ôn thi vào 10"): cấu trúc chung 100% tự luận, 6 bài, 10 điểm, 120 phút; ghép từ các dạng tự luận Toán 9 theo độ khó; có hướng dẫn chấm và ma trận. |
 | `mx.js` | Thẻ "Ma trận": ma trận và bản đặc tả đề kiểm tra theo mẫu Phụ lục Công văn 7991/BGDĐT-GDTrH (17/12/2024): chương → bài học, 4 dạng câu × 3 mức Biết/Hiểu/Vận dụng, số câu kèm số thứ tự câu, tổng điểm và tỉ lệ; in khổ ngang và tải Word khổ ngang (bảng có ô gộp). |
 | `site.js` | Nút "Báo lỗi đề này" (mở Google Form, tự điền hoặc chép sẵn lớp, kì, độ khó, mã đề, cấu trúc) và thống kê lượt in, tải Word bằng GoatCounter (không dùng cookie). Chỉ bật khi điền `SITE_CFG` ở đầu file. |
 | `core09h.js` | Toán 9: bổ sung dạng câu cho các bài còn ít dạng (Bài 5, 7, 10, 13, 14, 15, 17, 21, 22, 23, 24, 28, 30, 32), để mỗi bài có ít nhất 8 dạng và đủ cả 4 loại câu. |

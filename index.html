@@ -202,6 +202,8 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
 .lg .why.small{font-size:.94em}
 .ksmall{font-size:.9em;margin:2px 0}
 .mx td,.mx th{font-size:.92em}
+.v10i{margin-top:3px}
+.v10s{padding-left:22px}
 /* ===== Ma trận, bản đặc tả (khổ ngang) ===== */
 .sheet.mxs{max-width:297mm;padding:10mm 10mm 8mm}
 .mxh{text-align:center;margin-bottom:6px}
@@ -308,7 +310,7 @@ body[data-mode=ws] .only-exam,body[data-mode=exam] .only-ws{display:none}
           <label><input type="radio" name="term" value="ck1">Cuối kì I</label>
           <label><input type="radio" name="term" value="gk2">Giữa kì II</label>
           <label><input type="radio" name="term" value="ck2">Cuối kì II</label>
-          <label><input type="radio" name="term" value="tn">Ôn thi TN THPT</label>
+          <label><input type="radio" name="term" value="tn"><span id="tnLbl">Ôn thi TN THPT</span></label>
         </div>
         <p class="hint" id="scopeHint"></p>
       </div>
@@ -6471,7 +6473,7 @@ TL9('tl9-6-real',2,'VD','real',[6],r=>{
   const f=r.pick([10,12,15]),p=r.pick([10,12,14,16]),M=r.int(15,40)*10,n=Math.floor((M-f)/p),g=r.pick([8,9,11]),q=r.int(5,9)*1000;
   return{kind:'tl',title:'Ứng dụng bất phương trình bậc nhất một ẩn',parts:[
     {pts:.5,html:`Giá cước taxi: ${f} nghìn đồng cho lượt lên xe và ${p} nghìn đồng cho mỗi ki-lô-mét. Với ${M} nghìn đồng, hành khách đi được tối đa bao nhiêu ki-lô-mét (số nguyên)?`},
-    {pts:.5,html:`Một bạn có ${g*q+r.int(1,q-1)} đồng, muốn mua một hộp bút giá ${(q*2).toLocaleString('vi-VN')} đồng và một số quyển vở giá ${q.toLocaleString('vi-VN')} đồng/quyển. Bạn đó mua được nhiều nhất bao nhiêu quyển vở?`}],
+    {pts:.5,html:`Một bạn có ${(g*q+r.int(1,q/1000-1)*1000).toLocaleString('vi-VN')} đồng, muốn mua một hộp bút giá ${(q*2).toLocaleString('vi-VN')} đồng và một số quyển vở giá ${q.toLocaleString('vi-VN')} đồng/quyển. Bạn đó mua được nhiều nhất bao nhiêu quyển vở?`}],
     sol:[ptxt([[`Gọi x là số ki-lô-mét: ${f} + ${p}x ≤ ${M} ⟺ x ≤ ${qh(Q(M-f,p))}.`,.25],[`Đi được tối đa ${n} km.`,.25]]),ptxt([[`Gọi y là số quyển vở: ${(2*q).toLocaleString('vi-VN')} + ${q.toLocaleString('vi-VN')}y ≤ số tiền đang có.`,.25],[`Mua được nhiều nhất ${g-2} quyển vở.`,.25]])],chk:()=>n>0};
 });
 /* ================================================================
@@ -8722,7 +8724,7 @@ TLN9('t9-16-angle',5,'VD',[16],r=>{
 /* ---------- Tự luận ---------- */
 TL9('tl9-4-frac',2,'VD','alg',[4,6],r=>{
   const F=frac9(r),c=r.int(2,5),a=r.pick([2,3,4,5,6].filter(v=>v!==c+1)),x0=r.int(-4,5),b=-a*x0;
-  return{kind:'tl',title:'Phương trình và bất phương trình',parts:[{pts:.5,html:`Giải phương trình ${frac9H(F)}.`},{pts:.5,html:`Giải bất phương trình ${fr(xlin(a,b),c)} ≥ ${fr(xlin(1,-x0),c)} + ${I('x')} ${MINUS} ${x0>=0?x0:'('+sg(x0)+')'}.`}],
+  return{kind:'tl',title:'Phương trình và bất phương trình',parts:[{pts:.5,html:`Giải phương trình ${frac9H(F)}.`},{pts:.5,html:`Giải bất phương trình ${fr(xlin(a,b),c)} ≥ ${fr(xlin(1,-x0),c)} + ${xlin(1,-x0)}.`}],
     sol:[ptxt([[`ĐKXĐ: x ≠ ${sg(F.p)}, x ≠ ${sg(F.q)}; quy đồng và khử mẫu được ${xquad(F.A,F.B,F.C)} = 0.`,.25],[`Đối chiếu điều kiện: S = {${F.sols.map(sg).join('; ')}}.`,.25]]),
       ptxt([[`Nhân hai vế với ${c} > 0: ${xlin(a,b)} ≥ ${xlin(1,-x0)} + ${c}(${xlin(1,-x0)}) ⟺ ${a}(${xlin(1,-x0)}) ≥ ${c+1}(${xlin(1,-x0)}).`,.25],[`⟺ ${a-c-1===1?'':a-c-1===-1?MINUS:sg(a-c-1)}(${xlin(1,-x0)}) ≥ 0 ⟺ ${xlin(1,-x0)} ${a-c-1>0?'≥':'≤'} 0 ⟺ x ${a-c-1>0?'≥':'≤'} ${sg(x0)}.`,.25]])],chk:()=>a!==c+1};
 });
@@ -15917,7 +15919,7 @@ function mxData(v,bp){
   v.nlc.forEach((q,i)=>push(q,'nlc',i+1,1,bp.pn));
   v.ds.forEach((q,i)=>push(q,'ds',P.s2+i,4,4*PTS.dsItem));
   v.tln.forEach((q,i)=>push(q,'tln',P.s3+i,1,bp.pt));
-  v.tl.forEach((q,i)=>push(q,'tl',P.s4+i,1,qPts(q)));
+  v.tl.forEach((q,i)=>push(q,'tl',q.lbl||P.s4+i,1,qPts(q)));
   const LT=(typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[bp.grade])||{};
   const chs=bp.chapters.map(c=>({c,name:bp.tn?`Chủ đề ${c-100}. ${bp.chName[c]}`:`Chương ${ROM10[c]||c}. ${bp.chName[c]}`,rows:{}}));
   const byC=Object.fromEntries(chs.map(x=>[x.c,x]));
@@ -15953,7 +15955,7 @@ function mxHead(first,extraLast){
 }
 function mxCell(c,withNL){
   if(!c.n)return '<td></td>';
-  const qs=c.qs.map(n=>'C'+n).join(', ');
+  const qs=c.qs.map(n=>typeof n==='string'?n:'C'+n).join(', ');
   return `<td><b>${c.n}</b><br><small>${qs}</small>${withNL?`<br><small>${[...c.nl].join(', ')}</small>`:''}</td>`;
 }
 function mxFoot(d,withTotals){
@@ -15976,7 +15978,7 @@ function mxHTML(base,v0,bp){
   let h=`<article class="sheet mxs"><header class="mxh">${school?`<p class="mxsc">${school}</p>`:''}
 <h2>MA TRẬN VÀ BẢN ĐẶC TẢ ${esc(bp.title)}</h2>
 <p><b>MÔN: TOÁN – LỚP ${bp.grade} – NĂM HỌC ${esc(state.year)}</b></p>
-<p class="mxn">Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ GDĐT. Số thứ tự câu ghi theo mã đề ${esc(v0.code)}; thời gian làm bài ${esc(state.time)} phút.</p></header>`;
+<p class="mxn">Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ GDĐT. Số thứ tự câu ghi theo mã đề ${esc(v0.code)}; thời gian làm bài ${bp.v10&&state.time===90?V10.time:esc(state.time)} phút.</p></header>`;
 
   /* ---------- I. Ma trận ---------- */
   h+=`<h3>I. Ma trận đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,9,14,${Array(15).fill(3.6).join(',')},5">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức'],false)}<tbody>`;
@@ -16003,12 +16005,113 @@ function mxHTML(base,v0,bp){
   const lvTxt=['Biết','Hiểu','Vận dụng'].map((x,l)=>`${x} ${mxPctTxt(d.tot.lpts[l]*100/tot)}%`).join(', ');
   const kTxt=[['nlc','nhiều lựa chọn'],['ds','đúng – sai'],['tln','trả lời ngắn'],['tl','tự luận']].map(([k,x])=>`${x} ${mxPctTxt(d.tot.kpts[k]*100/tot)}%`).join(', ');
   h+=`<section class="mxnote"><p><b>Ghi chú</b></p><ul>
-<li>Mỗi ô ghi số câu hỏi (phần “Đúng – Sai” ghi số ý, mỗi câu gồm 4 ý); dòng dưới là số thứ tự câu trong đề, ví dụ C5 là câu 5.</li>
+<li>${bp.v10?'Mỗi ô ghi số ý; dòng dưới là vị trí trong đề, ví dụ II.1 là ý 1) của Bài II.':'Mỗi ô ghi số câu hỏi (phần “Đúng – Sai” ghi số ý, mỗi câu gồm 4 ý); dòng dưới là số thứ tự câu trong đề, ví dụ C5 là câu 5.'}</li>
 <li>Tỉ lệ điểm của đề này theo mức độ: ${lvTxt}; theo dạng câu: ${kTxt}. Mẫu của Bộ gợi ý khoảng 40% – 30% – 30% theo mức độ và 30% – 20% – 20% – 30% theo dạng câu; nhà trường được điều chỉnh cho phù hợp.</li>
 <li>Mức “Vận dụng” gồm cả các câu vận dụng cao. Mức độ do người soạn gán cho từng dạng câu, có thể khác cách phân loại của tổ chuyên môn.</li>
 <li>Dòng cuối mỗi ô của bản đặc tả ghi năng lực chủ yếu (gợi ý): TD – tư duy và lập luận toán học; MH – mô hình hoá toán học; GQVĐ – giải quyết vấn đề toán học.</li>
 <li>Cột “Yêu cầu cần đạt” được viết khái quát theo tên bài học. Thầy cô đối chiếu Chương trình môn Toán 2018 và kế hoạch dạy học của trường để chỉnh lại trước khi nộp; tải bản Word để sửa trực tiếp.</li>
 </ul></section>`;
+  return h+'</article>';
+}
+/* ================================================================
+   Đề ôn thi tuyển sinh vào lớp 10 – cấu trúc chung (100% tự luận, 10 điểm, 120 phút)
+   Ghép từ các dạng tự luận Toán 9 đã có; mỗi ý lớn là một dạng (1 điểm, hai ý nhỏ a, b).
+   Khung đề theo dạng phổ biến của nhiều tỉnh: biểu thức chứa căn; phương trình, hệ phương trình,
+   định lí Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học
+   (hình khối thực tế và hình học phẳng với đường tròn); bài toán thực tế.
+   ================================================================ */
+const V10={
+  title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',
+  time:120,
+  bai:[
+    {t:'Biểu thức đại số chứa căn',items:[['tl9-8-calc','tl9-9-rad','tl9-7-cond'],['tl9-9-expr','tl9-9-expr2','tl9-9-max','tl9-9-min']]},
+    {t:'Phương trình, hệ phương trình',items:[['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac'],['tl9-20-m','tl9-20-new','tl9-20-min','tl9-20-abs']]},
+    {t:'Giải bài toán bằng cách lập phương trình hoặc hệ phương trình',items:[['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree']]},
+    {t:'Thống kê và xác suất',items:[['tl9-22-tab','tl9-26-coin','tl9-24-grp','tl9-26-dice','tl9-26-ball']]},
+    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan'],['tl9-27-semi','tl9-28-tri','tl9-29-alt','tl9-29-tan','tl9-29-semi','tl9-29-oc'],['tl9-12-tri','tl9-14-chord','tl9-16-tan','tl9-16-two']]},
+    {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two']]}
+  ]
+};
+const V10_ROM=['I','II','III','IV','V','VI'];
+const v10P=n=>(Math.round(n*100)/100).toFixed(n*10%1?2:1).replace('.',',');   /* 2 → 2,0; 1,5; 0,25 */
+function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
+/* chọn một dạng trong nhóm theo độ khó: cơ bản lấy mức thấp nhất, chuẩn bỏ vận dụng cao, nâng cao lấy hai mức cao nhất */
+function v10Pick(ids,diff,rng,used){
+  const R={NB:0,TH:1,VD:2,VDC:3};
+  let all=ids.filter(id=>T.tl[id]&&!used.has(id));if(!all.length)all=ids.filter(id=>T.tl[id]);
+  const lv=all.map(id=>R[T.tl[id].lv]),lo=Math.min(...lv),hi=Math.max(...lv);
+  let pool=diff==='co_ban'?all.filter(id=>R[T.tl[id].lv]===lo)
+          :diff==='nang_cao'?all.filter(id=>R[T.tl[id].lv]>=Math.max(lo,hi-1))
+          :all.filter(id=>T.tl[id].lv!=='VDC');
+  if(!pool.length)pool=all;
+  return pool[rng.int(0,pool.length-1)];
+}
+function buildV10(code,diff){
+  diff=DIFFS[diff]?diff:'chuan';
+  const used=new Set(),bai=[];let k=0;
+  V10.bai.forEach((b,bi)=>{
+    const items=b.items.map((ids,ii)=>{
+      const id=v10Pick(ids,diff,new RNG(`v10|pick|${code}|${diff}|${bi}|${ii}`),used);used.add(id);
+      const t=T.tl[id],q=t.gen(new RNG(`v10|gen|${code}|${diff}|${bi}|${ii}|${id}`));
+      q.id=id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.les)q.les=t.les;
+      q.lbl=`${V10_ROM[bi]}.${ii+1}`;q.no=++k;return q;
+    });
+    if(items.length===1)items[0].lbl=V10_ROM[bi];   /* bài chỉ có một ý: ghi “III” thay cho “III.1” */
+    bai.push({t:b.t,items,pts:items.reduce((a,q)=>a+qPts(q),0)});
+  });
+  return{code,diff,bai,tl:bai.flatMap(b=>b.items)};
+}
+/* khung giả dùng chung với thẻ Ma trận */
+function v10BP(){
+  return{grade:9,school:'THCS',mon:'Toán 9',title:V10.title,short:'Ôn thi vào lớp 10',chapters:[1,2,3,4,5,6,7,8,9,10],chName:CH9,tn:false,v10:true,
+    nlc:[],ds:[],tln:[],tl:Array(10).fill(0),tlQ:Array(10).fill(1),pn:PTS.nlc,pt:PTS.tln};
+}
+/* một ý lớn: phần dẫn chung (nếu có) rồi các ý a), b) */
+function v10Item(q,ii,withPts){
+  const sp=q.parts.length>1&&q.parts[0].html.includes('<br>')?q.parts[0].html.split('<br>'):null;
+  /* ii = -1: bài chỉ có một ý lớn, không ghi “1)” */
+  let h=ii<0?(sp?`<div class="tl-part">${sp[0]}</div>`:''):`<div class="tl-part v10i"><b>${ii+1})</b> ${sp?sp[0]:''}</div>`;
+  if(q.parts.length===1)return (ii<0?'':h.replace(/<\/div>$/,''))+`${ii<0?'<div class="tl-part">':' '}${q.parts[0].html}${withPts?` <i>(${pts(q.parts[0].pts)} điểm)</i>`:''}</div>`;
+  q.parts.forEach((p,j)=>{const ph=j===0&&sp?sp.slice(1).join('<br>'):p.html;
+    h+=`<div class="tl-part${ii<0?'':' v10s'}"><b>${'abc'[j]})</b> ${ph}${withPts?` <i>(${pts(p.pts)} điểm)</i>`:''}</div>`});
+  return h;
+}
+function v10HTML(ex){
+  const tm=state.time===90?V10.time:state.time;
+  let h=`<article class="sheet exam"><header class="eh"><div class="l">
+    <div>${state.dept?esc(state.dept.toUpperCase()):'SỞ GIÁO DỤC VÀ ĐÀO TẠO '+dots(8)}</div>
+    <div class="school">${state.school?'TRƯỜNG THCS '+esc(state.school):'TRƯỜNG THCS '+dots(12)}</div>
+    <div class="rule"></div>
+    <div class="code">Mã đề: ${esc(ex.code)}</div>
+  </div><div class="r">
+    <div class="title">${V10.title}</div>
+    <div class="sub">NĂM HỌC ${esc(state.year||dots(8))}</div>
+    <div class="sub">MÔN: TOÁN</div>
+    <div><i>Thời gian làm bài: ${tm} phút (không kể thời gian phát đề)</i></div>
+  </div></header>
+  <div class="nameline"><span>Họ và tên: ${dots(18)}</span><span>Số báo danh: ${dots(8)}</span></div>`;
+  ex.bai.forEach((b,bi)=>{
+    h+=`<div class="q"><div class="qs"><b>Bài ${V10_ROM[bi]}.</b> <i>(${v10P(b.pts)} điểm)</i></div>`;
+    b.items.forEach((q,ii)=>{h+=v10Item(q,b.items.length>1?ii:-1,false)});
+    h+='</div>';
+  });
+  h+=`<div class="endmark">— HẾT —</div><p class="endnote">Thí sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.</p><div class="brandline">Xưởng đề Toán · Thầy Công · Mã đề ${esc(ex.code)}</div></article>`;
+  return h;
+}
+function v10KeyHTML(ex){
+  let h=`<article class="sheet key"><div class="kh"><h2>Hướng dẫn chấm</h2><p><b>${V10.title}</b> · Môn Toán · Năm học ${esc(state.year)} · Mã đề ${esc(ex.code)}</p><p>Tổng điểm: 10</p></div>
+<section class="ksec"><p class="ksmall">Mọi cách giải đúng khác đều cho điểm tối đa của ý đó. Điểm toàn bài không làm tròn.</p>`;
+  ex.bai.forEach((b,bi)=>{
+    h+=`<div class="lg"><div class="qs"><b>Bài ${V10_ROM[bi]}</b> (${v10P(b.pts)} điểm) – ${esc(b.t)}</div>`;
+    b.items.forEach((q,ii)=>{
+      if(b.items.length>1)h+=`<div class="qs" style="margin-top:4px"><b>${ii+1})</b> <i>(${v10P(qPts(q))} điểm)</i></div>`;
+      q.parts.forEach((p,j)=>{h+=q.parts.length>1?`<div class="why"><b>${'abc'[j]})</b> (${pts(p.pts)} điểm) ${q.sol[j]}</div>`:`<div class="why">${q.sol[j]}</div>`});
+    });
+    h+='</div>';
+  });
+  h+='</section>';
+  const lv={NB:0,TH:0,VD:0,VDC:0};ex.tl.forEach(q=>lv[q.lv]+=qPts(q));
+  h+=`<section class="ksec"><p class="ksmall">Mức độ: ${['NB','TH','VD','VDC'].filter(k=>lv[k]).map(k=>`${LV_NAME[k]} ${pts(lv[k])} đ`).join(' · ')}.</p><p class="ksmall noprint">Ma trận và bản đặc tả đầy đủ ở thẻ <b>Ma trận</b>.</p></section>`;
   return h+'</article>';
 }
 
@@ -16031,7 +16134,8 @@ if(!['gk1','ck1','gk2','ck2','tn'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
 const termOf=(g,k)=>g===8?k:g+k;
-function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!BLUEPRINT[state.term])state.kind='gk1'}
+const termOK=t=>!!BLUEPRINT[t]||t==='9tn';   /* 9tn: đề ôn thi vào lớp 10 (v10.js) */
+function fixKind(){if(!termOK(state.term))state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!termOK(state.term))state.kind='gk1'}
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
@@ -16295,6 +16399,7 @@ function setModeLabels(){
 function render(){
   setModeLabels();
   if(state.mode==='ws'){renderLessonBox();renderWS();return}
+  if(isV10()){renderV10();return}
   const err=state.struct==='custom'?structCheck(state.cs):'';
   let st=curStruct(),bp,ex;const base=state.code;
   ALLOW_EXT=!!state.ext;CUR_DIFF=state.diff;
@@ -16319,7 +16424,28 @@ function render(){
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
   $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}.`;
-  document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
+  termRadios();
+}
+function termRadios(){
+  document.querySelectorAll('input[name=term]').forEach(i=>{const ok=termOK(termOf(state.grade,i.value));i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
+  $('#tnLbl').textContent=state.grade===9?'Ôn thi vào 10':'Ôn thi TN THPT';
+}
+function renderV10(){
+  const ex=buildV10(state.code,state.diff),bp=v10BP();
+  $('#examOut').innerHTML=prettyMath(v10HTML(ex));
+  $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
+  $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
+  $('#scopeHint').textContent='Toàn bộ chương trình Toán 9 (Kết nối tri thức), trọng tâm như đề tuyển sinh vào lớp 10 của nhiều tỉnh.';
+  $('#diffHint').textContent={co_ban:'Chọn dạng dễ nhất trong mỗi ý, hợp với học sinh trung bình.',chuan:'Mức thường gặp trong đề thi thật; không có câu vận dụng cao.',nang_cao:'Ưu tiên dạng vận dụng và vận dụng cao, hợp với học sinh khá giỏi.'}[state.diff];
+  $('#histHint').textContent='';
+  $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
+  document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
+  $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
+  $('#structHint').textContent='Đề ôn thi vào lớp 10 theo cấu trúc chung: 100% tự luận, 6 bài, 10 điểm, 120 phút.';$('#structWarn').textContent='';
+  $('#csBox').hidden=true;$('#struct').disabled=true;
+  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh, không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
+  termRadios();
 }
 function syncInputs(){
   document.querySelectorAll('input[name=grade]').forEach(i=>i.checked=+i.value===state.grade);
@@ -16363,7 +16489,7 @@ $('#struct').addEventListener('change',e=>{
 ['n1','n2','n3','n4'].forEach(k=>$('#cs_'+k).addEventListener('input',e=>{state.cs[k]=e.target.value===''?NaN:+e.target.value;update()}));
 ['p1','p3'].forEach(k=>$('#cs_'+k).addEventListener('change',e=>{state.cs[k]=+e.target.value;update()}));
 $('#newBtn').addEventListener('click',()=>{
-  if(state.mode==='ws'){let c=String(100+Math.floor(Math.random()*880));if(c===state.code)c=String(100+(+c-100+1)%880);state.code=c;syncInputs();update();return}
+  if(state.mode==='ws'||isV10()){let c=String(100+Math.floor(Math.random()*880));if(c===state.code)c=String(100+(+c-100+1)%880);state.code=c;syncInputs();update();return}
   const b=pickFreshCode(state.term,state.diff,loadHist(),150,Math.random,curStruct());
   let c=b?b.c:String(100+Math.floor(Math.random()*880));
   if(c===state.code)c=String(100+(+c-100+1)%880);
@@ -16388,7 +16514,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
+    const kindTxt=isV10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}

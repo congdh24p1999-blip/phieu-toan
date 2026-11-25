@@ -18,7 +18,8 @@ if(!['gk1','ck1','gk2','ck2','tn'].includes(state.kind))state.kind='gk1';
 Object.defineProperty(state,'term',{get(){return state.grade===8?state.kind:state.grade+state.kind},enumerable:false});
 /* Chỉ lớp có đề học kì II mới chọn được kì II; các lớp khác quay về kì I tương ứng */
 const termOf=(g,k)=>g===8?k:g+k;
-function fixKind(){if(!BLUEPRINT[state.term])state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!BLUEPRINT[state.term])state.kind='gk1'}
+const termOK=t=>!!BLUEPRINT[t]||t==='9tn';   /* 9tn: đề ôn thi vào lớp 10 (v10.js) */
+function fixKind(){if(!termOK(state.term))state.kind=state.kind==='tn'?'ck1':state.kind.replace('2','1');if(!termOK(state.term))state.kind='gk1'}
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
@@ -282,6 +283,7 @@ function setModeLabels(){
 function render(){
   setModeLabels();
   if(state.mode==='ws'){renderLessonBox();renderWS();return}
+  if(isV10()){renderV10();return}
   const err=state.struct==='custom'?structCheck(state.cs):'';
   let st=curStruct(),bp,ex;const base=state.code;
   ALLOW_EXT=!!state.ext;CUR_DIFF=state.diff;
@@ -306,7 +308,28 @@ function render(){
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
   $('#gradeHint').textContent=`Lớp ${bp.grade}, sách Kết nối tri thức, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}.`;
-  document.querySelectorAll('input[name=term]').forEach(i=>{const ok=!!BLUEPRINT[termOf(state.grade,i.value)];i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
+  termRadios();
+}
+function termRadios(){
+  document.querySelectorAll('input[name=term]').forEach(i=>{const ok=termOK(termOf(state.grade,i.value));i.disabled=!ok;i.parentElement.classList.toggle('off',!ok)});
+  $('#tnLbl').textContent=state.grade===9?'Ôn thi vào 10':'Ôn thi TN THPT';
+}
+function renderV10(){
+  const ex=buildV10(state.code,state.diff),bp=v10BP();
+  $('#examOut').innerHTML=prettyMath(v10HTML(ex));
+  $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
+  $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
+  $('#scopeHint').textContent='Toàn bộ chương trình Toán 9 (Kết nối tri thức), trọng tâm như đề tuyển sinh vào lớp 10 của nhiều tỉnh.';
+  $('#diffHint').textContent={co_ban:'Chọn dạng dễ nhất trong mỗi ý, hợp với học sinh trung bình.',chuan:'Mức thường gặp trong đề thi thật; không có câu vận dụng cao.',nang_cao:'Ưu tiên dạng vận dụng và vận dụng cao, hợp với học sinh khá giỏi.'}[state.diff];
+  $('#histHint').textContent='';
+  $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
+  document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
+  $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
+  $('#structHint').textContent='Đề ôn thi vào lớp 10 theo cấu trúc chung: 100% tự luận, 6 bài, 10 điểm, 120 phút.';$('#structWarn').textContent='';
+  $('#csBox').hidden=true;$('#struct').disabled=true;
+  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh, không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
+  termRadios();
 }
 function syncInputs(){
   document.querySelectorAll('input[name=grade]').forEach(i=>i.checked=+i.value===state.grade);
@@ -350,7 +373,7 @@ $('#struct').addEventListener('change',e=>{
 ['n1','n2','n3','n4'].forEach(k=>$('#cs_'+k).addEventListener('input',e=>{state.cs[k]=e.target.value===''?NaN:+e.target.value;update()}));
 ['p1','p3'].forEach(k=>$('#cs_'+k).addEventListener('change',e=>{state.cs[k]=+e.target.value;update()}));
 $('#newBtn').addEventListener('click',()=>{
-  if(state.mode==='ws'){let c=String(100+Math.floor(Math.random()*880));if(c===state.code)c=String(100+(+c-100+1)%880);state.code=c;syncInputs();update();return}
+  if(state.mode==='ws'||isV10()){let c=String(100+Math.floor(Math.random()*880));if(c===state.code)c=String(100+(+c-100+1)%880);state.code=c;syncInputs();update();return}
   const b=pickFreshCode(state.term,state.diff,loadHist(),150,Math.random,curStruct());
   let c=b?b.c:String(100+Math.floor(Math.random()*880));
   if(c===state.code)c=String(100+(+c-100+1)%880);
@@ -375,7 +398,7 @@ async function doWord(what,btn){
   const old=btn.textContent;btn.disabled=true;btn.textContent='Đang tạo file…';
   try{
     if(state.mode!=='ws')try{recordHist(buildExam(state.term,state.code,state.diff,curStruct()))}catch(e){}
-    const kindTxt={gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
+    const kindTxt=isV10()?'OnThiVao10':{gk1:'GK1',ck1:'CK1',gk2:'GK2',ck2:'CK2',tn:'OnThiTN'}[state.kind]||state.kind;
     const nm=state.mode==='ws'?`${what==='exam'?'Phieu':'DapAnPhieu'}_Toan${state.grade}_${wsIsTN(wsSel())?'OnThiTN_ChuyenDe'+wsSel().map(n=>n-100).join('-'):'Bai'+wsSel().join('-')}_ma${state.code}.docx`:`${{exam:'De',key:'DapAn',mx:'MaTran_DacTa'}[what]}_Toan${state.grade}_${kindTxt}_ma${state.code}.docx`;
     await DOCX.save($({exam:'#examOut',key:'#keyOut',mx:'#mxOut'}[what]),nm,{landscape:what==='mx'});
   }catch(e){alert('Chưa tạo được file Word: '+e.message)}

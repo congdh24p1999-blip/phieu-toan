@@ -235,6 +235,6 @@ TL9('tl9-6-real',2,'VD','real',[6],r=>{
   const f=r.pick([10,12,15]),p=r.pick([10,12,14,16]),M=r.int(15,40)*10,n=Math.floor((M-f)/p),g=r.pick([8,9,11]),q=r.int(5,9)*1000;
   return{kind:'tl',title:'Ứng dụng bất phương trình bậc nhất một ẩn',parts:[
     {pts:.5,html:`Giá cước taxi: ${f} nghìn đồng cho lượt lên xe và ${p} nghìn đồng cho mỗi ki-lô-mét. Với ${M} nghìn đồng, hành khách đi được tối đa bao nhiêu ki-lô-mét (số nguyên)?`},
-    {pts:.5,html:`Một bạn có ${g*q+r.int(1,q-1)} đồng, muốn mua một hộp bút giá ${(q*2).toLocaleString('vi-VN')} đồng và một số quyển vở giá ${q.toLocaleString('vi-VN')} đồng/quyển. Bạn đó mua được nhiều nhất bao nhiêu quyển vở?`}],
+    {pts:.5,html:`Một bạn có ${(g*q+r.int(1,q/1000-1)*1000).toLocaleString('vi-VN')} đồng, muốn mua một hộp bút giá ${(q*2).toLocaleString('vi-VN')} đồng và một số quyển vở giá ${q.toLocaleString('vi-VN')} đồng/quyển. Bạn đó mua được nhiều nhất bao nhiêu quyển vở?`}],
     sol:[ptxt([[`Gọi x là số ki-lô-mét: ${f} + ${p}x ≤ ${M} ⟺ x ≤ ${qh(Q(M-f,p))}.`,.25],[`Đi được tối đa ${n} km.`,.25]]),ptxt([[`Gọi y là số quyển vở: ${(2*q).toLocaleString('vi-VN')} + ${q.toLocaleString('vi-VN')}y ≤ số tiền đang có.`,.25],[`Mua được nhiều nhất ${g-2} quyển vở.`,.25]])],chk:()=>n>0};
 });

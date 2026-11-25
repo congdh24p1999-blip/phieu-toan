@@ -30,7 +30,7 @@ function mxData(v,bp){
   v.nlc.forEach((q,i)=>push(q,'nlc',i+1,1,bp.pn));
   v.ds.forEach((q,i)=>push(q,'ds',P.s2+i,4,4*PTS.dsItem));
   v.tln.forEach((q,i)=>push(q,'tln',P.s3+i,1,bp.pt));
-  v.tl.forEach((q,i)=>push(q,'tl',P.s4+i,1,qPts(q)));
+  v.tl.forEach((q,i)=>push(q,'tl',q.lbl||P.s4+i,1,qPts(q)));
   const LT=(typeof LESSON_TITLES!=='undefined'&&LESSON_TITLES[bp.grade])||{};
   const chs=bp.chapters.map(c=>({c,name:bp.tn?`Chủ đề ${c-100}. ${bp.chName[c]}`:`Chương ${ROM10[c]||c}. ${bp.chName[c]}`,rows:{}}));
   const byC=Object.fromEntries(chs.map(x=>[x.c,x]));
@@ -66,7 +66,7 @@ function mxHead(first,extraLast){
 }
 function mxCell(c,withNL){
   if(!c.n)return '<td></td>';
-  const qs=c.qs.map(n=>'C'+n).join(', ');
+  const qs=c.qs.map(n=>typeof n==='string'?n:'C'+n).join(', ');
   return `<td><b>${c.n}</b><br><small>${qs}</small>${withNL?`<br><small>${[...c.nl].join(', ')}</small>`:''}</td>`;
 }
 function mxFoot(d,withTotals){
@@ -89,7 +89,7 @@ function mxHTML(base,v0,bp){
   let h=`<article class="sheet mxs"><header class="mxh">${school?`<p class="mxsc">${school}</p>`:''}
 <h2>MA TRẬN VÀ BẢN ĐẶC TẢ ${esc(bp.title)}</h2>
 <p><b>MÔN: TOÁN – LỚP ${bp.grade} – NĂM HỌC ${esc(state.year)}</b></p>
-<p class="mxn">Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ GDĐT. Số thứ tự câu ghi theo mã đề ${esc(v0.code)}; thời gian làm bài ${esc(state.time)} phút.</p></header>`;
+<p class="mxn">Theo mẫu tại Phụ lục kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ GDĐT. Số thứ tự câu ghi theo mã đề ${esc(v0.code)}; thời gian làm bài ${bp.v10&&state.time===90?V10.time:esc(state.time)} phút.</p></header>`;
 
   /* ---------- I. Ma trận ---------- */
   h+=`<h3>I. Ma trận đề kiểm tra</h3><div class="mxwrap"><table class="kt mxt" data-w="3,9,14,${Array(15).fill(3.6).join(',')},5">${mxHead(['TT','Chủ đề/Chương','Nội dung/đơn vị kiến thức'],false)}<tbody>`;
@@ -116,7 +116,7 @@ function mxHTML(base,v0,bp){
   const lvTxt=['Biết','Hiểu','Vận dụng'].map((x,l)=>`${x} ${mxPctTxt(d.tot.lpts[l]*100/tot)}%`).join(', ');
   const kTxt=[['nlc','nhiều lựa chọn'],['ds','đúng – sai'],['tln','trả lời ngắn'],['tl','tự luận']].map(([k,x])=>`${x} ${mxPctTxt(d.tot.kpts[k]*100/tot)}%`).join(', ');
   h+=`<section class="mxnote"><p><b>Ghi chú</b></p><ul>
-<li>Mỗi ô ghi số câu hỏi (phần “Đúng – Sai” ghi số ý, mỗi câu gồm 4 ý); dòng dưới là số thứ tự câu trong đề, ví dụ C5 là câu 5.</li>
+<li>${bp.v10?'Mỗi ô ghi số ý; dòng dưới là vị trí trong đề, ví dụ II.1 là ý 1) của Bài II.':'Mỗi ô ghi số câu hỏi (phần “Đúng – Sai” ghi số ý, mỗi câu gồm 4 ý); dòng dưới là số thứ tự câu trong đề, ví dụ C5 là câu 5.'}</li>
 <li>Tỉ lệ điểm của đề này theo mức độ: ${lvTxt}; theo dạng câu: ${kTxt}. Mẫu của Bộ gợi ý khoảng 40% – 30% – 30% theo mức độ và 30% – 20% – 20% – 30% theo dạng câu; nhà trường được điều chỉnh cho phù hợp.</li>
 <li>Mức “Vận dụng” gồm cả các câu vận dụng cao. Mức độ do người soạn gán cho từng dạng câu, có thể khác cách phân loại của tổ chuyên môn.</li>
 <li>Dòng cuối mỗi ô của bản đặc tả ghi năng lực chủ yếu (gợi ý): TD – tư duy và lập luận toán học; MH – mô hình hoá toán học; GQVĐ – giải quyết vấn đề toán học.</li>
