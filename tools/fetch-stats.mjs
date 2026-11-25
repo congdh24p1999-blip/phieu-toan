@@ -32,7 +32,9 @@ const addDays = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d
 
 const today = vnDay();
 const from30 = addDays(today, -29) < SINCE ? SINCE : addDays(today, -29);
-const rng = (start, end = today) => ({ start: start + 'T00:00:00+07:00', end: end + 'T23:59:59+07:00' });
+/* GoatCounter nhận thời điểm RFC 3339 dạng UTC (…Z); đổi mốc 0 giờ, 24 giờ theo giờ Việt Nam sang UTC */
+const utc = (day, h) => new Date(Date.parse(day + 'T00:00:00Z') - 7 * 3600e3 + h * 3600e3).toISOString().replace(/\.\d+Z$/, 'Z');
+const rng = (start, end = today) => ({ start: utc(start, 0), end: utc(end, 24) > new Date().toISOString() ? new Date().toISOString().replace(/\.\d+Z$/, 'Z') : utc(end, 24) });
 
 const tot30 = await api('/stats/total', rng(addDays(today, -29)));
 const totAll = await api('/stats/total', rng(SINCE));
@@ -53,7 +55,7 @@ while (more && guard++ < 10) {
 }
 /* Một mục lỗi (ví dụ GoatCounter đổi tên mục) không làm hỏng cả lần cập nhật */
 const top = async (page, limit = 12) => {
-  try { return ((await api('/stats/' + page, { ...rng(SINCE), limit })).stats || []).map(s => ({ name: s.name || '(không rõ)', n: s.count })); }
+  try { return ((await api('/stats/' + page, { ...rng(SINCE), limit })).stats || []).map(s => ({ name: s.name || s.id || '(không rõ)', n: s.count })); }
   catch (e) { console.warn('Bỏ qua mục', page, '-', e.message); return []; }
 };
 

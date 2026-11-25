@@ -30,7 +30,7 @@ jobs:
         env:
           GOATCOUNTER_KEY: ${{ secrets.GOATCOUNTER_KEY }}
           GOATCOUNTER_SITE: xuongdetoan1
-        run: node tools/gc-debug.mjs; node tools/fetch-stats.mjs out/stats.json
+        run: node tools/fetch-stats.mjs out/stats.json
       - name: Ghi vào nhánh stats (một commit duy nhất, không làm rối lịch sử main)
         if: steps.key.outputs.ok == '1'
         run: |
