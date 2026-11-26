@@ -23,7 +23,7 @@ function fixKind(){if(!termOK(state.term))state.kind=state.kind==='tn'?'ck1':sta
 fixKind();
 const ROM10=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 if(!DIFFS[state.diff])state.diff='chuan';
-if(!(state.struct==='custom'||state.struct==='tl100'||STRUCTS[state.struct]))state.struct='chuan';
+if(!(state.struct==='custom'||state.struct==='tl100'||state.struct==='tlhcm'||STRUCTS[state.struct]))state.struct='chuan';
 if(!state.cs||typeof state.cs!=='object')state.cs={...STRUCTS.chuan};
 ['n1','n2','n3','n4','p1','p3'].forEach(k=>state.cs[k]=+state.cs[k]);
 let lastGoodStruct=STRUCTS.chuan;
@@ -318,7 +318,7 @@ function termRadios(){
   $('#tnLbl').textContent=state.grade===9?'Ôn thi vào 10':'Ôn thi TN THPT';
 }
 function renderV10(){
-  const ex=buildV10(state.code,state.diff),bp=v10BP();
+  const ex=buildV10(state.code,state.diff,state.struct),bp=v10BP();
   $('#examOut').innerHTML=prettyMath(v10HTML(ex));
   $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
@@ -328,9 +328,9 @@ function renderV10(){
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
-  $('#structHint').textContent='100% tự luận, 6 bài, 10 điểm, 120 phút. Có thể chọn cấu trúc có trắc nghiệm như nhiều tỉnh năm 2026.';$('#structWarn').textContent='';
+  const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'100% tự luận, 8 bài như đề TP.HCM 2026: hàm số y = ax²; Viète; thống kê – xác suất; ba bài toán thực tế; hình khối; hình học phẳng.':'100% tự luận, 5 bài như đề Hà Nội 2026: thống kê – xác suất; căn thức; phương trình, hệ phương trình, Viète; hình học (hình khối và hình phẳng); câu vận dụng cuối.')+' 10 điểm, 120 phút.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
-  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh (đã đối chiếu đề tuyển sinh năm 2026 của 26 tỉnh, thành phố), không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#noteTxt').textContent=(hcm?'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 TP.HCM 2026':'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 Hà Nội 2026')+'; dạng bài đã đối chiếu với đề năm 2026 của 26 tỉnh, thành phố. Số liệu, câu chữ do trang tự tạo, không chép đề thật. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
   $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
 }
@@ -382,8 +382,8 @@ const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả l
 function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
 function structOpts(){
   const v=isVao10();
-  if(!v&&(state.struct==='tl100'||state.struct==='mc40'||state.struct==='ls8'))state.struct='chuan';
-  const html=(v?'<option value="tl100">100% tự luận, 6 bài (gần kiểu Hà Nội, TP.HCM)</option><option value="mc40">Toàn trắc nghiệm 40 câu nhiều lựa chọn (như Tuyên Quang 2026)</option><option value="ls8">Trắc nghiệm 2 đ (8 câu) + tự luận 8 đ (như Lạng Sơn 2026)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+  if(!v&&(state.struct==='tl100'||state.struct==='tlhcm'||state.struct==='mc40'||state.struct==='ls8'))state.struct='chuan';
+  const html=(v?'<option value="tl100">100% tự luận, 5 bài (kiểu Hà Nội 2026)</option><option value="tlhcm">100% tự luận, 8 bài (kiểu TP.HCM 2026)</option><option value="mc40">Toàn trắc nghiệm 40 câu nhiều lựa chọn (như Tuyên Quang 2026)</option><option value="ls8">Trắc nghiệm 2 đ (8 câu) + tự luận 8 đ (như Lạng Sơn 2026)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
   const el=$('#struct');if(el.dataset.v!==String(v)){el.innerHTML=html;el.dataset.v=String(v)}
   el.value=state.struct;
 }

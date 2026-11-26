@@ -6,21 +6,37 @@
    định lí Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học
    (hình khối thực tế và hình học phẳng với đường tròn); bài toán thực tế.
    ================================================================ */
+const V10G3=['tl9-g3-tan','tl9-g3-alt','tl9-g3-diam','tl9-g3-sec','tl9-g3-semi','tl9-g3-rect','tl9-g3-chord','tl9-g3-bis','tl9-g3-leg','tl9-g3-square','tl9-g3-orth','tl9-g3-equit','tl9-g3-secs','tl9-g3-isos','tl9-g3-mc','tl9-g3-ptol'];   /* bài hình một hình, 3 ý, 2 điểm (core09i.js) */
+const V10STAT=['tl9-22-tab','tl9-24-grp','tl9-24-read','tl9-23-pie'],V10PROB=['tl9-26-coin','tl9-26-dice','tl9-26-ball','tl9-26-card','tl9-26-box2'];
+const V10SOLID=['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan','tl9-31-bucket','tl9-31-pipe','tl9-32-rise','tl9-31-roll','tl9-32-popcorn','tl9-32-cone','tl9-32-paint'];
+const V10WORD=['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree','tl9-3-bank','tl9-21-trip','tl9-3-mix','tl9-21-land'];
 const V10={
   title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',
   time:120,
+  /* Kiểu Hà Nội (đối chiếu đề 2026): thống kê – xác suất; căn thức; phương trình, hệ phương trình, Viète; hình học (hình khối + hình phẳng); câu vận dụng cuối */
   bai:[
+    {t:'Thống kê và xác suất',items:[[...V10STAT,...V10PROB]]},
     {t:'Biểu thức đại số chứa căn',items:[['tl9-8-calc','tl9-9-rad','tl9-7-cond'],['tl9-9-expr','tl9-9-expr2','tl9-9-ineq','tl9-9-max','tl9-9-min']]},
-    {t:'Hàm số y = ax²; phương trình, hệ phương trình',items:[['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac','tl9-18-graph'],['tl9-20-m','tl9-20-new','tl9-20-sqrt','tl9-20-min','tl9-20-abs']]},
-    {t:'Giải bài toán bằng cách lập phương trình hoặc hệ phương trình',items:[['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree','tl9-3-bank','tl9-21-trip','tl9-3-mix']]},
-    {t:'Thống kê và xác suất',items:[['tl9-22-tab','tl9-26-coin','tl9-24-grp','tl9-26-dice','tl9-26-ball','tl9-24-read','tl9-26-card','tl9-26-box2','tl9-23-pie']]},
-    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan','tl9-31-bucket','tl9-31-pipe','tl9-32-rise','tl9-31-roll','tl9-32-popcorn','tl9-32-cone'],['tl9-g3-tan','tl9-g3-alt','tl9-g3-diam','tl9-g3-sec','tl9-g3-semi','tl9-g3-rect','tl9-g3-chord','tl9-g3-bis','tl9-g3-leg','tl9-g3-square','tl9-g3-orth','tl9-g3-equit','tl9-g3-secs','tl9-g3-isos','tl9-g3-mc','tl9-g3-ptol']]},   /* ý 2: bài hình một hình, 3 ý (core09i.js) */
-    {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two','tl9-18-arch','tl9-12-scene','tl9-6-fence','tl9-6-plan']]}
+    {t:'Phương trình, hệ phương trình và bài toán thực tế',items:[V10WORD,['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac','tl9-18-graph'],['tl9-20-m','tl9-20-new','tl9-20-sqrt','tl9-20-min','tl9-20-abs']]},
+    {t:'Hình học',items:[V10SOLID,V10G3]},
+    {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two','tl9-18-arch','tl9-12-scene','tl9-6-fence','tl9-6-plan','tl9-6-cost']]}
   ]
 };
-const V10_ROM=['I','II','III','IV','V','VI'];
+/* Kiểu TP. Hồ Chí Minh (đối chiếu đề 2026): nhiều bài ngắn, phần lớn là bài toán thực tế; bài hình học phẳng cuối */
+const V10HCM=[
+  {t:'Hàm số y = ax²',items:[['tl9-18-graph','tl9-18-fn']]},
+  {t:'Phương trình bậc hai và định lí Viète',items:[['tl9-20-new','tl9-20-sqrt','tl9-20-m','tl9-20-min']]},
+  {t:'Thống kê và xác suất',items:[V10STAT,V10PROB]},
+  {t:'Giải bài toán bằng cách lập phương trình',items:[['tl9-21-land','tl9-21-rect','tl9-21-trip','tl9-21-move','tl9-21-tree']]},
+  {t:'Hình khối trong thực tế',items:[['tl9-32-paint','tl9-32-ice','tl9-31-tank','tl9-32-popcorn','tl9-31-bucket','tl9-32-ball','tl9-31-roll']]},
+  {t:'Giải bài toán bằng cách lập hệ phương trình',items:[['tl9-3-work','tl9-3-word','tl9-3-bank','tl9-3-mix','tl9-3-simple']]},
+  {t:'Bài toán thực tế',items:[['tl9-12-scene','tl9-12-real','tl9-18-arch','tl9-6-plan','tl9-6-real','tl9-18-fall','tl9-12-two']]},
+  {t:'Hình học phẳng',items:[V10G3]}
+];
+const V10LAYOUT={tl100:V10.bai,tlhcm:V10HCM};
+const V10_ROM=['I','II','III','IV','V','VI','VII','VIII'];
 const v10P=n=>(Math.round(n*100)/100).toFixed(n*10%1?2:1).replace('.',',');   /* 2 → 2,0; 1,5; 0,25 */
-function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'&&state.struct==='tl100'}
+function isV10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'&&!!V10LAYOUT[state.struct]}
 /* chọn một dạng trong nhóm theo độ khó: cơ bản lấy mức thấp nhất, chuẩn bỏ vận dụng cao, nâng cao lấy hai mức cao nhất */
 function v10Pick(ids,diff,rng,used){
   const R={NB:0,TH:1,VD:2,VDC:3};
@@ -32,13 +48,13 @@ function v10Pick(ids,diff,rng,used){
   if(!pool.length)pool=all;
   return pool[rng.int(0,pool.length-1)];
 }
-function buildV10(code,diff){
-  diff=DIFFS[diff]?diff:'chuan';
-  const used=new Set(),bai=[];let k=0;
-  V10.bai.forEach((b,bi)=>{
+function buildV10(code,diff,key){
+  diff=DIFFS[diff]?diff:'chuan';key=V10LAYOUT[key]?key:(typeof state!=='undefined'&&V10LAYOUT[state.struct]?state.struct:'tl100');
+  const used=new Set(),bai=[],K=key==='tl100'?'':key+'|';let k=0;
+  V10LAYOUT[key].forEach((b,bi)=>{
     const items=b.items.map((ids,ii)=>{
-      const id=v10Pick(ids,diff,new RNG(`v10|pick|${code}|${diff}|${bi}|${ii}`),used);used.add(id);
-      const t=T.tl[id],q=t.gen(new RNG(`v10|gen|${code}|${diff}|${bi}|${ii}|${id}`));
+      const id=v10Pick(ids,diff,new RNG(`v10|pick|${K}${code}|${diff}|${bi}|${ii}`),used);used.add(id);
+      const t=T.tl[id],q=t.gen(new RNG(`v10|gen|${K}${code}|${diff}|${bi}|${ii}|${id}`));
       q.id=id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.les)q.les=t.les;
       q.lbl=`${V10_ROM[bi]}.${ii+1}`;q.no=++k;return q;
     });
