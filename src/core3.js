@@ -46,9 +46,9 @@ const BLUEPRINT={
     chapters:[101,102,103,104,105,106,107,108,109,110],
     nlc:[101,102,102,103,103,103,104,104,105,107,108,109],ds:[101,102,106,103],tln:[101,110,104,102,106,106],tl:[],
     /* dạng bám sát từng câu đề chính thức 2025, được ưu tiên (khoảng 60%) ở từng vị trí của Phần II và III */
-    prefer:{ds:[['ds12-2-seg','ds12-1-cubic'],['tn-ds-decay','tn-ds-solar'],['ds12-19-test','ds12-19-factory'],['tn-ds-flight','tn-ds-motion','tn-ds-drone']],
-      tln:[['tn-t-profit2','tn-t-profit'],['tn-t-menu','tn-t-ellipse'],['tn-t-pyr','tn-t-room'],['tn-t-stand','tn-t-bowl','tn-t-bead'],['tn-t-books','tn-t-shelf'],['tn-t-cipher','tn-t-ap','tn-t-grid']]},
-    note:'Cấu trúc theo đề chính thức năm 2025, giữ nguyên năm 2026: Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
+    prefer:{ds:[['ds12-2-seg','ds12-1-cubic'],['tn-ds-decay','tn-ds-solar','tn-ds-pump'],['ds12-19-test','ds12-19-factory'],['tn-ds-flight','tn-ds-motion','tn-ds-drone','tn-ds-guard','tn-ds-tower']],
+      tln:[['tn-t-profit2','tn-t-profit'],['tn-t-menu','tn-t-ellipse','tn-t-truck','tn-t-sys3'],['tn-t-pyr','tn-t-room','tn-t-isotet'],['tn-t-stand','tn-t-bowl','tn-t-bead','tn-t-ring'],['tn-t-books','tn-t-shelf'],['tn-t-cipher','tn-t-ap','tn-t-lamp']]},
+    note:'Cấu trúc theo đề chính thức năm 2025 và 2026 (giữ nguyên): Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
   '10gk1':{...G10,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,2,3,3],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[3]}]},
