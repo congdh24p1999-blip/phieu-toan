@@ -83,6 +83,7 @@ th:first-child,td:first-child{text-align:left}
 thead th{font-weight:600;color:var(--muted);font-size:.84rem;background:var(--bg)}
 tbody tr:last-child td{border-bottom:0}
 tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
+.wraptbl td:first-child,.wraptbl th:first-child{white-space:normal}
 
 ul.plain{margin:0;padding-left:1.2em;display:grid;gap:6px}
 ul.plain li{max-width:66ch}
@@ -115,6 +116,7 @@ ul.plain li{max-width:66ch}
       <a href="#can-cu">Văn bản căn cứ</a>
       <a href="#cach-tao">Cách tạo đề</a>
       <a href="#ngan-hang">Ngân hàng dạng câu</a>
+      <a href="#doi-chieu">Đối chiếu đề thi</a>
       <a href="#gioi-han">Giới hạn</a>
       <a href="#bao-loi">Báo lỗi</a>
       <a href="#nhat-ky">Nhật ký cập nhật</a>
@@ -146,7 +148,7 @@ ul.plain li{max-width:66ch}
         </div>
         <div class="doc">
           <div class="id"><b>Đề tuyển sinh vào lớp 10 các tỉnh</b><span>Tham khảo, không phải văn bản quy định</span></div>
-          <div><p>Đề ôn thi vào lớp 10 theo dạng bài phổ biến của nhiều tỉnh, không sao chép đề của tỉnh nào. Cấu trúc từng tỉnh mỗi năm có thể đổi, thầy cô nên đối chiếu thông báo của Sở.</p></div>
+          <div><p>Đề ôn thi vào lớp 10 theo dạng bài phổ biến của nhiều tỉnh, đã đối chiếu với 21 đề năm 2026 (xem mục Đối chiếu); không sao chép đề của tỉnh nào. Cấu trúc từng tỉnh mỗi năm có thể đổi, thầy cô nên đối chiếu thông báo của Sở.</p></div>
         </div>
       </div>
     </section>
@@ -173,16 +175,40 @@ ul.plain li{max-width:66ch}
             <tr><td>Lớp 6</td><td>74</td><td>41</td><td>36</td><td>44</td><td>195</td></tr>
             <tr><td>Lớp 7</td><td>87</td><td>37</td><td>46</td><td>45</td><td>215</td></tr>
             <tr><td>Lớp 8</td><td>126</td><td>33</td><td>69</td><td>51</td><td>279</td></tr>
-            <tr><td>Lớp 9</td><td>96</td><td>51</td><td>63</td><td>66</td><td>276</td></tr>
+            <tr><td>Lớp 9</td><td>96</td><td>51</td><td>63</td><td>80</td><td>290</td></tr>
             <tr><td>Lớp 10</td><td>124</td><td>41</td><td>49</td><td>39</td><td>253</td></tr>
             <tr><td>Lớp 11</td><td>114</td><td>39</td><td>40</td><td>44</td><td>237</td></tr>
             <tr><td>Lớp 12</td><td>119</td><td>33</td><td>57</td><td>40</td><td>249</td></tr>
             <tr><td>Riêng cho ôn thi TN THPT</td><td>0</td><td>4</td><td>18</td><td>0</td><td>22</td></tr>
           </tbody>
-          <tfoot><tr><td>Tổng</td><td>740</td><td>279</td><td>378</td><td>329</td><td>1.726</td></tr></tfoot>
+          <tfoot><tr><td>Tổng</td><td>740</td><td>279</td><td>378</td><td>343</td><td>1.740</td></tr></tfoot>
         </table>
       </div>
       <p class="muted">Đề ôn thi tốt nghiệp THPT dùng chung các dạng của lớp 10, 11, 12 cộng với 22 dạng riêng ở dòng cuối.</p>
+    </section>
+
+    <section id="doi-chieu" aria-labelledby="h-doi-chieu">
+      <h2 id="h-doi-chieu">Đối chiếu với đề tuyển sinh vào lớp 10</h2>
+      <p>Tháng 11/2026, phần ôn thi vào lớp 10 được đối chiếu với 21 đề tuyển sinh vào lớp 10 môn Toán (không chuyên) năm học 2026 – 2027 của 21 tỉnh, thành phố. Mỗi đề được phân tích dạng bài, cách hỏi, mức độ và bối cảnh thực tế; không câu nào được chép vào ngân hàng.</p>
+      <p>Hình thức: 9 đề hoàn toàn tự luận, các đề còn lại có phần trắc nghiệm (8 – 20 câu) kèm tự luận; Khánh Hòa và Hải Phòng có thêm câu Đúng – Sai. Dạng bài lặp lại nhiều nhất trong 15 đề xem được đầy đủ phần tự luận:</p>
+      <div class="tblwrap">
+        <table class="wraptbl">
+          <thead><tr><th scope="col">Dạng bài</th><th scope="col">Số đề có</th></tr></thead>
+          <tbody>
+            <tr><td>Hình học phẳng nhiều ý với đường tròn (tứ giác nội tiếp, tiếp tuyến…)</td><td>15/15</td></tr>
+            <tr><td>Giải bài toán bằng cách lập phương trình, hệ phương trình (năng suất, chuyển động, mua hàng, tiền lãi…)</td><td>15/15</td></tr>
+            <tr><td>Rút gọn biểu thức chứa căn và câu hỏi tiếp theo</td><td>14/15</td></tr>
+            <tr><td>Định lí Viète: tính biểu thức của hai nghiệm, tìm tham số</td><td>13/15</td></tr>
+            <tr><td>Thống kê (bảng tần số ghép nhóm, biểu đồ) và xác suất (rút thẻ, lấy bóng, hai hộp)</td><td>13/15</td></tr>
+            <tr><td>Hình trụ, hình nón, hình cầu trong thực tế</td><td>12/15</td></tr>
+            <tr><td>Hàm số y = ax²: vẽ đồ thị, tìm hệ số, tìm điểm; parabol trong thực tế</td><td>7/15</td></tr>
+            <tr><td>Câu cuối vận dụng cao: tối ưu trong thực tế hoặc bất đẳng thức</td><td>7/15</td></tr>
+            <tr><td>Tỉ số lượng giác trong thực tế (thang, máy bay, hải đăng, tòa nhà…)</td><td>5/15</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Từ kết quả này, ngân hàng được bổ sung 14 dạng tự luận còn thiếu: rút gọn rồi tìm <i>x</i> để biểu thức nhỏ hơn 1 hoặc nhận giá trị nguyên; vẽ đồ thị <i>y</i> = <i>ax</i>²; cổng hình parabol; Viète với căn thức; vay vốn hai ngân hàng; chia đều chi phí khi thêm người; múc nước đầy bể; ống cống bê tông; thả bi vào cốc nước; thang, máy bay, hải đăng, cây gãy; đọc bảng tần số ghép nhóm; rút thẻ từ một hộp và từ hai hộp; rào vườn có diện tích lớn nhất.</p>
+      <p class="muted">Đề được đọc từ bản đăng lại trên MathVN (đề gốc do các Sở GD&amp;ĐT công bố): <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_01651198404.html" rel="noopener">Hà Nội</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-lop-10-mon-toan-so-gd.html" rel="noopener">TP. Hồ Chí Minh</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-lop-10-mon-toan-nam.html" rel="noopener">Đà Nẵng</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-lop-10-mon-toan-nam.html" rel="noopener">Cần Thơ</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-vao-lop-10-thpt-mon_0246480661.html" rel="noopener">Hải Phòng</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-lop-10-thpt-mon-toan.html" rel="noopener">Huế</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_0756639031.html" rel="noopener">Khánh Hòa</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_099177472.html" rel="noopener">Đồng Nai</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_01486209329.html" rel="noopener">Tây Ninh</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_01008437075.html" rel="noopener">Đồng Tháp</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-vao-lop-10-mon-toan.html" rel="noopener">Gia Lai</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-vao-lop-10-mon-toan_01033404735.html" rel="noopener">Đắk Lắk</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_01332884833.html" rel="noopener">Hà Tĩnh</a>, <a href="https://www.math.vn/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_0256586610.html" rel="noopener">Nghệ An</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-lop-10-mon-toan-nam_02113217770.html" rel="noopener">Thanh Hóa</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan-so.html" rel="noopener">Quảng Trị</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-lop-10-mon-toan-nam_02042696527.html" rel="noopener">Quảng Ninh</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-lop-10-thpt-mon-toan_02003105603.html" rel="noopener">Ninh Bình</a>, <a href="https://www.mathvn.com/2026/08/e-thi-tuyen-sinh-vao-lop-10-thpt-mon_0675626943.html" rel="noopener">Phú Thọ</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_0827059279.html" rel="noopener">Bắc Ninh</a>, <a href="https://www.mathvn.com/2026/09/e-thi-tuyen-sinh-vao-lop-10-mon-toan_0764075324.html" rel="noopener">Hưng Yên</a>. Với Cần Thơ, Khánh Hòa, Hải Phòng, Bắc Ninh, Hưng Yên, Đồng Tháp mới xem được phần trắc nghiệm.</p>
     </section>
 
     <section id="gioi-han" aria-labelledby="h-gioi-han">
@@ -202,6 +228,9 @@ ul.plain li{max-width:66ch}
     <section id="nhat-ky" aria-labelledby="h-nhat-ky">
       <h2 id="h-nhat-ky">Nhật ký cập nhật</h2>
       <div class="log">
+        <div class="day"><time datetime="2026-11-26">26/11/2026</time><ul>
+          <li>Đối chiếu phần ôn thi vào lớp 10 với 21 đề tuyển sinh năm 2026; thêm 14 dạng tự luận còn thiếu (xem mục Đối chiếu).</li>
+        </ul></div>
         <div class="day"><time datetime="2026-11-25">25/11/2026</time><ul>
           <li>Lớp 10: thêm 16 dạng câu Đúng – Sai mức Biết; mức Chuẩn nay đạt khoảng 40% Biết như các lớp khác.</li>
           <li>Thêm thẻ Ma trận: ma trận và bản đặc tả theo mẫu Công văn 7991, in hoặc tải Word khổ ngang.</li>

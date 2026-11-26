@@ -330,7 +330,7 @@ function renderV10(){
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   $('#structHint').textContent='100% tự luận, 6 bài, 10 điểm, 120 phút. Có thể chọn cấu trúc có trắc nghiệm như nhiều tỉnh năm 2026.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
-  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh, không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh (đã đối chiếu 21 đề tuyển sinh năm 2026), không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
   $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
 }

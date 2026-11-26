@@ -10,12 +10,12 @@ const V10={
   title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',
   time:120,
   bai:[
-    {t:'Biểu thức đại số chứa căn',items:[['tl9-8-calc','tl9-9-rad','tl9-7-cond'],['tl9-9-expr','tl9-9-expr2','tl9-9-max','tl9-9-min']]},
-    {t:'Phương trình, hệ phương trình',items:[['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac'],['tl9-20-m','tl9-20-new','tl9-20-min','tl9-20-abs']]},
-    {t:'Giải bài toán bằng cách lập phương trình hoặc hệ phương trình',items:[['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree']]},
-    {t:'Thống kê và xác suất',items:[['tl9-22-tab','tl9-26-coin','tl9-24-grp','tl9-26-dice','tl9-26-ball']]},
-    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan'],['tl9-g3-tan','tl9-g3-alt','tl9-g3-diam','tl9-g3-sec','tl9-g3-semi','tl9-g3-rect','tl9-g3-chord','tl9-g3-bis','tl9-g3-leg','tl9-g3-square','tl9-g3-orth','tl9-g3-equit','tl9-g3-secs','tl9-g3-isos','tl9-g3-mc','tl9-g3-ptol']]},   /* ý 2: bài hình một hình, 3 ý (core09i.js) */
-    {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two']]}
+    {t:'Biểu thức đại số chứa căn',items:[['tl9-8-calc','tl9-9-rad','tl9-7-cond'],['tl9-9-expr','tl9-9-expr2','tl9-9-ineq','tl9-9-max','tl9-9-min']]},
+    {t:'Hàm số y = ax²; phương trình, hệ phương trình',items:[['tl9-2-sys','tl9-19-solve','tl9-4-eq','tl9-2-param','tl9-4-frac','tl9-18-graph'],['tl9-20-m','tl9-20-new','tl9-20-sqrt','tl9-20-min','tl9-20-abs']]},
+    {t:'Giải bài toán bằng cách lập phương trình hoặc hệ phương trình',items:[['tl9-3-simple','tl9-21-rect','tl9-3-word','tl9-3-work','tl9-21-move','tl9-21-tree','tl9-3-bank','tl9-21-trip']]},
+    {t:'Thống kê và xác suất',items:[['tl9-22-tab','tl9-26-coin','tl9-24-grp','tl9-26-dice','tl9-26-ball','tl9-24-read','tl9-26-card','tl9-26-box2']]},
+    {t:'Hình học',items:[['tl9-31-tank','tl9-32-ball','tl9-32-ice','tl9-15-fan','tl9-31-bucket','tl9-31-pipe','tl9-32-rise'],['tl9-g3-tan','tl9-g3-alt','tl9-g3-diam','tl9-g3-sec','tl9-g3-semi','tl9-g3-rect','tl9-g3-chord','tl9-g3-bis','tl9-g3-leg','tl9-g3-square','tl9-g3-orth','tl9-g3-equit','tl9-g3-secs','tl9-g3-isos','tl9-g3-mc','tl9-g3-ptol']]},   /* ý 2: bài hình một hình, 3 ý (core09i.js) */
+    {t:'Bài toán thực tế',items:[['tl9-18-fall','tl9-6-simple','tl9-6-real','tl9-12-real','tl9-12-two','tl9-18-arch','tl9-12-scene','tl9-6-fence']]}
   ]
 };
 const V10_ROM=['I','II','III','IV','V','VI'];
