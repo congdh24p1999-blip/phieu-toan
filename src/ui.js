@@ -443,4 +443,4 @@ $('#lesBox').addEventListener('change',e=>{
 });
 $('#lesNone').addEventListener('click',()=>{document.querySelectorAll('#lesBox input').forEach(i=>i.checked=false);state.les[state.grade]=[];saveState();renderLessonBox();renderWS()});
 /* trang làm bài online (?lam=1) không vẽ trang tạo đề */
-if(new URLSearchParams(location.search).get('lam')!=='1'){syncInputs();setTab(state.tab);render();hdSum();}
+if(!['lam','tuluyen'].some(k=>new URLSearchParams(location.search).get(k)==='1')){syncInputs();setTab(state.tab);render();hdSum();}

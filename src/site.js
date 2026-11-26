@@ -40,8 +40,16 @@ function track(name){
   if(!SITE_CFG.goat||!window.goatcounter||!window.goatcounter.count)return;
   try{window.goatcounter.count({path:`${name}/${state.mode==='ws'?'phieu-':''}${state.grade}-${state.kind}`,title:name,event:true})}catch(e){}
 }
+/* sự kiện tự đặt đường dẫn (trang làm bài, tự luyện); không gửi họ tên hay bài làm */
+function trackEv(path){
+  if(!SITE_CFG.goat||!window.goatcounter||!window.goatcounter.count)return;
+  try{window.goatcounter.count({path,title:path.split('/')[0],event:true})}catch(e){}
+}
 (function(){
   if(!SITE_CFG.goat)return;
+  /* lượt xem trang: bỏ phần ?… của đường dẫn (có thể chứa địa chỉ thu điểm của giáo viên), chỉ ghi loại trang */
+  const Q=new URLSearchParams(location.search),view=Q.get('lam')==='1'?(Q.get('luyen')==='1'?'luyen':'lam-bai'):Q.get('tuluyen')==='1'?'tu-luyen':'';
+  window.goatcounter=Object.assign(window.goatcounter||{},{path:p=>p.split('?')[0]+view});
   const s=document.createElement('script');s.async=true;s.src='https://gc.zgo.at/count.js';
   s.dataset.goatcounter=`https://${SITE_CFG.goat}.goatcounter.com/count`;document.head.appendChild(s);
   [['#printExam','in-de'],['#printKey','in-dap-an'],['#wordExam','word-de'],['#wordKey','word-dap-an'],['#printMx','in-ma-tran'],['#wordMx','word-ma-tran']].forEach(([id,n])=>{const b=$(id);if(b)b.addEventListener('click',()=>track(n))});

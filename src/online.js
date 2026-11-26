@@ -73,7 +73,8 @@ function qzBuild(P){
   }
   const practice=P.get('luyen')==='1',time=practice?0:Math.min(180,Math.max(0,+P.get('t')||0));
   const gm=(P.get('gs')||'').match(/^[\w-]{20,120}$/);
-  return{items,base:items.map(it=>it.q),info,chName,tlOrig,time,sol:practice||P.get('sol')!=='0',key,keepTL,practice,tn4,gs:gm?gm[0]:''};
+  const tag=`${practice?'luyen':'kt'}-${g}-${P.get('m')==='ws'?'phieu':(P.get('k')||'gk1')}${keepTL?'-tlg':''}${gm?'-sheet':''}${P.get('tu')==='1'?'-tu':''}`;
+  return{items,base:items.map(it=>it.q),info,chName,tlOrig,time,sol:practice||P.get('sol')!=='0',key,keepTL,practice,tn4,gs:gm?gm[0]:'',tu:P.get('tu')==='1',tag};
 }
 /* câu khác cùng dạng (chế độ luyện tập): sinh lại từ đúng dạng câu đó với hạt giống mới */
 function qzCanRegen(it){return !!(T[it.kind]&&T[it.kind][it.q.id])}
@@ -128,6 +129,16 @@ function qzScore(){
   const self=res.reduce((a,r)=>a+(r.self?r.got:0),0);
   return{res,gr,got,tot,all,self,ungraded:gr.some(x=>!x),sc10:tot?Math.round(got/tot*1000)/100:0,nOK:res.filter(r=>r.ok).length};
 }
+
+/* ---------- Đếm lượt dùng (không gửi họ tên, bài làm) và lịch sử làm bài trên máy ---------- */
+function qzTrack(n,once){if(once){QZ.once=QZ.once||{};if(QZ.once[n])return;QZ.once[n]=1}if(typeof trackEv==='function')trackEv(`${n}/${QZ.m.tag}`)}
+function qzHist(){try{const L=JSON.parse(localStorage.getItem('xdt-hist')||'[]');return Array.isArray(L)?L:[]}catch(e){return[]}}
+function qzHistPut(extra){
+  try{const m=QZ.m,L=qzHist().filter(x=>x.k!==m.key);
+    L.unshift(Object.assign({k:m.key,q:location.search,t:m.info.title,s:m.info.sub,c:m.info.code,p:m.practice?1:0,at:Date.now()},extra));
+    localStorage.setItem('xdt-hist',JSON.stringify(L.slice(0,12)))}catch(e){}
+}
+function qzHistDone(){const S=qzScore();qzHistPut({done:1,sc:S.ungraded?null:S.sc10,got:r2(S.got),tot:S.tot})}
 
 /* ---------- Giao diện học sinh ---------- */
 const QZ={};
@@ -224,7 +235,7 @@ function qzStartView(){
   if(tl)what.push(`${tl} câu trả lời ngắn thay cho phần tự luận của đề in`);
   if(tlg)what.push(`${tlg} câu tự luận làm ra giấy${m.sol?', nộp xong tự chấm theo hướng dẫn chấm':''}`);
   const how=m.practice?'Làm câu nào bấm Kiểm tra câu đó để biết đúng sai và xem lời giải ngay; câu nào sai có thể làm thêm câu khác cùng dạng.':'Nộp bài là có điểm'+(m.sol?' và lời giải':'')+' ngay.';
-  qzEl().innerHTML=`<div class="qzwrap"><div class="qzcard qzstart">
+  qzEl().innerHTML=`<div class="qzwrap">${m.tu?'<a class="qzback" href="?tuluyen=1">← Chọn bài khác</a>':''}<div class="qzcard qzstart">
     <p class="qzbrand">Xưởng đề Toán · ${m.practice?'Luyện tập online':'Làm bài online'}</p>
     <h1>${esc(m.info.title)}</h1><p class="qzsub">${esc(m.info.sub)} · Mã ${esc(m.info.code)}</p>
     <ul class="qzfacts"><li><b>${n}</b> câu</li><li><b>${m.time?m.time+' phút':'Không giới hạn'}</b> thời gian</li><li><b>${pts(tot)}</b> điểm</li></ul>
@@ -237,9 +248,9 @@ function qzStartView(){
   </div></div>`;
   const nm=()=>({name:document.getElementById('qzName').value.trim(),cls:document.getElementById('qzCls').value.trim()});
   const need=()=>{if(m.gs&&!nm().name){const e=document.getElementById('qzErr');e.hidden=false;document.getElementById('qzName').focus();return false}return true};
-  const go=document.getElementById('qzGo');if(go)go.onclick=()=>{if(!need())return;QZ.s=saved?Object.assign(saved,nm()):qzNewState(nm());qzFix();qzSave();qzApplyReps();qzTestView()};
+  const go=document.getElementById('qzGo');if(go)go.onclick=()=>{if(!need())return;QZ.s=saved?Object.assign(saved,nm()):qzNewState(nm());qzFix();qzSave();qzApplyReps();qzTrack('hs-bat-dau');qzHistPut({done:0});qzTestView()};
   const see=document.getElementById('qzSee');if(see)see.onclick=()=>{QZ.s=Object.assign(saved,nm());qzFix();qzSave();qzApplyReps();qzResultView()};
-  const redo=document.getElementById('qzRedo');if(redo)redo.onclick=()=>{if(!need())return;QZ.s=qzNewState(nm());qzSave();QZ.saved=null;qzApplyReps();qzTestView()};
+  const redo=document.getElementById('qzRedo');if(redo)redo.onclick=()=>{if(!need())return;QZ.s=qzNewState(nm());qzSave();QZ.saved=null;qzApplyReps();qzTrack('hs-bat-dau');qzHistPut({done:0});qzTestView()};
 }
 function qzFix(){const s=QZ.s;s.ans=s.ans||{};s.chk=s.chk||{};s.rep=s.rep||{};s.tick=s.tick||{};if(!s.aid)s.aid=(s.start||Date.now()).toString(36)+Math.random().toString(36).slice(2,7)}
 function qzTestView(){
@@ -269,8 +280,8 @@ function qzClick(e){
   if(QZ.s.done)return;
   const act=e.target.closest('[data-act]');
   if(act){const sec=act.closest('.qzq'),i=+sec.dataset.i;
-    if(act.dataset.act==='chk'){QZ.s.chk[i]=1;qzSave();qzRenderQ(i);qzUpdateBar();const s2=document.getElementById('qzq'+i);if(s2){const b=s2.querySelector('[data-act],input[type=checkbox]');if(b)b.focus({preventScroll:true})}}
-    if(act.dataset.act==='new'){QZ.s.rep[i]=(QZ.s.rep[i]||0)+1;delete QZ.s.chk[i];delete QZ.s.ans[i];delete QZ.s.tick[i];
+    if(act.dataset.act==='chk'){qzTrack('hs-kiem-tra',1);QZ.s.chk[i]=1;qzSave();qzRenderQ(i);qzUpdateBar();const s2=document.getElementById('qzq'+i);if(s2){const b=s2.querySelector('[data-act],input[type=checkbox]');if(b)b.focus({preventScroll:true})}}
+    if(act.dataset.act==='new'){qzTrack('hs-cau-khac',1);QZ.s.rep[i]=(QZ.s.rep[i]||0)+1;delete QZ.s.chk[i];delete QZ.s.ans[i];delete QZ.s.tick[i];
       try{const q=qzRegen(QZ.m.items[i],`luyen|${QZ.m.key}|${i}|${QZ.s.rep[i]}`);if(q){QZ.m.items[i].q=q;if(QZ.m.items[i].kind==='tl')QZ.m.items[i].orig=q}}catch(err){console.error(err)}
       qzSave();qzRenderQ(i);qzUpdateBar();const s2=document.getElementById('qzq'+i);if(s2){s2.scrollIntoView({block:'start'});const f=s2.querySelector('button,input');if(f)f.focus({preventScroll:true})}}
     return}
@@ -287,9 +298,9 @@ function qzInput(e){
 /* đánh dấu bước làm đúng trong hướng dẫn chấm (tự chấm câu tự luận) */
 function qzTick(e){
   const t=e.target;if(!t.matches('.qzrb input[type=checkbox]'))return;
-  const i=+t.dataset.i;QZ.s.tick[i]=QZ.s.tick[i]||{};if(t.checked)QZ.s.tick[i][t.dataset.s]=1;else delete QZ.s.tick[i][t.dataset.s];qzSave();
+  qzTrack('hs-tu-cham',1);const i=+t.dataset.i;QZ.s.tick[i]=QZ.s.tick[i]||{};if(t.checked)QZ.s.tick[i][t.dataset.s]=1;else delete QZ.s.tick[i][t.dataset.s];qzSave();
   const g=document.querySelector(`.qzsg[data-i="${i}"]`);if(g)g.textContent=pts(r2(qzSelf(i)));
-  if(document.getElementById('qzScoreBox'))qzScoreBoxRender();
+  if(document.getElementById('qzScoreBox')){qzScoreBoxRender();if(QZ.s.done)qzHistDone()}
   const sb=document.getElementById('qzSendBtn');if(sb&&QZ.m.gs){sb.hidden=false;sb.textContent='Gửi lại kết quả (đã tự chấm)'}
 }
 function qzSubmit(auto){
@@ -299,7 +310,7 @@ function qzSubmit(auto){
     if(m.practice){const miss=n-Object.keys(QZ.s.chk).length;if(miss&&!confirm(`Còn ${miss}/${n} câu em chưa kiểm tra. Em vẫn kết thúc lượt luyện tập?`))return}
     else{const miss=m.items.filter((it,i)=>it.kind!=='tl'&&!qzDone(i)).length;if(miss&&!confirm(`Còn ${miss}/${m.items.filter(it=>it.kind!=='tl').length} câu chưa làm xong. Em vẫn nộp bài?`))return}
   }
-  clearInterval(QZ.tick);QZ.s.done=true;QZ.s.end=Date.now();QZ.s.auto=!!auto;qzSave();qzResultView();
+  clearInterval(QZ.tick);QZ.s.done=true;QZ.s.end=Date.now();QZ.s.auto=!!auto;qzSave();qzTrack(auto?'hs-het-gio':'hs-nop');qzHistDone();qzResultView();
   if(m.gs)qzSend();
 }
 function qzAnsTxt(it,a){
@@ -327,7 +338,7 @@ function qzScoreBoxHTML(){
 function qzScoreBoxRender(){const b=document.getElementById('qzScoreBox');if(b)b.innerHTML=qzScoreBoxHTML()}
 function qzResultView(){
   const m=QZ.m,used=Math.round(((QZ.s.end||Date.now())-QZ.s.start)/60000),hasTLg=m.items.some(it=>it.kind==='tl');
-  let h=`<div class="qzwrap"><div class="qzcard qzres">
+  let h=`<div class="qzwrap">${m.tu?'<a class="qzback noprint" href="?tuluyen=1">← Chọn bài khác</a>':''}<div class="qzcard qzres">
     <p class="qzbrand">Xưởng đề Toán · ${m.practice?'Tổng kết lượt luyện tập':'Kết quả làm bài online'}</p>
     <h1>${esc(m.info.title)}</h1><p class="qzsub">${esc(m.info.sub)} · Mã ${esc(m.info.code)}</p>
     <p class="qzwho">${QZ.s.name?`Học sinh: <b>${esc(QZ.s.name)}</b>`:'Học sinh: ……………………'}${QZ.s.cls?` · Lớp <b>${esc(QZ.s.cls)}</b>`:''} · ${m.practice?'Kết thúc':'Nộp'} lúc ${new Date(QZ.s.end).toLocaleString('vi-VN')}${QZ.s.auto?' (hết giờ, tự nộp)':''} · Thời gian làm ${used<1?'dưới 1':used} phút</p>
@@ -382,7 +393,7 @@ function qzSend(){
   const body=JSON.stringify(qzPayload());
   /* Apps Script không trả tiêu đề CORS: gửi dạng text/plain, no-cors; trình duyệt không đọc được phản hồi nên chỉ biết là đã gửi đi */
   fetch(gsUrl(m.gs),{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:body.length<60000})
-    .then(()=>{QZ.s.sent={ok:true,at:Date.now()};qzSave();qzSendStatus()},()=>{QZ.s.sent={ok:false,at:Date.now()};qzSave();qzSendStatus()});
+    .then(()=>{QZ.s.sent={ok:true,at:Date.now()};qzSave();qzSendStatus();qzTrack('hs-gui-sheet',1)},()=>{QZ.s.sent={ok:false,at:Date.now()};qzSave();qzSendStatus()});
 }
 
 function qzInit(){
@@ -392,7 +403,7 @@ function qzInit(){
   if(!QZ.m.items.length){el.innerHTML='<div class="qzwrap"><div class="qzcard"><h1>Bài này chưa có câu hỏi</h1><p>Em hỏi lại thầy cô đường dẫn khác nhé.</p></div></div>';return true}
   const saved=qzLoad();QZ.saved=saved;
   if(saved){QZ.s=saved;qzFix();qzApplyReps()}
-  if(saved&&!saved.done&&QZ.m.time&&Date.now()>saved.start+QZ.m.time*60000){QZ.s.done=true;QZ.s.end=saved.start+QZ.m.time*60000;QZ.s.auto=true;qzSave();if(QZ.m.gs&&!QZ.s.sent){qzResultView();qzSend();return true}}
+  if(saved&&!saved.done&&QZ.m.time&&Date.now()>saved.start+QZ.m.time*60000){QZ.s.done=true;QZ.s.end=saved.start+QZ.m.time*60000;QZ.s.auto=true;qzSave();qzHistDone();if(QZ.m.gs&&!QZ.s.sent){qzResultView();qzSend();return true}}
   if(saved&&saved.done&&QZ.m.gs&&saved.sent&&!saved.sent.ok){qzResultView();return true}
   qzStartView();return true;
 }
@@ -407,7 +418,7 @@ function qzShareOpen(){
   let hasTL=false;try{hasTL=qzBuild(qzLinkParams({time:0,sol:true})).items.some(it=>it.orig)}catch(e){}
   dlg.dataset.tl=hasTL?'1':'';dlg.querySelector('#qzTLrow').hidden=!hasTL;
   const g=dlg.querySelector('#qzGs');if(!g.value)g.value=qzGsGet();
-  qzShareUpdate();dlg.hidden=false;dlg.querySelector('#qzLink').focus();
+  qzShareUpdate();dlg.hidden=false;dlg.querySelector('#qzLink').focus();if(typeof track==='function')track('online-mo');
 }
 function qzShareUpdate(){
   const dlg=document.getElementById('qzShare'),$d=s=>dlg.querySelector(s);
@@ -430,10 +441,12 @@ function qzShareUpdate(){
   b.addEventListener('click',qzShareOpen);
   dlg.addEventListener('change',qzShareUpdate);
   dlg.querySelector('#qzGs').addEventListener('input',qzShareUpdate);
+  dlg.querySelector('#qzOpen').addEventListener('click',()=>{if(typeof track==='function')track('online-mo-thu')});
   dlg.querySelector('#qzClose').addEventListener('click',()=>{dlg.hidden=true;b.focus()});
   dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){dlg.hidden=true;b.focus()}});
   dlg.addEventListener('click',e=>{if(e.target===dlg){dlg.hidden=true;b.focus()}});
   dlg.querySelector('#qzCopy').addEventListener('click',e=>{const u=dlg.querySelector('#qzLink').value,btn=e.currentTarget;
     const ok=()=>{btn.textContent='Đã chép';setTimeout(()=>btn.textContent='Chép đường dẫn',2000)};
+    const P=new URLSearchParams(u.split('?')[1]||'');if(typeof trackEv==='function')trackEv(`online-chep/${P.get('luyen')?'luyen':'kt'}${P.get('tl')?'-tlg':''}${P.get('gs')?'-sheet':''}/${state.mode==='ws'?'phieu-':''}${state.grade}-${state.kind}`);
     try{navigator.clipboard.writeText(u).then(ok,()=>{dlg.querySelector('#qzLink').select();document.execCommand('copy');ok()})}catch(_){dlg.querySelector('#qzLink').select();document.execCommand('copy');ok()}});
 })();

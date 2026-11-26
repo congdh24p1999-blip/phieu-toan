@@ -10,12 +10,15 @@ Trang đáp án có bảng đối chiếu mỗi câu với bài học trong SGK 
 
 **Làm bài online:** bấm "Cho học sinh làm online" để lấy đường dẫn, mã QR của đề hoặc phiếu đang xem. Hai chế độ: làm bài kiểm tra (hẹn giờ, nộp là có điểm, bảng điểm theo phần, lời giải) và luyện tập (kiểm tra từng câu, làm câu khác cùng dạng). Câu tự luận được thay bằng câu trả lời ngắn cùng chương, hoặc giữ nguyên để học sinh làm ra giấy rồi tự chấm theo hướng dẫn chấm. Giáo viên có thể thu điểm về Google Sheet của mình (xem `huong-dan-thu-diem.html`, mã Apps Script ở `src/thu-diem.gs`).
 
+**Tự luyện cho học sinh:** https://congdh24p1999-blip.github.io/phieu-toan/tu-luyen.html — học sinh tự chọn lớp, bài học hoặc đề (kiểm tra, ôn thi vào 10, tốt nghiệp), mức độ, rồi luyện ngay; lịch sử làm bài lưu trên máy.
+
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
 - `index.html`: Xưởng đề Toán (trang chính).
 - `can-cu.html`: Căn cứ và phương pháp (văn bản căn cứ, cách tạo và kiểm tra đề, giới hạn, nhật ký cập nhật).
 - `de-thi.html`, `phieu-lop-1.html`: chỉ chuyển hướng về trang chính, để link cũ vẫn dùng được (phiếu lớp 1 đã gỡ khỏi trang; bản cũ còn trong lịch sử git).
 - `index.html?lam=1&...`: chế độ làm bài online (đề được tạo lại từ tham số trên đường dẫn).
+- `tu-luyen.html`: đường dẫn ngắn tới trang Tự luyện (`index.html?tuluyen=1`).
 - `huong-dan-thu-diem.html`: hướng dẫn tạo bảng Google Sheet nhận kết quả làm bài online.
 - Toàn bộ chạy trên trình duyệt (HTML, CSS, JavaScript thuần), không cần máy chủ; bài tập tự soạn, không sao chép SGK.
 
