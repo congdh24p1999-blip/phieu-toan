@@ -40,6 +40,8 @@ const BLUEPRINT={
   '9tn':{...G9,hk:0,v10:true,short:'Ôn thi vào lớp 10',title:'ĐỀ ÔN THI TUYỂN SINH VÀO LỚP 10',scope:'Cả chương trình Toán 9, Chương I – X (Kết nối tri thức)',chapters:[1,2,3,4,5,6,7,8,9,10],
     nlc:[1,2,3,3,4,5,6,6,7,8,9,10],ds:[6,7],tln:[1,4,6,10],
     tl:[{role:'rad',chs:[3]},{role:'real',chs:[1,2,6]},{role:'geo',chs:[5,9]}],
+    /* khung toàn trắc nghiệm 12 + 4 + 6 (Hải Phòng, Lào Cai 2026): Đúng – Sai và trả lời ngắn lấy theo đúng các mạch nội dung của hai đề đó */
+    fixed:{'12-0.25-4-6-0.5-0':{ds:[[7,2],[3],[5,9],[6,2]],tln:[[1,2],[6],[7,8],[5,9],[10],[6,3]]}},
     note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
@@ -200,7 +202,9 @@ function bpOf(term,st){
   const ck=term+'|'+sk;if(BP_CACHE[ck])return BP_CACHE[ck];
   const w={};base.nlc.forEach(c=>w[c]=(w[c]||0)+1);
   const warn=[],lists={};
+  const fx=base.fixed&&base.fixed[sk];
   [['nlc',s.n1],['ds',s.n2],['tln',s.n3]].forEach(([k,n])=>{
+    if(fx&&fx[k]&&fx[k].length===n){lists[k]=fx[k];return}
     const pool=poolOf(base,k),cap={};
     base.chapters.forEach(c=>cap[c]=new Set(pool.filter(t=>t.ch===c).map(t=>t.grp)).size);
     const r=apportion(n,w,cap);
@@ -319,8 +323,12 @@ function buildExam(term,base,diff,st){
   const order=bp.chapters;
   nlc.sort((a,b)=>(mcVD?(a.lv==='VD')-(b.lv==='VD'):0)||order.indexOf(a.ch)-order.indexOf(b.ch)||LV_RANK[a.lv]-LV_RANK[b.lv]);
   const PF=bp.prefer||{};
-  const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,lvProp(byT(D.ds),bp.ds.length)[i],PF.ds&&PF.ds[i])));
-  const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,lvProp(byT(D.tln),bp.tln.length)[i],PF.tln&&PF.tln[i])));
+  /* Ôn thi vào 10 có từ 4 câu Đúng – Sai (Hải Phòng, Lào Cai 2026): các câu này ở mức Hiểu – Vận dụng như đề thật. */
+  const dsLv=bp.v10&&bp.ds.length>=4?lvProp({co_ban:['NB','TH','TH','VD'],chuan:['TH','TH','VD','VD'],nang_cao:['TH','VD','VD','VD']}[diff]||['TH','TH','VD','VD'],bp.ds.length):lvProp(byT(D.ds),bp.ds.length);
+  const inCh=ch=>t=>Array.isArray(ch)?ch.includes(t.ch):t.ch===ch;
+  const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',inCh(ch),dsLv[i],PF.ds&&PF.ds[i])));
+  const tlnLv=bp.v10&&bp.tln.length>=6?lvProp({co_ban:['TH','TH','TH','VD','VD','VD'],chuan:['TH','VD','TH','VD','VD','VD'],nang_cao:['VD','VD','VD','VD','VD','VD']}[diff]||['TH','VD','TH','VD','VD','VD'],bp.tln.length):lvProp(byT(D.tln),bp.tln.length);
+  const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',inCh(ch),tlnLv[i],PF.tln&&PF.tln[i])));
   const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),lvTL(byT(D.tl),bp.tl.length)[i])));
   /* Ôn thi vào 10 có từ 4 câu tự luận: gộp hai câu 1 điểm (ưu tiên câu hình) thành một bài hình học
      hoàn chỉnh 3 ý, 2 điểm (core09i.js), giống phần hình trong đề thật. Khung đề trả về theo đề này. */
