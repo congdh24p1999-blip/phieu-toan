@@ -43,7 +43,11 @@ const BLUEPRINT={
     /* khung toàn trắc nghiệm 12 + 4 + 6 (Hải Phòng, Lào Cai 2026): Đúng – Sai và trả lời ngắn lấy theo đúng các mạch nội dung của hai đề đó */
     fixed:{'12-0.25-4-6-0.5-0':{ds:[[7,2],[3],[5,9],[6,2]],tln:[[1,2],[6],[7,8],[5,9],[10],[6,3]]},
       /* khung mặc định 12 + 2 + 4 + 3 theo đúng mạch nội dung đề Khánh Hòa 2026 (đối chiếu đề mã 02) */
-      '12-0.25-2-4-0.5-3':{nlc:[1,3,4,5,6,6,7,7,8,8,9,9],ds:[7,6],tln:[3,2,10,5],tl:[{role:'alg',chs:[6,1]},{role:'real',chs:[6,1]},{role:'geo',chs:[5,9]}]}},
+      /* 12 nhiều lựa chọn + 7 điểm tự luận theo mạch nội dung đề Sơn La 2026 */
+      '12-0.25-0-0-0.5-7':{nlc:[1,2,2,3,3,3,4,6,9,9,10,10],tl:[{role:'rad',chs:[3],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VDC'}},{role:'alg',chs:[6]},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'stat',chs:[8]},{role:'real',chs:[10]},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
+      /* 8 nhiều lựa chọn + 8 điểm tự luận theo mạch nội dung đề Lạng Sơn 2026 */
+      '8-0.25-0-0-0.5-8':{nlc:[2,3,6,6,6,4,8,10],tl:[{role:'rad',chs:[3],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'alg',chs:[6,1]},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'stat',chs:[7,8]},{role:'real',chs:[4]},{role:'real',chs:[10]},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
+      '12-0.25-2-4-0.5-3':{nlc:[1,3,4,5,6,6,7,7,8,8,9,9],ds:[7,6],tln:[3,2,10,5],tl:[{role:'alg',chs:[6,1]},{role:'real',chs:[6,1],les:[3,21]},{role:'geo',chs:[5,9]}]}},
     note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
@@ -138,7 +142,8 @@ const STRUCTS={
   tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7},
   ct:{name:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận',n1:20,p1:.2,n2:2,n3:0,p3:.5,n4:4},
   /* chỉ hiện ở đề ôn thi vào lớp 10 (ui.js): đề toàn nhiều lựa chọn như Tuyên Quang 2026 */
-  mc40:{name:'40 câu nhiều lựa chọn',n1:40,p1:.25,n2:0,n3:0,p3:.5,n4:0}
+  mc40:{name:'40 câu nhiều lựa chọn',n1:40,p1:.25,n2:0,n3:0,p3:.5,n4:0},
+  ls8:{name:'Trắc nghiệm 2 đ + tự luận 8 đ (8 câu + 8 câu)',n1:8,p1:.25,n2:0,n3:0,p3:.5,n4:8}
 };
 const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37','ct'];
 const structKey=s=>[s.n1,s.p1,s.n2,s.n3,s.p3,s.n4].join('-');
@@ -331,7 +336,7 @@ function buildExam(term,base,diff,st){
   const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',inCh(ch),dsLv[i],PF.ds&&PF.ds[i])));
   const tlnLv=bp.v10&&bp.tln.length>=6?lvProp({co_ban:['TH','TH','TH','VD','VD','VD'],chuan:['TH','VD','TH','VD','VD','VD'],nang_cao:['VD','VD','VD','VD','VD','VD']}[diff]||['TH','VD','TH','VD','VD','VD'],bp.tln.length):lvProp(byT(D.tln),bp.tln.length);
   const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',inCh(ch),tlnLv[i],PF.tln&&PF.tln[i])));
-  const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch)),lvTL(byT(D.tl),bp.tl.length)[i])));
+  const tl=bp.tl.map((sl,i)=>make('tl',pickT('tl',t=>t.role===sl.role&&(!sl.chs||sl.chs.includes(t.ch))&&(!sl.les||(t.les||[]).some(l=>sl.les.includes(l))),sl.lv&&sl.lv[diff]||lvTL(byT(D.tl),bp.tl.length)[i])));
   /* Ôn thi vào 10 có từ 4 câu tự luận: gộp hai câu 1 điểm (ưu tiên câu hình) thành một bài hình học
      hoàn chỉnh 3 ý, 2 điểm (core09i.js), giống phần hình trong đề thật. Khung đề trả về theo đề này. */
   let tlOut=tl,bpx=bp;
