@@ -47,6 +47,10 @@ const BLUEPRINT={
       '12-0.25-0-0-0.5-7':{nlc:[1,2,2,3,3,3,4,6,9,9,10,10],tl:[{role:'rad',chs:[3],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VDC'}},{role:'alg',chs:[6]},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'stat',chs:[8]},{role:'real',chs:[10]},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
       /* 8 nhiều lựa chọn + 8 điểm tự luận theo mạch nội dung đề Lạng Sơn 2026 */
       '8-0.25-0-0-0.5-8':{nlc:[2,3,6,6,6,4,8,10],tl:[{role:'rad',chs:[3],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'alg',chs:[6,1]},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'stat',chs:[7,8]},{role:'real',chs:[4]},{role:'real',chs:[10]},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
+      /* 16 nhiều lựa chọn + tự luận 6 điểm theo mạch nội dung đề Quảng Trị 2026 */
+      '16-0.25-0-0-0.5-6':{tl:[{role:'rad',chs:[3],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'real',chs:[4,10]},{role:'stat',chs:[8]},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
+      /* 20 nhiều lựa chọn + 2 Đúng – Sai + tự luận 4 điểm theo mạch nội dung đề Cần Thơ 2026 */
+      '20-0.2-2-0-0.5-4':{ds:[[7],[6,3]],tl:[{role:'stat',chs:[8]},{role:'real',chs:[1,6],les:[3,21],lv:{co_ban:'TH',chuan:'VD',nang_cao:'VD'}},{role:'geo',chs:[5,9]},{role:'geo',chs:[5,9]}]},
       '12-0.25-2-4-0.5-3':{nlc:[1,3,4,5,6,6,7,7,8,8,9,9],ds:[7,6],tln:[3,2,10,5],tl:[{role:'alg',chs:[6,1]},{role:'real',chs:[6,1],les:[3,21]},{role:'geo',chs:[5,9]}]}},
     note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
