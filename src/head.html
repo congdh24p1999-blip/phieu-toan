@@ -257,7 +257,16 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
 @page land{size:A4 landscape;margin:10mm}
 
 /* ---------- Làm bài online ---------- */
-.actions .qzrow{grid-column:2/-1}
+.stagehead .qzopen{margin-left:auto}
+.stagehead .qzopen+.buglink{margin-left:0}
+@media (max-width:640px){.stagehead .qzopen{margin-left:0;order:3}.stagehead .qzopen+.buglink{order:4}}
+.qzgs{border-top:1px solid var(--line);padding-top:10px;margin:0 0 10px;display:flex;flex-direction:column;gap:4px}
+.qzgs input{font:inherit;font-size:.85rem;padding:7px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.qzgs input[aria-invalid=true]{border-color:var(--pen)}
+.qzgs .hint{margin:0}
+.qzerr{color:var(--pen);font-size:.85rem;margin:2px 0}
+.qzerr[hidden],.qzok[hidden]{display:none}
+.qzok{color:var(--accent);font-size:.85rem;margin:2px 0}
 .qzshare{position:fixed;inset:0;z-index:60;background:rgba(10,18,28,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 12px 12px;overflow:auto}
 .qzshare[hidden]{display:none}
 .qzbox{background:var(--surface);color:var(--ink);border-radius:14px;max-width:560px;width:100%;padding:16px 18px 18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
@@ -347,6 +356,30 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
 .qzv{font-family:var(--font-body);font-size:.9rem;margin:4px 0}
 .qzwhy{font-size:.95em;color:#222;background:#f6f7f9;border-radius:8px;padding:6px 9px;margin-top:6px}
 .qzwrapnote{max-width:760px;margin:0 auto;padding:0 14px}
+.qzpp{font-family:var(--font-body);font-size:.8rem;color:#555;white-space:nowrap}
+.qzpaper{display:inline-block;font-family:var(--font-body);font-size:.82rem;font-weight:600;color:#555;border:1px dashed #9aa3ae;border-radius:999px;padding:2px 10px;margin:2px 0 0}
+.qzact{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-family:var(--font-body)}
+.qzact .btn{min-height:40px}
+.qzq.rv.self .qzq-h .qzp{color:#1f4f8a}
+.qzrb{border:1px solid #d7dce3;border-radius:10px;padding:6px 10px 8px;margin:6px 0 10px;font-family:var(--font-body)}
+.qzrb legend{float:left;width:100%;font-size:.85rem;font-weight:600;color:#333;padding:2px 0 4px}
+.qzrb legend+*{clear:both}
+.qzst{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:7px 2px;border-top:1px solid #eceff3;cursor:pointer}
+.qzst:first-of-type{border-top:0}
+.qzst0{padding:6px 2px 6px 30px;border-top:1px solid #eceff3;color:#333}
+.qzst input{width:20px;height:20px;margin:2px 0 0;accent-color:#1f6f5c;cursor:pointer}
+.qzst b{font-family:var(--font-body);font-size:.85rem;color:#1f6f5c;white-space:nowrap}
+.qzst:has(input:checked){background:#eef7f4;border-radius:6px}
+.qzst:has(input:focus-visible){outline:3px solid #1f6f5c;outline-offset:1px;border-radius:6px}
+.qzwh{display:block;margin-top:4px;color:#333}
+.qzsend{font-size:.9rem;margin:8px 0 0;padding:7px 10px;border-radius:8px;background:var(--accent-soft);color:var(--ink)}
+.qzsend.ok{color:var(--accent)}
+.qzsend.bad{background:var(--warn-bg);color:var(--warn-ink)}
+.qzt:empty{display:none}
+.qzbar .btn{white-space:nowrap;flex:none}
+.qzbox a{color:var(--accent)}
+.qznb-s{display:none}
+@media (max-width:560px){.qzbar{gap:6px;padding:8px 10px}.qzc{white-space:normal;min-width:0;font-size:.8rem;line-height:1.25}.qzt{min-width:0;font-size:1rem}.qznb-l{display:none}.qznb-s{display:inline}.qzbar .btn{padding-left:10px;padding-right:10px}}
 @media (max-width:560px){.qzform{grid-template-columns:1fr}.qzcard h1{font-size:1.35rem}.sheet.qzsheet{padding:4px 10px;font-size:11.5pt}}
 @media print{
   body[data-view=quiz] .qzbar,body[data-view=quiz] .qznav{display:none!important}
@@ -357,6 +390,7 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
   .qzscore .big{color:#000}
   .sheet.qzsheet{border:0;padding:0}
   .qzq{break-inside:avoid}
+  .qzact,.qzsend{display:none!important}
 }
 @media print{
   html,body{background:#fff!important}
@@ -521,8 +555,6 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
         <button class="btn alt sm" id="wordExam" type="button" aria-label="Tải Word đề thi" title="Tải đề thi dạng file Word (.docx) để chỉnh sửa">Đề thi</button>
         <button class="btn alt sm" id="wordKey" type="button" aria-label="Tải Word đáp án" title="Tải đáp án dạng file Word (.docx)">Đáp án</button>
         <button class="btn alt sm only-exam" id="wordMx" type="button" aria-label="Tải Word ma trận" title="Tải ma trận và bản đặc tả theo Công văn 7991 dạng file Word (.docx), khổ ngang">Ma trận</button>
-        <span class="ak">Online</span>
-        <button class="btn alt sm qzrow" id="qzShareBtn" type="button" aria-haspopup="dialog" title="Tạo đường dẫn và mã QR để học sinh làm bài ngay trên điện thoại, máy tính">Cho học sinh làm online</button>
       </div>
     </aside>
     <main class="stage">
@@ -533,6 +565,7 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
           <button class="tab only-exam" role="tab" id="tabMx" aria-selected="false">Ma trận</button>
         </div>
         <span class="meta" id="meta"></span>
+        <button class="btn sm qzopen" id="qzShareBtn" type="button" aria-haspopup="dialog" title="Tạo đường dẫn và mã QR để học sinh làm bài hoặc luyện tập ngay trên điện thoại, máy tính">Cho học sinh làm online</button>
       </div>
       <div id="examOut"></div>
       <div id="keyOut"></div>
@@ -549,15 +582,26 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
       <div class="qzshare-g">
         <div class="qzqr" id="qzQR"></div>
         <div class="qzopt">
+          <label class="lbl" for="qzMode">Cách làm</label>
+          <select id="qzMode"><option value="kt">Làm bài kiểm tra: nộp bài mới có điểm</option><option value="luyen">Luyện tập: kiểm tra từng câu, làm thêm câu cùng dạng</option></select>
+          <span id="qzTLrow" class="qzopt" hidden><label class="lbl" for="qzTL">Câu tự luận</label>
+          <select id="qzTL"><option value="tln">Thay bằng câu trả lời ngắn, máy chấm</option><option value="g">Giữ nguyên, học sinh làm ra giấy rồi tự chấm</option></select></span>
           <label class="lbl" for="qzT">Thời gian làm bài</label>
           <select id="qzT"><option value="0">Không giới hạn (luyện tập)</option><option value="15">15 phút</option><option value="45">45 phút</option><option value="60">60 phút</option><option value="90">90 phút</option><option value="120">120 phút</option></select>
           <label class="switch"><input type="checkbox" id="qzSol" checked><span>Cho xem đáp án, lời giải sau khi nộp</span></label>
           <label class="switch"><input type="checkbox" id="qzMix"><span>Đảo thứ tự câu, phương án cho mỗi học sinh</span></label>
         </div>
       </div>
+      <div class="qzgs">
+        <label class="lbl" for="qzGs">Thu điểm về Google Sheet của thầy cô (không bắt buộc)</label>
+        <input id="qzGs" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Dán địa chỉ ứng dụng web, dạng https://script.google.com/macros/s/…/exec" aria-describedby="qzGsHelp qzGsErr">
+        <p class="hint" id="qzGsHelp">Mỗi lần học sinh nộp bài, một dòng kết quả (họ tên, lớp, điểm, bài làm) được ghi vào bảng tính của thầy cô. <a href="huong-dan-thu-diem.html" target="_blank" rel="noopener">Cách tạo địa chỉ này (khoảng 5 phút, miễn phí)</a>.</p>
+        <p class="qzerr" id="qzGsErr" role="alert" hidden>Địa chỉ chưa đúng. Địa chỉ cần bắt đầu bằng https://script.google.com/macros/s/ và kết thúc bằng /exec.</p>
+        <p class="qzok" id="qzGsOk" hidden>Đường dẫn bên dưới đã kèm địa chỉ thu điểm. Trang nhớ địa chỉ này cho lần sau.</p>
+      </div>
       <label class="lbl" for="qzLink">Đường dẫn gửi học sinh (Zalo, Messenger, lớp học trực tuyến…)</label>
       <div class="qzlinkrow"><input id="qzLink" type="text" readonly><button type="button" class="btn sm" id="qzCopy">Chép đường dẫn</button></div>
-      <p class="hint">Học sinh mở đường dẫn hoặc quét mã QR, làm bài, nộp là có điểm. Bài làm lưu trên máy của học sinh; trang chưa thu điểm về cho thầy cô, học sinh có thể in hoặc chụp phiếu kết quả để nộp. <a id="qzOpen" target="_blank" rel="noopener">Mở thử như học sinh</a></p>
+      <p class="hint">Học sinh mở đường dẫn hoặc quét mã QR, làm bài, nộp là có điểm. Bài đang làm lưu trên máy của học sinh. Không dùng Google Sheet thì học sinh in hoặc chụp phiếu kết quả để nộp. <a id="qzOpen" target="_blank" rel="noopener">Mở thử như học sinh</a></p>
     </div>
   </div>
   <div id="qz" class="qz" hidden></div>

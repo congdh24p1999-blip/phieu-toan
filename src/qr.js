@@ -1,12 +1,14 @@
 /* ================================================================
    Mã QR (ISO/IEC 18004) cho đường dẫn làm bài online: chế độ byte, mức sửa lỗi M,
-   phiên bản 1 – 10 (tối đa 213 byte). Tự viết, không dùng thư viện ngoài.
+   phiên bản 1 – 20 (tối đa 666 byte). Tự viết, không dùng thư viện ngoài.
    QR.svg(text, cỡ) trả về chuỗi <svg>.
    ================================================================ */
 const QR=(()=>{
   /* [số khối, số byte dữ liệu mỗi khối, số khối loại 2 (thêm 1 byte), số byte sửa lỗi mỗi khối] – mức M */
-  const BLK=[null,[1,16,0,10],[1,28,0,16],[1,44,0,26],[2,32,0,18],[2,43,0,24],[4,27,0,16],[4,31,0,18],[2,38,2,22],[3,36,2,22],[4,43,1,26]];
-  const ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]];
+  const BLK=[null,[1,16,0,10],[1,28,0,16],[1,44,0,26],[2,32,0,18],[2,43,0,24],[4,27,0,16],[4,31,0,18],[2,38,2,22],[3,36,2,22],[4,43,1,26],
+    [1,50,4,30],[6,36,2,22],[8,37,1,22],[4,40,5,24],[5,41,5,24],[7,45,3,28],[10,46,1,28],[9,43,4,26],[3,44,11,26],[3,41,13,26]];
+  const ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],
+    [6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90]];
   /* GF(256), đa thức 0x11d */
   const EXP=new Array(512),LOG=new Array(256);
   for(let i=0,x=1;i<255;i++){EXP[i]=x;LOG[x]=i;x<<=1;if(x&256)x^=0x11d}
@@ -18,8 +20,8 @@ const QR=(()=>{
   const cap=v=>{const b=BLK[v];return b[0]*b[1]+b[2]*(b[1]+1)};
   function encode(text){
     const bytes=[...new TextEncoder().encode(text)];
-    let v=1;while(v<=10&&bytes.length+(v<10?2:3)>cap(v))v++;
-    if(v>10)throw new Error('Đường dẫn quá dài để tạo mã QR');
+    let v=1;while(v<=20&&bytes.length+(v<10?2:3)>cap(v))v++;
+    if(v>20)throw new Error('Đường dẫn quá dài để tạo mã QR');
     const bits=[];const put=(x,n)=>{for(let i=n-1;i>=0;i--)bits.push((x>>i)&1)};
     put(4,4);put(bytes.length,v<10?8:16);bytes.forEach(b=>put(b,8));
     const total=cap(v)*8;for(let i=0;i<4&&bits.length<total;i++)bits.push(0);
