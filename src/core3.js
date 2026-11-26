@@ -21,7 +21,7 @@ const G10={grade:10,school:'THPT',mon:'Toán 10',chName:CH10,tlQ:[1,1,1],
   note:'Cấu trúc tham khảo: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ, mỗi câu 2 ý). Có thể chọn cấu trúc “Kiểu thi tốt nghiệp THPT” (12 + 4 + 6, không tự luận) ở mục Cấu trúc đề.'};
 /* Ôn thi tốt nghiệp THPT: chủ đề gộp nội dung lớp 10, 11, 12 theo cấu trúc đề chính thức năm 2025 */
 const CHTN={101:'Ứng dụng đạo hàm, khảo sát hàm số (lớp 11, 12)',102:'Nguyên hàm, tích phân và ứng dụng',103:'Vectơ và phương pháp toạ độ trong không gian',104:'Hình học không gian: quan hệ song song, vuông góc (lớp 11)',
-  105:'Thống kê: mẫu số liệu ghép nhóm (lớp 11, 12)',106:'Đại số tổ hợp và xác suất (lớp 10, 11, 12)',107:'Hàm số lượng giác, phương trình lượng giác (lớp 11)',108:'Dãy số, cấp số cộng, cấp số nhân (lớp 11)',109:'Hàm số mũ và hàm số lôgarit (lớp 11)',110:'Bất phương trình, hệ bất phương trình bậc nhất hai ẩn; hàm số bậc hai (lớp 10)'};
+  105:'Thống kê: mẫu số liệu ghép nhóm (lớp 11, 12)',106:'Đại số tổ hợp và xác suất (lớp 10, 11, 12)',107:'Hàm số lượng giác, phương trình lượng giác (lớp 11)',108:'Dãy số, cấp số cộng, cấp số nhân (lớp 11)',109:'Hàm số mũ và hàm số lôgarit (lớp 11)',110:'Bất phương trình, hệ bất phương trình bậc nhất hai ẩn; hàm số bậc hai; đường conic (lớp 10)'};
 const TN_MIX={101:[[12,1],[11,9],['tn',101]],102:[[12,4],['tn',102]],103:[[12,2],[12,5],['tn',103]],104:[[11,4],[11,7],['tn',104]],105:[[11,3],[12,3]],106:[[10,8],[10,9],[11,8],[12,6],['tn',106]],107:[[11,1]],108:[[11,2]],109:[[11,6]],110:[[10,2],[10,6],['tn',110]]};
 const BLUEPRINT={
   '9gk1':{...G9,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
@@ -46,9 +46,9 @@ const BLUEPRINT={
     chapters:[101,102,103,104,105,106,107,108,109,110],
     nlc:[101,102,102,103,103,103,104,104,105,107,108,109],ds:[101,102,106,103],tln:[101,110,104,102,106,106],tl:[],
     /* dạng bám sát từng câu đề chính thức 2025, được ưu tiên (khoảng 60%) ở từng vị trí của Phần II và III */
-    prefer:{ds:[['ds12-2-seg','ds12-1-cubic'],['tn-ds-decay'],['ds12-19-test','ds12-19-factory'],['tn-ds-flight','tn-ds-motion']],
-      tln:[['tn-t-profit2','tn-t-profit'],['tn-t-menu'],['tn-t-pyr','tn-t-room'],['tn-t-stand','tn-t-bowl'],['tn-t-books','tn-t-shelf'],['tn-t-cipher','tn-t-ap']]},
-    note:'Cấu trúc theo đề chính thức năm 2025: Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
+    prefer:{ds:[['ds12-2-seg','ds12-1-cubic'],['tn-ds-decay','tn-ds-solar'],['ds12-19-test','ds12-19-factory'],['tn-ds-flight','tn-ds-motion','tn-ds-drone']],
+      tln:[['tn-t-profit2','tn-t-profit'],['tn-t-menu','tn-t-ellipse'],['tn-t-pyr','tn-t-room'],['tn-t-stand','tn-t-bowl','tn-t-bead'],['tn-t-books','tn-t-shelf'],['tn-t-cipher','tn-t-ap','tn-t-grid']]},
+    note:'Cấu trúc theo đề chính thức năm 2025, giữ nguyên năm 2026: Phần I 12 câu × 0,25 đ; Phần II 4 câu đúng/sai (mỗi câu tối đa 1 đ); Phần III 6 câu × 0,5 đ, đáp án ghi không quá 4 kí tự.'},
   '10gk1':{...G10,hk:1,short:'Giữa học kì I',title:'ĐỀ KIỂM TRA GIỮA HỌC KÌ I',scope:'Chương I – III (Kết nối tri thức)',chapters:[1,2,3],
     nlc:[1,1,1,1,2,2,2,2,3,3,3,3],ds:[1,3],tln:[1,2,3,3],
     tl:[{role:'a',chs:[1]},{role:'b',chs:[2]},{role:'c',chs:[3]}]},
