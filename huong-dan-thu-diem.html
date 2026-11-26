@@ -126,9 +126,10 @@ kbd{font:inherit;font-weight:600;background:var(--bg);border:1px solid var(--lin
 
   <main class="sheet">
     <h1>Thu điểm về Google Sheet</h1>
-    <p class="lead">Mỗi lần học sinh nộp bài online, một dòng kết quả được ghi thẳng vào bảng tính Google Sheet của thầy cô. Làm một lần, khoảng 5 phút, miễn phí, chỉ cần tài khoản Google.</p>
+    <p class="lead">Mỗi lần học sinh nộp bài online, một dòng kết quả được ghi thẳng vào bảng tính Google Sheet của thầy cô, và thầy cô nhận email báo kết quả (mặc định mỗi ngày một email tổng hợp). Làm một lần, khoảng 5 phút, miễn phí, chỉ cần tài khoản Google.</p>
     <nav class="toc" aria-label="Mục lục">
       <a href="#tao">Tạo địa chỉ thu điểm</a>
+      <a href="#email">Nhận email</a>
       <a href="#dung">Dùng khi giao bài</a>
       <a href="#bang">Bảng điểm có gì</a>
       <a href="#luu-y">Lưu ý</a>
@@ -139,11 +140,22 @@ kbd{font:inherit;font-weight:600;background:var(--bg);border:1px solid var(--lin
       <ol class="steps">
         <li><div><p><b>Tạo bảng tính.</b> Mở <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> (đã đăng nhập Google), đặt tên, ví dụ “Điểm online lớp 9A”. Một bảng tính dùng được cho nhiều đề: mỗi đề tự ghi vào một trang tính riêng.</p></div></li>
         <li><div><p><b>Mở Apps Script.</b> Trên thanh menu của bảng tính, chọn <kbd>Tiện ích mở rộng</kbd> → <kbd>Apps Script</kbd> (giao diện tiếng Anh: Extensions → Apps Script).</p></div></li>
-        <li><div><p><b>Dán mã.</b> Xoá hết mã có sẵn trong khung soạn thảo, bấm nút <b>Chép mã</b> ở khung dưới rồi dán vào, bấm biểu tượng đĩa mềm để lưu.</p>
+        <li><div><p><b>Dán mã.</b> Xoá hết mã có sẵn trong khung soạn thảo, bấm nút <b>Chép mã</b> ở khung dưới rồi dán vào, bấm biểu tượng đĩa mềm để lưu. Muốn đổi cách nhận email, sửa phần <i>CÀI ĐẶT EMAIL</i> ở đầu mã trước khi lưu (xem <a href="#email">Nhận email</a>).</p>
           <div class="code"><button type="button" id="copyCode">Chép mã</button><pre id="gsCode"><code>/**
- * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này.
+ * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này và báo qua email.
  * @OnlyCurrentDoc
  */
+
+/* ===== CÀI ĐẶT EMAIL (sửa ở đây rồi bấm Lưu, chạy lại hàm caiDat) ===== */
+// 'hang-ngay' : mỗi ngày một email tổng hợp các bài nộp mới (khuyên dùng)
+// 'moi-bai'   : mỗi bài nộp một email (Gmail thường chỉ gửi được khoảng 100 email/ngày)
+// 'tat'       : không gửi email, chỉ ghi vào bảng tính
+const EMAIL_KIEU = 'hang-ngay';
+const GIO_GUI = 20;      // giờ gửi email tổng hợp mỗi ngày (0 – 23, giờ Việt Nam)
+const EMAIL_NHAN = '';   // để trống: gửi về Gmail của chính thầy cô; hoặc ghi địa chỉ khác
+/* ===================================================================== */
+
+const MUI_GIO = 'Asia/Ho_Chi_Minh';
 const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 10)', 'Điểm đạt', 'Tổng điểm',
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
@@ -151,10 +163,11 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
+  let d, tab, isNew = false;
   try {
-    const d = JSON.parse(e.postData.contents);
+    d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
+    tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
     const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
     if (sh.getLastRow() === 0) {
       sh.appendRow(HEAD);
@@ -166,31 +179,144 @@ function doPost(e) {
     const row = [new Date(), d.name, d.cls, d.score10, d.got, d.tot, d.tlSelf, d.nOK, d.n,
       d.minutes, d.autoSubmit ? 'có' : '', d.mode, d.code, d.parts, d.answers, String(d.id)]
       .map(v =&gt; safe(v == null ? '' : v));
-    // cùng một lượt làm gửi lại thì ghi đè dòng cũ
+    // cùng một lượt làm gửi lại (ví dụ sau khi tự chấm tự luận) thì ghi đè dòng cũ
     const n = sh.getLastRow() - 1;
     const hit = n &gt; 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
       .matchEntireCell(true).findNext() : null;
     if (hit) sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]);
-    else sh.appendRow(row);
-    return ContentService.createTextOutput('ok');
+    else { sh.appendRow(row); isNew = true; }
   } catch (err) {
     return ContentService.createTextOutput('loi: ' + err);
   } finally {
     lock.releaseLock();
   }
+  // email từng bài: lỗi gửi email không làm mất kết quả đã ghi
+  if (EMAIL_KIEU === 'moi-bai' &amp;&amp; isNew) {
+    try { guiEmailMotBai_(d, tab); } catch (err) { console.error(err); }
+  }
+  return ContentService.createTextOutput('ok');
 }
 
 function doGet() {
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
 }
+
+/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
+   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
+function caiDat() {
+  ScriptApp.getProjectTriggers()
+    .filter(t =&gt; t.getHandlerFunction() === 'guiEmailTongHop')
+    .forEach(t =&gt; ScriptApp.deleteTrigger(t));
+  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
+  if (EMAIL_KIEU === 'hang-ngay') {
+    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
+    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
+      .inTimezone(MUI_GIO).create();
+    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
+    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
+  } else if (EMAIL_KIEU === 'moi-bai') {
+    lich = 'Mỗi bài nộp mới một email.';
+  }
+  if (EMAIL_KIEU !== 'tat') {
+    MailApp.sendEmail({
+      to: nguoiNhan_(),
+      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
+      htmlBody: '&lt;p&gt;Bảng tính &lt;b&gt;' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
+        '&lt;/b&gt; đã sẵn sàng nhận kết quả làm bài online.&lt;/p&gt;&lt;p&gt;Cách báo qua email: ' + esc_(lich) +
+        '&lt;/p&gt;&lt;p&gt;&lt;a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
+    });
+  }
+  console.log('Đã cài đặt. ' + lich);
+}
+
+/* Gửi email tổng hợp các bài nộp từ lần gửi trước; lịch hằng ngày tự gọi hàm này. */
+function guiEmailTongHop() {
+  const props = PropertiesService.getScriptProperties();
+  const tu = Number(props.getProperty('lanGuiTruoc')) || (Date.now() - 24 * 3600 * 1000);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const nhom = [];
+  let tong = 0;
+  ss.getSheets().forEach(sh =&gt; {
+    if (sh.getLastRow() &lt; 2) return;
+    const v = sh.getDataRange().getValues();
+    if (v[0][0] !== HEAD[0]) return;
+    const moi = v.slice(1).filter(r =&gt; r[0] instanceof Date &amp;&amp; r[0].getTime() &gt; tu);
+    if (!moi.length) return;
+    tong += moi.length;
+    nhom.push({ ten: sh.getName(), url: ss.getUrl() + '#gid=' + sh.getSheetId(), rows: moi });
+  });
+  props.setProperty('lanGuiTruoc', String(Date.now()));
+  if (!tong) return;
+  const diem = r =&gt; (r[3] !== '' &amp;&amp; r[3] != null) ? Number(r[3]) : (Number(r[5]) ? Number(r[4]) / Number(r[5]) * 10 : NaN);
+  const so = x =&gt; (Math.round(x * 10) / 10).toString().replace('.', ',');
+  let html = '&lt;p&gt;Từ ' + Utilities.formatDate(new Date(tu), MUI_GIO, 'HH:mm dd/MM') + ' đến nay có &lt;b&gt;' + tong +
+    '&lt;/b&gt; bài nộp mới (tính cả bài gửi lại sau khi tự chấm).&lt;/p&gt;';
+  nhom.forEach(g =&gt; {
+    const ds = g.rows.map(diem).filter(x =&gt; !isNaN(x));
+    const tb = ds.length ? ds.reduce((a, b) =&gt; a + b, 0) / ds.length : NaN;
+    html += '&lt;h3 style="margin:18px 0 4px"&gt;' + esc_(g.ten) + '&lt;/h3&gt;&lt;p style="margin:0 0 6px"&gt;' + g.rows.length + ' bài' +
+      (ds.length ? ' · điểm trung bình ' + so(tb) + ' · thấp nhất ' + so(Math.min.apply(null, ds)) +
+        ' · cao nhất ' + so(Math.max.apply(null, ds)) + ' (thang 10)' : '') +
+      ' · &lt;a href="' + g.url + '"&gt;Xem trong bảng&lt;/a&gt;&lt;/p&gt;';
+    const rows = g.rows.slice().sort((a, b) =&gt; String(a[2]).localeCompare(String(b[2]), 'vi') || String(a[1]).localeCompare(String(b[1]), 'vi'));
+    html += '&lt;table cellpadding="4" style="border-collapse:collapse;font-size:14px"&gt;&lt;tr style="background:#eef3f1"&gt;' +
+      '&lt;th align="left"&gt;Họ và tên&lt;/th&gt;&lt;th align="left"&gt;Lớp&lt;/th&gt;&lt;th align="right"&gt;Điểm&lt;/th&gt;&lt;th align="left"&gt;Nộp lúc&lt;/th&gt;&lt;/tr&gt;' +
+      rows.slice(0, 60).map(r =&gt; '&lt;tr style="border-top:1px solid #ddd"&gt;&lt;td&gt;' + esc_(r[1]) + '&lt;/td&gt;&lt;td&gt;' + esc_(r[2]) +
+        '&lt;/td&gt;&lt;td align="right"&gt;' + (isNaN(diem(r)) ? '' : so(diem(r))) + '&lt;/td&gt;&lt;td&gt;' +
+        Utilities.formatDate(r[0], MUI_GIO, 'HH:mm dd/MM') + '&lt;/td&gt;&lt;/tr&gt;').join('') + '&lt;/table&gt;' +
+      (rows.length &gt; 60 ? '&lt;p&gt;… và ' + (rows.length - 60) + ' bài khác, xem đủ trong bảng tính.&lt;/p&gt;' : '');
+  });
+  html += '&lt;p style="color:#666;font-size:13px;margin-top:18px"&gt;Email tự động từ bảng tính &lt;a href="' + ss.getUrl() + '"&gt;' +
+    esc_(ss.getName()) + '&lt;/a&gt; (Xưởng đề Toán). Muốn đổi giờ gửi hoặc tắt email: sửa phần CÀI ĐẶT EMAIL trong Apps Script rồi chạy lại hàm caiDat.&lt;/p&gt;';
+  MailApp.sendEmail({
+    to: nguoiNhan_(),
+    subject: 'Xưởng đề Toán: ' + tong + ' bài nộp mới (' + Utilities.formatDate(new Date(), MUI_GIO, 'dd/MM') + ')',
+    htmlBody: html
+  });
+}
+
+function guiEmailMotBai_(d, tab) {
+  if (MailApp.getRemainingDailyQuota() &lt; 1) return;   // hết lượt gửi trong ngày: kết quả vẫn có trong bảng
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const so = x =&gt; String(x).replace('.', ',');
+  const diem = (d.score10 !== '' &amp;&amp; d.score10 != null) ? so(d.score10) + '/10' : so(d.got) + '/' + so(d.tot) + ' điểm';
+  MailApp.sendEmail({
+    to: nguoiNhan_(),
+    subject: 'Bài nộp: ' + String(d.name || 'Không tên').slice(0, 60) + (d.cls ? ' (' + String(d.cls).slice(0, 12) + ')' : '') + ' – ' + diem,
+    htmlBody: '&lt;p&gt;&lt;b&gt;' + esc_(d.name) + '&lt;/b&gt;' + (d.cls ? ', lớp ' + esc_(d.cls) : '') + ' vừa nộp bài &lt;b&gt;' + esc_(tab) + '&lt;/b&gt;' +
+      (d.code ? ' (mã ' + esc_(d.code) + ')' : '') + '.&lt;/p&gt;&lt;p&gt;Điểm: &lt;b&gt;' + esc_(diem) + '&lt;/b&gt; · Thời gian làm ' + esc_(d.minutes) +
+      ' phút' + (d.autoSubmit ? ' · hết giờ, tự nộp' : '') + '&lt;/p&gt;&lt;p&gt;Điểm từng phần: ' + esc_(d.parts) + '&lt;/p&gt;' +
+      '&lt;p&gt;&lt;a href="' + ss.getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
+  });
+}
+
+function nguoiNhan_() { return EMAIL_NHAN || Session.getEffectiveUser().getEmail(); }
+function esc_(s) {
+  return String(s == null ? '' : s).replace(/[&amp;&lt;&gt;"']/g, c =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;', "'": '&amp;#39;' })[c]);
+}
 </code></pre></div></div></li>
+        <li><div><p><b>Chạy hàm cài đặt và cấp quyền.</b> Trên thanh công cụ phía trên khung mã, ở ô chọn hàm (cạnh nút <kbd>Gỡ lỗi</kbd>), chọn <code>caiDat</code> rồi bấm <kbd>Chạy</kbd> (Run). Google hỏi quyền: chọn tài khoản của thầy cô; nếu hiện “Google chưa xác minh ứng dụng này”, bấm <kbd>Nâng cao</kbd> → <kbd>Đi tới … (không an toàn)</kbd> → <kbd>Cho phép</kbd> (Advanced → Go to … (unsafe) → Allow).</p>
+          <p>Cảnh báo này hiện với mọi mã tự viết chưa gửi Google duyệt. Mã chỉ xin ba quyền: ghi vào chính bảng tính này (dòng <code>@OnlyCurrentDoc</code>, không đọc được tệp nào khác trong Drive), gửi email báo kết quả từ Gmail của thầy cô, và đặt lịch gửi email hằng ngày. Chạy xong, hộp thư nhận được email “Xưởng đề Toán: đã cài đặt thu điểm”.</p></div></li>
         <li><div><p><b>Triển khai thành ứng dụng web.</b> Bấm <kbd>Triển khai</kbd> → <kbd>Tùy chọn triển khai mới</kbd> (Deploy → New deployment). Ở mục chọn loại, bấm biểu tượng bánh răng → <kbd>Ứng dụng web</kbd> (Web app). Đặt:</p>
           <div class="cols"><div><b>Thực thi với tư cách</b>Tôi (Execute as: Me)</div><div><b>Người có quyền truy cập</b>Bất kỳ ai (Who has access: Anyone)</div></div>
-          <p>Bấm <kbd>Triển khai</kbd> (Deploy).</p></div></li>
-        <li><div><p><b>Cấp quyền.</b> Google hỏi quyền cho mã vừa dán: chọn tài khoản của thầy cô. Nếu hiện “Google chưa xác minh ứng dụng này”, bấm <kbd>Nâng cao</kbd> → <kbd>Đi tới … (không an toàn)</kbd> → <kbd>Cho phép</kbd> (Advanced → Go to … (unsafe) → Allow). Cảnh báo này hiện với mọi mã tự viết chưa gửi Google duyệt; mã ở trên chỉ ghi vào chính bảng tính này (dòng <code>@OnlyCurrentDoc</code>), không đọc được tệp nào khác trong Drive của thầy cô.</p></div></li>
+          <p>Bấm <kbd>Triển khai</kbd> (Deploy). Nếu Google hỏi quyền lần nữa, làm như bước 4.</p></div></li>
         <li><div><p><b>Chép địa chỉ.</b> Màn hình triển khai hiện “URL ứng dụng web”, dạng <code>https://script.google.com/macros/s/…/exec</code>. Bấm chép địa chỉ này. Muốn thử, dán địa chỉ vào trình duyệt: thấy dòng “web app thu điểm đang chạy” là được.</p></div></li>
       </ol>
       <p class="muted">Tên nút có thể hơi khác tùy ngôn ngữ và phiên bản giao diện của Google.</p>
+    </section>
+
+    <section id="email" aria-labelledby="h-email">
+      <h2 id="h-email">Nhận email</h2>
+      <p>Phần <i>CÀI ĐẶT EMAIL</i> ở đầu mã có ba dòng:</p>
+      <div class="cols">
+        <div><b><code>EMAIL_KIEU</code></b><code>'hang-ngay'</code>: mỗi ngày một email tổng hợp (mặc định). <code>'moi-bai'</code>: mỗi bài nộp một email. <code>'tat'</code>: không gửi email.</div>
+        <div><b><code>GIO_GUI</code></b>Giờ gửi email tổng hợp, giờ Việt Nam, từ 0 đến 23. Mặc định 20 giờ.</div>
+        <div><b><code>EMAIL_NHAN</code></b>Để trống thì gửi về Gmail của chính thầy cô; muốn gửi tới địa chỉ khác thì ghi vào giữa hai dấu nháy.</div>
+      </div>
+      <p>Email tổng hợp liệt kê các bài nộp mới từ lần gửi trước, chia theo từng đề: số bài, điểm trung bình, thấp nhất, cao nhất, rồi danh sách họ tên, lớp, điểm, giờ nộp, kèm liên kết mở bảng. Ngày không có bài nộp thì không gửi. Google chạy lịch vào một thời điểm trong khung giờ đã chọn, có thể lệch vài chục phút.</p>
+      <p>Kiểu mỗi bài một email tiện khi lớp ít học sinh, nhưng Google giới hạn tài khoản Gmail thường khoảng 100 người nhận mỗi ngày (tài khoản Google Workspace của trường khoảng 1.500). Hết lượt trong ngày thì không gửi email nữa, kết quả vẫn ghi đủ vào bảng tính.</p>
+      <p><b>Đổi cài đặt:</b> sửa ba dòng trên, bấm lưu, chạy lại hàm <code>caiDat</code>. Đổi giờ gửi hoặc bật, tắt email tổng hợp không cần triển khai lại. Riêng khi chuyển sang hoặc thôi kiểu <code>'moi-bai'</code> thì phải triển khai lại phiên bản mới như mục dưới.</p>
+      <p><b>Đã cài mã cũ (chưa có email)?</b> Dán đè mã mới, lưu, chạy hàm <code>caiDat</code>, rồi bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → biểu tượng bút chì → ở mục phiên bản chọn <i>Phiên bản mới</i> → <kbd>Triển khai</kbd>. Địa chỉ thu điểm giữ nguyên, đường dẫn đã gửi học sinh vẫn dùng được.</p>
     </section>
 
     <section id="dung" aria-labelledby="h-dung">
