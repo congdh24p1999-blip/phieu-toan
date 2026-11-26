@@ -132,7 +132,9 @@ const STRUCTS={
   tn46:{name:'Trắc nghiệm 4 đ + tự luận 6 đ (16 câu + 6 câu)',n1:16,p1:.25,n2:0,n3:0,p3:.5,n4:6},
   tn55:{name:'Trắc nghiệm 5 đ + tự luận 5 đ (20 câu + 5 câu)',n1:20,p1:.25,n2:0,n3:0,p3:.5,n4:5},
   tn37:{name:'Trắc nghiệm 3 đ + tự luận 7 đ (12 câu + 7 câu)',n1:12,p1:.25,n2:0,n3:0,p3:.5,n4:7},
-  ct:{name:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận',n1:20,p1:.2,n2:2,n3:0,p3:.5,n4:4}
+  ct:{name:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận',n1:20,p1:.2,n2:2,n3:0,p3:.5,n4:4},
+  /* chỉ hiện ở đề ôn thi vào lớp 10 (ui.js): đề toàn nhiều lựa chọn như Tuyên Quang 2026 */
+  mc40:{name:'40 câu nhiều lựa chọn',n1:40,p1:.25,n2:0,n3:0,p3:.5,n4:0}
 };
 const STRUCT_ORDER=['chuan','tn','tn46','tn55','tn37','ct'];
 const structKey=s=>[s.n1,s.p1,s.n2,s.n3,s.p3,s.n4].join('-');
@@ -301,11 +303,21 @@ function buildExam(term,base,diff,st){
     if(RELABEL_RE.test(t.id)){const L=G===11?PT_LETTERS11:PT_LETTERS,sh=rg.int(0,L.length-1);if(sh)q=relabelDeep(q,sh,L)}
     q.id=t.id;q.ch=t.ch;q.lv=t.lv;if(t.role)q.role=t.role;if(t.ext)q.ext=t.ext;if(t.les)q.les=t.les;return q;
   };
-  const nb=Math.min(bp.nlc.length,Math.round(D.nb*bp.nlc.length/12)),nl=nlcLevels(bp.nlc,nb);
+  /* Ôn thi vào 10 với phần nhiều lựa chọn dài (từ 16 câu, như đề Tuyên Quang, Bắc Ninh, Đồng Tháp 2026):
+     tỉ lệ Biết – Hiểu – Vận dụng khoảng 50–40–10 (Cơ bản), 40–40–20 (Chuẩn), 30–40–30 (Nâng cao);
+     câu vận dụng rải đều các chương có dạng vận dụng và xếp cuối phần I như đề thật. */
+  const mcVD=bp.v10&&bp.nlc.length>=16,MCV={co_ban:[.5,.1],chuan:[.4,.2],nang_cao:[.3,.3]}[diff]||[.4,.2];
+  const nb=mcVD?Math.round(MCV[0]*bp.nlc.length):Math.min(bp.nlc.length,Math.round(D.nb*bp.nlc.length/12)),nl=nlcLevels(bp.nlc,nb);
+  if(mcVD){
+    const vdG={};poolOf(bp,'nlc').filter(t=>t.lv==='VD').forEach(t=>(vdG[t.ch]=vdG[t.ch]||new Set()).add(t.grp));
+    const byCh={};nl.forEach((l,i)=>{const c=bp.nlc[i];if(l==='TH'&&vdG[c])(byCh[c]=byCh[c]||[]).push(i)});
+    let left=Math.round(bp.nlc.length*MCV[1]);const take={};
+    for(let rd=0;left>0&&rd<10;rd++)for(const c of Object.keys(byCh)){if(left<=0)break;const u=take[c]||0;if(u<byCh[c].length&&u<vdG[c].size){nl[byCh[c][byCh[c].length-1-u]]='VD';take[c]=u+1;left--}}
+  }
   const byT=x=>Array.isArray(x)?x:x[term];
   const nlc=bp.nlc.map((ch,i)=>make('nlc',pickT('nlc',t=>t.ch===ch,nl[i])));
   const order=bp.chapters;
-  nlc.sort((a,b)=>order.indexOf(a.ch)-order.indexOf(b.ch)||LV_RANK[a.lv]-LV_RANK[b.lv]);
+  nlc.sort((a,b)=>(mcVD?(a.lv==='VD')-(b.lv==='VD'):0)||order.indexOf(a.ch)-order.indexOf(b.ch)||LV_RANK[a.lv]-LV_RANK[b.lv]);
   const PF=bp.prefer||{};
   const ds=bp.ds.map((ch,i)=>make('ds',pickT('ds',t=>t.ch===ch,lvProp(byT(D.ds),bp.ds.length)[i],PF.ds&&PF.ds[i])));
   const tln=bp.tln.map((ch,i)=>make('tln',pickT('tln',t=>t.ch===ch,lvProp(byT(D.tln),bp.tln.length)[i],PF.tln&&PF.tln[i])));

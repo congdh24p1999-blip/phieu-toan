@@ -303,7 +303,7 @@ function render(){
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
-  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm; mỗi câu đúng/sai 1 điểm (4 ý), mỗi câu tự luận 1 điểm${bp.g3?'; riêng bài hình học (3 ý) 2 điểm, thay cho hai câu tự luận':''}.`;
+  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm${[st.n2?'mỗi câu đúng/sai 1 điểm (4 ý)':'',st.n4?'mỗi câu tự luận 1 điểm':'',bp.g3?'riêng bài hình học (3 ý) 2 điểm, thay cho hai câu tự luận':''].filter(Boolean).map(x=>'; '+x).join('')}${bp.v10&&ex.nlc.length>=16?'; phần nhiều lựa chọn có nhóm câu vận dụng ở cuối như đề thật':''}.`;
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
@@ -378,12 +378,12 @@ $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.val
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
 $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
 /* Danh sách cấu trúc; với đề ôn thi vào lớp 10 ghi kèm tỉnh đã dùng cấu trúc đó (năm 2026) và thêm lựa chọn 100% tự luận */
-const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như Hải Phòng, Lào Cai 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh, Sơn La 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)'};
+const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như Hải Phòng, Lào Cai 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh, Sơn La 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)',mc40:'Toàn trắc nghiệm 40 câu nhiều lựa chọn, 90 phút (như Tuyên Quang 2026)'};
 function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
 function structOpts(){
   const v=isVao10();
-  if(!v&&state.struct==='tl100')state.struct='chuan';
-  const html=(v?'<option value="tl100">100% tự luận, 6 bài (gần kiểu Hà Nội, TP.HCM)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+  if(!v&&(state.struct==='tl100'||state.struct==='mc40'))state.struct='chuan';
+  const html=(v?'<option value="tl100">100% tự luận, 6 bài (gần kiểu Hà Nội, TP.HCM)</option><option value="mc40">Toàn trắc nghiệm 40 câu nhiều lựa chọn (như Tuyên Quang 2026)</option>':'')+STRUCT_ORDER.map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
   const el=$('#struct');if(el.dataset.v!==String(v)){el.innerHTML=html;el.dataset.v=String(v)}
   el.value=state.struct;
 }
