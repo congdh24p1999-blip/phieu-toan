@@ -111,14 +111,18 @@ TLNT('tn-t-ring',102,'VD',r=>{
 
 /* Phần III – quy hoạch tuyến tính: chi phí nhỏ nhất thuê hai loại xe (đề 2026 lần 2, câu III.2) */
 TLNT('tn-t-truck',110,'VD',r=>{
-  for(;;){const xs=r.int(1,8)/2,ys=r.int(1,8)/2,a1=r.int(8,14),b1=r.int(1,4),a2=r.int(3,8),b2=r.int(12,22),a3=r.int(12,20),b3=r.int(16,24),cx=r.int(25,45),cy=r.int(30,55);
-    const d1=a1*xs+b1*ys,d2=a2*xs+b2*ys;if(!Number.isInteger(d1)||!Number.isInteger(d2))continue;const d3=Math.ceil(a3*xs+b3*ys)+r.int(15,50);
-    const L=[[a1,b1,d1],[a2,b2,d2],[a3,b3,d3],[1,0,0],[0,1,0]],ok=(x,y)=>x>=-1e-9&&y>=-1e-9&&a1*x+b1*y>=d1-1e-9&&a2*x+b2*y>=d2-1e-9&&a3*x+b3*y<=d3+1e-9,V=[];
-    for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const [p,q,u]=L[i],[s,t,w]=L[j],D=p*t-q*s;if(!D)continue;const x=(u*t-q*w)/D,y=(p*w-u*s)/D;if(ok(x,y))V.push([x,y])}
-    if(V.length<3)continue;const best=V.reduce((m,v)=>cx*v[0]+cy*v[1]<cx*m[0]+cy*m[1]?v:m),T=cx*best[0]+cy*best[1];if(!Number.isInteger(Math.round(T*10*1000)/1000)||Math.abs(T*10-Math.round(T*10))>1e-6||T*10>9999)continue;
-    const vs=V.map(v=>`(${fmt(r2tn(v[0]))}; ${fmt(r2tn(v[1]))})`).join(', ');
-    return{kind:'tln',stem:`Một công ty vận tải nhận chở ít nhất ${d1} tấn hàng loại A, ít nhất ${d2} tấn hàng loại B và không quá ${d3} tấn hàng loại C. Công ty dùng hai loại xe X và Y: mỗi xe X chở ${a1} tấn hàng A, ${a2} tấn hàng B và ${a3} tấn hàng C; mỗi xe Y chở ${b1} tấn hàng A, ${b2} tấn hàng B và ${b3} tấn hàng C. Chi phí cho một xe X là ${cx} triệu đồng, cho một xe Y là ${cy} triệu đồng. Gọi ${I('T')} (triệu đồng) là chi phí nhỏ nhất để hoàn thành đơn hàng (số xe được xét là số thực không âm như trong mô hình quy hoạch tuyến tính). Giá trị của 10${I('T')} bằng bao nhiêu?`,ans:Math.round(T*10),
-      sol:`Gọi x, y là số xe X, Y: x, y ≥ 0; ${a1}x + ${b1}y ≥ ${d1}; ${a2}x + ${b2}y ≥ ${d2}; ${a3}x + ${b3}y ≤ ${d3}. Miền nghiệm là đa giác có các đỉnh ${vs}. Chi phí ${cx}x + ${cy}y nhỏ nhất tại (${fmt(best[0])}; ${fmt(best[1])}): T = ${fmt(T)} ⇒ 10T = ${Math.round(T*10)}.`,chk:()=>ok(...best)}}
+  for(;;){const a1=r.int(8,14),b1=r.int(1,4),a2=r.int(3,8),b2=r.int(12,22),a3=r.int(12,20),b3=r.int(16,24),cx=r.int(25,45),cy=r.int(30,55);
+    const d1=r.int(15,40),d2=r.int(35,80),d3=r.int(110,180);
+    const ok=(x,y)=>a1*x+b1*y>=d1&&a2*x+b2*y>=d2&&a3*x+b3*y<=d3,P=[];
+    for(let x=0;x<=20;x++)for(let y=0;y<=20;y++)if(ok(x,y))P.push([x,y,cx*x+cy*y]);
+    if(P.length<3)continue;P.sort((u,v)=>u[2]-v[2]);if(P[0][2]===P[1][2])continue;const [bx,by,T]=P[0];if(10*T>9999)continue;
+    /* đỉnh của miền nghiệm thực – để lời giải chỉ ra rằng phương án tối ưu thực không nguyên */
+    const L=[[a1,b1,d1],[a2,b2,d2],[a3,b3,d3],[1,0,0],[0,1,0]],okR=(x,y)=>x>=-1e-9&&y>=-1e-9&&a1*x+b1*y>=d1-1e-9&&a2*x+b2*y>=d2-1e-9&&a3*x+b3*y<=d3+1e-9,V=[];
+    for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const [p,q,u]=L[i],[s,t,w]=L[j],D=p*t-q*s;if(!D)continue;const x=(u*t-q*w)/D,y=(p*w-u*s)/D;if(okR(x,y))V.push([x,y])}
+    if(V.length<3)continue;const vb=V.reduce((m,v)=>cx*v[0]+cy*v[1]<cx*m[0]+cy*m[1]?v:m);if(Number.isInteger(vb[0])&&Number.isInteger(vb[1]))continue;
+    const near=P.slice(0,3).map(p=>`(${p[0]}; ${p[1]}): ${p[2]}`).join('; ');
+    return{kind:'tln',stem:`Một công ty vận tải nhận một đơn hàng vận chuyển ít nhất ${d1} tấn hàng loại A, ít nhất ${d2} tấn hàng loại B và không quá ${d3} tấn hàng loại C. Công ty sử dụng hai loại xe X và Y để chở số hàng đó. Mỗi xe loại X đều chở ${a1} tấn hàng loại A, ${a2} tấn hàng loại B và ${a3} tấn hàng loại C. Mỗi xe loại Y đều chở ${b1} tấn hàng loại A, ${b2} tấn hàng loại B và ${b3} tấn hàng loại C. Chi phí cho 1 xe loại X là ${cx} triệu đồng và cho 1 xe loại Y là ${cy} triệu đồng. Gọi ${I('T')} (triệu đồng) là chi phí nhỏ nhất để công ty hoàn thành đơn hàng. Giá trị của 10${I('T')} bằng bao nhiêu?`,ans:10*T,
+      sol:`Gọi x, y là số xe X, Y (x, y ∈ ℕ): ${a1}x + ${b1}y ≥ ${d1}; ${a2}x + ${b2}y ≥ ${d2}; ${a3}x + ${b3}y ≤ ${d3}. Chi phí F = ${cx}x + ${cy}y. Trên miền nghiệm thực, F nhỏ nhất tại đỉnh (${fmt(r2tn(vb[0]))}; ${fmt(r2tn(vb[1]))}) không nguyên, nên xét các điểm nguyên của miền nghiệm gần đỉnh đó; ba giá trị F nhỏ nhất: ${near}. Vậy T = ${T} (tại x = ${bx}, y = ${by}) ⇒ 10T = ${10*T}.`,chk:()=>ok(bx,by)&&Number.isInteger(bx)&&Number.isInteger(by)}}
 });
 
 /* Phần III – tứ diện có các cặp cạnh đối bằng nhau (đề 2026 lần 2, câu III.6) */
