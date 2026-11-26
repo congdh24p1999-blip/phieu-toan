@@ -442,4 +442,5 @@ $('#lesBox').addEventListener('change',e=>{
   saveState();renderWS();/* không vẽ lại danh sách để giữ nguyên các chương đang mở */
 });
 $('#lesNone').addEventListener('click',()=>{document.querySelectorAll('#lesBox input').forEach(i=>i.checked=false);state.les[state.grade]=[];saveState();renderLessonBox();renderWS()});
-syncInputs();setTab(state.tab);render();hdSum();
+/* trang làm bài online (?lam=1) không vẽ trang tạo đề */
+if(new URLSearchParams(location.search).get('lam')!=='1'){syncInputs();setTab(state.tab);render();hdSum();}

@@ -8,11 +8,14 @@ Trang đáp án có bảng đối chiếu mỗi câu với bài học trong SGK 
 
 **Phiếu bài tập theo bài học:** chọn "Phiếu bài tập", tick một hoặc vài bài trong SGK, chọn số câu (10–30) và loại câu. Trang tạo phiếu xếp từ dễ đến khó, kèm đáp án, lời giải; in hoặc tải Word như đề kiểm tra. Mỗi mã phiếu là một phiếu khác.
 
+**Làm bài online:** bấm "Cho học sinh làm online" để lấy đường dẫn, mã QR của đề hoặc phiếu đang xem. Học sinh làm ngay trên trang (không cần tài khoản, tự lưu bài, có hẹn giờ), nộp là có điểm, bảng điểm theo phần và lời giải; câu tự luận được thay bằng câu trả lời ngắn cùng chương. Chưa thu điểm về cho giáo viên.
+
 Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 
 - `index.html`: Xưởng đề Toán (trang chính).
 - `can-cu.html`: Căn cứ và phương pháp (văn bản căn cứ, cách tạo và kiểm tra đề, giới hạn, nhật ký cập nhật).
 - `de-thi.html`, `phieu-lop-1.html`: chỉ chuyển hướng về trang chính, để link cũ vẫn dùng được (phiếu lớp 1 đã gỡ khỏi trang; bản cũ còn trong lịch sử git).
+- `index.html?lam=1&...`: chế độ làm bài online (đề được tạo lại từ tham số trên đường dẫn).
 - Toàn bộ chạy trên trình duyệt (HTML, CSS, JavaScript thuần), không cần máy chủ; bài tập tự soạn, không sao chép SGK.
 
 ## Bản quyền

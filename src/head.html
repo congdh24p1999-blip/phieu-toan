@@ -255,6 +255,109 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
 /* ===== In ===== */
 @page{size:A4;margin:13mm 14mm}
 @page land{size:A4 landscape;margin:10mm}
+
+/* ---------- Làm bài online ---------- */
+.actions .qzrow{grid-column:2/-1}
+.qzshare{position:fixed;inset:0;z-index:60;background:rgba(10,18,28,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 12px 12px;overflow:auto}
+.qzshare[hidden]{display:none}
+.qzbox{background:var(--surface);color:var(--ink);border-radius:14px;max-width:560px;width:100%;padding:16px 18px 18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.qzbox-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qzbox h2{font-family:var(--font-display);font-size:1.25rem;margin:0}
+.qzx{font:inherit;font-size:1.6rem;line-height:1;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:2px 8px;border-radius:8px}
+.qzx:hover,.qzx:focus-visible{color:var(--ink);background:var(--accent-soft)}
+.qzshare-g{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;margin:10px 0 12px}
+.qzqr{background:#fff;border-radius:8px;padding:4px;line-height:0}
+.qzqr svg{width:170px;height:170px}
+.qzopt{display:flex;flex-direction:column;gap:8px}
+.qzopt select{font:inherit;padding:7px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.qzlinkrow{display:flex;gap:6px;margin:4px 0 6px}
+.qzlinkrow input{flex:1;min-width:0;font:inherit;font-size:.85rem;padding:7px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+@media (max-width:520px){.qzshare-g{grid-template-columns:1fr}.qzqr{justify-self:center}}
+body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
+.qz{min-height:100vh;padding-bottom:40px}
+.qzwrap{max-width:760px;margin:0 auto;padding:12px 12px 0}
+.qzcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;margin:14px 0}
+.qzcard h1{font-family:var(--font-display);font-size:1.6rem;line-height:1.2;margin:2px 0 4px}
+.qzbrand{margin:0;font-size:.8rem;font-weight:600;color:var(--accent)}
+.qzsub{margin:0 0 12px;color:var(--muted)}
+.qzfacts{list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;padding:0;margin:0 0 10px}
+.qzfacts b{font-size:1.25rem;font-variant-numeric:tabular-nums}
+.qzsmall{font-size:.9rem;margin:6px 0}
+.qzsmall.muted,.muted{color:var(--muted)}
+.qznote{background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:8px 10px;font-size:.9rem}
+.qzform{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin:12px 0}
+.qzform label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:600;color:var(--muted)}
+.qzform input,.qzin input{font:inherit;font-size:1rem;padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+.qzbtns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 6px}
+.qzbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.qzt{font-weight:700;font-variant-numeric:tabular-nums;font-size:1.1rem;min-width:64px}
+.qzt.low{color:var(--pen)}
+.qzc{flex:1;color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.qznav{position:sticky;top:50px;z-index:19;display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.qznav[hidden]{display:none}
+.qznav button{font:inherit;font-size:.85rem;width:38px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.qznav button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.qzhead{font-size:.85rem;color:var(--muted);margin:10px 2px 0}
+.qzpart{font-family:var(--font-display);font-size:1.15rem;margin:18px 2px 8px}
+.qzpart small{display:block;font-family:var(--font-body);font-size:.82rem;font-weight:400;color:var(--muted);margin-top:2px}
+.sheet.qzsheet{max-width:none;padding:6px 14px;margin:0 0 10px;border-radius:12px;font-size:12pt}
+.qzq{padding:12px 0 14px;border-bottom:1px solid #e2e2e2;scroll-margin-top:64px}
+.qzq:last-child{border-bottom:0}
+.qzq-h{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;font-family:var(--font-body)}
+.qzn{font-weight:700}
+.qzp{font-size:.82rem;color:#555}
+.qzs{margin:2px 0 8px}
+.qzopts{display:grid;gap:6px}
+.qzopts.c4{grid-template-columns:repeat(4,minmax(0,1fr))}.qzopts.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:560px){.qzopts.c4{grid-template-columns:repeat(2,minmax(0,1fr))}.qzopts.c2{grid-template-columns:1fr}}
+.qzo{display:flex;gap:10px;align-items:flex-start;text-align:left;font:inherit;color:#000;background:#fff;border:1.5px solid #c9ced6;border-radius:10px;padding:9px 12px;min-height:44px;cursor:pointer;width:100%}
+.qzo b{font-family:var(--font-body);min-width:1.2em}
+.qzo:hover{border-color:#1f6f5c}
+.qzo.on{border-color:#1f6f5c;background:#dff1ec;box-shadow:inset 0 0 0 1px #1f6f5c}
+.qzo:focus-visible,.qzb:focus-visible,.qzin input:focus-visible,.qznav button:focus-visible{outline:3px solid #1f6f5c;outline-offset:2px}
+.qzys{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.qzys li{border:1px solid #e2e2e2;border-radius:10px;padding:8px 10px}
+.qzy{margin-bottom:6px}
+.qztf{display:flex;gap:6px}
+.qzb{font:inherit;font-family:var(--font-body);font-weight:600;flex:1;max-width:120px;min-height:40px;border-radius:9px;border:1.5px solid #c9ced6;background:#fff;color:#000;cursor:pointer}
+.qzb.on{background:#1f6f5c;border-color:#1f6f5c;color:#fff}
+.qzin{display:flex;align-items:center;gap:8px;font-family:var(--font-body);font-size:.9rem;font-weight:600;color:#333}
+.qzin input{width:150px;background:#fff;color:#000;border-color:#b9c0ca}
+.qzin em{font-style:normal;font-weight:400}
+.qzend{text-align:center;margin:16px 0}
+.qzscore{display:flex;align-items:baseline;gap:8px;margin:8px 0 2px}
+.qzscore .big{font-family:var(--font-display);font-size:3.4rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.qzscore .of{font-size:1.1rem;color:var(--muted)}
+.qzwho{margin:0 0 6px;font-size:.92rem}
+.qztbl{border-collapse:collapse;width:100%;margin:10px 0;font-size:.9rem}
+.qztbl th,.qztbl td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}
+.qztbl td:not(:first-child),.qztbl th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.qzh2{font-size:1rem;margin:12px 0 4px}
+.qzweak{margin:0;padding-left:20px;font-size:.92rem}
+.qzgood{color:var(--accent);font-weight:600}
+.qzq.rv .qzq-h .qzp{font-weight:600}
+.qzq.rv.ok .qzq-h .qzp{color:#1f6f5c}
+.qzq.rv.part .qzq-h .qzp{color:#8a5a00}
+.qzq.rv.bad .qzq-h .qzp{color:#b3261e}
+.qzo.ro{cursor:default}
+.qzo.key{border-color:#1f6f5c;background:#dff1ec}
+.qzo.wrong{border-color:#b3261e;background:#fbe9e7}
+.qzys li.ok{border-color:#9fd3c3}
+.qzys li.bad{border-color:#e7a29b;background:#fdf3f2}
+.qzv{font-family:var(--font-body);font-size:.9rem;margin:4px 0}
+.qzwhy{font-size:.95em;color:#222;background:#f6f7f9;border-radius:8px;padding:6px 9px;margin-top:6px}
+.qzwrapnote{max-width:760px;margin:0 auto;padding:0 14px}
+@media (max-width:560px){.qzform{grid-template-columns:1fr}.qzcard h1{font-size:1.35rem}.sheet.qzsheet{padding:4px 10px;font-size:11.5pt}}
+@media print{
+  body[data-view=quiz] .qzbar,body[data-view=quiz] .qznav{display:none!important}
+  body[data-view=quiz] .qz{display:block!important}
+  .qzcard{border:1px solid #999;background:#fff;color:#000}
+  .qz,.qzpart,.qzpart small,.qzbrand,.qzsub,.qzsmall,.qzsmall.muted,.muted,.qzscore .of,.qzgood,.qzhead{color:#000!important}
+  .qztbl th,.qztbl td{border-color:#999}
+  .qzscore .big{color:#000}
+  .sheet.qzsheet{border:0;padding:0}
+  .qzq{break-inside:avoid}
+}
 @media print{
   html,body{background:#fff!important}
   body{padding:0!important}
@@ -418,6 +521,8 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
         <button class="btn alt sm" id="wordExam" type="button" aria-label="Tải Word đề thi" title="Tải đề thi dạng file Word (.docx) để chỉnh sửa">Đề thi</button>
         <button class="btn alt sm" id="wordKey" type="button" aria-label="Tải Word đáp án" title="Tải đáp án dạng file Word (.docx)">Đáp án</button>
         <button class="btn alt sm only-exam" id="wordMx" type="button" aria-label="Tải Word ma trận" title="Tải ma trận và bản đặc tả theo Công văn 7991 dạng file Word (.docx), khổ ngang">Ma trận</button>
+        <span class="ak">Online</span>
+        <button class="btn alt sm qzrow" id="qzShareBtn" type="button" aria-haspopup="dialog" title="Tạo đường dẫn và mã QR để học sinh làm bài ngay trên điện thoại, máy tính">Cho học sinh làm online</button>
       </div>
     </aside>
     <main class="stage">
@@ -437,4 +542,23 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
   <footer class="foot"></footer>
   <p class="copy">© 2026 Xưởng đề Toán · Bảo lưu mọi quyền. Không sao chép mã nguồn, phát hành lại khi chưa được đồng ý.</p>
 </div>
+<div class="qzshare" id="qzShare" role="dialog" aria-modal="true" aria-labelledby="qzShareT" hidden>
+    <div class="qzbox">
+      <div class="qzbox-h"><h2 id="qzShareT">Cho học sinh làm bài online</h2><button type="button" class="qzx" id="qzClose" aria-label="Đóng">×</button></div>
+      <p class="hint" id="qzWhat"></p>
+      <div class="qzshare-g">
+        <div class="qzqr" id="qzQR"></div>
+        <div class="qzopt">
+          <label class="lbl" for="qzT">Thời gian làm bài</label>
+          <select id="qzT"><option value="0">Không giới hạn (luyện tập)</option><option value="15">15 phút</option><option value="45">45 phút</option><option value="60">60 phút</option><option value="90">90 phút</option><option value="120">120 phút</option></select>
+          <label class="switch"><input type="checkbox" id="qzSol" checked><span>Cho xem đáp án, lời giải sau khi nộp</span></label>
+          <label class="switch"><input type="checkbox" id="qzMix"><span>Đảo thứ tự câu, phương án cho mỗi học sinh</span></label>
+        </div>
+      </div>
+      <label class="lbl" for="qzLink">Đường dẫn gửi học sinh (Zalo, Messenger, lớp học trực tuyến…)</label>
+      <div class="qzlinkrow"><input id="qzLink" type="text" readonly><button type="button" class="btn sm" id="qzCopy">Chép đường dẫn</button></div>
+      <p class="hint">Học sinh mở đường dẫn hoặc quét mã QR, làm bài, nộp là có điểm. Bài làm lưu trên máy của học sinh; trang chưa thu điểm về cho thầy cô, học sinh có thể in hoặc chụp phiếu kết quả để nộp. <a id="qzOpen" target="_blank" rel="noopener">Mở thử như học sinh</a></p>
+    </div>
+  </div>
+  <div id="qz" class="qz" hidden></div>
 <script>
