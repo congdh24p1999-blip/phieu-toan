@@ -330,7 +330,7 @@ function renderV10(){
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   $('#structHint').textContent='100% tự luận, 6 bài, 10 điểm, 120 phút. Có thể chọn cấu trúc có trắc nghiệm như nhiều tỉnh năm 2026.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
-  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh (đã đối chiếu 21 đề tuyển sinh năm 2026), không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#noteTxt').textContent='Cấu trúc chung theo dạng đề phổ biến của nhiều tỉnh (đã đối chiếu đề tuyển sinh năm 2026 của 26 tỉnh, thành phố), không theo riêng tỉnh nào: biểu thức chứa căn; phương trình, hệ phương trình, Viète; giải bài toán bằng cách lập phương trình; thống kê – xác suất; hình học; bài toán thực tế. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
   $('#gradeHint').textContent='Lớp 9, sách Kết nối tri thức, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
 }
@@ -378,7 +378,7 @@ $('#code').addEventListener('blur',e=>{if(e.target.value.length!==3)e.target.val
 $('#sol').addEventListener('change',e=>{state.sol=e.target.checked;update()});
 $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
 /* Danh sách cấu trúc; với đề ôn thi vào lớp 10 ghi kèm tỉnh đã dùng cấu trúc đó (năm 2026) và thêm lựa chọn 100% tự luận */
-const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như đề thi thử Hải Phòng 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)'};
+const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như Hải Phòng, Lào Cai 2026)',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ (như Quảng Ninh, Sơn La 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + 4 tự luận (như đề tham khảo Cần Thơ 2026)'};
 function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
 function structOpts(){
   const v=isVao10();
