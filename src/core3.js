@@ -41,7 +41,9 @@ const BLUEPRINT={
     nlc:[1,2,3,3,4,5,6,6,7,8,9,10],ds:[6,7],tln:[1,4,6,10],
     tl:[{role:'rad',chs:[3]},{role:'real',chs:[1,2,6]},{role:'geo',chs:[5,9]}],
     /* khung toàn trắc nghiệm 12 + 4 + 6 (Hải Phòng, Lào Cai 2026): Đúng – Sai và trả lời ngắn lấy theo đúng các mạch nội dung của hai đề đó */
-    fixed:{'12-0.25-4-6-0.5-0':{ds:[[7,2],[3],[5,9],[6,2]],tln:[[1,2],[6],[7,8],[5,9],[10],[6,3]]}},
+    fixed:{'12-0.25-4-6-0.5-0':{ds:[[7,2],[3],[5,9],[6,2]],tln:[[1,2],[6],[7,8],[5,9],[10],[6,3]]},
+      /* khung mặc định 12 + 2 + 4 + 3 theo đúng mạch nội dung đề Khánh Hòa 2026 (đối chiếu đề mã 02) */
+      '12-0.25-2-4-0.5-3':{nlc:[1,3,4,5,6,6,7,7,8,8,9,9],ds:[7,6],tln:[3,2,10,5],tl:[{role:'alg',chs:[6,1]},{role:'real',chs:[6,1]},{role:'geo',chs:[5,9]}]}},
     note:'Cấu trúc mặc định giống đề tuyển sinh lớp 10 Khánh Hòa 2026: 12 câu nhiều lựa chọn (3 đ), 2 câu đúng/sai (2 đ), 4 câu trả lời ngắn (2 đ), 3 câu tự luận (3 đ), 120 phút.'},
   '12tn':{grade:12,school:'THPT',mon:'Toán 12',chName:CHTN,tlQ:[],hk:0,tn:true,mix:TN_MIX,short:'Ôn thi tốt nghiệp THPT',title:'ĐỀ ÔN THI TỐT NGHIỆP THPT',
     scope:'Theo cấu trúc và phân bố chủ đề của đề thi tốt nghiệp THPT năm 2025 (cấu trúc giữ nguyên năm 2026): 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn; nội dung lớp 12 là chính, có lớp 10 và 11',
@@ -198,11 +200,11 @@ const BP_CACHE={};
 /* Bản thiết kế đề theo cấu trúc đã chọn. Cấu trúc mặc định trả về đúng bản gốc, nên đề cũ không đổi. */
 function bpOf(term,st){
   const base=BLUEPRINT[term],s=st||STRUCTS.chuan,sk=structKey(s);
-  if(sk===DEF_SK||base.tn)return base;
+  const fx=base.fixed&&base.fixed[sk];
+  if((sk===DEF_SK&&!fx)||base.tn)return base;
   const ck=term+'|'+sk;if(BP_CACHE[ck])return BP_CACHE[ck];
   const w={};base.nlc.forEach(c=>w[c]=(w[c]||0)+1);
   const warn=[],lists={};
-  const fx=base.fixed&&base.fixed[sk];
   [['nlc',s.n1],['ds',s.n2],['tln',s.n3]].forEach(([k,n])=>{
     if(fx&&fx[k]&&fx[k].length===n){lists[k]=fx[k];return}
     const pool=poolOf(base,k),cap={};
@@ -213,12 +215,12 @@ function bpOf(term,st){
     if(r.over>0)warn.push(`${r.over} ${KIND_VI[k]} sẽ lặp lại dạng đã dùng trong cùng đề (ngân hàng chưa đủ dạng khác nhau; số liệu vẫn khác)`);
   });
   const sl=base.tl,n4=s.n4;
-  const tl=n4===sl.length?sl:n4===0?[]:n4<sl.length?Array.from({length:n4},(_,i)=>sl[n4===1?0:Math.round(i*(sl.length-1)/(n4-1))]):Array.from({length:n4},(_,i)=>sl[i%sl.length]);
+  const tl=fx&&fx.tl&&fx.tl.length===n4?fx.tl:n4===sl.length?sl:n4===0?[]:n4<sl.length?Array.from({length:n4},(_,i)=>sl[n4===1?0:Math.round(i*(sl.length-1)/(n4-1))]):Array.from({length:n4},(_,i)=>sl[i%sl.length]);
   const dem={};tl.forEach(x=>{const k=x.role+'|'+(x.chs||[]).join(',');(dem[k]=dem[k]||{x,n:0}).n++});
   const tp=poolOf(base,'tl');let tover=0;
   Object.values(dem).forEach(d=>{const g=new Set(tp.filter(t=>t.role===d.x.role&&(!d.x.chs||d.x.chs.includes(t.ch))).map(t=>t.grp)).size;tover+=Math.max(0,d.n-g)});
   if(tover>0)warn.push(`${tover} ${KIND_VI.tl} sẽ lặp lại dạng đã dùng trong cùng đề (ngân hàng chưa đủ dạng khác nhau; số liệu vẫn khác)`);
-  return BP_CACHE[ck]={...base,nlc:lists.nlc,ds:lists.ds,tln:lists.tln,tl,tlQ:Array(n4).fill(1),pn:s.p1,pt:s.p3,sk,struct:s,warn,note:structNote(s)};
+  return BP_CACHE[ck]={...base,nlc:lists.nlc,ds:lists.ds,tln:lists.tln,tl,tlQ:Array(n4).fill(1),pn:s.p1,pt:s.p3,sk,struct:s,warn,note:sk===DEF_SK&&base.note?base.note:structNote(s)};
 }
 /* Mức nhận thức theo vị trí khi số câu khác khung gốc: ds, tln giữ tỉ lệ; tl giữ câu cuối là câu khó nhất. */
 const lvProp=(a,n)=>a.length===n?a:Array.from({length:n},(_,i)=>a[Math.floor(i*a.length/n)]);

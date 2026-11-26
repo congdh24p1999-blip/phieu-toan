@@ -3,7 +3,7 @@
    12 nhiều lựa chọn + 4 Đúng – Sai + 6 trả lời ngắn (Hải Phòng, Lào Cai 2026). Câu chữ, số liệu
    do Xưởng đề Toán tự tạo, không chép từ đề nào. Đáp số trả lời ngắn ghi được trong 4 kí tự.
    ================================================================ */
-const fit4=v=>fmt(v).length<=4;
+const fit4=v=>fmt(v).length<=4,f4=v=>(Math.round(v*10000)/10000).toFixed(4).replace(/0+$/,'').replace(/\.$/,'').replace('.',',');
 
 /* ---------- Đúng – Sai: so sánh hai gói cước (Hải Phòng, Phần II câu 4) ---------- */
 DS9('ds9-v-plan',2,'VD',[6],r=>{
@@ -74,4 +74,33 @@ TLN9b('t9-v-bags',8,'TH',[25,26],r=>{
     let f=0;A.forEach(x=>B.forEach(y=>{if(E[1](x,y))f++}));const P=f/(m*n),ans=Math.round(P*100)/100;if(f===0||f===m*n||!fit4(ans))continue;
     return{kind:'tln',stem:`Túi ${I('A')} chứa ${m} tấm thẻ màu đỏ được đánh số ${A.join('; ')}; túi ${I('B')} chứa ${n} tấm thẻ màu xanh được đánh số ${B.join('; ')}. Lấy ngẫu nhiên từ mỗi túi một tấm thẻ. Tính xác suất của biến cố “${E[0]}” (làm tròn kết quả đến hàng phần trăm).`,ans,
       sol:`Không gian mẫu có ${m}·${n} = ${m*n} kết quả đồng khả năng. Đếm các cặp thuận lợi được ${f} cặp. P = ${fr(f,m*n)} ≈ ${fmt(ans)}.`,chk:()=>f>0}}
+});
+
+/* ---------- Trả lời ngắn: trả nợ dần mỗi tháng một khoản bằng nhau (Khánh Hòa, Phần III câu 16) ---------- */
+TLN9('t9-v-debt',2,'TH',[4,6],r=>{
+  for(;;){const B=r.pick([5,8,10,12,15,20,25]),n=r.int(4,11),A=B*n-r.pick([0,0,B/2,B-1,1]),m=1;if(A<=B*(n-1)||!isInt(A)||(A===120&&B===15))continue;
+    const who=r.pick(['ông Ba','bà Tư','anh Nam','chị Hoa']),yr=2027;
+    return{kind:'tln',stem:`Cuối năm ${yr-1}, ${who} mượn ${A} triệu đồng của một người bạn và sẽ trả dần vào từng tháng sau đó. Theo thoả thuận, mỗi tháng ${who} trả cho bạn ${B} triệu đồng, bắt đầu từ tháng 01/${yr} (riêng tháng cuối cùng chỉ trả phần còn thiếu). Hỏi đến tháng nào của năm ${yr} thì ${who} trả hết nợ?`,ans:n,
+      sol:`Sau x tháng đã trả ${B}x triệu đồng. Trả hết nợ khi ${B}x ≥ ${A} ⟺ x ≥ ${qh(Q(A,B))}. Số tháng nhỏ nhất là ${n}, tức là trả hết vào tháng ${n} năm ${yr}.`,chk:()=>B*n>=A&&B*(n-1)<A}}
+});
+
+/* ---------- Trả lời ngắn: diện tích tấm gỗ sau khi cắt, khoét (Khánh Hòa, Phần III câu 18) ---------- */
+TLN9b('t9-v-wood',5,'VD',[15],r=>{
+  for(;;){const a=r.pick([1.2,1.4,1.6,1.8,2]),b=r.pick([.6,.7,.8,.9,1]),rc=r.pick([.1,.15,.2,.25]),d=r.pick([.2,.25,.3,.35]);if(2*d+2*rc>a-.2||rc>b/2)continue;
+    const S=a*b-2*(rc*rc-3.14*rc*rc/4)-2*(3.14*d*d/8),ans=Math.round(S*100)/100;if(!fit4(ans)||Math.abs(S*100-Math.round(S*100))>.45)continue;
+    return{kind:'tln',stem:`Từ một tấm gỗ phẳng hình chữ nhật dài ${fmt(a)} m, rộng ${fmt(b)} m, người ta tạo hình một chiếc xe ô tô đồ chơi bằng cách: bo tròn hai góc phía trên, mỗi góc cắt bỏ phần nằm ngoài một phần tư hình tròn bán kính ${fmt(rc)} m (tâm nằm trong tấm gỗ, cách hai cạnh của góc đó ${fmt(rc)} m); ở cạnh dưới khoét bỏ hai nửa hình tròn có đường kính ${fmt(d)} m để lắp bánh xe. Tính diện tích phần gỗ còn lại (lấy π ≈ 3,14; đơn vị mét vuông, làm tròn kết quả đến hàng phần trăm).`,ans,
+      sol:`Diện tích tấm gỗ: ${fmt(a)}·${fmt(b)} = ${f4(a*b)} m². Mỗi góc bo tròn bỏ đi phần hình vuông cạnh ${fmt(rc)} m nằm ngoài phần tư hình tròn: ${fmt(rc)}² − ${fr(1,4)}·3,14·${fmt(rc)}² ≈ ${f4(rc*rc-3.14*rc*rc/4)} m². Mỗi nửa hình tròn đường kính ${fmt(d)} m: ${fr(1,2)}·3,14·${fmt(d/2)}² ≈ ${f4(3.14*d*d/8)} m². Phần còn lại ≈ ${f4(a*b)} − 2·${f4(rc*rc-3.14*rc*rc/4)} − 2·${f4(3.14*d*d/8)} ≈ ${fmt(ans)} m².`,chk:()=>S>0&&S<a*b}}
+});
+
+/* ---------- Đúng – Sai: biểu đồ cột số liệu theo quý (Khánh Hòa, Phần II câu 13) ---------- */
+const BAR9=[{what:'Số lượng xi măng (tấn) một cửa hàng bán được',u:'tấn',lo:60,hi:180,st:10},{what:'Số lượng xe máy một đại lí bán được',u:'chiếc',lo:40,hi:120,st:5},{what:'Số lượng khách tham quan (nghìn lượt) của một khu du lịch',u:'nghìn lượt',lo:20,hi:90,st:5}];
+DS9b('ds9-v-bar',7,'NB',[22,23],r=>{
+  for(;;){const C=r.pick(BAR9),v=[0,1,2,3].map(()=>r.int(C.lo/C.st,C.hi/C.st)*C.st);if(new Set(v).size<4)continue;const T=v.reduce((a,b)=>a+b,0),q=r.int(0,3),p=v[q]*100/T;if(!isInt(p*10))continue;
+    const mx=v.indexOf(Math.max(...v)),mn=v.indexOf(Math.min(...v)),yr=2025;
+    return mkDS(r,{stem:`${C.what} trong năm ${yr} được thống kê theo từng quý như sau:<div class="figure">${barSVG(['Quý 1','Quý 2','Quý 3','Quý 4'],v,{unit:C.u})}</div>`,items:[
+      {t:`So với các quý khác trong năm ${yr}, quý ${mn+1} có số liệu thấp nhất.`,f:`So với các quý khác trong năm ${yr}, quý ${mx+1} có số liệu thấp nhất.`,why:`Cột thấp nhất là quý ${mn+1} (${v[mn]} ${C.u}).`},
+      {t:`Dữ liệu trên được biểu diễn dưới dạng biểu đồ cột.`,f:`Dữ liệu trên được biểu diễn dưới dạng biểu đồ hình quạt tròn.`,why:`Mỗi quý ứng với một cột nên đây là biểu đồ cột.`},
+      {t:`Tổng số liệu cả năm ${yr} là ${T} ${C.u}.`,f:`Tổng số liệu cả năm ${yr} là ${T+C.st*2} ${C.u}.`,why:`${v.join(' + ')} = ${T}.`},
+      {t:`Số liệu của quý ${q+1} chiếm ${fmt(p)}% tổng số liệu cả năm.`,f:`Số liệu của quý ${q+1} chiếm ${fmt(Math.round(v[q]*1000/(T-v[q]))/10)}% tổng số liệu cả năm.`,why:`${fr(v[q],T)}·100% = ${fmt(p)}%.`}],
+      chk:()=>Math.abs(Math.round(v[q]*1000/(T-v[q]))/10-p)>.05}) }
 });
