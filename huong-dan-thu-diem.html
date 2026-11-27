@@ -399,6 +399,7 @@ function esc_(s) {
           <p class="msg" id="gsMsg" role="status"></p>
           <div class="btns"><button type="button" id="gsTest" class="go">Lưu và gửi thử</button></div>
         </div>
+        <p class="en">Địa chỉ đúng có dạng <code>https://script.google.com/macros/s/…/exec</code>. Không thấy hộp này? Xem <a href="#khong-thay">cách lấy lại địa chỉ</a>.</p>
         <p class="see">Bấm <b>Lưu và gửi thử</b>, rồi mở lại bảng tính ở bước 1. Sau vài giây, phía dưới bảng có thêm một trang tên <b>Thử kết nối</b>, trong đó có dòng <q>Học sinh thử</q>. Có dòng đó là đã xong. Trang thử này xoá đi cũng được.</p>
         <label class="done"><input type="checkbox" data-s="6"> Đã xong bước 6</label>
       </li>
@@ -420,6 +421,16 @@ function esc_(s) {
         <dd>Mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd>, chờ một giây rồi chọn lại.</dd>
         <dt>Bấm Chạy thì hiện chữ đỏ báo lỗi.</dt>
         <dd>Thường do mã dán thiếu. Làm lại bước 3: bấm <b>Chép mã</b>, sang Apps Script nhấn <kbd>Ctrl</kbd> + <kbd>A</kbd> rồi <kbd>Ctrl</kbd> + <kbd>V</kbd>, lưu, rồi chạy lại.</dd>
+        <dt id="khong-thay">Làm xong bước 5 mà không thấy địa chỉ (URL ứng dụng web).</dt>
+        <dd>
+          <p>Đừng chép địa chỉ trên thanh địa chỉ của trình duyệt: đó là địa chỉ trang viết mã. Làm như sau:</p>
+          <ol class="sub">
+            <li>Trong Apps Script, bấm nút xanh <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> (Manage deployments).</li>
+            <li>Nếu có một bản triển khai: bấm vào nó, bên phải có dòng <q>Ứng dụng web</q> và địa chỉ đuôi <code>/exec</code>, bấm <kbd>Sao chép</kbd>.</li>
+            <li>Nếu danh sách trống, hoặc loại không phải <q>Ứng dụng web</q>: đóng hộp, làm lại bước 5, nhớ chọn bánh răng ⚙ → <kbd>Ứng dụng web</kbd>.</li>
+            <li>Nếu sau khi bấm <kbd>Triển khai</kbd> hiện hộp <q>Cấp quyền truy cập</q> (Authorize access): bấm vào đó và cho phép như bước 4; xong mới hiện địa chỉ.</li>
+          </ol>
+        </dd>
         <dt>Bấm “Lưu và gửi thử” nhưng bảng tính không có dòng mới.</dt>
         <dd>Hay gặp nhất là ở bước 5 chưa đổi sang <b>Bất kỳ ai</b>. Sửa: trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên, bấm gửi thử lại.</dd>
         <dt>Không nhận được email.</dt>
@@ -477,6 +488,7 @@ function esc_(s) {
   $('#gsTest').addEventListener('click',()=>{
     const v=inp.value.trim();
     if(!v){say('Thầy cô dán địa chỉ chép ở bước 6 vào ô trên trước nhé.','bad');inp.focus();return}
+    if(/script\.google\.com\/(?:u\/\d+\/)?home\/|script\.google\.com\/d\/|\/edit\b|docs\.google\.com\/spreadsheets/.test(v)){say('Đây là địa chỉ của trang viết mã hoặc của bảng tính (chép từ thanh địa chỉ trình duyệt), chưa phải địa chỉ nhận điểm. Trong Apps Script, bấm nút xanh Triển khai → Quản lý các bản triển khai: địa chỉ đúng nằm ở dòng “Ứng dụng web”, có đuôi /exec. Nếu ở đó trống, làm lại bước 5. Xem thêm mục “Không thấy địa chỉ” bên dưới.','bad');return}
     if(/\/dev\/?$/.test(v)){say('Đây là địa chỉ thử nghiệm (đuôi /dev). Hãy chép địa chỉ có đuôi /exec trong hộp “URL ứng dụng web”.','bad');return}
     if(!RE.test(v)){say('Địa chỉ chưa đúng. Địa chỉ đúng bắt đầu bằng https://script.google.com/macros/s/ và kết thúc bằng /exec. Hãy chép lại ở bước 6.','bad');return}
     LS.set('xdt-gs',v);
