@@ -62,7 +62,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body)
 .layout{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:960px){
   .layout{grid-template-columns:340px minmax(0,1fr);align-items:start}
-  .panel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+  .panel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden}
 }
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px 0;display:grid;gap:14px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;overscroll-behavior:contain;scroll-padding-bottom:120px}
 .grp{display:grid;gap:12px;min-width:0}
@@ -546,7 +546,7 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
           <label><input type="radio" name="diff" value="nang_cao">Nâng cao</label>
         </div>
         <p class="hint" id="diffHint"></p>
-        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng (ngoài SGK của khối lớp)<small class="hint">Mức Nâng cao luôn bật. Đáp án ghi rõ câu nào mở rộng.</small></span></label>
+        <label class="switch"><input type="checkbox" id="ext"><span>Cho phép câu mở rộng<small class="hint">Câu ngoài SGK, đáp án có đánh dấu. Mức Nâng cao luôn bật.</small></span></label>
       </div>
       </section>
       <section class="grp" aria-labelledby="sec3">

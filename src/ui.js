@@ -172,10 +172,11 @@ function histNote(ex){
   return `Trùng ${o.exact}/${o.n} câu với ${all.length} đề đã tạo.`;
 }
 
-const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Theo mẫu Công văn 7991: khoảng 40% nhận biết, 30% thông hiểu, 30% vận dụng (trong đó 10% vận dụng cao).',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
-const DIFF_HINT_TN={co_ban:'Phần I nghiêng về nhận biết; Phần II, III có nhiều câu thông hiểu hơn đề thật.',chuan:'Gần với mức độ đề thi chính thức năm 2025: Phần III gần như toàn câu vận dụng, câu cuối là câu xác suất vận dụng cao.',nang_cao:'Khó hơn đề thật: Phần II thiên về vận dụng, hai câu cuối Phần III là câu xác suất vận dụng cao.'};
-const DIFF_HINT11={co_ban:'Khoảng 35% nhận biết, 35–50% thông hiểu, 15–30% vận dụng, không có vận dụng cao.',chuan:'Gần mẫu Công văn 7991: khoảng 40% nhận biết (lớp 10 khoảng 30%), 30% thông hiểu, 30% vận dụng (tối đa 10% vận dụng cao).',nang_cao:'Khoảng 15% nhận biết, 25% thông hiểu, 50% vận dụng, 10% vận dụng cao.'};
-const DIFF_HINT={co_ban:'Khoảng 40% nhận biết, 35% thông hiểu, 25% vận dụng; không có câu vận dụng cao.',chuan:'Theo mẫu Công văn 7991: khoảng 40% nhận biết, 30% thông hiểu, 30% vận dụng (trong đó 10% vận dụng cao).',nang_cao:'Khoảng 20% nhận biết, 45–50% thông hiểu, 20–25% vận dụng, 10% vận dụng cao.'};
+/* NB: nhận biết, TH: thông hiểu, VD: vận dụng, VDC: vận dụng cao (cách viết tắt quen thuộc với giáo viên) */
+const DIFF_HINT7={co_ban:'NB\u00a032–35% · TH\u00a040–50% · VD\u00a015–25% · không có VDC',chuan:'Theo CV 7991: NB\u00a040% · TH\u00a030% · VD\u00a030% (gồm 10% VDC)',nang_cao:'NB\u00a012–15% · TH\u00a025–40% · VD\u00a035–50% · VDC\u00a010%'};
+const DIFF_HINT_TN={co_ban:'Dễ hơn đề thật, nhiều câu NB và TH.',chuan:'Sát đề thật; câu cuối Phần III là xác suất VDC.',nang_cao:'Khó hơn đề thật; 2 câu cuối Phần III là xác suất VDC.'};
+const DIFF_HINT11={co_ban:'NB\u00a035% · TH\u00a035–50% · VD\u00a015–30% · không có VDC',chuan:'Gần CV 7991: NB\u00a040% (lớp 10: 30%) · TH\u00a030% · VD\u00a030% (tối đa 10% VDC)',nang_cao:'NB\u00a015% · TH\u00a025% · VD\u00a050% · VDC\u00a010%'};
+const DIFF_HINT={co_ban:'NB\u00a040% · TH\u00a035% · VD\u00a025% · không có VDC',chuan:'Theo CV 7991: NB\u00a040% · TH\u00a030% · VD\u00a030% (gồm 10% VDC)',nang_cao:'NB\u00a020% · TH\u00a045–50% · VD\u00a020–25% · VDC\u00a010%'};
 
 /* ================= Phiếu bài tập theo bài học ================= */
 function wsSel(){/* các bài đang chọn của lớp hiện tại (hợp lệ) */
@@ -265,7 +266,7 @@ function renderWS(){
   if(got<state.wsn)ww.push(`Chỉ tạo được ${got} câu với lựa chọn này.`);
   if(w.repeats)ww.push(`Các bài đã chọn chưa đủ dạng câu khác nhau nên có ${w.repeats} câu cùng dạng với câu khác (khác số liệu). Chọn thêm bài${state.wsk==='mix'?' hoặc giảm số câu':', giảm số câu hoặc chọn “Trộn các loại”'} để ít lặp hơn.`);
   $('#wsWarn').textContent=ww.join(' ');
-  $('#diffHint').textContent={co_ban:'Ưu tiên câu nhận biết, thông hiểu.',chuan:'Ưu tiên câu nhận biết, thông hiểu, vận dụng.',nang_cao:'Ưu tiên câu thông hiểu, vận dụng, vận dụng cao.'}[state.diff]+' Câu xếp từ dễ đến khó trong mỗi phần.';
+  $('#diffHint').textContent={co_ban:'Chủ yếu câu NB, TH.',chuan:'Câu NB, TH, VD.',nang_cao:'Câu TH, VD, VDC.'}[state.diff]+' Xếp từ dễ đến khó.';
   const wsName=wsIsTN(les)?'Phiếu ôn thi TN THPT':`Phiếu bài tập Toán ${state.grade}`;
   $('#meta').textContent=`${wsName} · ${got} câu · mã phiếu ${state.code}`;
   document.title=`${wsName} – mã ${state.code}`;
@@ -303,12 +304,12 @@ function render(){
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
-  sh.textContent=`${state.struct==='custom'?'Tự chọn':(isVao10()&&V10_STRUCT_NAME[state.struct])||STRUCTS[state.struct].name}. Tổng ${pts(structTotal(st))} điểm${[st.n2?'mỗi câu đúng/sai 1 điểm (4 ý)':'',st.n4?'mỗi câu tự luận 1 điểm':'',bp.g3?'riêng bài hình học (3 ý) 2 điểm, thay cho hai câu tự luận':''].filter(Boolean).map(x=>'; '+x).join('')}${bp.v10&&ex.nlc.length>=16?'; phần nhiều lựa chọn có nhóm câu vận dụng ở cuối như đề thật':''}.`;
+  sh.textContent=(state.struct==='custom'?'Tự chọn: ':'')+structParts(st)+'.'+(bp.g3?' Bài hình (3 ý) 2 đ thay 2 câu tự luận.':'')+(isVao10()&&v10Prov(state.struct)?` Như đề ${v10Prov(state.struct)}.`:'');
   sw.textContent=err?`Chưa áp dụng: ${err} Đề vẫn dùng khung hợp lệ gần nhất.`:(bp.warn&&bp.warn.length?'Lưu ý: '+bp.warn.join('; ')+'.':'');
   $('#csBox').hidden=state.struct!=='custom'||!!bp.tn;
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
   $('#struct').disabled=!!bp.tn;
-  if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
+  if(bp.tn){sh.textContent='Theo đề chính thức: '+structParts(STRUCTS.tn)+'.';sw.textContent=''}
   $('#noteTxt').textContent='Đề do máy tạo, thầy cô đọc lướt trước khi in.';
   termRadios();
 }
@@ -321,12 +322,12 @@ function renderV10(){
   $('#examOut').innerHTML=prettyMath(v10HTML(ex));
   $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
-  $('#diffHint').textContent={co_ban:'Chọn dạng dễ nhất trong mỗi ý, hợp với học sinh trung bình.',chuan:'Mức thường gặp trong đề thi thật; không có câu vận dụng cao.',nang_cao:'Ưu tiên dạng vận dụng và vận dụng cao, hợp với học sinh khá giỏi.'}[state.diff];
+  $('#diffHint').textContent={co_ban:'Dạng dễ nhất mỗi ý, hợp học sinh trung bình.',chuan:'Mức thường gặp trong đề thật, không có VDC.',nang_cao:'Nhiều câu VD, VDC, hợp học sinh khá giỏi.'}[state.diff];
   setHist('');
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
-  const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'100% tự luận, 8 bài như đề TP.HCM 2026: hàm số y = ax²; Viète; thống kê – xác suất; ba bài toán thực tế; hình khối; hình học phẳng.':'100% tự luận, 5 bài như đề Hà Nội 2026: thống kê – xác suất; căn thức; phương trình, hệ phương trình, Viète; hình học (hình khối và hình phẳng); câu vận dụng cuối.')+' 10 điểm, 120 phút.';$('#structWarn').textContent='';
+  const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'8 bài như đề TP.HCM 2026: hàm số y = ax², Viète, thống kê – xác suất, 3 bài thực tế, hình khối, hình phẳng.':'5 bài như đề Hà Nội 2026: thống kê – xác suất, căn thức, phương trình và Viète, hình học, câu vận dụng.')+' 120 phút.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
   $('#noteTxt').textContent=(hcm?'Theo mẫu đề tuyển sinh lớp 10 TP.HCM 2026':'Theo mẫu đề tuyển sinh lớp 10 Hà Nội 2026')+'. Đề do máy tạo, thầy cô đọc lướt trước khi in.';
   termRadios();
@@ -378,12 +379,22 @@ $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
 const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như Hải Phòng, Lào Cai 2026)',tn37:'12 nhiều lựa chọn (3 đ) + tự luận 7 đ (như Sơn La, Quảng Ninh, Phú Thọ 2026)',tn46:'16 nhiều lựa chọn (4 đ) + tự luận 6 đ (như Quảng Trị 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + tự luận 4 đ (như Cần Thơ 2026)',mc40:'Toàn trắc nghiệm 40 câu nhiều lựa chọn, 90 phút (như Tuyên Quang 2026)',ls8:'8 nhiều lựa chọn (2 đ) + tự luận 8 đ (như Lạng Sơn, Ninh Bình, Thanh Hóa, Hà Tĩnh 2026)'};
 /* khung không thấy tỉnh nào dùng năm 2026: ẩn ở đề ôn thi vào 10 (vẫn tạo được bằng “Tự chọn số câu và điểm”) */
 const V10_HIDE=new Set(['tn55']);
+/* nhãn ngắn trong ô Cấu trúc đề (vừa một dòng); chi tiết số câu, điểm hiện ở dòng gợi ý bên dưới */
+const STRUCT_SHORT={chuan:'Trắc nghiệm 7 đ + tự luận 3 đ',tn:'Kiểu thi tốt nghiệp THPT',tn46:'Trắc nghiệm 4 đ + tự luận 6 đ',tn55:'Trắc nghiệm 5 đ + tự luận 5 đ',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ',ct:'Trắc nghiệm 6 đ + tự luận 4 đ',mc40:'Toàn trắc nghiệm, 40 câu',ls8:'Trắc nghiệm 2 đ + tự luận 8 đ'};
+const V10_SHORT={tn:'Toàn trắc nghiệm (12 + 4 + 6)'};
+function v10Prov(k){const m=/\(như ([^)]*?)( \d{4})?\)/.exec(V10_STRUCT_NAME[k]||'');return m?m[1].split(', ')[0]+(m[2]||''):''}
+function structParts(st){const a=[];
+  if(st.n1)a.push(`${st.n1} nhiều lựa chọn ${pts(st.n1*st.p1)} đ`);
+  if(st.n2)a.push(`${st.n2} đúng/sai ${pts(st.n2*4*PTS.dsItem)} đ`);
+  if(st.n3)a.push(`${st.n3} trả lời ngắn ${pts(st.n3*st.p3)} đ`);
+  if(st.n4)a.push(`${st.n4} tự luận ${pts(st.n4)} đ`);
+  return a.map(x=>x.replace(/ /g,'\u00a0')).join(' · ')}   // mỗi phần không bị ngắt giữa chừng
 function isVao10(){return state.mode!=='ws'&&state.grade===9&&state.kind==='tn'}
 function structOpts(){
   const v=isVao10();
   if(!v&&(state.struct==='tl100'||state.struct==='tlhcm'||state.struct==='mc40'||state.struct==='ls8'))state.struct='chuan';
   if(v&&V10_HIDE.has(state.struct))state.struct='chuan';
-  const html=(v?'<option value="tl100">100% tự luận, 5 bài (kiểu Hà Nội 2026)</option><option value="tlhcm">100% tự luận, 8 bài (kiểu TP.HCM 2026)</option><option value="mc40">Toàn trắc nghiệm 40 câu nhiều lựa chọn (như Tuyên Quang 2026)</option><option value="ls8">Trắc nghiệm 2 đ (8 câu) + tự luận 8 đ (như Lạng Sơn 2026)</option>':'')+STRUCT_ORDER.filter(k=>!(v&&V10_HIDE.has(k))).map(k=>`<option value="${k}">${esc(v&&V10_STRUCT_NAME[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
+  const html=(v?'<option value="tl100">100% tự luận, 5 bài (Hà Nội)</option><option value="tlhcm">100% tự luận, 8 bài (TP.HCM)</option><option value="mc40">'+STRUCT_SHORT.mc40+'</option><option value="ls8">'+STRUCT_SHORT.ls8+'</option>':'')+STRUCT_ORDER.filter(k=>!(v&&V10_HIDE.has(k))).map(k=>`<option value="${k}">${esc(v&&V10_SHORT[k]||STRUCT_SHORT[k]||STRUCTS[k].name)}</option>`).join('')+'<option value="custom">Tự chọn số câu và điểm…</option>';
   const el=$('#struct');if(el.dataset.v!==String(v)){el.innerHTML=html;el.dataset.v=String(v)}
   el.value=state.struct;
 }
