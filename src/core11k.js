@@ -17,12 +17,13 @@ TL11('tl4-gk',4,'VDC','c',r=>{
       [`Do đó ${I(A1+B1)} ∥ ${I('AB')}, ${I(A1+B1)} = ${fr(2,3)}${I('AB')} và ${I(D1+C1)} ∥ ${I('DC')}, ${I(D1+C1)} = ${fr(2,3)}${I('DC')}. Vì ${I('AB')} ∥ ${I('DC')} và ${I('AB')} = ${I('DC')} nên ${I(A1+B1)} ∥ ${I(D1+C1)} và ${I(A1+B1)} = ${I(D1+C1)}: ${I(A1+B1+C1+D1)} là hình bình hành.`,.25]])],
     chk:()=>{const d=V3.sub(P[k],P[g]),n=V3.cross(V3.sub(P.B,P.A),V3.sub(P.D,P.A));return Math.abs(V3.dot(d,n))<1e-9}};
 });
-/* SGK 4.46: tứ diện, mặt phẳng qua M song song với AD và BC */
+/* SGK 4.46: tứ diện, mặt phẳng qua M song song với AD và BC.
+   Tứ diện vẽ riêng: AD gần thẳng đứng, BC gần nằm ngang nên thiết diện hiện rõ là hình bình hành. */
 TL11('tl4-tetk',4,'VDC','c',r=>{
-  const [pp,qq]=r.pick([[1,2],[2,1],[1,1],[2,3],[3,2]]),F=tuDien(),P={...F.P},t=pp/(pp+qq),u=qq/(pp+qq),kk=Q(qq,pp);
+  const [pp,qq]=r.pick([[1,2],[2,1],[1,1],[2,3],[3,2]]),F=tuDien(),P={A:[4.7,1.2,5.2],B:[-1,2.4,0],C:[3,0.4,0],D:[5.3,3.2,0]},t=pp/(pp+qq),u=qq/(pp+qq),kk=Q(qq,pp);
   P.M=V3.lerp(P.A,P.B,t);P.N=V3.lerp(P.A,P.C,t);P.K=V3.lerp(P.C,P.D,u);P.Q=V3.lerp(P.B,P.D,u);
   const cond=pp===qq?`${I('M')} là trung điểm của ${I('AB')}`:pp===1?`${I('BM')} = ${qq}${I('AM')}`:qq===1?`${I('AM')} = ${pp}${I('BM')}`:`${qq}${I('AM')} = ${pp}${I('BM')}`;
-  const fig=fig3D(P,F.solid.concat([['M','N'],['N','K']]),F.dashed.concat([['K','Q'],['Q','M']]),['A','B','C','D','M','N','K','Q']);
+  const fig=fig3D(P,F.solid.concat([['M','N'],['N','K']]),F.dashed.concat([['K','Q'],['Q','M']]),['A','B','C','D','M','N','K','Q'],{fill:['M','N','K','Q']});
   return{kind:'tl',title:'Hai đường thẳng song song, thiết diện',parts:[
     {pts:.5,html:`Cho tứ diện ${I('ABCD')}. Trên cạnh ${I('AB')} lấy điểm ${I('M')} sao cho ${cond}. Mặt phẳng ${PLN('P')} đi qua ${I('M')} và song song với hai đường thẳng ${I('AD')}, ${I('BC')}.${fig}Xác định giao điểm ${I('N')} của ${PLN('P')} với ${I('AC')} và giao điểm ${I('K')} của ${PLN('P')} với ${I('CD')}.`},
     {pts:.5,html:`Tính tỉ số ${fr('KC','KD')} và chứng minh thiết diện của tứ diện cắt bởi ${PLN('P')} là hình bình hành.`}],

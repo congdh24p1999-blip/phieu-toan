@@ -72,7 +72,8 @@ const fig9Cyl=(R,h,lab={})=>{const ry=R*.28;return fig9({},{ell:[[[0,h],R,ry,'fu
 const fig9Cone=(R,h,lab={})=>{const ry=R*.28;return fig9({},{ell:[[[0,0],R,ry,'half']],segs:[[[-R,0],[0,h]],[[R,0],[0,h]]],dashed:[[[0,0],[R,0]],[[0,0],[0,h]]],
   texts:[[[R/2,0],lab.r||'r',0,-4],[[0,h/2],lab.h||'h',-9,3]].concat(lab.l?[[[R/2,h/2],lab.l,12,0]]:[]),w:150,h:150})};
 /* hình cầu */
-const fig9Sph=(lab={})=>fig9({},{circ:[[[0,0],1]],ell:[[[0,0],1,.3,'half']],dashed:[[[0,0],[1,0]]],texts:[[[.5,0],lab.r||'R',0,-4]],w:130,h:130});
+/* bán kính vẽ chếch lên trên, tách khỏi đường xích đạo để nhãn độ dài dễ đọc */
+const fig9Sph=(lab={})=>fig9({},{circ:[[[0,0],1]],ell:[[[0,0],1,.3,'half']],dashed:[[[0,0],[.77,.64]]],texts:[[[.36,.33],lab.r||'R',-12,-2]],w:130,h:130});
 /* parabol y = a·x² có đánh dấu điểm */
 const fig9Par=(a,mk)=>{const xm=Math.abs(mk[0])+1.2,Y=Math.abs(mk[1]);return graphSVG(x=>a*x*x,{x:[-xm,xm],y:a>0?[-1,Y+1.5]:[-Y-1.5,1],marks:[mk],w:190,h:180})};
 /* một tiếp tuyến MA */

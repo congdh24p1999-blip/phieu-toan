@@ -57,6 +57,8 @@ function fig3D(P,solid,dashed,show,o={}){
   const S=p=>{const q=pr(p);return[pad+(q[0]-mnx)*k,pad+(q[1]-mny)*k]};
   const cx=W/2,cy=H/2;
   let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Hình vẽ">`;
+  /* o.fill: tô nhạt thiết diện (danh sách đỉnh theo thứ tự) để học sinh nhìn ra ngay */
+  if(o.fill&&o.fill.every(n=>P[n]))s+=`<polygon points="${o.fill.map(n=>S(P[n]).map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="#bcd7f0" fill-opacity=".85" stroke="none"/>`;
   const seg=([a,b],d)=>{const p=S(P[a]),q=S(P[b]);s+=`<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${q[0].toFixed(1)}" y2="${q[1].toFixed(1)}" stroke="#000" stroke-width="1.1"${d?' stroke-dasharray="4 3"':''}/>`};
   solid.forEach(e=>seg(e,0));dashed.forEach(e=>seg(e,1));
   names.forEach(n=>{
