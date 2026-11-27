@@ -1,0 +1,52 @@
+name: Kiểm tra trước khi xuất bản
+# Mỗi lần đẩy mã lên nhánh main: dựng lại trang từ src/ và chạy toàn bộ bộ kiểm tra.
+# Nếu có lỗi, lần chạy báo "failed" (GitHub gửi email cho chủ kho mã).
+# Khi biến kho XUAT_BAN_QUA_ACTIONS = true (và GitHub Pages đặt nguồn là "GitHub Actions"),
+# trang chỉ được xuất bản khi mọi kiểm tra đều đạt.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: kiem-tra, cancel-in-progress: true }
+jobs:
+  kiem-tra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Cài esbuild (nén mã)
+        run: npm install --no-save esbuild@0.28.2
+      - name: Dựng trang từ src/
+        run: cd src && ./build.sh
+      - name: Kiểm tra đề (ba mức độ)
+        run: |
+          cd src
+          node test.js 300 co_ban
+          node test.js 300 chuan
+          node test.js 300 nang_cao
+      - name: Kiểm tra câu mở rộng
+        run: cd src && node exttest.js
+      - name: Kiểm tra từng dạng câu
+        run: node tools/kiem-tra-mau.js 120
+      - name: Gom các file của trang
+        if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+        run: |
+          mkdir -p _site
+          cp *.html *.png *.svg *.xml _site/ 2>/dev/null || true
+      - uses: actions/upload-pages-artifact@v4
+        if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+        with: { path: _site }
+  xuat-ban:
+    needs: kiem-tra
+    if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

@@ -15,7 +15,7 @@ const digs6=n=>n<10?n:n<100?9+2*(n-9):189+3*(n-99);/* số chữ số khi viết
 N6x('k6x-1-digits',1,'NB',[1],r=>{
   for(;;){const n=r.int(10000,99999),ds=[...new Set(String(n).split('').map(Number))].sort((a,b)=>a-b);if(ds.length<4)continue;
     const all=String(n).split('').map(Number);
-    return mkTxt(r,{stem:`Tập hợp ${I('M')} các chữ số của số ${nv(n)} là`,correct:set6(ds),wrongs:[`{${all.join('; ')}}`,set6(ds.slice(1)),set6([...ds,ds[ds.length-1]+1>9?ds[0]+1:ds[ds.length-1]+1].filter((v,i,s)=>s.indexOf(v)===i).sort((a,b)=>a-b)),`{${nv(n)}}`].filter(w=>w!==set6(ds)),
+    return mkTxt(r,{stem:`Tập hợp ${I('M')} các chữ số của số ${nv(n)} là`,correct:set6(ds),wrongs:[`{${all.join('; ')}}`,set6(ds.slice(1)),set6([...ds,[0,1,2,3,4,5,6,7,8,9].find(d=>!ds.includes(d))].sort((a,b)=>a-b)),set6(ds.filter((_,i)=>i!==2)),`{${nv(n)}}`].filter(w=>w!==set6(ds)),
       sol:`Các chữ số của ${nv(n)} là ${ds.join(', ')}; mỗi phần tử chỉ viết một lần: ${I('M')} = ${set6(ds)}.`,chk:()=>true})}
 });
 TLN6x('t6x-1-mult',1,'TH',[1],r=>{
