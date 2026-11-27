@@ -268,7 +268,7 @@ function renderWS(){
   $('#wsWarn').textContent=ww.join(' ');
   $('#diffHint').textContent={co_ban:'Chủ yếu câu NB, TH.',chuan:'Câu NB, TH, VD.',nang_cao:'Câu TH, VD, VDC.'}[state.diff]+' Xếp từ dễ đến khó.';
   const wsName=wsIsTN(les)?'Phiếu ôn thi TN THPT':`Phiếu bài tập Toán ${state.grade}`;
-  $('#meta').textContent=`${wsName} · ${got} câu · mã phiếu ${state.code}`;
+  setMeta(`${wsName} · ${got} câu · mã phiếu ${state.code}`);
   document.title=`${wsName} – mã ${state.code}`;
   $('#tagline').textContent='Tạo phiếu bài tập Toán theo từng bài học trong SGK, có đáp án và lời giải. Mỗi mã phiếu là một phiếu khác.';
   $('#noteTxt').textContent='Phiếu do máy tạo, thầy cô đọc lướt trước khi phát cho học sinh.';setHist('');
@@ -300,7 +300,7 @@ function render(){
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,vs[0],bp));
   $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===6||bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
   setHist(histNote(ex));
-  $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
+  {const cs=vs.map(v=>v.code),run=cs.length>2&&cs.every((c,i)=>+c===+cs[0]+i);setMeta(`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${run?cs[0]+'–'+cs[cs.length-1]:cs.join(', ')}`)}
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const sh=$('#structHint'),sw=$('#structWarn');
@@ -324,7 +324,7 @@ function renderV10(){
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
   $('#diffHint').textContent={co_ban:'Dạng dễ nhất mỗi ý, hợp học sinh trung bình.',chuan:'Mức thường gặp trong đề thật, không có VDC.',nang_cao:'Nhiều câu VD, VDC, hợp học sinh khá giỏi.'}[state.diff];
   setHist('');
-  $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
+  setMeta(`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`);
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'8 bài như đề TP.HCM 2026: hàm số y = ax², Viète, thống kê – xác suất, 3 bài thực tế, hình khối, hình phẳng.':'5 bài như đề Hà Nội 2026: thống kê – xác suất, căn thức, phương trình và Viète, hình học, câu vận dụng.')+' 120 phút.';$('#structWarn').textContent='';
@@ -378,6 +378,7 @@ $('#ext').addEventListener('change',e=>{state.ext=e.target.checked;update()});
 /* Danh sách cấu trúc; với đề ôn thi vào lớp 10 ghi kèm tỉnh đã dùng cấu trúc đó (năm 2026) và thêm lựa chọn 100% tự luận */
 const V10_STRUCT_NAME={chuan:'12 nhiều lựa chọn + 2 đúng/sai + 4 trả lời ngắn + 3 tự luận (như Khánh Hòa 2026)',tn:'Toàn trắc nghiệm: 12 + 4 đúng/sai + 6 trả lời ngắn (như Hải Phòng, Lào Cai 2026)',tn37:'12 nhiều lựa chọn (3 đ) + tự luận 7 đ (như Sơn La, Quảng Ninh, Phú Thọ 2026)',tn46:'16 nhiều lựa chọn (4 đ) + tự luận 6 đ (như Quảng Trị 2026)',ct:'20 nhiều lựa chọn (4 đ) + 2 đúng/sai + tự luận 4 đ (như Cần Thơ 2026)',mc40:'Toàn trắc nghiệm 40 câu nhiều lựa chọn, 90 phút (như Tuyên Quang 2026)',ls8:'8 nhiều lựa chọn (2 đ) + tự luận 8 đ (như Lạng Sơn, Ninh Bình, Thanh Hóa, Hà Tĩnh 2026)'};
 /* khung không thấy tỉnh nào dùng năm 2026: ẩn ở đề ôn thi vào 10 (vẫn tạo được bằng “Tự chọn số câu và điểm”) */
+function setMeta(t){const m=$('#meta');m.textContent=t;m.title=t}
 const V10_HIDE=new Set(['tn55']);
 /* nhãn ngắn trong ô Cấu trúc đề (vừa một dòng); chi tiết số câu, điểm hiện ở dòng gợi ý bên dưới */
 const STRUCT_SHORT={chuan:'Trắc nghiệm 7 đ + tự luận 3 đ',tn:'Kiểu thi tốt nghiệp THPT',tn46:'Trắc nghiệm 4 đ + tự luận 6 đ',tn55:'Trắc nghiệm 5 đ + tự luận 5 đ',tn37:'Trắc nghiệm 3 đ + tự luận 7 đ',ct:'Trắc nghiệm 6 đ + tự luận 4 đ',mc40:'Toàn trắc nghiệm, 40 câu',ls8:'Trắc nghiệm 2 đ + tự luận 8 đ'};

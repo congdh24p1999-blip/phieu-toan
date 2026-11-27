@@ -265,9 +265,11 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
 @page land{size:A4 landscape;margin:10mm}
 
 /* ---------- Làm bài online ---------- */
-.stagehead .qzopen{margin-left:auto}
+/* một hàng: thẻ | dòng mô tả (tự rút gọn bằng …) | Cho học sinh làm online | Báo lỗi đề này */
+.stagehead .tabs,.stagehead .btn,.stagehead .buglink{flex:none;white-space:nowrap}
+.stagehead .meta{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stagehead .qzopen+.buglink{margin-left:0}
-@media (max-width:640px){.stagehead .qzopen{margin-left:0;order:3}.stagehead .qzopen+.buglink{order:4}}
+@media (max-width:640px){.stagehead .meta{flex-basis:100%;order:2;white-space:normal}.stagehead .qzopen{order:3}.stagehead .qzopen+.buglink{order:4}}
 .qzgs{border-top:1px solid var(--line);padding-top:10px;margin:0 0 10px;display:flex;flex-direction:column;gap:4px}
 .qzgs input{font:inherit;font-size:.85rem;padding:7px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .qzgs input[aria-invalid=true]{border-color:var(--pen)}
