@@ -105,3 +105,30 @@ TL10x('tl10x-27-digits',9,'VDC','c',[27],r=>{
     sol:[ptxt([[`n(Ω) = ${n}·${n}·${n-1} = ${tot} (chữ số hàng trăm khác 0). Số chẵn tận cùng 0: ${n}·${n-1} = ${n*(n-1)}; tận cùng ${[2,4,6].filter(e=>e<=n).join(', ')}: ${E}·${n-1}·${n-1} = ${E*(n-1)*(n-1)}.`,.25],[`Có ${ev} số chẵn; P = ${fr(ev,tot)} = ${qh(Q(ev,tot))}.`,.25]]),
       ptxt([[`Tận cùng 0: ${n*(n-1)} số; tận cùng 5: ${n-1}·${n-1} = ${(n-1)*(n-1)} số; tổng ${f5} số.`,.25],[`P = ${fr(f5,tot)} = ${qh(Q(f5,tot))}.`,.25]])],chk:()=>tot===n*n*(n-1)&&ev===n*(n-1)+E*(n-1)*(n-1)&&f5===n*(n-1)+(n-1)*(n-1)};
 });
+
+/* ===== Bổ sung theo đề cuối kì I 2025 – 2026 (Sở GD&ĐT Bắc Ninh) và bài tập SGK ===== */
+/* Biểu giá bán lẻ điện sinh hoạt theo Quyết định 1279/QĐ-BCT ngày 09/5/2025 (đồng/kWh, chưa gồm thuế VAT) */
+const ELEC10=[[50,1984],[50,2050],[100,2380],[100,2998],[100,3350],[Infinity,3460]];
+const elec10=k=>{let s=0,rem=k,steps=[];for(const [w,p] of ELEC10){if(rem<=0)break;const u=Math.min(w,rem);s+=u*p;steps.push([u,p]);rem-=u}return{s,steps}};
+TLN10x('t10x-15-elec',6,'VD',[15],r=>{
+  const k=r.int(12,80)*5,{s,steps}=elec10(k),v=Math.round(s/1000);
+  return{kind:'tln',stem:`Giá bán lẻ điện sinh hoạt (chưa gồm thuế VAT) được tính theo bậc như sau: bậc 1 (0 – 50 kWh): 1 984 đồng/kWh; bậc 2 (51 – 100 kWh): 2 050 đồng/kWh; bậc 3 (101 – 200 kWh): 2 380 đồng/kWh; bậc 4 (201 – 300 kWh): 2 998 đồng/kWh; bậc 5 (301 – 400 kWh): 3 350 đồng/kWh; bậc 6 (từ 401 kWh): 3 460 đồng/kWh. Gia đình bạn An dùng hết ${k} kWh điện trong một tháng. Số tiền điện phải trả (chưa gồm thuế VAT) là bao nhiêu nghìn đồng (làm tròn đến hàng đơn vị)?`,ans:v,unit:'nghìn đồng',
+    sol:`Tiền điện: ${steps.map(([u,p])=>`${u}·${nv(p)}`).join(' + ')} = ${nv(s)} (đồng) ≈ ${v} nghìn đồng.`,chk:()=>v<10000};
+});
+TL10x('tl10x-16-cinema',6,'VDC','c',[16],r=>{
+  for(;;){const p0=r.int(6,12)*10,N0=r.int(2,5)*100,d=r.pick([5,10]),k=r.pick([50,100]),M=r.int(5,10)*100+r.int(0,99);
+    const xs=(k*p0-d*N0)/(2*d*k);if(xs<=0)continue;const xc=(M-N0)/k;let x,cap=false;
+    if(N0+k*xs<=M){if(!Number.isInteger(xs))continue;x=xs}else{if(!Number.isInteger(Math.floor(xc)))continue;x=Math.floor(xc);cap=true;if(x<=0)continue}
+    if(p0-d*x<=0)continue;const R=(p0-d*x)*(N0+k*x);
+    return{kind:'tl',title:'Bài toán tối ưu doanh thu',parts:[{pts:.5,html:`Một rạp chiếu phim có sức chứa ${M} người. Với giá vé ${p0} nghìn đồng, trung bình mỗi ngày có ${N0} người đến xem. Rạp khảo sát thấy cứ giảm giá vé ${d} nghìn đồng thì có thêm ${k} người đến xem mỗi ngày. Gọi ${I('x')} là số lần giảm giá (mỗi lần ${d} nghìn đồng). Viết công thức tính doanh thu ${I('R')}(${I('x')}) từ tiền bán vé mỗi ngày và điều kiện của ${I('x')}.`},{pts:.5,html:`Tìm giá vé để doanh thu từ tiền bán vé mỗi ngày lớn nhất.`}],
+      sol:[ptxt([[`Giá vé ${p0} − ${d}x (nghìn đồng), số người xem ${N0} + ${k}x, với ${N0} + ${k}x ≤ ${M} và ${p0} − ${d}x > 0.`,.25],[`R(x) = (${p0} − ${d}x)(${N0} + ${k}x) = ${ph(Pl.from([{c:-d*k,ex:2},{c:k*p0-d*N0,ex:1},{c:p0*N0,ex:0}]))} (nghìn đồng).`,.25]]),
+        ptxt([[`R(x) là hàm bậc hai có a = ${-d*k} < 0, đạt cực đại tại x = ${fmt(Math.round(xs*100)/100)}${cap?`; nhưng khi đó số người ${N0} + ${k}·${fmt(Math.round(xs*100)/100)} vượt sức chứa ${M}, nên xét x ≤ ${fmt(Math.round(xc*100)/100)}. R(x) đồng biến trên đoạn này, x là số nguyên nên chọn x = ${x}`:''}.`,.25],[`Giá vé ${p0-d*x} nghìn đồng, doanh thu lớn nhất ${nv(R)} nghìn đồng mỗi ngày.`,.25]])],chk:()=>true}}
+});
+const r2x=v=>(Math.round(v*100)/100).toFixed(2).replace('.',',');
+TL10x('tl10x-6-tunnel',3,'VDC','c',[6],r=>{
+  const a=r.int(5,10),b=r.int(4,9),B=r.int(20,24)*5,c=r.int(8,14),G=r.int(17,20)*5;
+  const AC=Math.sqrt(a*a+b*b-2*a*b*Math.cos(B*RAD10)),AD=Math.sqrt(AC*AC+c*c-2*AC*c*Math.cos(G*RAD10)),save=a+b+c-AD;
+  return{kind:'tl',title:'Ứng dụng định lí côsin',parts:[{pts:.5,html:`Một con đường đi vòng qua chân núi gồm ba đoạn thẳng ${I('AB')} = ${a} km, ${I('BC')} = ${b} km, ${I('CD')} = ${c} km với ${ANG('ABC')} = ${B}${DEG}. Tính khoảng cách ${I('AC')} (làm tròn đến hàng phần trăm).`},{pts:.5,html:`Người ta dự định làm một đường hầm thẳng nối ${I('A')} với ${I('D')} xuyên qua núi. Biết ${ANG('ACD')} = ${G}${DEG}. Hỏi đi theo đường hầm thì quãng đường ngắn hơn đường cũ bao nhiêu ki-lô-mét (làm tròn đến hàng phần trăm)?`}],
+    sol:[ptxt([[`Theo định lí côsin trong tam giác ABC: AC² = ${a}² + ${b}² − 2·${a}·${b}·cos ${B}°.`,.25],[`AC ≈ ${r2x(AC)} (km).`,.25]]),
+      ptxt([[`Trong tam giác ACD: AD² = AC² + ${c}² − 2·AC·${c}·cos ${G}° ⇒ AD ≈ ${r2x(AD)} (km).`,.25],[`Đường cũ dài ${a} + ${b} + ${c} = ${a+b+c} (km); ngắn hơn khoảng ${a+b+c} − ${r2x(AD)} ≈ ${r2x(save)} (km).`,.25]])],chk:()=>save>0};
+});

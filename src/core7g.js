@@ -264,3 +264,17 @@ TL7x('tl7x-35-alt',9,'VD','geo',[35],r=>{
     sol:[ptxt([[`BD, CE là hai đường cao của tam giác ABC, cắt nhau tại H nên H là trực tâm.`,.25],[`Ba đường cao đồng quy tại H, do đó AH nằm trên đường cao thứ ba, tức AH ⊥ BC.`,.25]]),
       ptxt([[`Tam giác ABD vuông tại D: ∠ABD = 90° − ${a}° = ${90-a}°.`,.25],[`Tam giác BEH vuông tại E: ∠BHE = 90° − ∠EBH = 90° − ${90-a}° = ${a}°, nên ∠BHC = 180° − ${a}° = ${180-a}° (hai góc kề bù).`,.25]])],chk:()=>true};
 });
+
+/* ===== Bổ sung theo dạng bài thực tế trong đề cuối kì I 2025 – 2026 (khối lượng cặp sách) ===== */
+const bag7=r=>{for(;;){const m=r.int(30,48)*10+r.pick([0,5])*1,c=r.int(25,38)*100,q=r.pick([120,150,160,180,200]),cap=m*10,free=cap-c;if(free<q*2)continue;return{m,c,q,cap,free,n:Math.floor(free/q)}}};
+TLN7x('t7x-2-bag',1,'VD',[2],r=>{
+  const {m,c,q,cap,n}=bag7(r);
+  return{kind:'tln',stem:`Nhiều khuyến nghị về sức khoẻ học đường cho rằng khối lượng cặp sách của học sinh không nên vượt quá 10% khối lượng cơ thể. Bạn Minh nặng ${dec6(m/10)} kg, chiếc cặp hằng ngày nặng ${dec6(c/1000)} kg. Hôm nay Minh cần mang thêm một số quyển vở, mỗi quyển nặng ${q} g. Minh có thể mang thêm nhiều nhất bao nhiêu quyển vở để vẫn đúng khuyến nghị?`,ans:n,unit:'quyển',
+    sol:`Khối lượng cặp tối đa: 10% · ${dec6(m/10)} = ${dec6(cap/1000)} (kg) = ${nv(cap)} g. Còn có thể thêm ${nv(cap)} − ${nv(c)} = ${nv(cap-c)} (g); ${nv(cap-c)} : ${q} ${(cap-c)%q?'≈':'='} ${fmt(Math.round((cap-c)/q*100)/100)}, nên mang thêm nhiều nhất ${n} quyển.`,chk:()=>n>=2};
+});
+TL7x('tl7x-2-bag',1,'VD','real',[2,4],r=>{
+  const {m,c,q,cap,n}=bag7(r),t=r.int(1,n);
+  return{kind:'tl',title:'Bài toán thực tế',parts:[{pts:.5,html:`Theo khuyến nghị, khối lượng cặp sách của học sinh không nên vượt quá 10% khối lượng cơ thể. Bạn Lan nặng ${dec6(m/10)} kg, chiếc cặp hằng ngày nặng ${dec6(c/1000)} kg. Nếu Lan bỏ thêm vào cặp ${t} quyển sách, mỗi quyển nặng ${q} g thì khối lượng cặp là bao nhiêu ki-lô-gam? Có vượt khuyến nghị không?`},{pts:.5,html:`Lan có thể mang thêm nhiều nhất bao nhiêu quyển sách như vậy để vẫn đúng khuyến nghị?`}],
+    sol:[ptxt([[`Khối lượng cặp: ${dec6(c/1000)} + ${t}·${dec6(q/1000)} = ${dec6((c+t*q)/1000)} (kg).`,.25],[`Khối lượng tối đa theo khuyến nghị: 10% · ${dec6(m/10)} = ${dec6(cap/1000)} (kg); ${dec6((c+t*q)/1000)} ${c+t*q<=cap?'≤':'>'} ${dec6(cap/1000)} nên ${c+t*q<=cap?'không vượt':'vượt'} khuyến nghị.`,.25]]),
+      ptxt([[`Khối lượng còn được thêm: ${dec6(cap/1000)} − ${dec6(c/1000)} = ${dec6((cap-c)/1000)} (kg).`,.25],[`${dec6((cap-c)/1000)} : ${dec6(q/1000)} ${(cap-c)%q?'≈':'='} ${fmt(Math.round((cap-c)/q*100)/100)}, nên mang thêm nhiều nhất ${n} quyển.`,.25]])],chk:()=>true};
+});

@@ -163,3 +163,32 @@ TL8x('tl8x-37-photo',9,'VD','geo',[37],r=>{
     sol:[ptxt([[`Tỉ số đồng dạng: ${L} : ${b} = ${k}.`,.25],[`Chiều rộng tấm ảnh mới: ${k}·${a} = ${k*a} (cm).`,.25]]),
       ptxt([[`Diện tích ban đầu: ${a}·${b} = ${a*b} (cm²); diện tích mới: ${k*a}·${L} = ${k*a*L} (cm²).`,.25],[`${k*a*L} : ${a*b} = ${k*k}, tức gấp ${k*k} lần.`,.25]])],chk:()=>true};
 });
+
+/* ===== Bổ sung theo dạng bài thực tế trong đề kiểm tra 2025 – 2026 ===== */
+/* BC có tối đa một chữ số thập phân và không quá 4 kí tự (kể cả dấu phẩy) để dùng được cho câu trả lời ngắn */
+const lake8=r=>{for(;;){const q=r.int(8,20),s=q+r.int(10,25),p=r.int(12,30),bc=p*s/q;if(!Number.isInteger(bc*10)||String(bc).length>4)continue;return{q,s,p,bc}}};
+TLN8x('t8x-15-lake',4,'TH',[15],r=>{
+  const {q,s,p,bc}=lake8(r);
+  return{kind:'tln',stem:`Để đo chiều rộng ${I('BC')} của một hồ nước, người ta chọn điểm ${I('A')} trên bờ, căng dây nối ${I('A')} với ${I('B')} và ${I('C')}, rồi lấy ${I('D')} ∈ ${I('AB')}, ${I('E')} ∈ ${I('AC')} sao cho ${I('DE')} ∥ ${I('BC')}. Đo được ${I('AD')} = ${q} m, ${I('AB')} = ${s} m, ${I('DE')} = ${p} m. Tính chiều rộng ${I('BC')} của hồ (đơn vị: m).`,ans:bc,unit:'m',
+    sol:`DE ∥ BC nên theo hệ quả định lí Thalès: AD/AB = DE/BC, suy ra BC = DE·AB/AD = ${p}·${s}/${q} = ${fmt(bc)} (m).`,chk:()=>true};
+});
+TL8x('tl8x-15-lake',4,'VD','real',[15],r=>{
+  const {q,s,p,bc}=lake8(r);
+  return{kind:'tl',title:'Đo khoảng cách nhờ định lí Thalès',parts:[{pts:.5,html:`Để đo chiều rộng ${I('BC')} của một hồ nước (không đo trực tiếp được), người ta chọn điểm ${I('A')} trên bờ, căng dây từ ${I('A')} đến ${I('B')} và ${I('C')}, rồi lấy ${I('D')} ∈ ${I('AB')}, ${I('E')} ∈ ${I('AC')} sao cho ${I('DE')} ∥ ${I('BC')}. Giải thích vì sao ${fr(I('AD'),I('AB'))} = ${fr(I('DE'),I('BC'))}.`},{pts:.5,html:`Đo được ${I('AD')} = ${q} m, ${I('AB')} = ${s} m, ${I('DE')} = ${p} m. Tính chiều rộng ${I('BC')} của hồ và độ dài đoạn ${I('DB')}.`}],
+    sol:[ptxt([[`Trong tam giác ABC có DE ∥ BC (D ∈ AB, E ∈ AC).`,.25],[`Theo hệ quả của định lí Thalès, tam giác ADE có ba cạnh tương ứng tỉ lệ với ba cạnh tam giác ABC, nên AD/AB = DE/BC.`,.25]]),
+      ptxt([[`BC = DE·AB/AD = ${p}·${s}/${q} = ${fmt(bc)} (m).`,.25],[`DB = AB − AD = ${s} − ${q} = ${s-q} (m).`,.25]])],chk:()=>true};
+});
+TL8x('tl8x-26-shop',7,'VDC','real',[26],r=>{
+  for(;;){const P=r.pick([120,150,180,185,200,250]),a=r.pick([30,35,38,40]),f=r.pick([[3,5],[2,5],[1,2]]),b=r.pick([80,85,90]),x=r.int(10,40)*20;
+    const n1=x/2,n2=n1*f[0]/f[1],n3=n1-n2;if(!Number.isInteger(n2))continue;
+    const L=n1*P*a/100-n3*P*(100-b)/100;if(L<=0||!Number.isInteger(L*1000)||Math.round(L)!==L)continue;const per=L/x;
+    return{kind:'tl',title:'Giải bài toán bằng cách lập phương trình',parts:[{pts:.5,html:`Một cửa hàng nhập về một số chiếc áo với giá ${P} nghìn đồng mỗi chiếc. Đợt thứ nhất, cửa hàng bán một nửa số áo, mỗi chiếc lãi ${a}% so với giá vốn. Đợt thứ hai, cửa hàng bán ${fr(f[0],f[1])} số áo còn lại với giá bằng giá vốn. Đợt thứ ba, cửa hàng bán hết số áo còn lại với giá bằng ${b}% giá vốn. Gọi ${I('x')} là số áo đã nhập. Biểu thị lợi nhuận của cửa hàng theo ${I('x')}.`},{pts:.5,html:`Sau khi bán hết, cửa hàng lãi ${nv(L*1000)} đồng. Hỏi cửa hàng đã nhập bao nhiêu chiếc áo?`}],
+      sol:[ptxt([[`Đợt 1 bán ${fr('x',2)} áo, lãi ${fr('x',2)}·${a}%·${P} = ${fmt(P*a/200)}x (nghìn đồng); đợt 2 không lãi không lỗ.`,.25],[`Đợt 3 bán ${fr('x',2)}·${fr(f[1]-f[0],f[1])} = ${fr(`${f[1]-f[0]}x`,2*f[1])} áo, lỗ ${100-b}% mỗi chiếc. Lợi nhuận: ${fmt(P*a/200)}x − ${fmt(P*(100-b)*(f[1]-f[0])/(200*f[1]))}x = ${fmt(per)}x (nghìn đồng).`,.25]]),
+        ptxt([[`${fmt(per)}x = ${nv(L)} (nghìn đồng).`,.25],[`x = ${nv(L)} : ${fmt(per)} = ${x}. Cửa hàng đã nhập ${x} chiếc áo.`,.25]])],chk:()=>Math.abs(per*x-L)<1e-6}}
+});
+TLN8x('t8x-32-est',8,'TH',[32],r=>{
+  const t=r.chance(.5);
+  if(t){const n=r.int(20,150)*6,k=r.int(1,6);return{kind:'tln',stem:`Gieo một con xúc xắc cân đối và đồng chất ${n} lần. Hãy ước lượng số lần xuất hiện mặt ${k} chấm.`,ans:n/6,unit:'lần',sol:`Xác suất xuất hiện mặt ${k} chấm là ${fr(1,6)}; số lần xuất hiện ước lượng: ${n}·${fr(1,6)} = ${n/6}.`,chk:()=>true}}
+  for(;;){const a=r.int(2,9),b=r.int(2,9),n=r.int(10,60)*(a+b);if(n>999)continue;return{kind:'tln',stem:`Một hộp có ${a} quả bóng xanh và ${b} quả bóng đỏ có cùng kích thước. Lấy ngẫu nhiên một quả, ghi màu rồi trả lại hộp; lặp lại ${n} lần. Hãy ước lượng số lần lấy được bóng xanh.`,ans:n*a/(a+b),unit:'lần',
+    sol:`Xác suất lấy được bóng xanh là ${fr(a,a+b)}; số lần ước lượng: ${n}·${fr(a,a+b)} = ${n*a/(a+b)}.`,chk:()=>true}}
+});

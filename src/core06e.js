@@ -371,3 +371,11 @@ TLN6x('t6x-42-fav',9,'TH',[42],r=>{
   return{kind:'tln',stem:`Một hộp có ${n} quả bóng được đánh số từ 1 đến ${n}. Lấy ngẫu nhiên một quả bóng. Có bao nhiêu kết quả có thể làm cho sự kiện “Số ghi trên quả bóng ${t?'':'không '}chia hết cho ${k}” xảy ra?`,ans:v,unit:'',
     sol:`Từ 1 đến ${n} có ${Math.floor(n/k)} số chia hết cho ${k}${t?'':`; số không chia hết cho ${k} là ${n} − ${Math.floor(n/k)} = ${v}`}.`,chk:()=>v>0};
 });
+
+/* ===== Bổ sung theo dạng bài thực tế thường gặp trong đề cuối kì (đối chiếu đề HK1 2025 – 2026) ===== */
+TL6x('tl6x-20-flower',4,'VD','real',[19,20],r=>{
+  const a=r.int(2,6)*5,h=r.int(3,6)*4,d=r.int(3,8)*2,s=r.pick([20,25,30,40,50]),EF=a+d,S=(a+EF)*h/2,flower=d*h/2,bags=Math.ceil(flower/s);
+  return{kind:'tl',title:'Khu đất hình thang cân',parts:[{pts:.5,html:`Một khu đất có dạng hình thang cân ${I('ABEF')} với đáy nhỏ ${I('AB')} = ${a} m, đáy lớn ${I('EF')} dài hơn đáy nhỏ ${d} m. Bên trong khu đất có phần hình chữ nhật ${I('ABCD')} (${I('C')}, ${I('D')} nằm trên ${I('EF')}) với ${I('BC')} = ${h} m. Tính độ dài đáy ${I('EF')} và diện tích khu đất.`},{pts:.5,html:`Phần hình chữ nhật ${I('ABCD')} dùng để trồng rau, phần còn lại hai bên trồng hoa. Tính diện tích trồng hoa. Mỗi túi hạt giống hoa gieo vừa đủ ${s} m² đất; cần ít nhất bao nhiêu túi hạt giống?`}],
+    sol:[ptxt([[`EF = ${a} + ${d} = ${EF} (m).`,.25],[`Chiều cao hình thang bằng BC = ${h} m; diện tích khu đất: (${a} + ${EF})·${h} : 2 = ${nv(S)} (m²).`,.25]]),
+      ptxt([[`Diện tích hình chữ nhật ABCD: ${a}·${h} = ${a*h} (m²); diện tích trồng hoa: ${nv(S)} − ${a*h} = ${nv(flower)} (m²).`,.25],[`${nv(flower)} : ${s} ${flower%s?`≈ ${fmt(Math.round(flower/s*100)/100)} nên cần ít nhất ${bags} túi`:`= ${bags} nên cần ${bags} túi`}.`,.25]])],chk:()=>flower===S-a*h};
+});
