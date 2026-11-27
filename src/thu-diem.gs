@@ -17,6 +17,34 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
+/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
+   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
+function caiDat() {
+  ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'guiEmailTongHop')
+    .forEach(t => ScriptApp.deleteTrigger(t));
+  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
+  if (EMAIL_KIEU === 'hang-ngay') {
+    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
+    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
+      .inTimezone(MUI_GIO).create();
+    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
+    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
+  } else if (EMAIL_KIEU === 'moi-bai') {
+    lich = 'Mỗi bài nộp mới một email.';
+  }
+  if (EMAIL_KIEU !== 'tat') {
+    MailApp.sendEmail({
+      to: nguoiNhan_(),
+      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
+      htmlBody: '<p>Bảng tính <b>' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
+        '</b> đã sẵn sàng nhận kết quả làm bài online.</p><p>Cách báo qua email: ' + esc_(lich) +
+        '</p><p><a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '">Mở bảng tính</a></p>'
+    });
+  }
+  console.log('Đã cài đặt. ' + lich);
+}
+
 /* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
 function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
@@ -84,34 +112,6 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
-}
-
-/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
-   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
-function caiDat() {
-  ScriptApp.getProjectTriggers()
-    .filter(t => t.getHandlerFunction() === 'guiEmailTongHop')
-    .forEach(t => ScriptApp.deleteTrigger(t));
-  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
-  if (EMAIL_KIEU === 'hang-ngay') {
-    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
-    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
-      .inTimezone(MUI_GIO).create();
-    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
-    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
-  } else if (EMAIL_KIEU === 'moi-bai') {
-    lich = 'Mỗi bài nộp mới một email.';
-  }
-  if (EMAIL_KIEU !== 'tat') {
-    MailApp.sendEmail({
-      to: nguoiNhan_(),
-      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
-      htmlBody: '<p>Bảng tính <b>' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
-        '</b> đã sẵn sàng nhận kết quả làm bài online.</p><p>Cách báo qua email: ' + esc_(lich) +
-        '</p><p><a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '">Mở bảng tính</a></p>'
-    });
-  }
-  console.log('Đã cài đặt. ' + lich);
 }
 
 /* Gửi email tổng hợp các bài nộp từ lần gửi trước; lịch hằng ngày tự gọi hàm này. */

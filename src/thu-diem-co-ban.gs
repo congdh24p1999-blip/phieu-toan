@@ -8,6 +8,12 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
+/* Bấm Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
+function caiDat() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
+}
+
 /* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
 function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
@@ -69,12 +75,6 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
-}
-
-/* Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
-function caiDat() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
 }
 
 /* Giữ chỗ: nếu trước đây đã cài bản có email thì lịch gửi cũ gọi vào đây và không làm gì. */

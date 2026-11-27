@@ -240,6 +240,34 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
+/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
+   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
+function caiDat() {
+  ScriptApp.getProjectTriggers()
+    .filter(t =&gt; t.getHandlerFunction() === 'guiEmailTongHop')
+    .forEach(t =&gt; ScriptApp.deleteTrigger(t));
+  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
+  if (EMAIL_KIEU === 'hang-ngay') {
+    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
+    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
+      .inTimezone(MUI_GIO).create();
+    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
+    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
+  } else if (EMAIL_KIEU === 'moi-bai') {
+    lich = 'Mỗi bài nộp mới một email.';
+  }
+  if (EMAIL_KIEU !== 'tat') {
+    MailApp.sendEmail({
+      to: nguoiNhan_(),
+      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
+      htmlBody: '&lt;p&gt;Bảng tính &lt;b&gt;' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
+        '&lt;/b&gt; đã sẵn sàng nhận kết quả làm bài online.&lt;/p&gt;&lt;p&gt;Cách báo qua email: ' + esc_(lich) +
+        '&lt;/p&gt;&lt;p&gt;&lt;a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
+    });
+  }
+  console.log('Đã cài đặt. ' + lich);
+}
+
 /* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
 function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
@@ -307,34 +335,6 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
-}
-
-/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
-   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
-function caiDat() {
-  ScriptApp.getProjectTriggers()
-    .filter(t =&gt; t.getHandlerFunction() === 'guiEmailTongHop')
-    .forEach(t =&gt; ScriptApp.deleteTrigger(t));
-  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
-  if (EMAIL_KIEU === 'hang-ngay') {
-    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
-    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
-      .inTimezone(MUI_GIO).create();
-    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
-    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
-  } else if (EMAIL_KIEU === 'moi-bai') {
-    lich = 'Mỗi bài nộp mới một email.';
-  }
-  if (EMAIL_KIEU !== 'tat') {
-    MailApp.sendEmail({
-      to: nguoiNhan_(),
-      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
-      htmlBody: '&lt;p&gt;Bảng tính &lt;b&gt;' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
-        '&lt;/b&gt; đã sẵn sàng nhận kết quả làm bài online.&lt;/p&gt;&lt;p&gt;Cách báo qua email: ' + esc_(lich) +
-        '&lt;/p&gt;&lt;p&gt;&lt;a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
-    });
-  }
-  console.log('Đã cài đặt. ' + lich);
 }
 
 /* Gửi email tổng hợp các bài nộp từ lần gửi trước; lịch hằng ngày tự gọi hàm này. */
@@ -406,7 +406,7 @@ function esc_(s) {
       </li>
       <li>
         <h2>Bấm Chạy và cho phép</h2>
-        <p>Chọn <b>caiDat</b>, bấm <kbd>▷ Chạy</kbd> → <kbd>Xem lại quyền</kbd> → chọn Gmail của mình.</p>
+        <p>Ô tên hàm cạnh nút <kbd>Gỡ lỗi</kbd> phải ghi <b>caiDat</b> (nếu ghi chữ khác, bấm ▼ chọn <b>caiDat</b>). Bấm <kbd>▷ Chạy</kbd> → <kbd>Xem lại quyền</kbd> → chọn Gmail của mình.</p>
         <div class="calm">
           <p><b>Bản này sẽ hiện màn hình “Google chưa xác minh ứng dụng này”.</b> Google hiện cảnh báo này với mọi đoạn mã tự viết xin quyền gửi thư và hẹn giờ mà chưa gửi Google duyệt, không phải vì có virus hay lừa đảo. Mã do chính thầy cô vừa dán, chạy bằng tài khoản của thầy cô; nó chỉ ghi điểm vào bảng tính này, gửi thư về Gmail của thầy cô và hẹn giờ gửi thư, không đọc được Gmail hay tệp nào khác.</p>
           <p>Để đi tiếp: bấm chữ nhỏ <kbd>Nâng cao</kbd> ở góc dưới bên trái → <kbd class="w">Đi tới Dự án không có tiêu đề (không an toàn)</kbd> → nếu có ô <q>Chọn tất cả</q> thì đánh dấu → <kbd>Cho phép</kbd>.</p>
@@ -417,6 +417,7 @@ function esc_(s) {
       <li>
         <h2>Cập nhật bản triển khai</h2>
         <p>Bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b> → <kbd>Triển khai</kbd>.</p>
+        <p>Nếu hiện hộp <q>Ứng dụng web yêu cầu bạn ủy quyền truy cập…</q>: bấm <kbd>Ủy quyền truy cập</kbd> → chọn Gmail → <kbd>Cho phép</kbd>, rồi bấm <kbd>Xong</kbd>.</p>
         <p class="see">Địa chỉ nhận điểm giữ nguyên, đường dẫn đã gửi học sinh vẫn dùng được.</p>
       </li>
     </ol>

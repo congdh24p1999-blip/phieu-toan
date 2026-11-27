@@ -18,6 +18,12 @@ basic=f'''/**
 
 {consts}
 
+/* Bấm Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
+function caiDat() {{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
+}}
+
 {fn('ghiKetQua_')}
 /* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
 function doPost(e) {{
@@ -30,12 +36,6 @@ function doPost(e) {{
 }}
 
 {fn('doGet')}
-/* Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
-function caiDat() {{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
-}}
-
 /* Giữ chỗ: nếu trước đây đã cài bản có email thì lịch gửi cũ gọi vào đây và không làm gì. */
 function guiEmailTongHop() {{}}
 '''

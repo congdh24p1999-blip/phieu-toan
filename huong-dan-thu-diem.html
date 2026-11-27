@@ -251,6 +251,12 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
+/* Bấm Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
+function caiDat() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
+}
+
 /* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
 function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
@@ -314,12 +320,6 @@ function doGet(e) {
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
 }
 
-/* Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
-function caiDat() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
-}
-
 /* Giữ chỗ: nếu trước đây đã cài bản có email thì lịch gửi cũ gọi vào đây và không làm gì. */
 function guiEmailTongHop() {}
 </code></pre></div>
@@ -329,11 +329,12 @@ function guiEmailTongHop() {}
     <!-- BƯỚC 4 -->
     <section class="wz" data-n="4" aria-labelledby="w4" hidden>
       <h2 id="w4">Bấm Chạy và cho phép</h2>
-      <p>Phía trên khung chữ, ở ô chọn tên (cạnh nút <kbd>Gỡ lỗi</kbd>), chọn <b>caiDat</b>, rồi bấm <kbd>▷ Chạy</kbd>.</p>
+      <p>Phía trên khung chữ có hàng <kbd>▷ Chạy</kbd> <kbd>Gỡ lỗi</kbd> và một ô ghi tên hàm. Ô đó phải ghi <b>caiDat</b> (nếu ghi chữ khác, ví dụ <q>doPost</q>, bấm mũi tên ▼ và chọn <b>caiDat</b>). Bấm <kbd>▷ Chạy</kbd>.</p>
       <p>Google hỏi quyền: bấm <kbd>Xem lại quyền</kbd> → chọn Gmail của mình → <kbd>Cho phép</kbd>. Nếu có ô <q>Chọn tất cả</q> thì đánh dấu trước khi bấm Cho phép.</p>
       <p class="see">Phía dưới khung chữ hiện dòng <q>Đã cài đặt…</q>.</p>
       <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
-        <p>Không thấy tên <b>caiDat</b>: mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd> rồi chọn lại.</p>
+        <p>Ô tên hàm vẫn ghi <q>myFunction</q> hoặc không có <b>caiDat</b> trong danh sách: mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd> rồi chọn lại.</p>
+        <p>Bấm Chạy mà Google không hỏi quyền, chỉ hiện <q>Đã cài đặt…</q>: không sao, sang bước tiếp.</p>
         <p>Hiện chữ đỏ báo lỗi: mã dán chưa đủ. Làm lại bước 3.</p>
       </details>
     </section>
@@ -344,17 +345,18 @@ function guiEmailTongHop() {}
       <p>Góc trên bên phải, bấm nút xanh <kbd>Triển khai</kbd> → <kbd>Tùy chọn triển khai mới</kbd>.</p>
       <p>Bấm bánh răng ⚙ → <kbd>Ứng dụng web</kbd>. Ở ô <q>Người có quyền truy cập</q> chọn <kbd>Bất kỳ ai</kbd>. Bấm <kbd>Triển khai</kbd>.</p>
       <p class="imp">Phải chọn đúng “Bất kỳ ai”, không chọn “Bất kỳ ai có Tài khoản Google”.</p>
-      <p class="see">Hộp mới có dòng <q>URL ứng dụng web</q> và nút <kbd>Sao chép</kbd>.</p>
+      <p>Nếu hộp ghi <q>Ứng dụng web yêu cầu bạn ủy quyền truy cập…</q>: bấm <kbd>Ủy quyền truy cập</kbd> → chọn Gmail của mình → <kbd>Cho phép</kbd>. Xong thì bấm <kbd>Xong</kbd> (hoặc <kbd>Huỷ</kbd>) để đóng hộp.</p>
+      <p class="see">Hộp đóng lại. Chưa cần chép gì ở bước này.</p>
       <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
-        <p>Hiện hộp <q>Cấp quyền truy cập</q>: bấm vào và cho phép như bước 4. Cửa sổ cho phép đôi khi nằm khuất phía sau, tìm trên thanh tác vụ.</p>
-        <p>Lỡ đóng hộp, không thấy địa chỉ: bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>, địa chỉ nằm ở dòng <q>Ứng dụng web</q>.</p>
+        <p>Bấm <q>Ủy quyền truy cập</q> mà không thấy gì: cửa sổ cho phép có thể nằm khuất phía sau, tìm trên thanh tác vụ, hoặc trình duyệt đang chặn cửa sổ bật lên (cho phép ở biểu tượng bên phải thanh địa chỉ).</p>
       </details>
     </section>
 
     <!-- BƯỚC 6 -->
     <section class="wz" data-n="6" aria-labelledby="w6" hidden>
-      <h2 id="w6">Dán địa chỉ và kiểm tra</h2>
-      <p>Bấm <kbd>Sao chép</kbd> trong hộp vừa hiện, dán vào ô dưới đây (<kbd>Ctrl</kbd> + <kbd>V</kbd>), bấm <b>Kiểm tra</b>.</p>
+      <h2 id="w6">Lấy địa chỉ và kiểm tra</h2>
+      <p>Bấm lại nút xanh <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>. Bên phải có dòng <q>Ứng dụng web</q> với địa chỉ đuôi <code>/exec</code>: bấm <kbd>Sao chép</kbd> ngay dưới địa chỉ đó.</p>
+      <p>Dán vào ô dưới đây (<kbd>Ctrl</kbd> + <kbd>V</kbd>), bấm <b>Kiểm tra</b>.</p>
       <div class="paste">
         <label for="gsUrl"><b>Địa chỉ nhận điểm</b></label>
         <input id="gsUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
@@ -362,6 +364,10 @@ function guiEmailTongHop() {}
         <button type="button" id="gsTest" class="go">Kiểm tra</button>
       </div>
       <p class="imp">Không chép địa chỉ trên thanh địa chỉ của trình duyệt.</p>
+      <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
+        <p>Danh sách <q>Quản lý các bản triển khai</q> trống, hoặc không có dòng <q>Ứng dụng web</q>: bước 5 chưa xong. Quay lại bước 5.</p>
+        <p>Có hai bản triển khai: chọn bản mới nhất (ở trên cùng) rồi chép địa chỉ của bản đó.</p>
+      </details>
     </section>
 
     <!-- XONG -->
@@ -395,7 +401,7 @@ function guiEmailTongHop() {}
         </ol>
       </details>
       <details><summary>Dùng máy tính khác, hoặc lỡ mất địa chỉ</summary>
-        <p>Ô thu điểm chỉ tự điền trên máy tính đã làm hướng dẫn này. Máy khác: mở trang này, chuyển tới bước 6, dán địa chỉ và bấm Kiểm tra. Lấy lại địa chỉ: mở bảng tính → <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>.</p>
+        <p>Ô thu điểm chỉ tự điền trên máy tính đã làm hướng dẫn này. Máy khác: mở trang này, chuyển tới bước 6, dán địa chỉ và bấm Kiểm tra. Lấy lại địa chỉ: mở bảng tính → <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → <kbd>Sao chép</kbd> ở dòng <q>Ứng dụng web</q>.</p>
       </details>
       <details><summary>Lưu ý về độ tin cậy</summary>
         <p>Điểm đi thẳng từ máy học sinh vào bảng tính của thầy cô; Xưởng đề Toán không giữ bản nào. Ai có đường dẫn cũng gửi được kết quả, và đáp án được chấm trên máy học sinh, nên bảng điểm hợp để theo dõi ôn luyện, chưa thay được bài kiểm tra có giám sát.</p>
@@ -442,7 +448,7 @@ function guiEmailTongHop() {}
       const body=JSON.stringify({v:1,id:'thu-'+Date.now(),sheet:'Thử kết nối',name:'Học sinh thử',cls:'Thử',code:'000',mode:'Thử kết nối',score10:10,got:10,tot:10,answers:'Dòng này do trang hướng dẫn gửi thử'});
       fetch(v,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}).catch(()=>{});
       msg.className='msg bad';
-      msg.innerHTML='Chưa kết nối được. Hay gặp nhất: ở bước 5 chưa chọn đúng <b>Bất kỳ ai</b>, hoặc bảng tính đang chạy mã cũ.<br><b>Cách sửa:</b> làm lại bước 3 và 4. Sau đó trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → <q>Phiên bản</q>: <b>Phiên bản mới</b>, <q>Người có quyền truy cập</q>: <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Rồi bấm Kiểm tra lại.';
+      msg.innerHTML='Chưa kết nối được. Hay gặp nhất: ở bước 5 chưa chọn đúng <b>Bất kỳ ai</b>, chưa bấm <b>Ủy quyền truy cập</b>, hoặc bảng tính đang chạy mã cũ.<br><b>Cách sửa:</b> làm lại bước 3 và 4. Sau đó trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → <q>Phiên bản</q>: <b>Phiên bản mới</b>, <q>Người có quyền truy cập</q>: <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Rồi bấm Kiểm tra lại.';
     };
     window[cb]=r=>{if(done)return;done=true;clean();
       if(r&&r.ok&&r.ghi){say('Thành công! Đã ghi dòng thử vào bảng tính “'+(r.bang||'')+'”.','ok');setTimeout(()=>show(N+1,true),1200)}
