@@ -65,6 +65,7 @@ function doGet(e) {
         mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
       out.ghi = true;
       out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
+      out.url = SpreadsheetApp.getActiveSpreadsheet().getUrl();   // để trang hướng dẫn mở đúng bảng điểm
     } catch (err) {
       out.ok = false;
       out.loi = String(err);

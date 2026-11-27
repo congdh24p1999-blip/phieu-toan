@@ -451,6 +451,10 @@ function qzShareUpdate(){
   const tlTxt=!hasTL?'':o.keepTL?(o.sol?' Phần tự luận giữ nguyên: học sinh làm ra giấy, nộp xong tự chấm theo hướng dẫn chấm.':' Phần tự luận giữ nguyên: học sinh làm ra giấy, nộp cho thầy cô chấm.'):' Phần tự luận được thay bằng câu trả lời ngắn cùng nội dung.';
   $d('#qzWhat').textContent=(state.mode==='ws'?`Phiếu đang xem (mã ${state.code}).`:`Đề đang xem (mã ${state.code}${isV10()?'':', mã hoán vị đầu tiên'}).`)+(practice?' Chế độ luyện tập: học sinh kiểm tra từng câu, xem lời giải ngay, làm thêm câu cùng dạng.':'')+tlTxt;
   $d('#qzGsOk').hidden=!gm;
+  /* đường dẫn bảng điểm (trang hướng dẫn lưu lại khi kiểm tra thành công) */
+  let sh=null;try{sh=JSON.parse(localStorage.getItem('xdt-gs-sheet')||'null')}catch(e){}
+  const shOk=!!(gm&&sh&&sh.gs===gv.replace(/\/$/,'')&&/^https:\/\/docs\.google\.com\/spreadsheets\//.test(sh.sheet||''));
+  $d('#qzSheetP').hidden=!shOk;if(shOk)$d('#qzSheetLink').href=sh.sheet;
 }
 (function(){
   if(qzInit())return;
