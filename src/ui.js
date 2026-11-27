@@ -269,7 +269,6 @@ function renderWS(){
   document.title=`${wsName} – mã ${state.code}`;
   $('#tagline').textContent='Tạo phiếu bài tập Toán theo từng bài học trong SGK, có đáp án và lời giải. Mỗi mã phiếu là một phiếu khác.';
   $('#noteTxt').textContent='Phiếu do thuật toán sinh ra từ các dạng câu gắn với bài học đã chọn; thầy cô nên đọc lướt trước khi phát cho học sinh.';
-  $('#gradeHint').textContent=`Lớp ${state.grade}. Các lớp khác sẽ thêm sau.`;
 }
 function setModeLabels(){
   const ws=state.mode==='ws';document.body.dataset.mode=state.mode;
@@ -296,7 +295,6 @@ function render(){
   $('#examOut').innerHTML=prettyMath(vs.map((v,i)=>examHTML(v,bp,i)).join(''));
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,vs[0],bp));
-  $('#scopeHint').textContent=bp.scope+'.';
   $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===6||bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
   $('#histHint').textContent=histNote(ex);
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
@@ -310,7 +308,6 @@ function render(){
   $('#struct').disabled=!!bp.tn;
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
   $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
-  $('#gradeHint').textContent=`Lớp ${bp.grade}, ${BLUEPRINT[bp.grade+'gk2']||bp.grade===8?'học kì I và II':'học kì I (học kì II sẽ thêm sau)'}${bp.grade===9?'; có đề ôn thi vào lớp 10':''}.`;
   termRadios();
 }
 function termRadios(){
@@ -322,7 +319,6 @@ function renderV10(){
   $('#examOut').innerHTML=prettyMath(v10HTML(ex));
   $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
-  $('#scopeHint').textContent='Toàn bộ chương trình Toán 9, trọng tâm như đề tuyển sinh vào lớp 10 của nhiều tỉnh.';
   $('#diffHint').textContent={co_ban:'Chọn dạng dễ nhất trong mỗi ý, hợp với học sinh trung bình.',chuan:'Mức thường gặp trong đề thi thật; không có câu vận dụng cao.',nang_cao:'Ưu tiên dạng vận dụng và vận dụng cao, hợp với học sinh khá giỏi.'}[state.diff];
   $('#histHint').textContent='';
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
@@ -331,7 +327,6 @@ function renderV10(){
   const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'100% tự luận, 8 bài như đề TP.HCM 2026: hàm số y = ax²; Viète; thống kê – xác suất; ba bài toán thực tế; hình khối; hình học phẳng.':'100% tự luận, 5 bài như đề Hà Nội 2026: thống kê – xác suất; căn thức; phương trình, hệ phương trình, Viète; hình học (hình khối và hình phẳng); câu vận dụng cuối.')+' 10 điểm, 120 phút.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
   $('#noteTxt').textContent=(hcm?'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 TP.HCM 2026':'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 Hà Nội 2026')+'; dạng bài đã đối chiếu với đề năm 2026 của 26 tỉnh, thành phố. Số liệu, câu chữ do trang tự tạo, không chép đề thật. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
-  $('#gradeHint').textContent='Lớp 9, học kì I và II; có đề ôn thi vào lớp 10.';
   termRadios();
 }
 function syncInputs(){
