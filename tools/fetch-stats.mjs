@@ -16,15 +16,23 @@ async function api(path, params = {}) {
   const u = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) (Array.isArray(v) ? v : [v]).forEach(x => u.append(k, x));
   const q = u.toString();
-  for (let i = 0; i < 4; i++) {
-    const r = await fetch(`${BASE}${path}${q ? '?' + q : ''}`, {
-      headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' } });
-    if (r.status === 429) { await sleep(1500 * (i + 1)); continue; }
-    if (!r.ok) throw new Error(`${path}: HTTP ${r.status} ${await r.text()}`);
-    await sleep(300);                            // giới hạn 4 yêu cầu/giây
-    return r.json();
+  /* GoatCounter thỉnh thoảng trả 404 "not found" hoặc lỗi 5xx trong vài giây rồi tự hết,
+     nên các lỗi này (và lỗi mạng) được thử lại, chờ lâu dần; lỗi khác báo ngay. */
+  let last = '';
+  for (let i = 0; i < 5; i++) {
+    let r;
+    try {
+      r = await fetch(`${BASE}${path}${q ? '?' + q : ''}`, {
+        headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' } });
+    } catch (e) { last = e.message; await sleep(3000 * (i + 1)); continue; }
+    if (r.ok) { await sleep(300); return r.json(); }   // giới hạn 4 yêu cầu/giây
+    last = `HTTP ${r.status} ${await r.text()}`;
+    if (r.status === 429 || r.status === 404 || r.status >= 500) { await sleep(3000 * (i + 1)); continue; }
+    throw new Error(`${path}: ${last}`);
   }
-  throw new Error(`${path}: quá giới hạn yêu cầu`);
+  /* mã 75: lỗi tạm thời, workflow chỉ cảnh báo; lỗi khác (sai khóa…) vẫn báo failed */
+  console.error(`${path}: thử 5 lần vẫn lỗi (${last})`);
+  process.exit(75);
 }
 /* Ngày theo giờ Việt Nam (UTC+7) */
 const vnDay = (d = new Date()) => new Date(d.getTime() + 7 * 3600e3).toISOString().slice(0, 10);

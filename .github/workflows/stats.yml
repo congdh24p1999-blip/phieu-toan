@@ -25,14 +25,25 @@ jobs:
           else
             echo "ok=1" >> "$GITHUB_OUTPUT"
           fi
+      # Nếu GoatCounter trục trặc tạm thời: giữ nguyên số liệu cũ, chỉ cảnh báo,
+      # không báo "failed" (lần chạy giờ sau sẽ tự cập nhật lại).
       - name: Lấy số liệu GoatCounter
+        id: fetch
         if: steps.key.outputs.ok == '1'
         env:
           GOATCOUNTER_KEY: ${{ secrets.GOATCOUNTER_KEY }}
           GOATCOUNTER_SITE: xuongdetoan1
-        run: node tools/fetch-stats.mjs out/stats.json
+        run: |
+          set +e
+          node tools/fetch-stats.mjs out/stats.json; rc=$?
+          set -e
+          if [ $rc -eq 0 ]; then echo "ok=1" >> "$GITHUB_OUTPUT"
+          elif [ $rc -eq 75 ]; then
+            echo "::warning::GoatCounter trục trặc tạm thời; giữ nguyên thống kê cũ, giờ sau chạy lại."
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else exit $rc; fi
       - name: Ghi vào nhánh stats (một commit duy nhất, không làm rối lịch sử main)
-        if: steps.key.outputs.ok == '1'
+        if: steps.fetch.outputs.ok == '1'
         run: |
           cd out
           git init -q -b stats
