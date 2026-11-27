@@ -413,6 +413,8 @@ $('#newBtn').addEventListener('click',()=>{
   if(c===state.code)c=String(100+(+c-100+1)%880);
   state.code=c;recordHist(buildExam(state.term,c,state.diff,curStruct()));syncInputs();update();
 });
+/* khung chọn đề chỉ cuộn dọc: nếu trình duyệt lỡ cuộn ngang (do phóng to, phông chữ khác…) thì đưa về 0 */
+{const pn=document.querySelector('.panel');if(pn)pn.addEventListener('scroll',()=>{if(pn.scrollLeft)pn.scrollLeft=0},{passive:true})}
 $('#clearHist').addEventListener('click',()=>{if(confirm('Xoá lịch sử các đề đã tạo trong trình duyệt này? Các mã đề vẫn tái tạo được.')){saveHist([]);update()}});
 $('#tabExam').addEventListener('click',()=>setTab('exam'));
 $('#tabKey').addEventListener('click',()=>setTab('key'));
