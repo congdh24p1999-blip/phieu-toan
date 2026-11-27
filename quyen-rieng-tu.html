@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Xưởng đề Toán thu những dữ liệu nào, lưu ở đâu: không cần tài khoản, không có máy chủ lưu dữ liệu, điểm học sinh chỉ về Google Sheet của thầy cô.">
+<title>Quyền riêng tư – Xưởng đề Toán</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://congdh24p1999-blip.github.io/phieu-toan/quyen-rieng-tu.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Xưởng đề Toán">
+<meta property="og:title" content="Quyền riêng tư – Xưởng đề Toán">
+<meta property="og:description" content="Xưởng đề Toán thu những dữ liệu nào, lưu ở đâu: không cần tài khoản, không có máy chủ lưu dữ liệu, điểm học sinh chỉ về Google Sheet của thầy cô.">
+<meta property="og:image" content="https://congdh24p1999-blip.github.io/phieu-toan/og.png">
+<meta property="og:locale" content="vi_VN">
+<meta name="theme-color" content="#1f6f5c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#e7ebf0; --paper:#f8fafc; --ink:#1b2531; --muted:#586677; --line:#ccd5df;
+  --accent:#1f6f5c; --accent-soft:#dff1ec; --warn-bg:#fbefd9; --warn-ink:#7a4a05;
+  --font-display:"Baloo 2","Be Vietnam Pro",system-ui,sans-serif;
+  --font-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171e; --paper:#1b222b; --ink:#e5eaf0; --muted:#9ba7b5; --line:#2d3743;
+    --accent:#59c2a5; --accent-soft:#183a31; --warn-bg:#3a2c12; --warn-ink:#f3c779; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171e; --paper:#1b222b; --ink:#e5eaf0; --muted:#9ba7b5; --line:#2d3743;
+  --accent:#59c2a5; --accent-soft:#183a31; --warn-bg:#3a2c12; --warn-ink:#f3c779; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--font-body);
+  padding:22px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:820px;margin:0 auto}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:18px}
+.brand{font-family:var(--font-display);font-weight:800;font-size:1.6rem;line-height:1.1;margin:0;color:var(--ink);text-decoration:none}
+.brand span{color:var(--accent)}
+.top .back{margin-left:auto;font-weight:600;font-size:.92rem;text-decoration:none}
+.top .back:hover{text-decoration:underline}
+
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px clamp(18px,5vw,48px) 34px}
+h1{font-family:var(--font-display);font-weight:800;font-size:clamp(1.9rem,5vw,2.5rem);line-height:1.15;margin:0 0 10px}
+.lead{font-size:1.06rem;color:var(--muted);margin:0 0 8px;max-width:62ch}
+.toc{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:.92rem}
+.toc a{text-decoration:none;font-weight:600}
+.toc a:hover{text-decoration:underline}
+
+section{margin-top:38px;scroll-margin-top:16px}
+h2{font-family:var(--font-display);font-weight:700;font-size:1.5rem;line-height:1.2;margin:0 0 12px}
+h3{font-size:1rem;margin:0 0 2px}
+p{margin:0 0 12px;max-width:68ch}
+.muted{color:var(--muted)}
+
+/* Văn bản căn cứ: số hiệu bên trái, điều trang này lấy từ văn bản bên phải */
+.docs{display:grid;gap:0;border-top:1px solid var(--line)}
+.doc{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:6px 24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.doc .id b{display:block;font-weight:700;line-height:1.35}
+.doc .id span{display:block;color:var(--muted);font-size:.88rem;margin-top:2px}
+.doc .id .src{display:block;margin-top:4px;font-size:.88rem;font-weight:600;line-height:1.35}
+.doc p{margin:0 0 6px}
+.doc p:last-child{margin:0}
+@media (max-width:640px){.doc{grid-template-columns:minmax(0,1fr)}}
+
+/* Quy trình tạo đề: đúng là một chuỗi bước nên đánh số */
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:14px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+ol.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.9rem;margin-top:1px}
+ol.steps p{margin:0}
+
+.tblwrap{overflow-x:auto;margin:6px 0 10px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--muted);font-size:.84rem;background:var(--bg)}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
+.wraptbl td:first-child,.wraptbl th:first-child{white-space:normal}
+@media (max-width:640px){.wraptbl td:last-child,.wraptbl th:last-child{white-space:normal;width:6.5rem}}
+
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:6px}
+ul.plain li{max-width:66ch}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:14px 18px}
+.warn p{margin:0 0 8px}.warn p:last-child{margin:0}
+
+/* Nhật ký cập nhật */
+.log{display:grid;gap:0;border-top:1px solid var(--line)}
+.day{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:4px 20px;padding:12px 0;border-bottom:1px solid var(--line)}
+.day time{font-weight:700;font-variant-numeric:tabular-nums}
+.day ul{margin:0;padding-left:1.1em;display:grid;gap:3px}
+@media (max-width:640px){.day{grid-template-columns:minmax(0,1fr)}}
+
+.foot{margin-top:22px;color:var(--muted);font-size:.86rem;text-align:center}
+.foot a{font-weight:600}
+@media print{body{background:#fff;padding:0}.sheet{border:0;padding:0}.top .back,.toc{display:none}}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:12px;margin:10px 0 6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--bg)}
+.card b{display:block;margin-bottom:4px}
+.card p{margin:0;font-size:.95rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr));gap:10px;margin:14px 0 4px}
+.fact{border-left:3px solid var(--accent);padding:2px 0 2px 12px}
+.fact b{display:block;font-family:var(--font-display);font-size:1.6rem;line-height:1.1}
+.fact span{color:var(--muted);font-size:.9rem}
+.btnlink{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;border-radius:999px;padding:9px 18px;margin:4px 8px 4px 0}
+:root[data-theme="dark"] .btnlink{color:#10241e}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btnlink{color:#10241e}}
+.btnlink.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.stamp{color:var(--muted);font-size:.9rem;margin-top:6px}
+</style>
+<style id="sitefoot-css">
+.sitefoot{margin:26px auto 0;max-width:820px;padding:16px 4px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+.sitefoot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;margin-bottom:8px}
+.sitefoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.sitefoot a:hover{text-decoration:underline}
+.sitefoot p{margin:0 auto;max-width:none;font-size:.78rem}
+@media print{.sitefoot{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./">Xưởng <span>đề</span> Toán</a>
+    <a class="back" href="./">← Về trang tạo đề</a>
+  </header>
+  <main class="sheet">
+    <h1>Quyền riêng tư</h1>
+    <p class="lead">Trang thu những dữ liệu nào, lưu ở đâu và thầy cô cần lưu ý gì khi nhận điểm của học sinh.</p>
+    <nav class="toc" aria-label="Mục lục"><a href="#tom-tat">Tóm tắt</a><a href="#tren-may">Dữ liệu trên máy</a><a href="#lam-bai">Làm bài trực tuyến</a><a href="#gv">Lưu ý cho thầy cô</a><a href="#dem-luot">Đếm lượt truy cập</a><a href="#ben-thu-ba">Dịch vụ bên ngoài</a></nav>
+
+    <section id="tom-tat" aria-labelledby="h-tom-tat">
+      <h2 id="h-tom-tat">Tóm tắt</h2>
+      <ul class="plain">
+        <li>Không cần tài khoản, không đăng nhập, không quảng cáo.</li>
+        <li>Xưởng đề Toán là trang tĩnh, <b>không có máy chủ riêng để lưu dữ liệu</b> của thầy cô hay học sinh.</li>
+        <li>Lựa chọn tạo đề, bài làm dở, lịch sử tự luyện chỉ lưu trong trình duyệt trên máy của chính người dùng.</li>
+        <li>Khi thầy cô bật thu điểm, bài nộp của học sinh được gửi thẳng vào Google Sheet của chính thầy cô; trang không giữ bản sao.</li>
+        <li>Trang đếm lượt truy cập bằng GoatCounter, không dùng cookie, không ghi họ tên hay bài làm.</li>
+      </ul>
+    </section>
+
+    <section id="tren-may" aria-labelledby="h-tren-may">
+      <h2 id="h-tren-may">Dữ liệu lưu trên máy của bạn</h2>
+      <p>Để lần sau mở trang không phải chọn lại, trình duyệt lưu (bằng bộ nhớ cục bộ của trình duyệt) các thông tin sau trên chính máy đang dùng:</p>
+      <ul class="plain">
+        <li>Lựa chọn tạo đề: lớp, kì, cấu trúc, độ khó, thông tin đầu đề (tên trường, phòng giáo dục) mà thầy cô tự nhập.</li>
+        <li>Lịch sử các mã đề đã tạo (để so sánh mức trùng lặp giữa các đề).</li>
+        <li>Đường dẫn thu điểm Google Sheet thầy cô đã dán vào (để không phải dán lại).</li>
+        <li>Bài làm đang dở và kết quả các lần tự luyện của học sinh trên máy đó.</li>
+      </ul>
+      <p>Các thông tin này không được gửi đi đâu. Có thể xoá bằng nút “Xoá lịch sử” trên trang hoặc xoá dữ liệu trang web trong phần cài đặt của trình duyệt.</p>
+    </section>
+
+    <section id="lam-bai" aria-labelledby="h-lam-bai">
+      <h2 id="h-lam-bai">Khi học sinh làm bài trực tuyến</h2>
+      <p><b>Nếu thầy cô không bật thu điểm:</b> bài làm và điểm chỉ hiện trên máy học sinh, không được gửi đi.</p>
+      <p><b>Nếu thầy cô bật thu điểm về Google Sheet:</b> khi nộp bài, trình duyệt của học sinh gửi các thông tin sau đến đoạn mã Google Apps Script mà chính thầy cô đã cài trong tài khoản Google của mình, rồi ghi vào bảng tính của thầy cô:</p>
+      <ul class="plain">
+        <li>Họ và tên, lớp do học sinh tự nhập;</li>
+        <li>Điểm, số câu đúng, thời gian làm bài, mã đề, đáp án học sinh đã chọn và đường dẫn xem lại bài làm.</li>
+      </ul>
+      <p>Xưởng đề Toán không nhận và không lưu bản sao các thông tin này. Bản thu điểm có gửi email tổng hợp dùng chính tài khoản Google của thầy cô để gửi thư. Hướng dẫn cài đặt: <a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a>.</p>
+    </section>
+
+    <section id="gv" aria-labelledby="h-gv">
+      <h2 id="h-gv">Lưu ý cho thầy cô khi thu điểm</h2>
+      <p>Họ tên, lớp, điểm của học sinh là dữ liệu cá nhân, và thầy cô là người quản lý bảng tính chứa chúng. Luật Bảo vệ dữ liệu cá nhân (số 91/2025/QH15) có hiệu lực từ ngày 01/01/2026. Để thực hiện đúng, xin thầy cô lưu ý:</p>
+      <ul class="plain">
+        <li>Cho học sinh (và phụ huynh, khi cần) biết bài làm sẽ được ghi vào bảng điểm của thầy cô và dùng để làm gì.</li>
+        <li>Chỉ chia sẻ bảng tính với người cần xem; không để chế độ “ai có đường liên kết cũng xem được”.</li>
+        <li>Có thể cho học sinh nhập số thứ tự hoặc mã học sinh thay cho họ tên đầy đủ.</li>
+        <li>Xoá các dòng hoặc bảng tính khi không còn cần dùng.</li>
+      </ul>
+      <p class="muted">Đây là gợi ý thực hành, không phải tư vấn pháp lý. Nhà trường có quy định riêng thì thầy cô làm theo quy định đó.</p>
+    </section>
+
+    <section id="dem-luot" aria-labelledby="h-dem-luot">
+      <h2 id="h-dem-luot">Đếm lượt truy cập</h2>
+      <p>Trang dùng <a href="https://www.goatcounter.com" rel="noopener" target="_blank">GoatCounter</a> để đếm số lượt mở trang và một số thao tác (in đề, tải file Word, bắt đầu hoặc nộp bài làm trực tuyến). GoatCounter không dùng cookie, không lập hồ sơ người dùng; trang không gửi họ tên, lớp hay nội dung bài làm vào số liệu này. Số liệu tổng hợp công khai tại trang <a href="thongke.html">Thống kê</a>.</p>
+    </section>
+
+    <section id="gop-y" aria-labelledby="h-gop-y">
+      <h2 id="h-gop-y">Báo lỗi và góp ý</h2>
+      <p>Phiếu báo lỗi, góp ý dùng Google Forms. Phiếu báo lỗi được điền sẵn lớp, kì, mã đề để biết đề nào cần sửa; các nội dung khác do người gửi tự nhập và không bắt buộc ghi email.</p>
+    </section>
+
+    <section id="ben-thu-ba" aria-labelledby="h-ben-thu-ba">
+      <h2 id="h-ben-thu-ba">Dịch vụ bên ngoài trang sử dụng</h2>
+      <ul class="plain">
+        <li>GitHub Pages: nơi lưu và phát trang web.</li>
+        <li>Google Fonts: phông chữ hiển thị.</li>
+        <li>GoatCounter: đếm lượt truy cập.</li>
+        <li>Google Forms: phiếu báo lỗi, góp ý.</li>
+        <li>Google Sheets và Google Apps Script trong tài khoản của thầy cô: chỉ khi thầy cô bật thu điểm.</li>
+      </ul>
+      <p class="muted">Mỗi dịch vụ có chính sách quyền riêng tư riêng của nhà cung cấp.</p>
+    </section>
+
+    <section id="lien-he-rieng-tu" aria-labelledby="h-lien-he-rieng-tu">
+      <h2 id="h-lien-he-rieng-tu">Liên hệ</h2>
+      <p>Có câu hỏi về dữ liệu, xin gửi qua <a href="gioi-thieu.html#lien-he">phiếu góp ý</a>.</p>
+      <p class="stamp">Cập nhật lần cuối: 27/11/2026.</p>
+    </section>
+
+  </main>
+<!--SITEFOOT-->
+<footer class="sitefoot">
+  <nav aria-label="Liên kết cuối trang">
+    <a href="./">Tạo đề</a>
+    <a href="./?tuluyen=1">Học sinh tự luyện</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+    <a href="can-cu.html">Căn cứ và phương pháp</a>
+    <a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a>
+    <a href="quyen-rieng-tu.html">Quyền riêng tư</a>
+    <a href="gioi-thieu.html#lien-he">Liên hệ, góp ý</a>
+    <a href="can-cu.html#nhat-ky">Nhật ký cập nhật</a>
+  </nav>
+  <p>© 2026 Xưởng đề Toán · Miễn phí, không quảng cáo, không cần tài khoản · Bảo lưu mọi quyền.</p>
+</footer>
+<!--/SITEFOOT-->
+</div>
+</body>
+</html>

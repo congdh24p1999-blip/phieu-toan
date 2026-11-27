@@ -99,3 +99,5 @@ function tuInit(){
   return true;
 }
 tuInit();
+/* ở chế độ làm bài, tự luyện: tiêu đề chính là tên bài; tên trang (đang ẩn) không còn là thẻ h1 */
+if(document.body.dataset.view==='quiz'){const h=document.querySelector('h1.brand');if(h){const d=document.createElement('div');d.className=h.className;d.innerHTML=h.innerHTML;h.replaceWith(d)}}

@@ -140,6 +140,12 @@ body[data-mode=ws] .actions{grid-template-columns:auto repeat(2,minmax(0,1fr))}
 .foot a:hover{text-decoration:underline}
 .foot:empty{display:none}
 .copy{margin:8px 0 0;text-align:center;font-size:.7rem;color:var(--muted);opacity:.85}
+.sitefoot{margin-top:18px;text-align:center;color:var(--muted);font-size:.85rem}
+.sitefoot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px}
+.sitefoot a,.qzfoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.sitefoot a:hover,.qzfoot a:hover{text-decoration:underline}
+.qzfoot{display:none;text-align:center;font-size:.82rem;color:var(--muted);margin:18px 0 8px}
+body[data-view=quiz] .qzfoot{display:block}
 .stagehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;position:sticky;top:0;z-index:5;background:var(--bg);padding:4px 0}
 .tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
 .tab{font:inherit;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 16px;border-radius:999px;cursor:pointer}
@@ -621,7 +627,12 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
     </main>
   </div>
   <footer class="foot"></footer>
-  <p class="copy">© 2026 Xưởng đề Toán · Bảo lưu mọi quyền. Không sao chép mã nguồn, phát hành lại khi chưa được đồng ý.</p>
+  <footer class="sitefoot noprint">
+    <nav aria-label="Liên kết cuối trang">
+      <a href="./">Tạo đề</a><a href="./?tuluyen=1">Học sinh tự luyện</a><a href="gioi-thieu.html">Giới thiệu</a><a href="can-cu.html">Căn cứ và phương pháp</a><a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a><a href="quyen-rieng-tu.html">Quyền riêng tư</a><a href="gioi-thieu.html#lien-he">Liên hệ, góp ý</a><a href="can-cu.html#nhat-ky">Nhật ký cập nhật</a>
+    </nav>
+    <p class="copy">© 2026 Xưởng đề Toán · Miễn phí, không quảng cáo, không cần tài khoản · Bảo lưu mọi quyền. Không sao chép mã nguồn, phát hành lại khi chưa được đồng ý.</p>
+  </footer>
 </div>
 <div class="qzshare" id="qzShare" role="dialog" aria-modal="true" aria-labelledby="qzShareT" hidden>
     <div class="qzbox">
@@ -654,4 +665,5 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
     </div>
   </div>
   <div id="qz" class="qz" hidden></div>
+  <footer class="qzfoot noprint"><a href="./?tuluyen=1">Tự luyện</a> · <a href="gioi-thieu.html">Giới thiệu Xưởng đề Toán</a> · <a href="quyen-rieng-tu.html">Quyền riêng tư</a></footer>
 <script>

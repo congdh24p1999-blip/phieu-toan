@@ -200,6 +200,14 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
 .adv{margin-top:16px;font-weight:600}
 @media (max-width:560px){.wz{padding:16px 14px 8px}.wz h2{font-size:1.25rem}.wznav .go{padding:11px 14px}}
 </style>
+<style id="sitefoot-css">
+.sitefoot{margin:26px auto 0;max-width:820px;padding:16px 4px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+.sitefoot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;margin-bottom:8px}
+.sitefoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.sitefoot a:hover{text-decoration:underline}
+.sitefoot p{margin:0 auto;max-width:none;font-size:.78rem}
+@media print{.sitefoot{display:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -479,7 +487,21 @@ function esc_(s) {
     </section>
   </main>
 
-  <p class="foot"><a href="./">Về trang tạo đề</a> · <a href="huong-dan-thu-diem.html">Hướng dẫn thu điểm</a> · © 2026 Xưởng đề Toán</p>
+  <!--SITEFOOT-->
+<footer class="sitefoot">
+  <nav aria-label="Liên kết cuối trang">
+    <a href="./">Tạo đề</a>
+    <a href="./?tuluyen=1">Học sinh tự luyện</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+    <a href="can-cu.html">Căn cứ và phương pháp</a>
+    <a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a>
+    <a href="quyen-rieng-tu.html">Quyền riêng tư</a>
+    <a href="gioi-thieu.html#lien-he">Liên hệ, góp ý</a>
+    <a href="can-cu.html#nhat-ky">Nhật ký cập nhật</a>
+  </nav>
+  <p>© 2026 Xưởng đề Toán · Miễn phí, không quảng cáo, không cần tài khoản · Bảo lưu mọi quyền.</p>
+</footer>
+<!--/SITEFOOT-->
 </div>
 <script>
 document.getElementById('copyCode').addEventListener('click',e=>{const b=e.currentTarget,el=document.getElementById('gsCode'),t=el.textContent;

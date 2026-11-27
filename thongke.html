@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Thống kê – Xưởng đề Toán</title>
+<meta name="description" content="Số lượt dùng Xưởng đề Toán: lượt xem theo ngày, số đề được in, tải Word, số bài làm trực tuyến. Số liệu từ GoatCounter, không dùng cookie.">
+<meta property="og:title" content="Thống kê – Xưởng đề Toán">
+<meta property="og:description" content="Số lượt dùng Xưởng đề Toán: lượt xem theo ngày, số đề được in, tải Word, số bài làm trực tuyến. Số liệu từ GoatCounter, không dùng cookie.">
+<meta property="og:image" content="https://congdh24p1999-blip.github.io/phieu-toan/og.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1f6f5c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,6 +104,14 @@ h2{font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:
 @media (max-width:520px){.kpi.main b{font-size:2.6rem}.kpi b{font-size:1.9rem}.sheet{padding:16px 14px 12px}.kpis{gap:8px 22px}}
 @media (prefers-reduced-motion:no-preference){.chart .bar{transition:opacity .2s}}
 </style>
+<style id="sitefoot-css">
+.sitefoot{margin:26px auto 0;max-width:820px;padding:16px 4px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+.sitefoot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;margin-bottom:8px}
+.sitefoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.sitefoot a:hover{text-decoration:underline}
+.sitefoot p{margin:0 auto;max-width:none;font-size:.78rem}
+@media print{.sitefoot{display:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -158,8 +170,22 @@ h2{font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:
   <footer class="foot">
     <p>Số liệu từ GoatCounter, không dùng cookie, không lưu thông tin cá nhân. Trang tự cập nhật mỗi giờ; một lượt xem là một người mở trang trong ngày.</p>
     <p>Xem chi tiết hơn tại <a id="gclink" href="https://xuongdetoan1.goatcounter.com" target="_blank" rel="noopener">bảng GoatCounter</a>.</p>
-    <p style="font-size:.72rem;margin-top:10px">© 2026 Xưởng đề Toán · Bảo lưu mọi quyền.</p>
-  </footer>
+    </footer>
+<!--SITEFOOT-->
+<footer class="sitefoot">
+  <nav aria-label="Liên kết cuối trang">
+    <a href="./">Tạo đề</a>
+    <a href="./?tuluyen=1">Học sinh tự luyện</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+    <a href="can-cu.html">Căn cứ và phương pháp</a>
+    <a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a>
+    <a href="quyen-rieng-tu.html">Quyền riêng tư</a>
+    <a href="gioi-thieu.html#lien-he">Liên hệ, góp ý</a>
+    <a href="can-cu.html#nhat-ky">Nhật ký cập nhật</a>
+  </nav>
+  <p>© 2026 Xưởng đề Toán · Miễn phí, không quảng cáo, không cần tài khoản · Bảo lưu mọi quyền.</p>
+</footer>
+<!--/SITEFOOT-->
 </div>
 
 <script>

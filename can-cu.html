@@ -103,6 +103,14 @@ ul.plain li{max-width:66ch}
 .foot a{font-weight:600}
 @media print{body{background:#fff;padding:0}.sheet{border:0;padding:0}.top .back,.toc{display:none}}
 </style>
+<style id="sitefoot-css">
+.sitefoot{margin:26px auto 0;max-width:820px;padding:16px 4px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+.sitefoot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;margin-bottom:8px}
+.sitefoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.sitefoot a:hover{text-decoration:underline}
+.sitefoot p{margin:0 auto;max-width:none;font-size:.78rem}
+@media print{.sitefoot{display:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -310,6 +318,7 @@ ul.plain li{max-width:66ch}
       <h2 id="h-nhat-ky">Nhật ký cập nhật</h2>
       <div class="log">
         <div class="day"><time datetime="2026-11-27">27/11/2026</time><ul>
+          <li>Thêm trang <a href="gioi-thieu.html">Giới thiệu</a> (người thực hiện, cách giữ chất lượng câu hỏi, liên hệ góp ý), trang <a href="quyen-rieng-tu.html">Quyền riêng tư</a> (dữ liệu nào được lưu, lưu ở đâu, lưu ý cho thầy cô khi thu điểm theo Luật Bảo vệ dữ liệu cá nhân 2025) và trang báo không tìm thấy (404). Chân trang thống nhất ở mọi trang; học sinh làm bài cũng thấy liên kết Quyền riêng tư.</li>
           <li>Đối chiếu các dạng bài thực tế mới với bài tập SGK Kết nối tri thức (Toán 10 Bài 6: bài 3.9, 3.11; Toán 7 Bài 15) và đề kiểm tra học kì I năm học 2025 – 2026 (Sở GD&amp;ĐT Bắc Ninh – Toán 10; xã Đông Anh, Hà Nội – Toán 6; THCS Thái Thịnh, Hà Nội – Toán 7) cùng đề học kì II Toán 8 THCS Võ Trường Toản (TP.HCM). Thêm 10 dạng theo các kiểu bài đó, lời văn và số liệu tự soạn: tiền điện bậc thang theo biểu giá tại Quyết định 1279/QĐ-BCT ngày 09/5/2025, giá vé rạp chiếu phim tối ưu doanh thu có giới hạn sức chứa, đường hầm xuyên núi (định lí côsin), khu đất hình thang cân trồng hoa, khối lượng cặp sách không quá 10% khối lượng cơ thể, đo chiều rộng hồ bằng định lí Thalès, bán hàng nhiều đợt (lập phương trình), ước lượng số lần xảy ra biến cố.</li>
           <li>Lớp 10: thêm 8 câu tự luận vận dụng cao (đo chiều cao không đến được chân, bán kính đường tròn ngoại tiếp – nội tiếp, số đặc trưng và độ ổn định, tam thức có tham số, bài toán tối ưu lợi nhuận, xác suất khi xếp chỗ và lập số) cho ý cuối đề; trước đây lớp 10 chưa có câu vận dụng cao nào. Thêm 2 dạng cho Bài 7 (vectơ). Lớp 11: thêm 13 dạng cho Bài 8 (mẫu số liệu ghép nhóm), Bài 13 (hai mặt phẳng song song), Bài 14 (phép chiếu song song, trước đây chưa có dạng), Bài 17 (hàm số liên tục).</li>
           <li>Lớp 8: thêm 24 dạng câu cho 10 bài còn ít dạng (đơn thức, cộng trừ và chia đa thức, hằng đẳng thức lập phương, hình thang cân, đường phân giác, phân loại dữ liệu, nhân chia phân thức, hình đồng dạng).</li>
@@ -390,7 +399,21 @@ ul.plain li{max-width:66ch}
     </section>
   </main>
 
-  <p class="foot"><a href="./">Về trang tạo đề</a> · © 2026 Xưởng đề Toán</p>
+  <!--SITEFOOT-->
+<footer class="sitefoot">
+  <nav aria-label="Liên kết cuối trang">
+    <a href="./">Tạo đề</a>
+    <a href="./?tuluyen=1">Học sinh tự luyện</a>
+    <a href="gioi-thieu.html">Giới thiệu</a>
+    <a href="can-cu.html">Căn cứ và phương pháp</a>
+    <a href="huong-dan-thu-diem.html">Thu điểm về Google Sheet</a>
+    <a href="quyen-rieng-tu.html">Quyền riêng tư</a>
+    <a href="gioi-thieu.html#lien-he">Liên hệ, góp ý</a>
+    <a href="can-cu.html#nhat-ky">Nhật ký cập nhật</a>
+  </nav>
+  <p>© 2026 Xưởng đề Toán · Miễn phí, không quảng cáo, không cần tài khoản · Bảo lưu mọi quyền.</p>
+</footer>
+<!--/SITEFOOT-->
 </div>
 </body>
 </html>
