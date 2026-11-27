@@ -17,14 +17,13 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
-function doPost(e) {
+/* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
+function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
-  let d, tab, isNew = false;
   try {
-    d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
+    const tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
     const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
     if (sh.getLastRow() === 0) {
       sh.appendRow(HEAD);
@@ -40,21 +39,50 @@ function doPost(e) {
     const n = sh.getLastRow() - 1;
     const hit = n > 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
       .matchEntireCell(true).findNext() : null;
-    if (hit) sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]);
-    else { sh.appendRow(row); isNew = true; }
-  } catch (err) {
-    return ContentService.createTextOutput('loi: ' + err);
+    if (hit) { sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); return { tab, isNew: false }; }
+    sh.appendRow(row);
+    return { tab, isNew: true };
   } finally {
     lock.releaseLock();
   }
+}
+
+/* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
+function doPost(e) {
+  let d, r;
+  try {
+    d = JSON.parse(e.postData.contents);
+    r = ghiKetQua_(d);
+  } catch (err) {
+    return ContentService.createTextOutput('loi: ' + err);
+  }
   // email từng bài: lỗi gửi email không làm mất kết quả đã ghi
-  if (EMAIL_KIEU === 'moi-bai' && isNew) {
-    try { guiEmailMotBai_(d, tab); } catch (err) { console.error(err); }
+  if (EMAIL_KIEU === 'moi-bai' && r.isNew) {
+    try { guiEmailMotBai_(d, r.tab); } catch (err) { console.error(err); }
   }
   return ContentService.createTextOutput('ok');
 }
 
-function doGet() {
+/* Mở địa chỉ trong trình duyệt để xem web app có chạy không.
+   Trang hướng dẫn gọi kèm ?thu=1&cb=… để ghi một dòng thử và nhận lại kết quả. */
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  const out = { ok: true, ban: 2 };
+  if (p.thu === '1') {
+    try {
+      ghiKetQua_({ id: 'thu-' + Date.now(), sheet: 'Thử kết nối', name: 'Học sinh thử', cls: 'Thử', code: '000',
+        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
+      out.ghi = true;
+      out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
+    } catch (err) {
+      out.ok = false;
+      out.loi = String(err);
+    }
+  }
+  if (p.cb && /^[A-Za-z_$][\w$]{0,40}$/.test(p.cb)) {
+    return ContentService.createTextOutput(p.cb + '(' + JSON.stringify(out) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
 }
 
@@ -96,7 +124,7 @@ function guiEmailTongHop() {
   ss.getSheets().forEach(sh => {
     if (sh.getLastRow() < 2) return;
     const v = sh.getDataRange().getValues();
-    if (v[0][0] !== HEAD[0]) return;
+    if (v[0][0] !== HEAD[0] || sh.getName() === 'Thử kết nối') return;   // bỏ qua trang thử
     const moi = v.slice(1).filter(r => r[0] instanceof Date && r[0].getTime() > tu);
     if (!moi.length) return;
     tong += moi.length;

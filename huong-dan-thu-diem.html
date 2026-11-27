@@ -217,14 +217,13 @@ const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 
   'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
   'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
-function doPost(e) {
+/* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
+function ghiKetQua_(d) {
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
-  let d, tab, isNew = false;
   try {
-    d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
+    const tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
     const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
     if (sh.getLastRow() === 0) {
       sh.appendRow(HEAD);
@@ -240,21 +239,50 @@ function doPost(e) {
     const n = sh.getLastRow() - 1;
     const hit = n &gt; 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
       .matchEntireCell(true).findNext() : null;
-    if (hit) sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]);
-    else { sh.appendRow(row); isNew = true; }
-  } catch (err) {
-    return ContentService.createTextOutput('loi: ' + err);
+    if (hit) { sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); return { tab, isNew: false }; }
+    sh.appendRow(row);
+    return { tab, isNew: true };
   } finally {
     lock.releaseLock();
   }
+}
+
+/* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
+function doPost(e) {
+  let d, r;
+  try {
+    d = JSON.parse(e.postData.contents);
+    r = ghiKetQua_(d);
+  } catch (err) {
+    return ContentService.createTextOutput('loi: ' + err);
+  }
   // email từng bài: lỗi gửi email không làm mất kết quả đã ghi
-  if (EMAIL_KIEU === 'moi-bai' &amp;&amp; isNew) {
-    try { guiEmailMotBai_(d, tab); } catch (err) { console.error(err); }
+  if (EMAIL_KIEU === 'moi-bai' &amp;&amp; r.isNew) {
+    try { guiEmailMotBai_(d, r.tab); } catch (err) { console.error(err); }
   }
   return ContentService.createTextOutput('ok');
 }
 
-function doGet() {
+/* Mở địa chỉ trong trình duyệt để xem web app có chạy không.
+   Trang hướng dẫn gọi kèm ?thu=1&amp;cb=… để ghi một dòng thử và nhận lại kết quả. */
+function doGet(e) {
+  const p = (e &amp;&amp; e.parameter) || {};
+  const out = { ok: true, ban: 2 };
+  if (p.thu === '1') {
+    try {
+      ghiKetQua_({ id: 'thu-' + Date.now(), sheet: 'Thử kết nối', name: 'Học sinh thử', cls: 'Thử', code: '000',
+        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
+      out.ghi = true;
+      out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
+    } catch (err) {
+      out.ok = false;
+      out.loi = String(err);
+    }
+  }
+  if (p.cb &amp;&amp; /^[A-Za-z_$][\w$]{0,40}$/.test(p.cb)) {
+    return ContentService.createTextOutput(p.cb + '(' + JSON.stringify(out) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
   return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
 }
 
@@ -296,7 +324,7 @@ function guiEmailTongHop() {
   ss.getSheets().forEach(sh =&gt; {
     if (sh.getLastRow() &lt; 2) return;
     const v = sh.getDataRange().getValues();
-    if (v[0][0] !== HEAD[0]) return;
+    if (v[0][0] !== HEAD[0] || sh.getName() === 'Thử kết nối') return;   // bỏ qua trang thử
     const moi = v.slice(1).filter(r =&gt; r[0] instanceof Date &amp;&amp; r[0].getTime() &gt; tu);
     if (!moi.length) return;
     tong += moi.length;
@@ -400,7 +428,7 @@ function esc_(s) {
           <div class="btns"><button type="button" id="gsTest" class="go">Lưu và gửi thử</button></div>
         </div>
         <p class="en">Địa chỉ đúng có dạng <code>https://script.google.com/macros/s/…/exec</code>. Không thấy hộp này? Xem <a href="#khong-thay">cách lấy lại địa chỉ</a>.</p>
-        <p class="see">Bấm <b>Lưu và gửi thử</b>, rồi mở lại bảng tính ở bước 1. Sau vài giây, phía dưới bảng có thêm một trang tên <b>Thử kết nối</b>, trong đó có dòng <q>Học sinh thử</q>. Có dòng đó là đã xong. Trang thử này xoá đi cũng được.</p>
+        <p class="see">Bấm <b>Lưu và gửi thử</b>. Sau vài giây, ngay dưới nút hiện dòng chữ xanh <q>Thành công…</q>. Trong bảng tính, ở hàng thẻ dưới cùng (cạnh <q>Trang tính1</q>) có thêm thẻ <b>Thử kết nối</b> với dòng <q>Học sinh thử</q>. Thẻ thử này xoá đi cũng được. Nếu hiện chữ đỏ, làm theo cách sửa ghi ngay trong chữ đỏ đó.</p>
         <label class="done"><input type="checkbox" data-s="6"> Đã xong bước 6</label>
       </li>
     </ol>
@@ -431,8 +459,8 @@ function esc_(s) {
             <li>Nếu sau khi bấm <kbd>Triển khai</kbd> hiện hộp <q>Cấp quyền truy cập</q> (Authorize access): bấm vào đó và cho phép như bước 4; xong mới hiện địa chỉ.</li>
           </ol>
         </dd>
-        <dt>Bấm “Lưu và gửi thử” nhưng bảng tính không có dòng mới.</dt>
-        <dd>Hay gặp nhất là ở bước 5 chưa đổi sang <b>Bất kỳ ai</b>. Sửa: trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên, bấm gửi thử lại.</dd>
+        <dt>Bấm “Lưu và gửi thử” thì hiện chữ đỏ, hoặc bảng tính không có dòng mới.</dt>
+        <dd>Hay gặp nhất là ở bước 5 chưa đổi sang <b>Bất kỳ ai</b> (lưu ý: <q>Bất kỳ ai có Tài khoản Google</q> là sai, học sinh sẽ không gửi được). Sửa: trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên, bấm gửi thử lại.</dd>
         <dt>Không nhận được email.</dt>
         <dd>Xem thư mục <b>Thư rác</b> (Spam) và <b>Quảng cáo</b>. Email tổng hợp gửi khoảng 20 giờ mỗi ngày, ngày nào không có bài nộp thì không gửi.</dd>
         <dt>Muốn thôi nhận điểm.</dt>
@@ -492,11 +520,25 @@ function esc_(s) {
     if(/\/dev\/?$/.test(v)){say('Đây là địa chỉ thử nghiệm (đuôi /dev). Hãy chép địa chỉ có đuôi /exec trong hộp “URL ứng dụng web”.','bad');return}
     if(!RE.test(v)){say('Địa chỉ chưa đúng. Địa chỉ đúng bắt đầu bằng https://script.google.com/macros/s/ và kết thúc bằng /exec. Hãy chép lại ở bước 6.','bad');return}
     LS.set('xdt-gs',v);
-    const body=JSON.stringify({v:1,id:'thu-'+Date.now(),sheet:'Thử kết nối',name:'Học sinh thử',cls:'Thử',code:'000',mode:'Thử kết nối',score10:10,got:10,tot:10,tlSelf:'',nOK:0,n:0,minutes:0,autoSubmit:false,parts:'',answers:'Dòng này do trang hướng dẫn gửi thử'});
-    say('Đang gửi thử…');
-    fetch(v,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body})
-      .then(()=>say('Đã lưu địa chỉ và gửi thử. Mở bảng tính xem có trang “Thử kết nối” với dòng “Học sinh thử” không. Có là xong; không có thì xem mục “Nếu gặp khó”.','ok'),
-            ()=>say('Chưa gửi được: máy đang mất mạng hoặc mạng chặn. Địa chỉ đã được lưu; kiểm tra mạng rồi bấm lại.','bad'));
+    /* hỏi thẳng bảng tính: web app ghi một dòng thử và trả lời lại (mã từ 27/11/2026 trở đi) */
+    say('Đang kiểm tra với bảng tính…');
+    const cb='xdtCb'+Date.now(),sc=document.createElement('script');let done=false;
+    const clean=()=>{try{delete window[cb]}catch(e){window[cb]=undefined}sc.remove()};
+    const fail=()=>{if(done)return;done=true;clean();
+      /* phòng khi bảng tính còn chạy mã cũ: vẫn gửi một dòng thử kiểu cũ */
+      const body=JSON.stringify({v:1,id:'thu-'+Date.now(),sheet:'Thử kết nối',name:'Học sinh thử',cls:'Thử',code:'000',mode:'Thử kết nối',score10:10,got:10,tot:10,answers:'Dòng này do trang hướng dẫn gửi thử'});
+      fetch(v,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}).catch(()=>{});
+      msg.className='msg bad';
+      msg.innerHTML='Chưa kết nối được với bảng tính. Thường do một trong hai lý do:'+
+        '<ol class="sub"><li>Ở bước 5, ô <q>Người có quyền truy cập</q> chưa chọn đúng <b>Bất kỳ ai</b> (chọn nhầm <q>Chỉ mình tôi</q> hoặc <q>Bất kỳ ai có Tài khoản Google</q>).</li>'+
+        '<li>Bảng tính đang chạy mã cũ: đã triển khai trước khi dán mã, hoặc dán mã trước ngày 27/11/2026.</li></ol>'+
+        '<b>Cách sửa cả hai:</b> làm lại bước 3 và bước 4 (dán mã mới, bấm Chạy). Sau đó trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên; bấm lại <b>Lưu và gửi thử</b>.';
+    };
+    window[cb]=r=>{if(done)return;done=true;clean();
+      if(r&&r.ok&&r.ghi){say('Thành công: đã ghi dòng “Học sinh thử” vào bảng tính “'+(r.bang||'')+'”, trang “Thử kết nối”. Thầy cô đã cài xong.','ok');
+        const b6=document.querySelector('.done input[data-s="6"]');if(b6&&!b6.checked){b6.checked=true;b6.dispatchEvent(new Event('change'))}}
+      else say('Bảng tính trả lời nhưng báo lỗi: '+((r&&r.loi)||'không rõ')+'. Thử làm lại bước 4 (bấm Chạy và cho phép), rồi bấm lại.','bad')};
+    sc.src=v.replace(/\/$/,'')+'?thu=1&cb='+cb;sc.onerror=fail;setTimeout(fail,20000);document.head.appendChild(sc);
   });
 })();
 </script>
