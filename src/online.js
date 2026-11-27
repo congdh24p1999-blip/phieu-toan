@@ -124,10 +124,11 @@ function qzGrade(it,a,i){
 }
 function qzScore(){
   const m=QZ.m,res=m.items.map((it,i)=>qzGrade(it,QZ.s.ans[i],i));
-  const gr=m.items.map((it,i)=>!res[i].ungraded);
+  const done=m.items.map((it,i)=>!m.practice||!!QZ.s.chk[i]);   /* luyện tập: chỉ tính câu đã bấm Kiểm tra */
+  const gr=m.items.map((it,i)=>!res[i].ungraded&&done[i]);
   const got=res.reduce((a,r,i)=>a+(gr[i]?r.got:0),0),tot=m.items.reduce((a,it,i)=>a+(gr[i]?it.pts:0),0),all=m.items.reduce((a,it)=>a+it.pts,0);
   const self=res.reduce((a,r)=>a+(r.self?r.got:0),0);
-  return{res,gr,got,tot,all,self,ungraded:gr.some(x=>!x),sc10:tot?Math.round(got/tot*1000)/100:0,nOK:res.filter(r=>r.ok).length};
+  return{res,gr,done,got,tot,all,self,ungraded:res.some(r=>r.ungraded),nDone:done.filter(Boolean).length,sc10:tot?Math.round(got/tot*1000)/100:0,nOK:res.filter((r,i)=>r.ok&&done[i]).length};
 }
 
 /* ---------- Đếm lượt dùng (không gửi họ tên, bài làm) và lịch sử làm bài trên máy ---------- */
@@ -138,7 +139,7 @@ function qzHistPut(extra){
     L.unshift(Object.assign({k:m.key,q:location.search,t:m.info.title,s:m.info.sub,c:m.info.code,p:m.practice?1:0,at:Date.now()},extra));
     localStorage.setItem('xdt-hist',JSON.stringify(L.slice(0,12)))}catch(e){}
 }
-function qzHistDone(){const S=qzScore();qzHistPut({done:1,sc:S.ungraded?null:S.sc10,got:r2(S.got),tot:S.tot})}
+function qzHistDone(){const S=qzScore();qzHistPut({done:1,sc:S.ungraded||!S.tot?null:S.sc10,got:r2(S.got),tot:S.tot,nd:S.nDone,nt:QZ.m.items.length})}
 
 /* ---------- Giao diện học sinh ---------- */
 const QZ={};
@@ -199,7 +200,7 @@ function qzReviewHTML(it,i,live){
       h+=`<div class="qzs">${q.parts.length>1?`<b>${'abcd'[j]})</b> `:''}${s.parts[j]}</div>`;
       if(r.ungraded){h+=`<div class="qzwhy"><b>Lời giải${q.parts.length>1?' '+'abcd'[j]+')':''} (${pts(p.pts)} điểm).</b> ${q.sol[j]}</div>`;return}
       h+=`<fieldset class="qzrb"><legend>Hướng dẫn chấm${q.parts.length>1?' ý '+'abcd'[j]+')':''} · ${pts(p.pts)} điểm. Đánh dấu bước em làm đúng:</legend>${p.steps.map((x,k)=>!x.pts&&!x.whole?`<div class="qzst0">${x.html}</div>`:`<label class="qzst"><input type="checkbox" data-i="${i}" data-s="${p.j}.${k}"${tk[p.j+'.'+k]?' checked':''}><span class="qzstt">${x.whole?'Em làm đúng toàn bộ ý này. <span class="qzwh">'+x.html+'</span>':x.html}</span><b>${pts(x.pts)} đ</b></label>`).join('')}</fieldset>`});
-    return h+'</section>';
+    return h+qzBugLink(it,i)+'</section>';
   }
   h+=`<div class="qzs">${q.stem}</div>`;
   if(it.kind==='nlc')h+=`<div class="qzopts ${optClass(q.opts)}">${q.opts.map((o,j)=>`<div class="qzo ro${j===q.ans?' key':''}${a===j&&j!==q.ans?' wrong':''}"><b>${LET[j]}</b><span>${o}</span></div>`).join('')}</div>`;
@@ -207,8 +208,18 @@ function qzReviewHTML(it,i,live){
   else h+=`<p class="qzv">Em trả lời: <b>${qzAnsTxt(it,a)}</b> · Đáp án: <b>${qzKeyTxt(it)}</b></p>`;
   if(it.kind!=='ds')h+=`<div class="qzwhy"><b>Lời giải.</b> ${q.sol}</div>`;
   if(live&&qzCanRegen(it))h+=`<div class="qzact"><button type="button" class="btn alt sm" data-act="new">Làm câu khác cùng dạng</button></div>`;
-  return h+'</section>';
+  return h+qzBugLink(it,i)+'</section>';
 }
+/* học sinh báo câu sai: mở form báo lỗi, điền sẵn đề, số câu, dạng câu (không gửi họ tên, không gửi địa chỉ thu điểm) */
+function qzBugUrl(it,i){
+  if(typeof SITE_CFG==='undefined'||!SITE_CFG.form)return'';
+  const m=QZ.m,P=new URLSearchParams(location.search);P.delete('gs');
+  const n=(QZ.s.rep||{})[i]||0;
+  const info=`Làm online · ${m.info.title} · ${m.info.sub} · mã ${m.info.code} · câu ${i+1} (${it.kind==='tl'?'tự luận':it.orig?'trả lời ngắn thay tự luận':KIND_NAME[it.kind].toLowerCase()}) · dạng ${it.q.id||'?'}${n?` · câu làm thêm lần ${n}`:''} · ${QZ_BASE}?${P.toString()}`;
+  const q=new URLSearchParams({usp:'pp_url'});if(SITE_CFG.formInfo)q.set(SITE_CFG.formInfo,info);
+  return SITE_CFG.form+'?'+q.toString();
+}
+function qzBugLink(it,i){const u=qzBugUrl(it,i);return u?`<p class="qzbugp noprint"><a class="qzbug" href="${esc(u)}" target="_blank" rel="noopener">Báo câu này sai</a></p>`:''}
 function qzTLLive(it,i){   /* chế độ luyện tập: câu tự luận đã xem hướng dẫn chấm vẫn có nút câu khác */
   return qzCanRegen(it)?`<div class="qzact"><button type="button" class="btn alt sm" data-act="new">Làm câu khác cùng dạng</button></div>`:'';
 }
@@ -328,11 +339,15 @@ function qzScoreBoxHTML(){
   const m=QZ.m,S=qzScore(),parts=qzPartsOf(m.items);
   const byCh={};m.items.forEach((it,i)=>{if(!S.gr[i])return;const c=it.q.ch;(byCh[c]=byCh[c]||{got:0,tot:0,n:0}).got+=S.res[i].got;byCh[c].tot+=it.pts;byCh[c].n++});
   const weak=Object.entries(byCh).map(([c,v])=>({c:+c,...v,r:v.got/v.tot})).sort((a,b)=>a.r-b.r).filter(x=>x.r<.7).slice(0,5);
-  const big=S.ungraded?`<div class="qzscore"><span class="big">${pts(r2(S.got))}</span><span class="of">/ ${pts(S.tot)} điểm phần chấm online</span></div><p class="qzsmall">Phần tự luận (${pts(S.all-S.tot)} điểm) do thầy cô chấm trên bài giấy.</p>`
+  const n=m.items.length;
+  if(m.practice&&!S.nDone)return`<div class="qzscore"><span class="big">–</span><span class="of">chưa có điểm</span></div><p class="qzsmall">Em chưa bấm Kiểm tra câu nào nên chưa có điểm. Bấm “Luyện tiếp” để làm tiếp lượt này.</p>`;
+  const big=m.practice?`<div class="qzscore"><span class="big" id="qzBig">${pts(S.sc10)}</span><span class="of">/ 10 điểm</span></div><p class="qzsmall">Tính trên ${S.nDone}/${n} câu em đã làm${S.nDone<n?'; các câu chưa làm không tính vào điểm':''}.</p>`
+    :S.ungraded?`<div class="qzscore"><span class="big">${pts(r2(S.got))}</span><span class="of">/ ${pts(S.tot)} điểm phần chấm online</span></div><p class="qzsmall">Phần tự luận (${pts(S.all-S.tot)} điểm) do thầy cô chấm trên bài giấy.</p>`
     :`<div class="qzscore"><span class="big" id="qzBig">${pts(S.sc10)}</span><span class="of">/ 10 điểm</span></div>`;
-  const nAuto=m.items.filter(it=>it.kind!=='tl').length,nOKa=S.res.filter((r,i)=>r.ok&&m.items[i].kind!=='tl').length;
-  return big+`<p class="qzsmall">Đúng hoàn toàn ${nOKa}/${nAuto} câu chấm tự động · Đạt ${pts(r2(S.got))}/${pts(S.tot)} điểm${S.self>0||m.items.some(it=>it.kind==='tl')&&m.sol?`, trong đó tự luận tự chấm ${pts(r2(S.self))} điểm`:''}.</p>
-    <table class="qztbl"><thead><tr><th scope="col">Phần</th><th scope="col">Số câu</th><th scope="col">Điểm</th></tr></thead><tbody>${parts.map((p,pi)=>{const g=p.idx.reduce((a,i)=>a+S.res[i].got,0),t=p.idx.reduce((a,i)=>a+m.items[i].pts,0);return`<tr><td>${QZ_ROM[pi]}. ${qzPartTitle(p)[0]}</td><td>${p.idx.length}</td><td>${p.k==='tlg'&&!m.sol?'thầy cô chấm':`${pts(r2(g))}/${pts(t)}`}</td></tr>`}).join('')}</tbody></table>
+  const nOKa=S.res.filter((r,i)=>r.ok&&S.done[i]&&m.items[i].kind!=='tl').length;
+  const nAutoD=m.items.filter((it,i)=>it.kind!=='tl'&&S.done[i]).length;
+  return big+`<p class="qzsmall">${nAutoD?`Đúng hoàn toàn ${nOKa}/${nAutoD} câu chấm tự động · `:''}Đạt ${pts(r2(S.got))}/${pts(S.tot)} điểm${m.practice?' của các câu đã làm':''}${S.self>0||m.items.some(it=>it.kind==='tl')&&m.sol?`, trong đó tự luận tự chấm ${pts(r2(S.self))} điểm`:''}.</p>
+    <table class="qztbl"><thead><tr><th scope="col">Phần</th><th scope="col">Số câu</th><th scope="col">Điểm</th></tr></thead><tbody>${parts.map((p,pi)=>{const ix=p.idx.filter(i=>S.done[i]),g=ix.reduce((a,i)=>a+S.res[i].got,0),t=ix.reduce((a,i)=>a+m.items[i].pts,0);return`<tr><td>${QZ_ROM[pi]}. ${qzPartTitle(p)[0]}</td><td>${m.practice?`${ix.length}/${p.idx.length}`:p.idx.length}</td><td>${p.k==='tlg'&&!m.sol?'thầy cô chấm':ix.length?`${pts(r2(g))}/${pts(t)}`:'chưa làm'}</td></tr>`}).join('')}</tbody></table>
     ${weak.length?`<h2 class="qzh2">Nội dung cần ôn lại</h2><ul class="qzweak">${weak.map(x=>`<li>${esc(qzChLabel(x.c))}: đạt ${Math.round(x.r*100)}% số điểm (${x.n} câu)</li>`).join('')}</ul>`:`<p class="qzgood">Em làm tốt đều các chương trong bài này.</p>`}`;
 }
 function qzScoreBoxRender(){const b=document.getElementById('qzScoreBox');if(b)b.innerHTML=qzScoreBoxHTML()}
@@ -347,7 +362,7 @@ function qzResultView(){
     ${m.tlOrig.length?`<p class="qzsmall muted">Điểm trên là điểm của bài làm online, trong đó phần tự luận của đề in được thay bằng câu trả lời ngắn; thi thật còn chấm cả cách trình bày.</p>`:''}
     ${m.practice?`<p class="qzsmall muted">Trong chế độ luyện tập, câu em đổi sang câu khác cùng dạng được tính theo câu làm sau cùng.</p>`:''}
     ${m.gs?`<p class="qzsend" id="qzSend" role="status"></p>`:''}
-    <div class="qzbtns noprint">${m.gs?`<button class="btn alt" id="qzSendBtn" type="button" hidden>Gửi lại kết quả</button>`:''}<button class="btn" id="qzPrint" type="button">In / lưu PDF phiếu kết quả</button><button class="btn alt" id="qzAgain" type="button">Làm lại bài này</button><button class="btn alt" id="qzNew" type="button">Làm đề khác cùng loại</button></div>
+    <div class="qzbtns noprint">${m.gs?`<button class="btn alt" id="qzSendBtn" type="button" hidden>Gửi lại kết quả</button>`:''}${m.practice&&Object.keys(QZ.s.chk).length<m.items.length?'<button class="btn" id="qzMore" type="button">Luyện tiếp</button>':''}<button class="btn${m.practice&&Object.keys(QZ.s.chk).length<m.items.length?' alt':''}" id="qzPrint" type="button">In / lưu PDF phiếu kết quả</button><button class="btn alt" id="qzAgain" type="button">Làm lại bài này</button><button class="btn alt" id="qzNew" type="button">Làm đề khác cùng loại</button></div>
   </div>`;
   if(m.sol){
     h+=`<h2 class="qzpart">Xem lại từng câu</h2><div class="sheet qzsheet">${m.items.map((it,i)=>qzReviewHTML(it,i,false)).join('')}</div>`;
@@ -364,6 +379,8 @@ function qzResultView(){
   qzEl().innerHTML=prettyMath(h);window.scrollTo(0,0);document.title=`Kết quả – ${m.info.title} – mã ${m.info.code}`;
   const root=qzEl();root.onclick=null;root.oninput=null;root.onchange=qzTick;
   document.getElementById('qzPrint').onclick=()=>window.print();
+  const more=document.getElementById('qzMore');if(more)more.onclick=()=>{QZ.s.done=false;delete QZ.s.end;delete QZ.s.auto;qzSave();qzHistPut({done:0});qzTestView();
+    const i=m.items.findIndex((_,k)=>!QZ.s.chk[k]);const sec=i>=0&&document.getElementById('qzq'+i);if(sec)sec.scrollIntoView({block:'start'})};
   document.getElementById('qzAgain').onclick=()=>{QZ.s=qzNewState({name:QZ.s.name,cls:QZ.s.cls});qzSave();qzApplyReps();qzTestView()};
   document.getElementById('qzNew').onclick=()=>{const P=new URLSearchParams(location.search);let c=+(P.get('c')||101);c=100+((c-100+Math.floor(Math.random()*800)+37)%900);P.set('c',String(c));location.search=P.toString()};
   const sb=document.getElementById('qzSendBtn');if(sb)sb.onclick=()=>qzSend();
@@ -377,7 +394,7 @@ function qzPayload(){
     const t=it.kind==='nlc'?(a==null?'-':LET[a]):it.kind==='ds'?((a||[]).some(x=>x!=null)?a.map(x=>x==null?'-':x?'Đ':'S').join(''):'-'):(a==null||String(a).trim()===''?'-':String(a).trim().slice(0,20));
     return`${i+1}:${t}${S.res[i].ok?'✓':''}`}).join(' ');
   return{v:1,id:QZ.s.aid,sheet:`${m.info.title} – mã ${m.info.base}`.slice(0,90),name:QZ.s.name||'',cls:QZ.s.cls||'',code:m.info.code,
-    mode:m.practice?'Luyện tập':'Kiểm tra',score10:S.ungraded?'':S.sc10,got:r2(S.got),tot:S.tot,tlSelf:m.items.some(it=>it.kind==='tl')&&m.sol?r2(S.self):'',
+    mode:m.practice?`Luyện tập (làm ${S.nDone}/${m.items.length} câu)`:'Kiểm tra',score10:S.ungraded||!S.tot?'':S.sc10,got:r2(S.got),tot:S.tot,tlSelf:m.items.some(it=>it.kind==='tl')&&m.sol?r2(S.self):'',
     nOK:S.res.filter((r,i)=>r.ok&&m.items[i].kind!=='tl').length,n:m.items.filter(it=>it.kind!=='tl').length,
     minutes:Math.max(0,Math.round(((QZ.s.end||Date.now())-QZ.s.start)/60000)),autoSubmit:!!QZ.s.auto,
     parts:parts.map((p,pi)=>`${QZ_ROM[pi]}: ${p.k==='tlg'&&!m.sol?'giấy':pts(r2(p.idx.reduce((a,i)=>a+S.res[i].got,0)))+'/'+pts(p.idx.reduce((a,i)=>a+m.items[i].pts,0))}`).join('; '),answers:ans};
@@ -401,6 +418,7 @@ function qzInit(){
   document.body.dataset.view='quiz';const el=qzEl();el.hidden=false;
   try{QZ.m=qzBuild(P)}catch(e){console.error(e);el.innerHTML=`<div class="qzwrap"><div class="qzcard"><h1>Không mở được bài làm</h1><p>Đường dẫn bài làm không đúng hoặc bị thiếu một phần. Em kiểm tra lại đường dẫn hoặc hỏi thầy cô đường dẫn mới nhé.</p></div></div>`;return true}
   if(!QZ.m.items.length){el.innerHTML='<div class="qzwrap"><div class="qzcard"><h1>Bài này chưa có câu hỏi</h1><p>Em hỏi lại thầy cô đường dẫn khác nhé.</p></div></div>';return true}
+  document.addEventListener('click',e=>{if(e.target.closest('.qzbug'))qzTrack('hs-bao-loi')});
   const saved=qzLoad();QZ.saved=saved;
   if(saved){QZ.s=saved;qzFix();qzApplyReps()}
   if(saved&&!saved.done&&QZ.m.time&&Date.now()>saved.start+QZ.m.time*60000){QZ.s.done=true;QZ.s.end=saved.start+QZ.m.time*60000;QZ.s.auto=true;qzSave();qzHistDone();if(QZ.m.gs&&!QZ.s.sent){qzResultView();qzSend();return true}}

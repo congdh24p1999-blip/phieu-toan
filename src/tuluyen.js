@@ -43,7 +43,7 @@ function tuLesBox(){
 function tuHistHTML(){
   const L=qzHist();if(!L.length)return'';
   const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'vừa xong':m<60?m+' phút trước':m<1440?Math.round(m/60)+' giờ trước':new Date(t).toLocaleDateString('vi-VN')};
-  return`<section class="qzcard tuhist" aria-labelledby="tuH"><h2 id="tuH" class="qzh2">Bài em đã làm gần đây</h2><ul>${L.map(x=>`<li><a href="${esc(x.q)}"><b>${esc(x.t)}</b><span>${esc(x.s)} · mã ${esc(x.c)}${x.p?' · luyện tập':''}</span></a><span class="tures">${x.done?(x.sc!=null?`<b>${pts(x.sc)}</b>/10`:`${pts(x.got)}/${pts(x.tot)} đ`):'đang làm'}<small>${ago(x.at)}</small></span></li>`).join('')}</ul><button type="button" class="linkbtn" id="tuClr">Xoá lịch sử trên máy này</button></section>`;
+  return`<section class="qzcard tuhist" aria-labelledby="tuH"><h2 id="tuH" class="qzh2">Bài em đã làm gần đây</h2><ul>${L.map(x=>`<li><a href="${esc(x.q)}"><b>${esc(x.t)}</b><span>${esc(x.s)} · mã ${esc(x.c)}${x.p?' · luyện tập':''}</span></a><span class="tures">${x.done?(x.sc!=null?`<b>${pts(x.sc)}</b>/10${x.p&&x.nd<x.nt?` · ${x.nd}/${x.nt} câu`:''}`:x.tot?`${pts(x.got)}/${pts(x.tot)} đ`:'chưa làm câu nào'):'đang làm'}<small>${ago(x.at)}</small></span></li>`).join('')}</ul><button type="button" class="linkbtn" id="tuClr">Xoá lịch sử trên máy này</button></section>`;
 }
 function tuRender(){
   const g=TU.g,root=document.getElementById('qz');
