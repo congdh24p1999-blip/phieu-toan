@@ -129,6 +129,10 @@ ol.big>li::before{content:counter(b);position:absolute;left:16px;top:16px;width:
 ol.big>li.ok{border-color:var(--accent);background:var(--accent-soft)}
 ol.big>li.ok::before{content:"✓"}
 ol.big h2{font-size:1.3rem;margin:4px 0 10px}
+ol.big h3{font-size:1.15rem;margin:3px 0 8px}
+ol.big.small>li{padding:14px 16px 12px 62px}
+ol.big.small>li::before{width:34px;height:34px;font-size:1.05rem;background:var(--accent-soft);color:var(--accent)}
+@media (max-width:560px){ol.big.small>li{padding:56px 14px 12px}}
 ol.big p{max-width:none}
 .see{border-left:4px solid var(--accent);padding:4px 0 4px 12px;color:var(--ink)}
 .see::before{content:"Thầy cô sẽ thấy: ";font-weight:700;color:var(--accent)}
@@ -190,9 +194,9 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
       </li>
       <li id="b2">
         <h2>Mở phần viết mã của bảng tính</h2>
-        <p>Trên hàng chữ phía trên bảng ô, bấm <kbd>Tiện ích mở rộng</kbd>, rồi bấm <kbd>Apps Script</kbd>.</p>
+        <p>Trên hàng chữ phía trên bảng ô (<q>Tệp, Chỉnh sửa, Xem, Chèn, Định dạng, Dữ liệu, Công cụ, Tiện ích, Trợ giúp</q>), bấm <kbd>Tiện ích</kbd>, rồi bấm <kbd>Apps Script</kbd> (dòng có biểu tượng nhiều màu).</p>
         <p class="see">Một thẻ mới mở ra. Giữa màn hình có khung chữ, dòng đầu là <code>function myFunction() {</code>.</p>
-        <p class="en">Máy dùng tiếng Anh: <i>Extensions → Apps Script</i>.</p>
+        <p class="en">Một số máy ghi là <i>Tiện ích mở rộng</i>; máy dùng tiếng Anh: <i>Extensions → Apps Script</i>.</p>
         <label class="done"><input type="checkbox" data-s="2"> Đã xong bước 2</label>
       </li>
       <li id="b3">
@@ -412,8 +416,9 @@ function esc_(s) {
         <p>Trong hộp hiện ra:</p>
         <ol class="sub">
           <li>bấm hình bánh răng ⚙ cạnh chữ <q>Chọn loại</q>, chọn <kbd>Ứng dụng web</kbd>;</li>
-          <li>ở ô <q>Người có quyền truy cập</q>, đổi thành <kbd>Bất kỳ ai</kbd> <span class="imp">(quan trọng: nếu để <q>Chỉ mình tôi</q> thì học sinh không gửi điểm được)</span>;</li>
-          <li>bấm <kbd>Triển khai</kbd>.</li>
+          <li>ở ô <q>Người có quyền truy cập</q>, đổi thành đúng <kbd>Bất kỳ ai</kbd>. <span class="imp">Không chọn <q>Chỉ mình tôi</q> hay <q>Bất kỳ ai có Tài khoản Google</q>: chọn hai ô đó thì học sinh không gửi điểm được.</span></li>
+          <li>bấm <kbd>Triển khai</kbd>;</li>
+          <li>nếu hiện hộp <q>Cấp quyền truy cập</q> (Authorize access): bấm vào và cho phép như bước 4. Hộp cho phép đôi khi mở thành cửa sổ nhỏ nằm khuất phía sau, hãy tìm trên thanh tác vụ.</li>
         </ol>
         <p class="en">Tiếng Anh: <i>Deploy → New deployment → ⚙ → Web app → Who has access: Anyone → Deploy</i>.</p>
         <label class="done"><input type="checkbox" data-s="5"> Đã xong bước 5</label>
@@ -421,6 +426,7 @@ function esc_(s) {
       <li id="b6">
         <h2>Chép địa chỉ và dán vào đây</h2>
         <p>Hộp mới hiện dòng <q>URL ứng dụng web</q> (Web app URL), bên dưới có nút <kbd>Sao chép</kbd>. Bấm <kbd>Sao chép</kbd>, rồi bấm vào ô dưới đây và nhấn <kbd>Ctrl</kbd> + <kbd>V</kbd>.</p>
+        <p class="imp">Không chép địa chỉ trên thanh địa chỉ của trình duyệt: đó là địa chỉ trang viết mã, không dùng được.</p>
         <div class="paste">
           <label for="gsUrl"><b>Địa chỉ nhận điểm</b></label>
           <input id="gsUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
@@ -434,17 +440,55 @@ function esc_(s) {
     </ol>
 
     <section id="dung" aria-labelledby="h-dung">
-      <h2 id="h-dung">Từ nay giao bài thế nào?</h2>
-      <p>Không phải làm gì thêm. Trên máy tính này, khi bấm <b>Cho học sinh làm online</b> ở trang tạo đề, ô <b>Thu điểm về Google Sheet</b> đã có sẵn địa chỉ. Gửi đường dẫn hoặc mã QR cho học sinh như bình thường.</p>
-      <p>Dùng máy tính khác thì dán lại địa chỉ vào ô đó một lần. Lỡ làm mất địa chỉ: mở bảng tính → <kbd>Tiện ích mở rộng</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>, địa chỉ nằm ở đó.</p>
-      <p>Học sinh phải gõ họ tên trước khi làm bài. Mỗi đề tự ghi vào một trang riêng trong bảng tính: họ tên, lớp, điểm, thời gian làm, bài làm từng câu (dấu ✓ là câu đúng).</p>
+      <h2 id="h-dung">Sau khi cài xong: giao bài và xem điểm</h2>
+      <ol class="big small">
+        <li>
+          <h3>Tạo mã QR mới để giao bài</h3>
+          <p>Ở trang tạo đề, chọn đề, bấm <b>Cho học sinh làm online</b>. Ô <b>Thu điểm về Google Sheet</b> phải có sẵn địa chỉ và bên dưới có dòng chữ xanh <q>Đường dẫn bên dưới đã kèm địa chỉ thu điểm</q>. Khi đó mới chép đường dẫn hoặc gửi mã QR.</p>
+          <p class="imp">Đường dẫn, mã QR tạo trước khi cài không gửi điểm về. Phải tạo lại.</p>
+          <p class="en">Ô chỉ tự điền trên đúng máy tính, đúng trình duyệt đã làm hướng dẫn này. Dùng máy khác thì dán lại địa chỉ một lần. Lỡ làm mất địa chỉ: mở bảng tính → <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>.</p>
+        </li>
+        <li>
+          <h3>Làm thử một bài như học sinh</h3>
+          <p>Lấy điện thoại quét mã QR, gõ một tên thử, làm vài câu rồi nộp. Màn hình kết quả phải có dòng <q>Đã gửi kết quả cho thầy cô</q>, và trong bảng tính có dòng của bài vừa nộp. Được rồi mới gửi cho cả lớp.</p>
+          <p class="en">Khi có thu điểm, học sinh phải gõ họ tên trước khi làm. Dặn các em ghi đủ họ tên và lớp.</p>
+        </li>
+        <li>
+          <h3>Xem điểm ở đâu</h3>
+          <ul class="plain">
+            <li><b>Máy tính:</b> vào <a href="https://sheets.google.com" target="_blank" rel="noopener">sheets.google.com</a>, bảng tính nằm đầu danh sách. Nên đánh dấu trang (<kbd>Ctrl</kbd> + <kbd>D</kbd>) để lần sau mở nhanh.</li>
+            <li><b>Điện thoại:</b> cài ứng dụng <b>Google Trang tính</b> (Google Sheets), đăng nhập đúng Gmail đã cài.</li>
+            <li>Nhìn <b>hàng thẻ dưới cùng</b> của bảng tính: mỗi đề có một thẻ riêng, tên là tên đề và mã đề, ví dụ <q>Đề kiểm tra giữa học kì I – mã 101</q>. Kết quả không nằm ở thẻ <q>Trang tính1</q>.</li>
+            <li>Học sinh nộp xong vài giây là có dòng mới; bảng đang mở thì dòng mới tự hiện. Mỗi tối khoảng 20 giờ còn có email tổng hợp.</li>
+          </ul>
+        </li>
+        <li>
+          <h3>Đọc bảng điểm</h3>
+          <ul class="plain">
+            <li>Mỗi lần nộp là một dòng: thời điểm nộp, họ tên, lớp, <b>điểm thang 10</b>, điểm đạt, thời gian làm, điểm từng phần.</li>
+            <li>Cột <b>Bài làm</b> ghi lựa chọn từng câu, dấu ✓ là câu đúng. Ví dụ <code>1:B✓ 2:C 13:ĐSĐĐ✓ 19:2,5</code>: câu 1 chọn B, đúng; câu 2 chọn C, sai; câu 13 chọn Đúng, Sai, Đúng, Đúng cho bốn ý, đúng hết; câu 19 trả lời 2,5, sai.</li>
+            <li>Muốn xếp theo điểm hay theo tên: bấm vào chữ cái đầu cột, rồi <kbd>Dữ liệu</kbd> → <kbd>Sắp xếp trang tính</kbd>.</li>
+          </ul>
+        </li>
+        <li>
+          <h3>Bài có câu tự luận viết tay</h3>
+          <p>Trang không nhận được bài viết tay. Nên làm thế này:</p>
+          <ul class="plain">
+            <li>Trong hộp <b>Cho học sinh làm online</b>, ở ô <b>Câu tự luận</b> chọn <b>Giữ nguyên…</b>, và tắt <b>“Cho xem đáp án, lời giải sau khi nộp”</b>. Học sinh làm tự luận ra giấy, điểm online chỉ tính phần máy chấm.</li>
+            <li>Học sinh nộp bài giấy, hoặc chụp ảnh gửi qua Zalo. Thầy cô chấm như bình thường.</li>
+            <li>Gõ điểm tự luận vào <b>cột trống bên phải cột cuối cùng</b> (cột <q>Mã lượt làm</q>), ví dụ đặt tên cột là <q>Tự luận (GV chấm)</q>.</li>
+            <li>Nếu có cho xem lời giải, cột <b>Tự luận (HS tự chấm)</b> là điểm học sinh tự đánh dấu, chỉ để tham khảo.</li>
+          </ul>
+          <p class="imp">Đừng chèn cột vào giữa bảng, đừng đổi tên các thẻ đề: trang sẽ không ghi tiếp đúng chỗ. Chỉ thêm cột ở bên phải cột cuối.</p>
+        </li>
+      </ol>
     </section>
 
     <section id="kho" aria-labelledby="h-kho">
       <h2 id="h-kho">Nếu gặp khó</h2>
       <dl class="faq">
-        <dt>Không thấy chữ “Tiện ích mở rộng”.</dt>
-        <dd>Thầy cô đang mở trên điện thoại, hoặc máy đang dùng tiếng Anh (tìm chữ <i>Extensions</i>). Hãy làm trên máy tính.</dd>
+        <dt>Không thấy chữ “Tiện ích”.</dt>
+        <dd>Thầy cô đang mở trên điện thoại (ứng dụng điện thoại không có mục này), hoặc máy ghi là <i>Tiện ích mở rộng</i>, hoặc máy dùng tiếng Anh (tìm chữ <i>Extensions</i>). Hãy làm trên máy tính.</dd>
         <dt>Ở bước 4 không thấy tên <b>caiDat</b> để chọn.</dt>
         <dd>Mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd>, chờ một giây rồi chọn lại.</dd>
         <dt>Bấm Chạy thì hiện chữ đỏ báo lỗi.</dt>
@@ -461,6 +505,14 @@ function esc_(s) {
         </dd>
         <dt>Bấm “Lưu và gửi thử” thì hiện chữ đỏ, hoặc bảng tính không có dòng mới.</dt>
         <dd>Hay gặp nhất là ở bước 5 chưa đổi sang <b>Bất kỳ ai</b> (lưu ý: <q>Bất kỳ ai có Tài khoản Google</q> là sai, học sinh sẽ không gửi được). Sửa: trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên, bấm gửi thử lại.</dd>
+        <dt>Học sinh đã nộp mà bảng tính không có dòng nào.</dt>
+        <dd>
+          <ol class="sub">
+            <li>Xem đúng thẻ chưa: thẻ mang tên đề ở hàng dưới cùng, không phải <q>Trang tính1</q>. Nhiều thẻ thì bấm nút ☰ ở góc dưới bên trái để xem hết.</li>
+            <li>Xem đúng Gmail chưa: bấm ảnh đại diện góc trên bên phải, đổi sang Gmail đã cài.</li>
+            <li>Màn hình kết quả của học sinh có dòng <q>Đã gửi kết quả cho thầy cô</q> không? Không có, và lúc bắt đầu cũng không bắt gõ họ tên: mã QR được tạo khi chưa có địa chỉ thu điểm. Tạo lại mã QR như mục <q>Sau khi cài xong</q> ở trên.</li>
+          </ol>
+        </dd>
         <dt>Không nhận được email.</dt>
         <dd>Xem thư mục <b>Thư rác</b> (Spam) và <b>Quảng cáo</b>. Email tổng hợp gửi khoảng 20 giờ mỗi ngày, ngày nào không có bài nộp thì không gửi.</dd>
         <dt>Muốn thôi nhận điểm.</dt>
