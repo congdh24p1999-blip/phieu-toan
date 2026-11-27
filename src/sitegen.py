@@ -15,7 +15,7 @@ FORM = 'https://docs.google.com/forms/d/e/1FAIpQLScG0zNoYADPOzP44gIzj9ZEDqCIFE1x
 CONTACT = {'email': '', 'fanpage': '', 'zalo': ''}
 UPDATED = '27/11/2026'
 
-FOOT_LINKS = [('./', 'Tạo đề'), ('./?tuluyen=1', 'Học sinh tự luyện'), ('gioi-thieu.html', 'Giới thiệu'),
+FOOT_LINKS = [('./', 'Tạo đề'), ('./?tuluyen=1', 'Học sinh tự luyện'), ('huong-dan.html', 'Hướng dẫn, hỏi đáp'), ('gioi-thieu.html', 'Giới thiệu'),
               ('can-cu.html', 'Căn cứ và phương pháp'), ('huong-dan-thu-diem.html', 'Thu điểm về Google Sheet'),
               ('quyen-rieng-tu.html', 'Quyền riêng tư'), ('gioi-thieu.html#lien-he', 'Liên hệ, góp ý'),
               ('can-cu.html#nhat-ky', 'Nhật ký cập nhật')]
@@ -64,6 +64,11 @@ EXTRA = '''
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btnlink{color:#10241e}}
 .btnlink.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 .stamp{color:var(--muted);font-size:.9rem;margin-top:6px}
+.faq{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding:10px 0}
+.faq summary{cursor:pointer;font-weight:600;list-style-position:outside}
+.faq summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.faq details p{margin:8px 0 2px}
 '''
 
 def page(fname, title, desc, h1, lead, body, toc=None, noindex=False, abs_links=False):
@@ -251,6 +256,62 @@ NOTFOUND = '''
     <p class="muted">Nếu thầy cô mở từ một đường dẫn bài làm học sinh, hãy kiểm tra đường dẫn đã được chép đầy đủ (đường dẫn bài làm luôn bắt đầu bằng …/phieu-toan/?lam=1).</p>
 '''
 
+
+GUIDE = f'''
+    <section id="tao-de" aria-labelledby="h-tao-de">
+      <h2 id="h-tao-de">Tạo một đề kiểm tra trong 1 phút</h2>
+      <ol class="steps">
+        <li><p><b>Chọn đề.</b> Ở khung bên trái, chọn <i>Đề kiểm tra</i>, lớp, kì kiểm tra (giữa kì, cuối kì hoặc ôn thi) và cấu trúc đề.</p></li>
+        <li><p><b>Chọn độ khó.</b> Cơ bản, Chuẩn hoặc Nâng cao; dòng nhỏ bên dưới ghi tỉ lệ nhận biết – thông hiểu – vận dụng.</p></li>
+        <li><p><b>Ghi thông tin đầu đề.</b> Mở mục <i>Thông tin đầu đề</i> để điền tên trường, phòng giáo dục, năm học, thời gian làm bài. Trang nhớ các thông tin này cho lần sau.</p></li>
+        <li><p><b>Xem và đổi đề.</b> Đề hiện ngay bên phải. Chưa ưng thì bấm <i>Đổi đề khác</i>; muốn in lại đúng đề cũ thì nhập lại mã đề.</p></li>
+        <li><p><b>In hoặc tải Word.</b> Dùng các nút <i>In</i> hoặc <i>Word</i> ở cuối khung trái cho đề thi, đáp án và ma trận. Khi in, chọn khổ giấy A4 và tắt “đầu trang, chân trang” của trình duyệt.</p></li>
+      </ol>
+      <p class="muted" style="margin-top:12px">Cần nhiều mã đề để chống chép bài: chọn 2 – 4 ở mục <i>Số mã đề hoán vị</i>. Các mã có cùng nội dung, chỉ đảo thứ tự câu và phương án; đáp án in riêng cho từng mã.</p>
+    </section>
+
+    <section id="phieu" aria-labelledby="h-phieu">
+      <h2 id="h-phieu">Tạo phiếu bài tập theo bài học</h2>
+      <p>Chọn <i>Phiếu bài tập</i>, chọn lớp rồi tích một hay nhiều bài học, chọn số câu và loại câu. Phiếu sắp từ dễ đến khó, có đáp án và lời giải ở trang riêng.</p>
+    </section>
+
+    <section id="online" aria-labelledby="h-online">
+      <h2 id="h-online">Cho học sinh làm bài trên điện thoại</h2>
+      <ol class="steps">
+        <li><p>Tạo đề như bình thường, rồi bấm <i>Cho học sinh làm online</i> phía trên đề.</p></li>
+        <li><p>Chọn cách làm: <i>Kiểm tra</i> (có hẹn giờ, nộp xong mới có điểm) hoặc <i>Luyện tập</i> (làm câu nào biết đúng sai câu đó, xem lời giải).</p></li>
+        <li><p>Chọn cách xử lí câu tự luận: đổi thành câu trả lời ngắn để máy chấm, hoặc giữ tự luận để học sinh làm ra giấy.</p></li>
+        <li><p>Gửi đường dẫn qua Zalo, Messenger hoặc chiếu mã QR lên màn hình cho học sinh quét.</p></li>
+      </ol>
+      <p class="muted" style="margin-top:12px">Muốn nhận điểm của cả lớp vào một bảng tính, cài đặt một lần theo <a href="huong-dan-thu-diem.html">hướng dẫn thu điểm về Google Sheet</a> (khoảng 5 phút).</p>
+    </section>
+
+    <section id="hoc-sinh" aria-labelledby="h-hoc-sinh">
+      <h2 id="h-hoc-sinh">Học sinh tự luyện</h2>
+      <p>Vào <a href="./?tuluyen=1">Học sinh tự luyện</a>, chọn lớp, chọn luyện theo bài học hoặc theo đề kiểm tra, chọn mức độ rồi bấm <i>Bắt đầu</i>. Mỗi lần bắt đầu là một bộ câu hỏi mới; lịch sử làm bài lưu trên máy của em.</p>
+    </section>
+
+    <section id="hoi-dap" aria-labelledby="h-hoi-dap">
+      <h2 id="h-hoi-dap">Câu hỏi thường gặp</h2>
+      <div class="faq">
+        <details><summary>Dùng trang có mất phí không? Có cần tài khoản không?</summary><p>Không. Trang miễn phí, không quảng cáo, không cần đăng kí hay đăng nhập.</p></details>
+        <details><summary>Đề có theo cấu trúc mới không?</summary><p>Có. Cấu trúc mặc định gồm câu nhiều lựa chọn, đúng – sai, trả lời ngắn và tự luận; ma trận và bản đặc tả theo mẫu Công văn 7991. Thầy cô đổi được cấu trúc ở mục <i>Cấu trúc đề</i>. Chi tiết căn cứ xem tại <a href="can-cu.html">Căn cứ và phương pháp</a>.</p></details>
+        <details><summary>Hai lần tạo đề có bị trùng câu không?</summary><p>Mỗi mã đề là một đề khác: số liệu, phương án và thứ tự đều thay đổi. Dòng dưới ô mã đề cho biết đề hiện tại trùng bao nhiêu câu với các đề thầy cô đã tạo trước đó trên máy này.</p></details>
+        <details><summary>Tôi muốn sửa vài câu trong đề thì làm thế nào?</summary><p>Bấm <i>Word</i> để tải file .docx, mở bằng Microsoft Word hoặc Google Docs rồi sửa như văn bản bình thường. Công thức và hình vẽ đi kèm trong file.</p></details>
+        <details><summary>Câu “mở rộng” là gì?</summary><p>Là câu vượt phạm vi sách giáo khoa của khối lớp, dùng cho học sinh khá giỏi. Mặc định tắt (trừ mức Nâng cao); khi bật, đáp án ghi rõ câu nào là câu mở rộng.</p></details>
+        <details><summary>Thấy câu sai hoặc đáp án sai thì báo ở đâu?</summary><p>Bấm <i>Báo lỗi đề này</i> phía trên đề; lớp, kì, mã đề được điền sẵn. Lỗi đã sửa được ghi trong <a href="can-cu.html#nhat-ky">nhật ký cập nhật</a>.</p></details>
+        <details><summary>Học sinh đang làm thì mất mạng có sao không?</summary><p>Không mất bài: bài làm được lưu ngay trên máy học sinh. Khi nộp mà chưa gửi được điểm cho thầy cô, trang báo rõ và có nút <i>Gửi lại kết quả</i> khi có mạng trở lại.</p></details>
+        <details><summary>Học sinh làm lại được không?</summary><p>Được. Sau khi nộp, học sinh có thể bấm <i>Làm lại từ đầu</i>. Nếu thầy cô thu điểm, mỗi lần nộp là một dòng trong bảng tính, kèm thời điểm nộp.</p></details>
+        <details><summary>Xem bài làm của từng học sinh ở đâu?</summary><p>Trong bảng tính Google Sheet của thầy cô, mỗi dòng có cột <i>Xem bài làm</i>: bấm vào để mở lại toàn bộ bài của học sinh đó, có đáp án và lời giải.</p></details>
+        <details><summary>Dữ liệu của học sinh được lưu ở đâu?</summary><p>Trang không có máy chủ lưu dữ liệu. Bài nộp chỉ đi vào Google Sheet của chính thầy cô khi thầy cô bật thu điểm. Xem chi tiết tại <a href="quyen-rieng-tu.html">Quyền riêng tư</a>.</p></details>
+      </div>
+      <p class="muted" style="margin-top:12px">Chưa thấy câu trả lời thầy cô cần? Gửi câu hỏi qua <a href="gioi-thieu.html#lien-he">phiếu góp ý</a>.</p>
+    </section>
+'''
+(ROOT / 'huong-dan.html').write_text(page('huong-dan.html', 'Hướng dẫn và hỏi đáp – Xưởng đề Toán',
+    'Hướng dẫn nhanh dùng Xưởng đề Toán: tạo đề kiểm tra trong 1 phút, in và tải Word, phiếu bài tập, cho học sinh làm bài trên điện thoại, nhận điểm về Google Sheet, và các câu hỏi thường gặp.',
+    'Hướng dẫn và hỏi đáp', 'Những việc thầy cô và học sinh hay làm nhất trên trang, kèm câu trả lời cho các thắc mắc thường gặp.',
+    GUIDE, toc=[('tao-de', 'Tạo đề'), ('phieu', 'Phiếu bài tập'), ('online', 'Làm bài online'), ('hoc-sinh', 'Học sinh tự luyện'), ('hoi-dap', 'Hỏi đáp')]), encoding='utf8')
 (ROOT / 'gioi-thieu.html').write_text(page('gioi-thieu.html', 'Giới thiệu – Xưởng đề Toán',
     'Xưởng đề Toán: công cụ miễn phí tạo đề kiểm tra, phiếu bài tập Toán lớp 6 – 12 có đáp án, ma trận, bản đặc tả; ai làm, giữ chất lượng câu hỏi thế nào, liên hệ góp ý.',
     'Giới thiệu', 'Công cụ miễn phí tạo đề kiểm tra và phiếu bài tập Toán lớp 6 – 12, có đáp án, hướng dẫn chấm, ma trận và bản đặc tả.',
@@ -265,7 +326,7 @@ NOTFOUND = '''
 
 # ---------- sitemap (gửi qua Google Search Console) ----------
 today = datetime.date.today().isoformat()
-urls = ['', '?tuluyen=1', 'gioi-thieu.html', 'can-cu.html', 'huong-dan-thu-diem.html', 'thu-diem-email.html', 'quyen-rieng-tu.html']
+urls = ['', '?tuluyen=1', 'huong-dan.html', 'gioi-thieu.html', 'can-cu.html', 'huong-dan-thu-diem.html', 'thu-diem-email.html', 'quyen-rieng-tu.html']
 (ROOT / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     ''.join(f'  <url><loc>{BASE}{u.replace("&", "&amp;")}</loc><lastmod>{today}</lastmod></url>\n' for u in urls) + '</urlset>\n', encoding='utf8')
 
