@@ -19,7 +19,8 @@ Dùng ngay: https://congdh24p1999-blip.github.io/phieu-toan/
 - `de-thi.html`, `phieu-lop-1.html`: chỉ chuyển hướng về trang chính, để link cũ vẫn dùng được (phiếu lớp 1 đã gỡ khỏi trang; bản cũ còn trong lịch sử git).
 - `index.html?lam=1&...`: chế độ làm bài online (đề được tạo lại từ tham số trên đường dẫn).
 - `tu-luyen.html`: đường dẫn ngắn tới trang Tự luyện (`index.html?tuluyen=1`).
-- `huong-dan-thu-diem.html`: hướng dẫn tạo bảng Google Sheet nhận kết quả làm bài online.
+- `huong-dan-thu-diem.html`: hướng dẫn từng bước tạo bảng Google Sheet nhận kết quả (bản mã cơ bản, `src/thu-diem-co-ban.gs`).
+- `thu-diem-email.html`: nâng cao, bản mã có email tổng hợp (`src/thu-diem.gs`). `src/gsgen.py` sinh bản cơ bản và chèn mã vào hai trang.
 - Toàn bộ chạy trên trình duyệt (HTML, CSS, JavaScript thuần), không cần máy chủ; bài tập tự soạn, không sao chép SGK.
 
 ## Bản quyền

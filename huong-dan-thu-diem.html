@@ -169,6 +169,36 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
 .foot{text-align:center;color:var(--muted);font-size:.9rem;margin-top:22px}
 @media (max-width:560px){ol.big>li{padding:62px 14px 14px}ol.big>li::before{left:14px;top:14px}}
 @media print{.prog,.done,.paste,.code button,.why summary{display:none}.code pre{max-height:none;background:#fff;color:#000;border:1px solid #999}ol.big>li{break-inside:avoid}}
+
+/* ---- từng bước một ---- */
+[hidden]{display:none!important}
+.wzbar{display:flex;align-items:center;gap:14px;margin:22px 0 8px;scroll-margin-top:12px}
+.wzbar #wzNo{font-weight:800;font-size:1.05rem;color:var(--accent);white-space:nowrap}
+.wzbar .bar{flex:1;height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.wzbar .bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.wz{border:1.5px solid var(--accent);border-radius:16px;padding:20px 22px 10px;margin:8px 0 0;background:var(--paper);min-height:210px}
+.wz h2{font-size:1.45rem;margin:0 0 14px}
+.wz h2:focus{outline:none}
+.wz p{font-size:1.08rem;line-height:1.7}
+.wz .see{font-size:1rem}
+.wz .imp{font-size:1rem}
+.wznav{display:flex;justify-content:space-between;gap:10px;margin:14px 0 0}
+.wznav .go{margin-left:auto}
+.ghost{font:inherit;font-weight:700;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;background:transparent;color:var(--ink);cursor:pointer}
+.ghost:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.stuck{margin:6px 0 12px;border-top:1px dashed var(--line);padding-top:8px}
+.stuck summary{cursor:pointer;font-weight:700;color:#b3261e;font-size:.98rem}
+.stuck p{font-size:1rem;margin:8px 0 0}
+.stuck .code pre{max-height:160px}
+.paste .go{margin-top:2px}
+.big3 li{margin:10px 0;font-size:1.05rem;line-height:1.6}
+.more{margin-top:34px;border-top:1px solid var(--line);padding-top:6px}
+.more h2{font-size:1.2rem;margin:14px 0 6px}
+.more details{border-bottom:1px solid var(--line);padding:10px 0}
+.more summary{cursor:pointer;font-weight:700}
+.more details p,.more details ol{margin:8px 0 0}
+.adv{margin-top:16px;font-weight:600}
+@media (max-width:560px){.wz{padding:16px 14px 8px}.wz h2{font-size:1.25rem}.wznav .go{padding:11px 14px}}
 </style>
 </head>
 <body>
@@ -180,42 +210,38 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
 
   <main class="sheet">
     <h1>Nhận điểm học sinh về Google Sheet</h1>
-    <p class="lead">Làm một lần, khoảng 10 phút. Sau đó, mỗi khi học sinh nộp bài online, họ tên và điểm của các em tự ghi vào bảng tính của thầy cô. Muốn thì có thể nhận thêm email tổng hợp điểm mỗi tối.</p>
+    <p class="lead">Học sinh nộp bài online xong, họ tên và điểm tự ghi vào bảng tính của thầy cô. Cài một lần, khoảng 10 phút, miễn phí. Cần <b>máy tính</b> và <b>Gmail</b>.</p>
 
-    <div class="need">
-      <p><b>Cần chuẩn bị</b></p>
-      <ul>
-        <li><b>Máy tính</b> (máy bàn hoặc máy xách tay). Bước cài đặt không làm được trên điện thoại.</li>
-        <li><b>Tài khoản Gmail</b> đã đăng nhập trên trình duyệt (Chrome, Cốc Cốc, Edge… đều được).</li>
-        <li>Mẹo: mở trang hướng dẫn này trên điện thoại để vừa đọc vừa làm trên máy tính, hoặc in ra giấy.</li>
-      </ul>
-    </div>
+    <div class="wzbar" aria-live="polite"><span id="wzNo">Bước 1/6</span><div class="bar"><span id="wzFill"></span></div></div>
 
-    <div class="prog" aria-live="polite"><div class="bar"><span id="progBar"></span></div><p id="progTxt">Chưa làm bước nào.</p></div>
+    <!-- BƯỚC 1 -->
+    <section class="wz" data-n="1" aria-labelledby="w1">
+      <h2 id="w1">Tạo bảng tính mới</h2>
+      <p><a class="go" href="https://sheets.new" target="_blank" rel="noopener">Tạo bảng tính mới</a></p>
+      <p>Ở góc trên bên trái, bấm chữ <q>Bảng tính không có tiêu đề</q>, gõ tên, ví dụ <q>Điểm lớp 9A</q>, nhấn <kbd>Enter</kbd>.</p>
+      <p class="see">Một thẻ mới mở ra, có bảng ô trống.</p>
+    </section>
 
-    <ol class="big" id="buoc">
-      <li id="b1">
-        <h2>Tạo một bảng tính mới</h2>
-        <p><a class="go" href="https://sheets.new" target="_blank" rel="noopener">Bấm vào đây để tạo bảng tính mới</a></p>
-        <p class="see">Một thẻ mới mở ra, có bảng ô trống. Ở góc trên bên trái có dòng chữ <q>Bảng tính không có tiêu đề</q>: bấm vào đó, gõ tên, ví dụ <q>Điểm lớp 9A</q>, rồi nhấn phím <kbd>Enter</kbd>.</p>
-        <label class="done"><input type="checkbox" data-s="1"> Đã xong bước 1</label>
-      </li>
-      <li id="b2">
-        <h2>Mở phần viết mã của bảng tính</h2>
-        <p>Trên hàng chữ phía trên bảng ô (<q>Tệp, Chỉnh sửa, Xem, Chèn, Định dạng, Dữ liệu, Công cụ, Tiện ích, Trợ giúp</q>), bấm <kbd>Tiện ích</kbd>, rồi bấm <kbd>Apps Script</kbd> (dòng có biểu tượng nhiều màu).</p>
-        <p class="see">Một thẻ mới mở ra. Giữa màn hình có khung chữ, dòng đầu là <code>function myFunction() {</code>.</p>
-        <p class="en">Một số máy ghi là <i>Tiện ích mở rộng</i>; máy dùng tiếng Anh: <i>Extensions → Apps Script</i>.</p>
-        <label class="done"><input type="checkbox" data-s="2"> Đã xong bước 2</label>
-      </li>
-      <li id="b3">
-        <h2>Chọn bản mã và dán vào</h2>
-        <p>Có hai bản, thầy cô chọn một:</p>
-        <div class="pick" role="radiogroup" aria-label="Chọn bản mã">
-          <label class="card"><input type="radio" name="ban" value="cb" checked><b>Bản cơ bản (khuyên dùng)</b><span>Chỉ ghi điểm vào bảng tính. Xin ít quyền nhất (chỉ ghi vào đúng bảng tính này), Google không hiện màn hình cảnh báo.</span></label>
-          <label class="card"><input type="radio" name="ban" value="em"><b>Bản có email</b><span>Như bản cơ bản, thêm email tổng hợp điểm mỗi tối. Google sẽ hiện màn hình cảnh báo ở bước 4.</span></label>
-        </div>
-        <p>Bấm nút xanh <b>Chép mã</b> ngay dưới đây.</p>
-        <div class="code"><button type="button" id="copyCode">Chép mã</button><pre id="gsCodeBasic"><code>/**
+    <!-- BƯỚC 2 -->
+    <section class="wz" data-n="2" aria-labelledby="w2" hidden>
+      <h2 id="w2">Mở Apps Script</h2>
+      <p>Trên thanh chữ phía trên bảng, bấm <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd>.</p>
+      <p class="see">Một thẻ mới mở ra, giữa màn hình có khung chữ, dòng đầu là <code>function myFunction() {</code>.</p>
+      <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
+        <p>Không thấy chữ <q>Tiện ích</q>: tìm <q>Tiện ích mở rộng</q> hoặc <q>Extensions</q>. Trên điện thoại không có mục này, phải làm trên máy tính.</p>
+      </details>
+    </section>
+
+    <!-- BƯỚC 3 -->
+    <section class="wz" data-n="3" aria-labelledby="w3" hidden>
+      <h2 id="w3">Dán mã</h2>
+      <p><button type="button" class="go" id="copyCode">Chép mã</button></p>
+      <p>Sang thẻ Apps Script: bấm vào khung chữ, nhấn <kbd>Ctrl</kbd> + <kbd>A</kbd>, rồi <kbd>Ctrl</kbd> + <kbd>V</kbd>, rồi <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p>
+      <p class="see">Khung chữ đổi thành mã mới, dòng thứ hai là <q>Xưởng đề Toán – nhận kết quả làm bài online…</q>.</p>
+      <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
+        <p>Máy Mac: dùng phím <kbd>⌘ Command</kbd> thay cho <kbd>Ctrl</kbd>.</p>
+        <p>Nút <q>Chép mã</q> không chạy: chọn hết chữ trong khung dưới đây rồi chép.</p>
+        <div class="code"><pre id="gsCodeBasic"><code>/**
  * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này (bản cơ bản, không gửi email).
  * Mã chỉ đọc và ghi đúng bảng tính chứa nó, không đọc Gmail, không đọc tệp nào khác.
  * @OnlyCurrentDoc
@@ -296,350 +322,85 @@ function caiDat() {
 
 /* Giữ chỗ: nếu trước đây đã cài bản có email thì lịch gửi cũ gọi vào đây và không làm gì. */
 function guiEmailTongHop() {}
-</code></pre><pre id="gsCode" hidden><code>/**
- * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này và báo qua email.
- * @OnlyCurrentDoc
- */
-
-/* ===== CÀI ĐẶT EMAIL (sửa ở đây rồi bấm Lưu, chạy lại hàm caiDat) ===== */
-// 'hang-ngay' : mỗi ngày một email tổng hợp các bài nộp mới (khuyên dùng)
-// 'moi-bai'   : mỗi bài nộp một email (Gmail thường chỉ gửi được khoảng 100 email/ngày)
-// 'tat'       : không gửi email, chỉ ghi vào bảng tính
-const EMAIL_KIEU = 'hang-ngay';
-const GIO_GUI = 20;      // giờ gửi email tổng hợp mỗi ngày (0 – 23, giờ Việt Nam)
-const EMAIL_NHAN = '';   // để trống: gửi về Gmail của chính thầy cô; hoặc ghi địa chỉ khác
-/* ===================================================================== */
-
-const MUI_GIO = 'Asia/Ho_Chi_Minh';
-const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 10)', 'Điểm đạt', 'Tổng điểm',
-  'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
-  'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
-
-/* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
-function ghiKetQua_(d) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
-    const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
-    if (sh.getLastRow() === 0) {
-      sh.appendRow(HEAD);
-      sh.setFrozenRows(1);
-      sh.getRange(1, 1, 1, HEAD.length).setFontWeight('bold');
-    }
-    // chặn chuỗi bắt đầu bằng = + - @ để không bị hiểu thành công thức
-    const safe = v =&gt; (typeof v === 'string' &amp;&amp; /^[=+\-@]/.test(v)) ? "'" + v : v;
-    const row = [new Date(), d.name, d.cls, d.score10, d.got, d.tot, d.tlSelf, d.nOK, d.n,
-      d.minutes, d.autoSubmit ? 'có' : '', d.mode, d.code, d.parts, d.answers, String(d.id)]
-      .map(v =&gt; safe(v == null ? '' : v));
-    // cùng một lượt làm gửi lại (ví dụ sau khi tự chấm tự luận) thì ghi đè dòng cũ
-    const n = sh.getLastRow() - 1;
-    const hit = n &gt; 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
-      .matchEntireCell(true).findNext() : null;
-    if (hit) { sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); return { tab, isNew: false }; }
-    sh.appendRow(row);
-    return { tab, isNew: true };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
-function doPost(e) {
-  let d, r;
-  try {
-    d = JSON.parse(e.postData.contents);
-    r = ghiKetQua_(d);
-  } catch (err) {
-    return ContentService.createTextOutput('loi: ' + err);
-  }
-  // email từng bài: lỗi gửi email không làm mất kết quả đã ghi
-  if (EMAIL_KIEU === 'moi-bai' &amp;&amp; r.isNew) {
-    try { guiEmailMotBai_(d, r.tab); } catch (err) { console.error(err); }
-  }
-  return ContentService.createTextOutput('ok');
-}
-
-/* Mở địa chỉ trong trình duyệt để xem web app có chạy không.
-   Trang hướng dẫn gọi kèm ?thu=1&amp;cb=… để ghi một dòng thử và nhận lại kết quả. */
-function doGet(e) {
-  const p = (e &amp;&amp; e.parameter) || {};
-  const out = { ok: true, ban: 2 };
-  if (p.thu === '1') {
-    try {
-      ghiKetQua_({ id: 'thu-' + Date.now(), sheet: 'Thử kết nối', name: 'Học sinh thử', cls: 'Thử', code: '000',
-        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
-      out.ghi = true;
-      out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
-    } catch (err) {
-      out.ok = false;
-      out.loi = String(err);
-    }
-  }
-  if (p.cb &amp;&amp; /^[A-Za-z_$][\w$]{0,40}$/.test(p.cb)) {
-    return ContentService.createTextOutput(p.cb + '(' + JSON.stringify(out) + ');')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-  return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
-}
-
-/* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
-   cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
-function caiDat() {
-  ScriptApp.getProjectTriggers()
-    .filter(t =&gt; t.getHandlerFunction() === 'guiEmailTongHop')
-    .forEach(t =&gt; ScriptApp.deleteTrigger(t));
-  let lich = 'Không gửi email (chỉ ghi vào bảng tính).';
-  if (EMAIL_KIEU === 'hang-ngay') {
-    const gio = Math.min(23, Math.max(0, Math.floor(GIO_GUI)));
-    ScriptApp.newTrigger('guiEmailTongHop').timeBased().everyDays(1).atHour(gio)
-      .inTimezone(MUI_GIO).create();
-    PropertiesService.getScriptProperties().setProperty('lanGuiTruoc', String(Date.now()));
-    lich = 'Mỗi ngày khoảng ' + gio + ' giờ, một email tổng hợp các bài nộp mới (ngày không có bài nộp thì không gửi).';
-  } else if (EMAIL_KIEU === 'moi-bai') {
-    lich = 'Mỗi bài nộp mới một email.';
-  }
-  if (EMAIL_KIEU !== 'tat') {
-    MailApp.sendEmail({
-      to: nguoiNhan_(),
-      subject: 'Xưởng đề Toán: đã cài đặt thu điểm',
-      htmlBody: '&lt;p&gt;Bảng tính &lt;b&gt;' + esc_(SpreadsheetApp.getActiveSpreadsheet().getName()) +
-        '&lt;/b&gt; đã sẵn sàng nhận kết quả làm bài online.&lt;/p&gt;&lt;p&gt;Cách báo qua email: ' + esc_(lich) +
-        '&lt;/p&gt;&lt;p&gt;&lt;a href="' + SpreadsheetApp.getActiveSpreadsheet().getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
-    });
-  }
-  console.log('Đã cài đặt. ' + lich);
-}
-
-/* Gửi email tổng hợp các bài nộp từ lần gửi trước; lịch hằng ngày tự gọi hàm này. */
-function guiEmailTongHop() {
-  const props = PropertiesService.getScriptProperties();
-  const tu = Number(props.getProperty('lanGuiTruoc')) || (Date.now() - 24 * 3600 * 1000);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const nhom = [];
-  let tong = 0;
-  ss.getSheets().forEach(sh =&gt; {
-    if (sh.getLastRow() &lt; 2) return;
-    const v = sh.getDataRange().getValues();
-    if (v[0][0] !== HEAD[0] || sh.getName() === 'Thử kết nối') return;   // bỏ qua trang thử
-    const moi = v.slice(1).filter(r =&gt; r[0] instanceof Date &amp;&amp; r[0].getTime() &gt; tu);
-    if (!moi.length) return;
-    tong += moi.length;
-    nhom.push({ ten: sh.getName(), url: ss.getUrl() + '#gid=' + sh.getSheetId(), rows: moi });
-  });
-  props.setProperty('lanGuiTruoc', String(Date.now()));
-  if (!tong) return;
-  const diem = r =&gt; (r[3] !== '' &amp;&amp; r[3] != null) ? Number(r[3]) : (Number(r[5]) ? Number(r[4]) / Number(r[5]) * 10 : NaN);
-  const so = x =&gt; (Math.round(x * 10) / 10).toString().replace('.', ',');
-  let html = '&lt;p&gt;Từ ' + Utilities.formatDate(new Date(tu), MUI_GIO, 'HH:mm dd/MM') + ' đến nay có &lt;b&gt;' + tong +
-    '&lt;/b&gt; bài nộp mới (tính cả bài gửi lại sau khi tự chấm).&lt;/p&gt;';
-  nhom.forEach(g =&gt; {
-    const ds = g.rows.map(diem).filter(x =&gt; !isNaN(x));
-    const tb = ds.length ? ds.reduce((a, b) =&gt; a + b, 0) / ds.length : NaN;
-    html += '&lt;h3 style="margin:18px 0 4px"&gt;' + esc_(g.ten) + '&lt;/h3&gt;&lt;p style="margin:0 0 6px"&gt;' + g.rows.length + ' bài' +
-      (ds.length ? ' · điểm trung bình ' + so(tb) + ' · thấp nhất ' + so(Math.min.apply(null, ds)) +
-        ' · cao nhất ' + so(Math.max.apply(null, ds)) + ' (thang 10)' : '') +
-      ' · &lt;a href="' + g.url + '"&gt;Xem trong bảng&lt;/a&gt;&lt;/p&gt;';
-    const rows = g.rows.slice().sort((a, b) =&gt; String(a[2]).localeCompare(String(b[2]), 'vi') || String(a[1]).localeCompare(String(b[1]), 'vi'));
-    html += '&lt;table cellpadding="4" style="border-collapse:collapse;font-size:14px"&gt;&lt;tr style="background:#eef3f1"&gt;' +
-      '&lt;th align="left"&gt;Họ và tên&lt;/th&gt;&lt;th align="left"&gt;Lớp&lt;/th&gt;&lt;th align="right"&gt;Điểm&lt;/th&gt;&lt;th align="left"&gt;Nộp lúc&lt;/th&gt;&lt;/tr&gt;' +
-      rows.slice(0, 60).map(r =&gt; '&lt;tr style="border-top:1px solid #ddd"&gt;&lt;td&gt;' + esc_(r[1]) + '&lt;/td&gt;&lt;td&gt;' + esc_(r[2]) +
-        '&lt;/td&gt;&lt;td align="right"&gt;' + (isNaN(diem(r)) ? '' : so(diem(r))) + '&lt;/td&gt;&lt;td&gt;' +
-        Utilities.formatDate(r[0], MUI_GIO, 'HH:mm dd/MM') + '&lt;/td&gt;&lt;/tr&gt;').join('') + '&lt;/table&gt;' +
-      (rows.length &gt; 60 ? '&lt;p&gt;… và ' + (rows.length - 60) + ' bài khác, xem đủ trong bảng tính.&lt;/p&gt;' : '');
-  });
-  html += '&lt;p style="color:#666;font-size:13px;margin-top:18px"&gt;Email tự động từ bảng tính &lt;a href="' + ss.getUrl() + '"&gt;' +
-    esc_(ss.getName()) + '&lt;/a&gt; (Xưởng đề Toán). Muốn đổi giờ gửi hoặc tắt email: sửa phần CÀI ĐẶT EMAIL trong Apps Script rồi chạy lại hàm caiDat.&lt;/p&gt;';
-  MailApp.sendEmail({
-    to: nguoiNhan_(),
-    subject: 'Xưởng đề Toán: ' + tong + ' bài nộp mới (' + Utilities.formatDate(new Date(), MUI_GIO, 'dd/MM') + ')',
-    htmlBody: html
-  });
-}
-
-function guiEmailMotBai_(d, tab) {
-  if (MailApp.getRemainingDailyQuota() &lt; 1) return;   // hết lượt gửi trong ngày: kết quả vẫn có trong bảng
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const so = x =&gt; String(x).replace('.', ',');
-  const diem = (d.score10 !== '' &amp;&amp; d.score10 != null) ? so(d.score10) + '/10' : so(d.got) + '/' + so(d.tot) + ' điểm';
-  MailApp.sendEmail({
-    to: nguoiNhan_(),
-    subject: 'Bài nộp: ' + String(d.name || 'Không tên').slice(0, 60) + (d.cls ? ' (' + String(d.cls).slice(0, 12) + ')' : '') + ' – ' + diem,
-    htmlBody: '&lt;p&gt;&lt;b&gt;' + esc_(d.name) + '&lt;/b&gt;' + (d.cls ? ', lớp ' + esc_(d.cls) : '') + ' vừa nộp bài &lt;b&gt;' + esc_(tab) + '&lt;/b&gt;' +
-      (d.code ? ' (mã ' + esc_(d.code) + ')' : '') + '.&lt;/p&gt;&lt;p&gt;Điểm: &lt;b&gt;' + esc_(diem) + '&lt;/b&gt; · Thời gian làm ' + esc_(d.minutes) +
-      ' phút' + (d.autoSubmit ? ' · hết giờ, tự nộp' : '') + '&lt;/p&gt;&lt;p&gt;Điểm từng phần: ' + esc_(d.parts) + '&lt;/p&gt;' +
-      '&lt;p&gt;&lt;a href="' + ss.getUrl() + '"&gt;Mở bảng tính&lt;/a&gt;&lt;/p&gt;'
-  });
-}
-
-function nguoiNhan_() { return EMAIL_NHAN || Session.getEffectiveUser().getEmail(); }
-function esc_(s) {
-  return String(s == null ? '' : s).replace(/[&amp;&lt;&gt;"']/g, c =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;', "'": '&amp;#39;' })[c]);
-}
 </code></pre></div>
-        <p>Quay sang thẻ Apps Script vừa mở ở bước 2:</p>
-        <ul class="plain">
-          <li>bấm chuột vào khung chữ;</li>
-          <li>nhấn cùng lúc <kbd>Ctrl</kbd> + <kbd>A</kbd> để chọn hết chữ cũ;</li>
-          <li>nhấn cùng lúc <kbd>Ctrl</kbd> + <kbd>V</kbd> để dán mã mới (chữ cũ tự mất);</li>
-          <li>nhấn cùng lúc <kbd>Ctrl</kbd> + <kbd>S</kbd> để lưu.</li>
-        </ul>
-        <p class="en">Máy Mac: dùng phím <kbd>⌘ Command</kbd> thay cho <kbd>Ctrl</kbd>.</p>
-        <label class="done"><input type="checkbox" data-s="3"> Đã xong bước 3</label>
-      </li>
-      <li id="b4">
-        <h2>Bấm Chạy và cho phép</h2>
-        <p>Phía trên khung chữ có một ô chọn tên (cạnh nút <kbd>Gỡ lỗi</kbd>). Bấm vào ô đó, chọn <b>caiDat</b>. Sau đó bấm nút <kbd>▷ Chạy</kbd>.</p>
-        <p>Google sẽ hỏi quyền cho đoạn mã vừa dán. Bấm lần lượt:</p>
-        <ol class="sub">
-          <li><kbd>Xem lại quyền</kbd> (Review permissions)</li>
-          <li>chọn tài khoản Gmail của thầy cô</li>
-          <li>chỉ với bản có email: hiện màn hình <q>Google chưa xác minh ứng dụng này</q>, đọc khung vàng ngay dưới đây</li>
-          <li>nếu có ô <q>Chọn tất cả</q> thì đánh dấu ô đó</li>
-          <li><kbd>Cho phép</kbd> hoặc <kbd>Tiếp tục</kbd> (Allow / Continue)</li>
-        </ol>
-        <div class="calm">
-          <p><b>Bản có email: về màn hình “Google chưa xác minh ứng dụng này”</b></p>
-          <p>Bản cơ bản không gặp màn hình này; bản có email thì có, vì mã xin thêm quyền gửi thư và hẹn giờ. Google hiện cảnh báo này với mọi đoạn mã tự viết chưa gửi Google duyệt, không phải vì mã có virus hay lừa đảo. Ở đây <b>chính thầy cô vừa dán mã vào bảng tính của mình</b>, mã chạy bằng tài khoản của thầy cô, và toàn bộ mã nằm ở bước 3 cho ai cũng đọc được. Mã chỉ ghi điểm vào đúng bảng tính này (bản có email thì thêm gửi thư về Gmail của thầy cô và hẹn giờ gửi thư); mã không đọc được Gmail hay tệp nào khác.</p>
-          <p>Để đi tiếp: bấm chữ nhỏ <kbd>Nâng cao</kbd> (Advanced) ở góc dưới bên trái, rồi bấm <kbd class="w">Đi tới Dự án không có tiêu đề (không an toàn)</kbd>.</p>
-          <p class="rule"><b>Quy tắc an toàn:</b> chỉ bấm <q>Nâng cao</q> khi chính thầy cô vừa dán mã từ trang Xưởng đề Toán này. Nếu ai đó gửi đường dẫn lạ rồi bảo bấm <q>Nâng cao</q>, đừng làm.</p>
-        </div>
-        <p class="see">Phía dưới khung chữ hiện <q>Đã cài đặt…</q>. Bản có email: vài giây sau, hộp thư nhận được thư <q>Xưởng đề Toán: đã cài đặt thu điểm</q>.</p>
-        <label class="done"><input type="checkbox" data-s="4"> Đã xong bước 4</label>
-      </li>
-      <li id="b5">
-        <h2>Mở cửa để nhận điểm</h2>
-        <p>Góc trên bên phải, bấm nút xanh <kbd>Triển khai</kbd>, rồi bấm <kbd>Tùy chọn triển khai mới</kbd>.</p>
-        <p>Trong hộp hiện ra:</p>
-        <ol class="sub">
-          <li>bấm hình bánh răng ⚙ cạnh chữ <q>Chọn loại</q>, chọn <kbd>Ứng dụng web</kbd>;</li>
-          <li>ở ô <q>Người có quyền truy cập</q>, đổi thành đúng <kbd>Bất kỳ ai</kbd>. <span class="imp">Không chọn <q>Chỉ mình tôi</q> hay <q>Bất kỳ ai có Tài khoản Google</q>: chọn hai ô đó thì học sinh không gửi điểm được.</span></li>
-          <li>bấm <kbd>Triển khai</kbd>;</li>
-          <li>nếu hiện hộp <q>Cấp quyền truy cập</q> (Authorize access): bấm vào và cho phép như bước 4. Hộp cho phép đôi khi mở thành cửa sổ nhỏ nằm khuất phía sau, hãy tìm trên thanh tác vụ.</li>
-        </ol>
-        <p class="en">Tiếng Anh: <i>Deploy → New deployment → ⚙ → Web app → Who has access: Anyone → Deploy</i>.</p>
-        <label class="done"><input type="checkbox" data-s="5"> Đã xong bước 5</label>
-      </li>
-      <li id="b6">
-        <h2>Chép địa chỉ và dán vào đây</h2>
-        <p>Hộp mới hiện dòng <q>URL ứng dụng web</q> (Web app URL), bên dưới có nút <kbd>Sao chép</kbd>. Bấm <kbd>Sao chép</kbd>, rồi bấm vào ô dưới đây và nhấn <kbd>Ctrl</kbd> + <kbd>V</kbd>.</p>
-        <p class="imp">Không chép địa chỉ trên thanh địa chỉ của trình duyệt: đó là địa chỉ trang viết mã, không dùng được.</p>
-        <div class="paste">
-          <label for="gsUrl"><b>Địa chỉ nhận điểm</b></label>
-          <input id="gsUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
-          <p class="msg" id="gsMsg" role="status"></p>
-          <div class="btns"><button type="button" id="gsTest" class="go">Lưu và gửi thử</button></div>
-        </div>
-        <p class="en">Địa chỉ đúng có dạng <code>https://script.google.com/macros/s/…/exec</code>. Không thấy hộp này? Xem <a href="#khong-thay">cách lấy lại địa chỉ</a>.</p>
-        <p class="see">Bấm <b>Lưu và gửi thử</b>. Sau vài giây, ngay dưới nút hiện dòng chữ xanh <q>Thành công…</q>. Trong bảng tính, ở hàng thẻ dưới cùng (cạnh <q>Trang tính1</q>) có thêm thẻ <b>Thử kết nối</b> với dòng <q>Học sinh thử</q>. Thẻ thử này xoá đi cũng được. Nếu hiện chữ đỏ, làm theo cách sửa ghi ngay trong chữ đỏ đó.</p>
-        <label class="done"><input type="checkbox" data-s="6"> Đã xong bước 6</label>
-      </li>
-    </ol>
-
-    <section id="dung" aria-labelledby="h-dung">
-      <h2 id="h-dung">Sau khi cài xong: giao bài và xem điểm</h2>
-      <ol class="big small">
-        <li>
-          <h3>Tạo mã QR mới để giao bài</h3>
-          <p>Ở trang tạo đề, chọn đề, bấm <b>Cho học sinh làm online</b>. Ô <b>Thu điểm về Google Sheet</b> phải có sẵn địa chỉ và bên dưới có dòng chữ xanh <q>Đường dẫn bên dưới đã kèm địa chỉ thu điểm</q>. Khi đó mới chép đường dẫn hoặc gửi mã QR.</p>
-          <p class="imp">Đường dẫn, mã QR tạo trước khi cài không gửi điểm về. Phải tạo lại.</p>
-          <p class="en">Ô chỉ tự điền trên đúng máy tính, đúng trình duyệt đã làm hướng dẫn này. Dùng máy khác thì dán lại địa chỉ một lần. Lỡ làm mất địa chỉ: mở bảng tính → <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>.</p>
-        </li>
-        <li>
-          <h3>Làm thử một bài như học sinh</h3>
-          <p>Lấy điện thoại quét mã QR, gõ một tên thử, làm vài câu rồi nộp. Màn hình kết quả phải có dòng <q>Đã gửi kết quả cho thầy cô</q>, và trong bảng tính có dòng của bài vừa nộp. Được rồi mới gửi cho cả lớp.</p>
-          <p class="en">Khi có thu điểm, học sinh phải gõ họ tên trước khi làm. Dặn các em ghi đủ họ tên và lớp.</p>
-        </li>
-        <li>
-          <h3>Xem điểm ở đâu</h3>
-          <ul class="plain">
-            <li><b>Máy tính:</b> vào <a href="https://sheets.google.com" target="_blank" rel="noopener">sheets.google.com</a>, bảng tính nằm đầu danh sách. Nên đánh dấu trang (<kbd>Ctrl</kbd> + <kbd>D</kbd>) để lần sau mở nhanh.</li>
-            <li><b>Điện thoại:</b> cài ứng dụng <b>Google Trang tính</b> (Google Sheets), đăng nhập đúng Gmail đã cài.</li>
-            <li>Nhìn <b>hàng thẻ dưới cùng</b> của bảng tính: mỗi đề có một thẻ riêng, tên là tên đề và mã đề, ví dụ <q>Đề kiểm tra giữa học kì I – mã 101</q>. Kết quả không nằm ở thẻ <q>Trang tính1</q>.</li>
-            <li>Học sinh nộp xong vài giây là có dòng mới; bảng đang mở thì dòng mới tự hiện. Dùng bản có email thì mỗi tối khoảng 20 giờ còn có email tổng hợp.</li>
-          </ul>
-        </li>
-        <li>
-          <h3>Đọc bảng điểm</h3>
-          <ul class="plain">
-            <li>Mỗi lần nộp là một dòng: thời điểm nộp, họ tên, lớp, <b>điểm thang 10</b>, điểm đạt, thời gian làm, điểm từng phần.</li>
-            <li>Cột <b>Bài làm</b> ghi lựa chọn từng câu, dấu ✓ là câu đúng. Ví dụ <code>1:B✓ 2:C 13:ĐSĐĐ✓ 19:2,5</code>: câu 1 chọn B, đúng; câu 2 chọn C, sai; câu 13 chọn Đúng, Sai, Đúng, Đúng cho bốn ý, đúng hết; câu 19 trả lời 2,5, sai.</li>
-            <li>Muốn xếp theo điểm hay theo tên: bấm vào chữ cái đầu cột, rồi <kbd>Dữ liệu</kbd> → <kbd>Sắp xếp trang tính</kbd>.</li>
-          </ul>
-        </li>
-        <li>
-          <h3>Bài có câu tự luận viết tay</h3>
-          <p>Trang không nhận được bài viết tay. Nên làm thế này:</p>
-          <ul class="plain">
-            <li>Trong hộp <b>Cho học sinh làm online</b>, ở ô <b>Câu tự luận</b> chọn <b>Giữ nguyên…</b>, và tắt <b>“Cho xem đáp án, lời giải sau khi nộp”</b>. Học sinh làm tự luận ra giấy, điểm online chỉ tính phần máy chấm.</li>
-            <li>Học sinh nộp bài giấy, hoặc chụp ảnh gửi qua Zalo. Thầy cô chấm như bình thường.</li>
-            <li>Gõ điểm tự luận vào <b>cột trống bên phải cột cuối cùng</b> (cột <q>Mã lượt làm</q>), ví dụ đặt tên cột là <q>Tự luận (GV chấm)</q>.</li>
-            <li>Nếu có cho xem lời giải, cột <b>Tự luận (HS tự chấm)</b> là điểm học sinh tự đánh dấu, chỉ để tham khảo.</li>
-          </ul>
-          <p class="imp">Đừng chèn cột vào giữa bảng, đừng đổi tên các thẻ đề: trang sẽ không ghi tiếp đúng chỗ. Chỉ thêm cột ở bên phải cột cuối.</p>
-        </li>
-      </ol>
-    </section>
-
-    <section id="kho" aria-labelledby="h-kho">
-      <h2 id="h-kho">Nếu gặp khó</h2>
-      <dl class="faq">
-        <dt>Không thấy chữ “Tiện ích”.</dt>
-        <dd>Thầy cô đang mở trên điện thoại (ứng dụng điện thoại không có mục này), hoặc máy ghi là <i>Tiện ích mở rộng</i>, hoặc máy dùng tiếng Anh (tìm chữ <i>Extensions</i>). Hãy làm trên máy tính.</dd>
-        <dt>Ở bước 4 không thấy tên <b>caiDat</b> để chọn.</dt>
-        <dd>Mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd>, chờ một giây rồi chọn lại.</dd>
-        <dt>Bấm Chạy thì hiện chữ đỏ báo lỗi.</dt>
-        <dd>Thường do mã dán thiếu. Làm lại bước 3: bấm <b>Chép mã</b>, sang Apps Script nhấn <kbd>Ctrl</kbd> + <kbd>A</kbd> rồi <kbd>Ctrl</kbd> + <kbd>V</kbd>, lưu, rồi chạy lại.</dd>
-        <dt id="khong-thay">Làm xong bước 5 mà không thấy địa chỉ (URL ứng dụng web).</dt>
-        <dd>
-          <p>Đừng chép địa chỉ trên thanh địa chỉ của trình duyệt: đó là địa chỉ trang viết mã. Làm như sau:</p>
-          <ol class="sub">
-            <li>Trong Apps Script, bấm nút xanh <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> (Manage deployments).</li>
-            <li>Nếu có một bản triển khai: bấm vào nó, bên phải có dòng <q>Ứng dụng web</q> và địa chỉ đuôi <code>/exec</code>, bấm <kbd>Sao chép</kbd>.</li>
-            <li>Nếu danh sách trống, hoặc loại không phải <q>Ứng dụng web</q>: đóng hộp, làm lại bước 5, nhớ chọn bánh răng ⚙ → <kbd>Ứng dụng web</kbd>.</li>
-            <li>Nếu sau khi bấm <kbd>Triển khai</kbd> hiện hộp <q>Cấp quyền truy cập</q> (Authorize access): bấm vào đó và cho phép như bước 4; xong mới hiện địa chỉ.</li>
-          </ol>
-        </dd>
-        <dt>Bấm “Lưu và gửi thử” thì hiện chữ đỏ, hoặc bảng tính không có dòng mới.</dt>
-        <dd>Hay gặp nhất là ở bước 5 chưa đổi sang <b>Bất kỳ ai</b> (lưu ý: <q>Bất kỳ ai có Tài khoản Google</q> là sai, học sinh sẽ không gửi được). Sửa: trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên, bấm gửi thử lại.</dd>
-        <dt>Học sinh đã nộp mà bảng tính không có dòng nào.</dt>
-        <dd>
-          <ol class="sub">
-            <li>Xem đúng thẻ chưa: thẻ mang tên đề ở hàng dưới cùng, không phải <q>Trang tính1</q>. Nhiều thẻ thì bấm nút ☰ ở góc dưới bên trái để xem hết.</li>
-            <li>Xem đúng Gmail chưa: bấm ảnh đại diện góc trên bên phải, đổi sang Gmail đã cài.</li>
-            <li>Màn hình kết quả của học sinh có dòng <q>Đã gửi kết quả cho thầy cô</q> không? Không có, và lúc bắt đầu cũng không bắt gõ họ tên: mã QR được tạo khi chưa có địa chỉ thu điểm. Tạo lại mã QR như mục <q>Sau khi cài xong</q> ở trên.</li>
-          </ol>
-        </dd>
-        <dt>Không nhận được email (bản có email).</dt>
-        <dd>Xem thư mục <b>Thư rác</b> (Spam) và <b>Quảng cáo</b>. Email tổng hợp gửi khoảng 20 giờ mỗi ngày, ngày nào không có bài nộp thì không gửi.</dd>
-        <dt>Muốn thôi nhận điểm.</dt>
-        <dd>Trong hộp <b>Cho học sinh làm online</b>, xoá trống ô Thu điểm về Google Sheet. Đường dẫn gửi học sinh sau đó sẽ không gửi điểm đi nữa.</dd>
-      </dl>
-      <p class="muted">Tên nút trên màn hình có thể khác đôi chút tùy phiên bản giao diện của Google. Nếu vẫn vướng, nhờ một đồng nghiệp rành máy tính làm cùng trên máy của thầy cô: chỉ cần làm một lần.</p>
-    </section>
-
-    <section id="email" aria-labelledby="h-email">
-      <h2 id="h-email">Bản có email: đổi cách nhận email</h2>
-      <details class="why"><summary>Xem cách đổi giờ gửi, nhận email từng bài, hoặc tắt email</summary>
-        <p>Ở đầu mã (trong Apps Script) có ba dòng cài đặt:</p>
-        <ul class="plain">
-          <li><code>EMAIL_KIEU</code>: <code>'hang-ngay'</code> là mỗi ngày một email tổng hợp (mặc định); <code>'moi-bai'</code> là mỗi bài nộp một email; <code>'tat'</code> là không gửi email.</li>
-          <li><code>GIO_GUI</code>: giờ gửi email tổng hợp, từ 0 đến 23. Mặc định 20.</li>
-          <li><code>EMAIL_NHAN</code>: để trống thì gửi về chính Gmail này; muốn gửi tới địa chỉ khác thì ghi vào giữa hai dấu nháy.</li>
-        </ul>
-        <p>Sửa chữ trong dấu nháy, nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd>, rồi chọn <b>caiDat</b> và bấm <kbd>▷ Chạy</kbd> như bước 4. Riêng khi chuyển sang hoặc thôi kiểu <code>'moi-bai'</code>, làm thêm như mục “bảng tính không có dòng mới” ở trên (chọn <b>Phiên bản mới</b> rồi triển khai).</p>
-        <p>Kiểu mỗi bài một email tiện khi lớp ít học sinh. Gmail thường chỉ gửi được khoảng 100 email mỗi ngày; quá số đó thì thôi gửi email, điểm vẫn ghi đủ vào bảng tính.</p>
-        <p><b>Đang dùng bản cơ bản, muốn thêm email?</b> Làm lại bước 3 (chọn bản có email) và bước 4, rồi trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → <b>Phiên bản mới</b> → <kbd>Triển khai</kbd>. Địa chỉ nhận điểm giữ nguyên. Đổi ngược từ bản có email về bản cơ bản cũng làm y như vậy.</p>
       </details>
     </section>
 
-    <section id="luu-y" aria-labelledby="h-luu-y">
-      <h2 id="h-luu-y">Lưu ý</h2>
-      <div class="warn">
-        <p>Điểm đi thẳng từ máy học sinh vào bảng tính của thầy cô; Xưởng đề Toán không giữ bản nào.</p>
-        <p>Ai có đường dẫn bài làm cũng gửi được kết quả vào bảng, kể cả kết quả không thật, và đáp án được chấm ngay trên máy học sinh. Bảng điểm này hợp để theo dõi việc ôn luyện, chưa thay được bài kiểm tra có giám sát. Điểm phần tự luận do học sinh tự chấm, nên kiểm tra lại trên bài giấy.</p>
+    <!-- BƯỚC 4 -->
+    <section class="wz" data-n="4" aria-labelledby="w4" hidden>
+      <h2 id="w4">Bấm Chạy và cho phép</h2>
+      <p>Phía trên khung chữ, ở ô chọn tên (cạnh nút <kbd>Gỡ lỗi</kbd>), chọn <b>caiDat</b>, rồi bấm <kbd>▷ Chạy</kbd>.</p>
+      <p>Google hỏi quyền: bấm <kbd>Xem lại quyền</kbd> → chọn Gmail của mình → <kbd>Cho phép</kbd>. Nếu có ô <q>Chọn tất cả</q> thì đánh dấu trước khi bấm Cho phép.</p>
+      <p class="see">Phía dưới khung chữ hiện dòng <q>Đã cài đặt…</q>.</p>
+      <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
+        <p>Không thấy tên <b>caiDat</b>: mã chưa được lưu. Nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd> rồi chọn lại.</p>
+        <p>Hiện chữ đỏ báo lỗi: mã dán chưa đủ. Làm lại bước 3.</p>
+      </details>
+    </section>
+
+    <!-- BƯỚC 5 -->
+    <section class="wz" data-n="5" aria-labelledby="w5" hidden>
+      <h2 id="w5">Triển khai</h2>
+      <p>Góc trên bên phải, bấm nút xanh <kbd>Triển khai</kbd> → <kbd>Tùy chọn triển khai mới</kbd>.</p>
+      <p>Bấm bánh răng ⚙ → <kbd>Ứng dụng web</kbd>. Ở ô <q>Người có quyền truy cập</q> chọn <kbd>Bất kỳ ai</kbd>. Bấm <kbd>Triển khai</kbd>.</p>
+      <p class="imp">Phải chọn đúng “Bất kỳ ai”, không chọn “Bất kỳ ai có Tài khoản Google”.</p>
+      <p class="see">Hộp mới có dòng <q>URL ứng dụng web</q> và nút <kbd>Sao chép</kbd>.</p>
+      <details class="stuck"><summary>Tôi bị vướng ở bước này</summary>
+        <p>Hiện hộp <q>Cấp quyền truy cập</q>: bấm vào và cho phép như bước 4. Cửa sổ cho phép đôi khi nằm khuất phía sau, tìm trên thanh tác vụ.</p>
+        <p>Lỡ đóng hộp, không thấy địa chỉ: bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>, địa chỉ nằm ở dòng <q>Ứng dụng web</q>.</p>
+      </details>
+    </section>
+
+    <!-- BƯỚC 6 -->
+    <section class="wz" data-n="6" aria-labelledby="w6" hidden>
+      <h2 id="w6">Dán địa chỉ và kiểm tra</h2>
+      <p>Bấm <kbd>Sao chép</kbd> trong hộp vừa hiện, dán vào ô dưới đây (<kbd>Ctrl</kbd> + <kbd>V</kbd>), bấm <b>Kiểm tra</b>.</p>
+      <div class="paste">
+        <label for="gsUrl"><b>Địa chỉ nhận điểm</b></label>
+        <input id="gsUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
+        <p class="msg" id="gsMsg" role="status"></p>
+        <button type="button" id="gsTest" class="go">Kiểm tra</button>
       </div>
+      <p class="imp">Không chép địa chỉ trên thanh địa chỉ của trình duyệt.</p>
+    </section>
+
+    <!-- XONG -->
+    <section class="wz" data-n="7" aria-labelledby="w7" hidden>
+      <h2 id="w7">Xong! Từ nay thầy cô làm thế này</h2>
+      <ol class="sub big3">
+        <li><b>Giao bài:</b> ở trang tạo đề, bấm <b>Cho học sinh làm online</b>. Ô thu điểm đã điền sẵn, chỉ cần gửi đường dẫn hoặc mã QR. Đường dẫn tạo từ trước hôm nay thì phải tạo lại.</li>
+        <li><b>Xem điểm:</b> mở bảng tính <q>Điểm lớp…</q> (ở <a href="https://sheets.google.com" target="_blank" rel="noopener">sheets.google.com</a> hoặc ứng dụng Google Trang tính trên điện thoại). Mỗi đề có một thẻ riêng ở hàng dưới cùng.</li>
+        <li><b>Bài có tự luận viết tay:</b> khi giao bài, tắt <q>Cho xem đáp án, lời giải sau khi nộp</q>. Chấm bài giấy rồi gõ điểm vào cột trống bên phải bảng.</li>
+      </ol>
+      <p><a class="go" href="./">Về trang tạo đề</a></p>
+      <p class="en">Thẻ <q>Thử kết nối</q> trong bảng tính là dòng thử, xoá đi cũng được.</p>
+    </section>
+
+    <div class="wznav">
+      <button type="button" class="ghost" id="wzBack">← Quay lại</button>
+      <button type="button" class="go" id="wzNext">Làm xong, sang bước 2 →</button>
+    </div>
+
+    <section class="more" aria-labelledby="hMore">
+      <h2 id="hMore">Thông tin thêm</h2>
+      <details><summary>Đọc bảng điểm</summary>
+        <p>Mỗi lần nộp là một dòng: thời điểm nộp, họ tên, lớp, điểm thang 10, thời gian làm, điểm từng phần. Cột <b>Bài làm</b> ghi lựa chọn từng câu, dấu ✓ là câu đúng: <code>1:B✓ 2:C 13:ĐSĐĐ✓</code> nghĩa là câu 1 chọn B, đúng; câu 2 chọn C, sai; câu 13 chọn Đúng, Sai, Đúng, Đúng.</p>
+        <p>Chỉ thêm cột ở bên phải cột cuối cùng; đừng chèn cột vào giữa, đừng đổi tên các thẻ đề.</p>
+      </details>
+      <details><summary>Học sinh đã nộp mà bảng tính không có dòng nào</summary>
+        <ol class="sub">
+          <li>Xem đúng thẻ mang tên đề ở hàng dưới cùng, không phải <q>Trang tính1</q>.</li>
+          <li>Xem đúng Gmail đã cài (bấm ảnh đại diện góc trên bên phải để đổi).</li>
+          <li>Màn hình kết quả của học sinh không có dòng <q>Đã gửi kết quả cho thầy cô</q>: đường dẫn được tạo khi chưa cài xong. Tạo lại đường dẫn, mã QR.</li>
+        </ol>
+      </details>
+      <details><summary>Dùng máy tính khác, hoặc lỡ mất địa chỉ</summary>
+        <p>Ô thu điểm chỉ tự điền trên máy tính đã làm hướng dẫn này. Máy khác: mở trang này, chuyển tới bước 6, dán địa chỉ và bấm Kiểm tra. Lấy lại địa chỉ: mở bảng tính → <kbd>Tiện ích</kbd> → <kbd>Apps Script</kbd> → <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd>.</p>
+      </details>
+      <details><summary>Lưu ý về độ tin cậy</summary>
+        <p>Điểm đi thẳng từ máy học sinh vào bảng tính của thầy cô; Xưởng đề Toán không giữ bản nào. Ai có đường dẫn cũng gửi được kết quả, và đáp án được chấm trên máy học sinh, nên bảng điểm hợp để theo dõi ôn luyện, chưa thay được bài kiểm tra có giám sát.</p>
+      </details>
+      <p class="adv"><a href="thu-diem-email.html">Nâng cao: nhận thêm email tổng hợp điểm mỗi tối →</a></p>
     </section>
   </main>
 
@@ -648,51 +409,44 @@ function esc_(s) {
 <script>
 (function(){
   const $=s=>document.querySelector(s),LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
-  /* chọn bản mã: cơ bản hay có email */
-  const ban=()=>(document.querySelector('input[name=ban]:checked')||{}).value||'cb';
-  const showBan=()=>{$('#gsCodeBasic').hidden=ban()!=='cb';$('#gsCode').hidden=ban()!=='em'};
-  {const v=LS.get('xdt-gs-ban');if(v==='em'){document.querySelector('input[name=ban][value=em]').checked=true}}
-  document.querySelectorAll('input[name=ban]').forEach(r=>r.addEventListener('change',()=>{LS.set('xdt-gs-ban',ban());showBan()}));showBan();
-  /* chép mã */
-  $('#copyCode').addEventListener('click',e=>{const b=e.currentTarget,t=(ban()==='em'?$('#gsCode'):$('#gsCodeBasic')).innerText;
-    const ok=()=>{b.textContent='Đã chép ✓';setTimeout(()=>b.textContent='Chép mã',2500)};
-    const fb=()=>{const r=document.createRange();r.selectNodeContents(ban()==='em'?$('#gsCode'):$('#gsCodeBasic'));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok()}catch(_){}};
+  /* ---- từng bước một ---- */
+  const W=[...document.querySelectorAll('.wz')],N=6;let cur=Math.min(Math.max(1,+(LS.get('xdt-gs-wz')||1)),7);
+  const show=(i,focus)=>{cur=i;LS.set('xdt-gs-wz',String(i));
+    W.forEach(w=>w.hidden=+w.dataset.n!==i);
+    $('#wzNo').textContent=i>N?'Đã xong cả 6 bước':`Bước ${i}/${N}`;$('#wzFill').style.width=(Math.min(i-1,N)/N*100)+'%';
+    $('#wzBack').hidden=i===1;const nx=$('#wzNext');nx.hidden=i>=N;nx.textContent=`Làm xong, sang bước ${i+1} →`;
+    if(i>N){$('#wzBack').hidden=false;$('#wzBack').textContent='← Làm lại từ đầu'}else $('#wzBack').textContent='← Quay lại';
+    if(focus){const h=W.find(w=>+w.dataset.n===i).querySelector('h2');h.setAttribute('tabindex','-1');h.focus({preventScroll:true});$('.wzbar').scrollIntoView({behavior:'smooth',block:'start'})}};
+  $('#wzNext').addEventListener('click',()=>show(Math.min(cur+1,N),true));
+  $('#wzBack').addEventListener('click',()=>show(cur>N?1:Math.max(1,cur-1),true));
+  show(cur);
+  /* ---- chép mã ---- */
+  $('#copyCode').addEventListener('click',e=>{const b=e.currentTarget,t=$('#gsCodeBasic').textContent;
+    const ok=()=>{b.textContent='Đã chép ✓ Giờ sang thẻ Apps Script';setTimeout(()=>b.textContent='Chép mã',4000)};
+    const fb=()=>{const d=b.closest('.wz').querySelector('details');d.open=true;const r=document.createRange();r.selectNodeContents($('#gsCodeBasic'));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok()}catch(_){}};
     if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()});
-  /* đánh dấu đã xong từng bước */
-  const boxes=[...document.querySelectorAll('.done input')];let st={};try{st=JSON.parse(LS.get('xdt-gs-buoc')||'{}')||{}}catch(e){}
-  const upd=()=>{const n=boxes.filter(b=>b.checked).length;$('#progBar').style.width=(n/boxes.length*100)+'%';
-    $('#progTxt').textContent=n===boxes.length?'Đã xong cả 6 bước.':n?`Đã xong ${n}/${boxes.length} bước. Tiếp theo: bước ${boxes.find(b=>!b.checked).dataset.s}.`:'Chưa làm bước nào.';
-    boxes.forEach(b=>b.closest('li').classList.toggle('ok',b.checked))};
-  boxes.forEach(b=>{b.checked=!!st[b.dataset.s];b.addEventListener('change',()=>{st[b.dataset.s]=b.checked?1:0;LS.set('xdt-gs-buoc',JSON.stringify(st));upd()})});upd();
-  /* dán địa chỉ, lưu, gửi thử */
+  /* ---- dán địa chỉ, kiểm tra thật với bảng tính ---- */
   const RE=/^https:\/\/script\.google\.com\/(?:a\/[^/]+\/)?macros\/s\/([\w-]{20,})\/exec\/?$/,inp=$('#gsUrl'),msg=$('#gsMsg');
   inp.value=LS.get('xdt-gs')||'';
   const say=(t,c)=>{msg.textContent=t;msg.className='msg '+(c||'')};
   $('#gsTest').addEventListener('click',()=>{
     const v=inp.value.trim();
-    if(!v){say('Thầy cô dán địa chỉ chép ở bước 6 vào ô trên trước nhé.','bad');inp.focus();return}
-    if(/script\.google\.com\/(?:u\/\d+\/)?home\/|script\.google\.com\/d\/|\/edit\b|docs\.google\.com\/spreadsheets/.test(v)){say('Đây là địa chỉ của trang viết mã hoặc của bảng tính (chép từ thanh địa chỉ trình duyệt), chưa phải địa chỉ nhận điểm. Trong Apps Script, bấm nút xanh Triển khai → Quản lý các bản triển khai: địa chỉ đúng nằm ở dòng “Ứng dụng web”, có đuôi /exec. Nếu ở đó trống, làm lại bước 5. Xem thêm mục “Không thấy địa chỉ” bên dưới.','bad');return}
-    if(/\/dev\/?$/.test(v)){say('Đây là địa chỉ thử nghiệm (đuôi /dev). Hãy chép địa chỉ có đuôi /exec trong hộp “URL ứng dụng web”.','bad');return}
-    if(!RE.test(v)){say('Địa chỉ chưa đúng. Địa chỉ đúng bắt đầu bằng https://script.google.com/macros/s/ và kết thúc bằng /exec. Hãy chép lại ở bước 6.','bad');return}
-    LS.set('xdt-gs',v);
-    /* hỏi thẳng bảng tính: web app ghi một dòng thử và trả lời lại (mã từ 27/11/2026 trở đi) */
-    say('Đang kiểm tra với bảng tính…');
+    if(!v){say('Thầy cô dán địa chỉ vào ô trên trước nhé.','bad');inp.focus();return}
+    if(/script\.google\.com\/(?:u\/\d+\/)?home\/|script\.google\.com\/d\/|\/edit\b|docs\.google\.com\/spreadsheets/.test(v)){say('Địa chỉ này chép từ thanh địa chỉ của trình duyệt, chưa đúng. Trong Apps Script bấm Triển khai → Quản lý các bản triển khai, chép địa chỉ ở dòng “Ứng dụng web” (đuôi /exec).','bad');return}
+    if(/\/dev\/?$/.test(v)){say('Đây là địa chỉ thử nghiệm (đuôi /dev). Hãy chép địa chỉ có đuôi /exec.','bad');return}
+    if(!RE.test(v)){say('Địa chỉ chưa đúng: phải bắt đầu bằng https://script.google.com/macros/s/ và kết thúc bằng /exec.','bad');return}
+    LS.set('xdt-gs',v);say('Đang kiểm tra…');
     const cb='xdtCb'+Date.now(),sc=document.createElement('script');let done=false;
     const clean=()=>{try{delete window[cb]}catch(e){window[cb]=undefined}sc.remove()};
     const fail=()=>{if(done)return;done=true;clean();
-      /* phòng khi bảng tính còn chạy mã cũ: vẫn gửi một dòng thử kiểu cũ */
       const body=JSON.stringify({v:1,id:'thu-'+Date.now(),sheet:'Thử kết nối',name:'Học sinh thử',cls:'Thử',code:'000',mode:'Thử kết nối',score10:10,got:10,tot:10,answers:'Dòng này do trang hướng dẫn gửi thử'});
       fetch(v,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}).catch(()=>{});
       msg.className='msg bad';
-      msg.innerHTML='Chưa kết nối được với bảng tính. Thường do một trong hai lý do:'+
-        '<ol class="sub"><li>Ở bước 5, ô <q>Người có quyền truy cập</q> chưa chọn đúng <b>Bất kỳ ai</b> (chọn nhầm <q>Chỉ mình tôi</q> hoặc <q>Bất kỳ ai có Tài khoản Google</q>).</li>'+
-        '<li>Bảng tính đang chạy mã cũ: đã triển khai trước khi dán mã, hoặc dán mã trước ngày 27/11/2026.</li></ol>'+
-        '<b>Cách sửa cả hai:</b> làm lại bước 3 và bước 4 (dán mã mới, bấm Chạy). Sau đó trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → ô <q>Phiên bản</q> chọn <b>Phiên bản mới</b>, ô <q>Người có quyền truy cập</q> chọn <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Địa chỉ giữ nguyên; bấm lại <b>Lưu và gửi thử</b>.';
+      msg.innerHTML='Chưa kết nối được. Hay gặp nhất: ở bước 5 chưa chọn đúng <b>Bất kỳ ai</b>, hoặc bảng tính đang chạy mã cũ.<br><b>Cách sửa:</b> làm lại bước 3 và 4. Sau đó trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → <q>Phiên bản</q>: <b>Phiên bản mới</b>, <q>Người có quyền truy cập</q>: <b>Bất kỳ ai</b> → <kbd>Triển khai</kbd>. Rồi bấm Kiểm tra lại.';
     };
     window[cb]=r=>{if(done)return;done=true;clean();
-      if(r&&r.ok&&r.ghi){say('Thành công: đã ghi dòng “Học sinh thử” vào bảng tính “'+(r.bang||'')+'”, trang “Thử kết nối”. Thầy cô đã cài xong.','ok');
-        const b6=document.querySelector('.done input[data-s="6"]');if(b6&&!b6.checked){b6.checked=true;b6.dispatchEvent(new Event('change'))}}
-      else say('Bảng tính trả lời nhưng báo lỗi: '+((r&&r.loi)||'không rõ')+'. Thử làm lại bước 4 (bấm Chạy và cho phép), rồi bấm lại.','bad')};
+      if(r&&r.ok&&r.ghi){say('Thành công! Đã ghi dòng thử vào bảng tính “'+(r.bang||'')+'”.','ok');setTimeout(()=>show(N+1,true),1200)}
+      else say('Bảng tính báo lỗi: '+((r&&r.loi)||'không rõ')+'. Làm lại bước 4 rồi bấm Kiểm tra lại.','bad')};
     sc.src=v.replace(/\/$/,'')+'?thu=1&cb='+cb;sc.onerror=fail;setTimeout(fail,20000);document.head.appendChild(sc);
   });
 })();

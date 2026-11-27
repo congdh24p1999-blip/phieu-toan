@@ -40,10 +40,11 @@ function caiDat() {{
 function guiEmailTongHop() {{}}
 '''
 open(os.path.join(H,'thu-diem-co-ban.gs'),'w',encoding='utf8').write(basic)
-p=os.path.join(H,'..','huong-dan-thu-diem.html')
-s=open(p,encoding='utf8').read()
-for pid,code in [('gsCode',full),('gsCodeBasic',basic)]:
-    pat=re.compile(r'(<pre id="'+pid+r'"[^>]*><code>)[\s\S]*?(</code></pre>)')
-    if pat.search(s):s=pat.sub(lambda m:m.group(1)+html.escape(code,quote=False)+m.group(2),s)
-open(p,'w',encoding='utf8').write(s)
+for f in ['huong-dan-thu-diem.html','thu-diem-email.html']:
+    p=os.path.join(H,'..',f)
+    s=open(p,encoding='utf8').read()
+    for pid,code in [('gsCode',full),('gsCodeBasic',basic)]:
+        pat=re.compile(r'(<pre id="'+pid+r'"[^>]*><code>)[\s\S]*?(</code></pre>)')
+        if pat.search(s):s=pat.sub(lambda m:m.group(1)+html.escape(code,quote=False)+m.group(2),s)
+    open(p,'w',encoding='utf8').write(s)
 print('gs ok',len(basic),len(full))
