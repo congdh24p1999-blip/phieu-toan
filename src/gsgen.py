@@ -24,7 +24,8 @@ function caiDat() {{
   console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
 }}
 
-{fn('ghiKetQua_')}
+{fn('ghiKetQua_')}{full[full.index('function colChu_'):full.index(chr(10),full.index('function colChu_'))+1]}
+
 /* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
 function doPost(e) {{
   try {{

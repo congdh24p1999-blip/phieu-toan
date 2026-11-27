@@ -13,9 +13,10 @@ const EMAIL_NHAN = '';   // để trống: gửi về Gmail của chính thầy 
 /* ===================================================================== */
 
 const MUI_GIO = 'Asia/Ho_Chi_Minh';
-const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 10)', 'Điểm đạt', 'Tổng điểm',
-  'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
-  'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
+// Các cột của mỗi thẻ đề. Trang ghi theo TÊN cột: thầy cô thêm cột riêng hay đổi chỗ cột cũng không lệch.
+const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 10)', 'Tự luận (GV chấm)', 'Tổng điểm (thang 10)',
+  'Xem bài làm', 'Điểm máy chấm', 'Tự luận (HS tự chấm)', 'Điểm toàn bài', 'Số câu đúng', 'Số câu chấm tự động',
+  'Thời gian làm (phút)', 'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
 
 /* Chạy hàm này một lần sau khi dán mã (và mỗi lần đổi cài đặt email):
    cấp quyền, gửi email thử, bật hoặc tắt lịch gửi email tổng hợp hằng ngày. */
@@ -58,22 +59,52 @@ function ghiKetQua_(d) {
       sh.setFrozenRows(1);
       sh.getRange(1, 1, 1, HEAD.length).setFontWeight('bold');
     }
+    // tìm cột theo tên; thẻ tạo bằng mã cũ thiếu cột nào thì thêm cột đó vào cuối
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    const col = {};
+    HEAD.forEach(h => {
+      let i = head.indexOf(h);
+      if (i < 0) { head.push(h); i = head.length - 1; sh.getRange(1, i + 1).setValue(h).setFontWeight('bold'); }
+      col[h] = i + 1;
+    });
     // chặn chuỗi bắt đầu bằng = + - @ để không bị hiểu thành công thức
-    const safe = v => (typeof v === 'string' && /^[=+\-@]/.test(v)) ? "'" + v : v;
-    const row = [new Date(), d.name, d.cls, d.score10, d.got, d.tot, d.tlSelf, d.nOK, d.n,
-      d.minutes, d.autoSubmit ? 'có' : '', d.mode, d.code, d.parts, d.answers, String(d.id)]
-      .map(v => safe(v == null ? '' : v));
-    // cùng một lượt làm gửi lại (ví dụ sau khi tự chấm tự luận) thì ghi đè dòng cũ
+    const safe = v => (v == null ? '' : (typeof v === 'string' && /^[=+\-@]/.test(v)) ? "'" + v : v);
+    const val = {
+      'Thời điểm nộp': new Date(), 'Họ và tên': d.name, 'Lớp': d.cls, 'Điểm (thang 10)': d.score10,
+      'Điểm máy chấm': d.auto, 'Tự luận (HS tự chấm)': d.tlSelf, 'Điểm toàn bài': d.all,
+      'Số câu đúng': d.nOK, 'Số câu chấm tự động': d.n, 'Thời gian làm (phút)': d.minutes,
+      'Hết giờ tự nộp': d.autoSubmit ? 'có' : '', 'Chế độ': d.mode, 'Mã đề': d.code,
+      'Điểm từng phần': d.parts, 'Bài làm': d.answers, 'Mã lượt làm': String(d.id)
+    };
+    // cùng một lượt làm gửi lại (ví dụ sau khi tự chấm) thì ghi đè đúng các cột của trang, giữ điểm thầy cô đã gõ
     const n = sh.getLastRow() - 1;
-    const hit = n > 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
+    const hit = n > 0 ? sh.getRange(2, col['Mã lượt làm'], n, 1).createTextFinder(String(d.id))
       .matchEntireCell(true).findNext() : null;
-    if (hit) { sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); return { tab, isNew: false }; }
-    sh.appendRow(row);
-    return { tab, isNew: true };
+    let r;
+    if (hit) {
+      r = hit.getRow();
+      Object.keys(val).forEach(k => sh.getRange(r, col[k]).setValue(safe(val[k])));
+    } else {
+      const row = new Array(head.length).fill('');
+      Object.keys(val).forEach(k => { row[col[k] - 1] = safe(val[k]); });
+      sh.appendRow(row);
+      r = sh.getLastRow();
+    }
+    // Tổng điểm: chưa gõ điểm tự luận thì bằng điểm online; gõ rồi thì = (điểm máy chấm + tự luận) quy về thang 10
+    const c = h => colChu_(col[h]) + r;
+    sh.getRange(r, col['Tổng điểm (thang 10)']).setFormula('=IF(' + c('Tự luận (GV chấm)') + '="",' + c('Điểm (thang 10)') +
+      ',IF(N(' + c('Điểm toàn bài') + ')=0,"",ROUND((N(' + c('Điểm máy chấm') + ')+' + c('Tự luận (GV chấm)') + ')/' +
+      c('Điểm toàn bài') + '*10,2)))');
+    if (d.xem && /^https:\/\//.test(d.xem)) {
+      sh.getRange(r, col['Xem bài làm']).setRichTextValue(
+        SpreadsheetApp.newRichTextValue().setText('Xem bài làm').setLinkUrl(String(d.xem)).build());
+    }
+    return { tab, isNew: !hit };
   } finally {
     lock.releaseLock();
   }
 }
+function colChu_(c) { let s = ''; while (c > 0) { const m = (c - 1) % 26; s = String.fromCharCode(65 + m) + s; c = Math.floor((c - 1) / 26); } return s; }
 
 /* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
 function doPost(e) {
@@ -99,7 +130,7 @@ function doGet(e) {
   if (p.thu === '1') {
     try {
       ghiKetQua_({ id: 'thu-' + Date.now(), sheet: 'Thử kết nối', name: 'Học sinh thử', cls: 'Thử', code: '000',
-        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
+        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, auto: 10, all: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
       out.ghi = true;
       out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
       out.url = SpreadsheetApp.getActiveSpreadsheet().getUrl();   // để trang hướng dẫn mở đúng bảng điểm
@@ -126,14 +157,19 @@ function guiEmailTongHop() {
     if (sh.getLastRow() < 2) return;
     const v = sh.getDataRange().getValues();
     if (v[0][0] !== HEAD[0] || sh.getName() === 'Thử kết nối') return;   // bỏ qua trang thử
-    const moi = v.slice(1).filter(r => r[0] instanceof Date && r[0].getTime() > tu);
+    const h = v[0].map(String), ix = k => h.indexOf(k), so_ = x => (x === '' || x == null || isNaN(Number(x))) ? NaN : Number(x);
+    const moi = v.slice(1).filter(r => r[0] instanceof Date && r[0].getTime() > tu).map(r => {
+      let dm = ix('Tổng điểm (thang 10)') >= 0 ? so_(r[ix('Tổng điểm (thang 10)')]) : NaN;
+      if (isNaN(dm) && ix('Điểm (thang 10)') >= 0) dm = so_(r[ix('Điểm (thang 10)')]);
+      return { t: r[0], ten: r[ix('Họ và tên')], lop: r[ix('Lớp')], diem: dm };
+    });
     if (!moi.length) return;
     tong += moi.length;
     nhom.push({ ten: sh.getName(), url: ss.getUrl() + '#gid=' + sh.getSheetId(), rows: moi });
   });
   props.setProperty('lanGuiTruoc', String(Date.now()));
   if (!tong) return;
-  const diem = r => (r[3] !== '' && r[3] != null) ? Number(r[3]) : (Number(r[5]) ? Number(r[4]) / Number(r[5]) * 10 : NaN);
+  const diem = r => r.diem;
   const so = x => (Math.round(x * 10) / 10).toString().replace('.', ',');
   let html = '<p>Từ ' + Utilities.formatDate(new Date(tu), MUI_GIO, 'HH:mm dd/MM') + ' đến nay có <b>' + tong +
     '</b> bài nộp mới (tính cả bài gửi lại sau khi tự chấm).</p>';
@@ -144,12 +180,12 @@ function guiEmailTongHop() {
       (ds.length ? ' · điểm trung bình ' + so(tb) + ' · thấp nhất ' + so(Math.min.apply(null, ds)) +
         ' · cao nhất ' + so(Math.max.apply(null, ds)) + ' (thang 10)' : '') +
       ' · <a href="' + g.url + '">Xem trong bảng</a></p>';
-    const rows = g.rows.slice().sort((a, b) => String(a[2]).localeCompare(String(b[2]), 'vi') || String(a[1]).localeCompare(String(b[1]), 'vi'));
+    const rows = g.rows.slice().sort((a, b) => String(a.lop).localeCompare(String(b.lop), 'vi') || String(a.ten).localeCompare(String(b.ten), 'vi'));
     html += '<table cellpadding="4" style="border-collapse:collapse;font-size:14px"><tr style="background:#eef3f1">' +
       '<th align="left">Họ và tên</th><th align="left">Lớp</th><th align="right">Điểm</th><th align="left">Nộp lúc</th></tr>' +
-      rows.slice(0, 60).map(r => '<tr style="border-top:1px solid #ddd"><td>' + esc_(r[1]) + '</td><td>' + esc_(r[2]) +
+      rows.slice(0, 60).map(r => '<tr style="border-top:1px solid #ddd"><td>' + esc_(r.ten) + '</td><td>' + esc_(r.lop) +
         '</td><td align="right">' + (isNaN(diem(r)) ? '' : so(diem(r))) + '</td><td>' +
-        Utilities.formatDate(r[0], MUI_GIO, 'HH:mm dd/MM') + '</td></tr>').join('') + '</table>' +
+        Utilities.formatDate(r.t, MUI_GIO, 'HH:mm dd/MM') + '</td></tr>').join('') + '</table>' +
       (rows.length > 60 ? '<p>… và ' + (rows.length - 60) + ' bài khác, xem đủ trong bảng tính.</p>' : '');
   });
   html += '<p style="color:#666;font-size:13px;margin-top:18px">Email tự động từ bảng tính <a href="' + ss.getUrl() + '">' +
