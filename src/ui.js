@@ -163,11 +163,13 @@ function recordHist(ex){
   const a=loadHist().filter(h=>!(h.t===histKey(ex)&&h.d===ex.diff&&h.c===ex.base));
   a.unshift({t:histKey(ex),d:ex.diff,c:ex.base,fp:examFP(ex)});saveHist(a);
 }
+/* dòng so sánh với các đề đã tạo: chỉ hiện (kèm nút xoá) khi có đề để so */
+function setHist(t){const h=$('#histHint');h.textContent=t;h.hidden=!t;$('#clearHist').hidden=!t}
 function histNote(ex){
   const all=loadHist().filter(h=>h.t===histKey(ex)&&!(h.d===ex.diff&&h.c===ex.base));
-  if(!all.length)return'Chưa có đề nào được lưu để so sánh. Đề được lưu khi bạn bấm “Đổi đề khác” hoặc in.';
+  if(!all.length)return'';
   const o=overlapOf(ex,all);
-  return `So với ${all.length} đề ${ex.bp.short} đã tạo: ${o.exact===0?'không có câu nào trùng nguyên văn':o.exact+'/'+o.n+' câu trùng nguyên văn'}; ${o.kind}/${o.n} câu cùng dạng bài (khác số liệu hoặc tên điểm)${o.kind>=o.n-2?`. Lặp dạng bài là bình thường khi đã tạo nhiều đề, vì ngân hàng hiện có ${Object.values(T).reduce((a,k)=>a+Object.keys(k).length,0)} dạng`:''}.`;
+  return `Trùng ${o.exact}/${o.n} câu với ${all.length} đề đã tạo.`;
 }
 
 const DIFF_HINT7={co_ban:'Khoảng 32–35% nhận biết, 40–50% thông hiểu, 15–25% vận dụng, không có vận dụng cao.',chuan:'Theo mẫu Công văn 7991: khoảng 40% nhận biết, 30% thông hiểu, 30% vận dụng (trong đó 10% vận dụng cao).',nang_cao:'Khoảng 12–15% nhận biết, 25–40% thông hiểu, 35–50% vận dụng, 10% vận dụng cao.'};
@@ -268,7 +270,7 @@ function renderWS(){
   $('#meta').textContent=`${wsName} · ${got} câu · mã phiếu ${state.code}`;
   document.title=`${wsName} – mã ${state.code}`;
   $('#tagline').textContent='Tạo phiếu bài tập Toán theo từng bài học trong SGK, có đáp án và lời giải. Mỗi mã phiếu là một phiếu khác.';
-  $('#noteTxt').textContent='Phiếu do thuật toán sinh ra từ các dạng câu gắn với bài học đã chọn; thầy cô nên đọc lướt trước khi phát cho học sinh.';
+  $('#noteTxt').textContent='Phiếu do máy tạo, thầy cô đọc lướt trước khi phát cho học sinh.';setHist('');
 }
 function setModeLabels(){
   const ws=state.mode==='ws';document.body.dataset.mode=state.mode;
@@ -296,7 +298,7 @@ function render(){
   $('#keyOut').innerHTML=prettyMath(keyHTML(ex,vs,bp));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,vs[0],bp));
   $('#diffHint').textContent=bp.tn?DIFF_HINT_TN[state.diff]:(bp.grade===8?DIFF_HINT:bp.grade===6||bp.grade===7||bp.grade===9?DIFF_HINT7:DIFF_HINT11)[state.diff];
-  $('#histHint').textContent=histNote(ex);
+  setHist(histNote(ex));
   $('#meta').textContent=`${bp.short} · ${DIFFS[state.diff].name} · mã đề ${vs.map(v=>v.code).join(', ')}`;
   document.title=`Đề ${bp.mon} ${bp.short} – mã ${vs[0].code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
@@ -307,7 +309,7 @@ function render(){
   /* Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức, không đổi cấu trúc */
   $('#struct').disabled=!!bp.tn;
   if(bp.tn){sh.textContent='Đề ôn thi tốt nghiệp luôn theo cấu trúc đề chính thức năm 2025: 12 câu nhiều lựa chọn (3 đ), 4 câu đúng/sai (4 đ), 6 câu trả lời ngắn (3 đ).';sw.textContent=''}
-  $('#noteTxt').textContent=bp.note+' Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in.';
+  $('#noteTxt').textContent='Đề do máy tạo, thầy cô đọc lướt trước khi in.';
   termRadios();
 }
 function termRadios(){
@@ -320,13 +322,13 @@ function renderV10(){
   $('#keyOut').innerHTML=prettyMath(v10KeyHTML(ex));
   $('#mxOut').innerHTML=prettyMath(mxHTML(ex,{code:ex.code,nlc:[],ds:[],tln:[],tl:ex.tl},bp));
   $('#diffHint').textContent={co_ban:'Chọn dạng dễ nhất trong mỗi ý, hợp với học sinh trung bình.',chuan:'Mức thường gặp trong đề thi thật; không có câu vận dụng cao.',nang_cao:'Ưu tiên dạng vận dụng và vận dụng cao, hợp với học sinh khá giỏi.'}[state.diff];
-  $('#histHint').textContent='';
+  setHist('');
   $('#meta').textContent=`Ôn thi vào lớp 10 · ${DIFFS[state.diff].name} · mã đề ${ex.code}`;
   document.title=`Đề ôn thi vào lớp 10 môn Toán – mã ${ex.code}`;
   $('#tagline').textContent='Tạo đề kiểm tra Toán cấp 2, cấp 3 có đáp án và hướng dẫn chấm. Mỗi lần bấm là một đề khác, in thẳng ra khổ A4.';
   const hcm=state.struct==='tlhcm';$('#structHint').textContent=(hcm?'100% tự luận, 8 bài như đề TP.HCM 2026: hàm số y = ax²; Viète; thống kê – xác suất; ba bài toán thực tế; hình khối; hình học phẳng.':'100% tự luận, 5 bài như đề Hà Nội 2026: thống kê – xác suất; căn thức; phương trình, hệ phương trình, Viète; hình học (hình khối và hình phẳng); câu vận dụng cuối.')+' 10 điểm, 120 phút.';$('#structWarn').textContent='';
   $('#csBox').hidden=true;$('#struct').disabled=false;
-  $('#noteTxt').textContent=(hcm?'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 TP.HCM 2026':'Theo cấu trúc và mạch nội dung đề tuyển sinh lớp 10 Hà Nội 2026')+'; dạng bài đã đối chiếu với đề năm 2026 của 26 tỉnh, thành phố. Số liệu, câu chữ do trang tự tạo, không chép đề thật. Đề do thuật toán sinh ra, thầy cô nên đọc lướt trước khi in. Đề này chỉ có một mã.';
+  $('#noteTxt').textContent=(hcm?'Theo mẫu đề tuyển sinh lớp 10 TP.HCM 2026':'Theo mẫu đề tuyển sinh lớp 10 Hà Nội 2026')+'. Đề do máy tạo, thầy cô đọc lướt trước khi in.';
   termRadios();
 }
 function syncInputs(){

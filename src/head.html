@@ -569,9 +569,9 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
           <input type="text" id="code" inputmode="numeric" maxlength="3" autocomplete="off">
           <button class="btn alt sm" id="newBtn" type="button">Đổi đề khác</button>
         </div>
-        <p class="hint">Cùng mã thì ra cùng một đề, in lại lúc nào cũng được.</p>
-        <p class="hint" id="histHint"></p>
-        <button type="button" class="linkbtn" id="clearHist">Xoá lịch sử đề đã tạo</button>
+        <p class="hint">Cùng mã thì ra cùng đề.</p>
+        <p class="hint" id="histHint" hidden></p>
+        <button type="button" class="linkbtn" id="clearHist" hidden>Xoá lịch sử đề đã tạo</button>
       </div>
       <div class="field only-exam">
         <span class="lbl">Số mã đề hoán vị</span>
@@ -581,9 +581,9 @@ body[data-view=quiz] .app,body[data-view=quiz] .bugtoast{display:none!important}
           <label><input type="radio" name="nv" value="3">3</label>
           <label><input type="radio" name="nv" value="4">4</label>
         </div>
-        <p class="hint">Cùng nội dung, đảo thứ tự câu và phương án để hạn chế chép bài.</p>
+        <p class="hint">Đảo thứ tự câu và phương án để chống chép bài.</p>
       </div>
-      <label class="switch"><input type="checkbox" id="sol"><span>Kèm lời giải chi tiết ở trang đáp án</span></label>
+      <label class="switch"><input type="checkbox" id="sol"><span>Kèm lời giải<small class="hint">Bỏ tích nếu chỉ cần bảng đáp án.</small></span></label>
       </section>
       <p class="note" id="noteTxt"></p>
       <div class="actions" role="group" aria-label="In và tải về">
