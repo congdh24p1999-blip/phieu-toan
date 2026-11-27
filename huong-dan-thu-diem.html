@@ -211,7 +211,7 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
         <h2>Chọn bản mã và dán vào</h2>
         <p>Có hai bản, thầy cô chọn một:</p>
         <div class="pick" role="radiogroup" aria-label="Chọn bản mã">
-          <label class="card"><input type="radio" name="ban" value="cb" checked><b>Bản cơ bản (khuyên dùng)</b><span>Chỉ ghi điểm vào bảng tính. Xin ít quyền nhất: chỉ ghi vào đúng bảng tính này.</span></label>
+          <label class="card"><input type="radio" name="ban" value="cb" checked><b>Bản cơ bản (khuyên dùng)</b><span>Chỉ ghi điểm vào bảng tính. Xin ít quyền nhất (chỉ ghi vào đúng bảng tính này), Google không hiện màn hình cảnh báo.</span></label>
           <label class="card"><input type="radio" name="ban" value="em"><b>Bản có email</b><span>Như bản cơ bản, thêm email tổng hợp điểm mỗi tối. Google sẽ hiện màn hình cảnh báo ở bước 4.</span></label>
         </div>
         <p>Bấm nút xanh <b>Chép mã</b> ngay dưới đây.</p>
@@ -495,13 +495,13 @@ function esc_(s) {
         <ol class="sub">
           <li><kbd>Xem lại quyền</kbd> (Review permissions)</li>
           <li>chọn tài khoản Gmail của thầy cô</li>
-          <li>nếu hiện màn hình <q>Google chưa xác minh ứng dụng này</q>: đọc khung vàng ngay dưới đây</li>
+          <li>chỉ với bản có email: hiện màn hình <q>Google chưa xác minh ứng dụng này</q>, đọc khung vàng ngay dưới đây</li>
           <li>nếu có ô <q>Chọn tất cả</q> thì đánh dấu ô đó</li>
           <li><kbd>Cho phép</kbd> hoặc <kbd>Tiếp tục</kbd> (Allow / Continue)</li>
         </ol>
         <div class="calm">
-          <p><b>Về màn hình “Google chưa xác minh ứng dụng này”</b></p>
-          <p>Bản có email chắc chắn gặp màn hình này; bản cơ bản có thể không gặp. Google hiện cảnh báo này với mọi đoạn mã tự viết chưa gửi Google duyệt, không phải vì mã có virus hay lừa đảo. Ở đây <b>chính thầy cô vừa dán mã vào bảng tính của mình</b>, mã chạy bằng tài khoản của thầy cô, và toàn bộ mã nằm ở bước 3 cho ai cũng đọc được. Mã chỉ ghi điểm vào đúng bảng tính này (bản có email thì thêm gửi thư về Gmail của thầy cô và hẹn giờ gửi thư); mã không đọc được Gmail hay tệp nào khác.</p>
+          <p><b>Bản có email: về màn hình “Google chưa xác minh ứng dụng này”</b></p>
+          <p>Bản cơ bản không gặp màn hình này; bản có email thì có, vì mã xin thêm quyền gửi thư và hẹn giờ. Google hiện cảnh báo này với mọi đoạn mã tự viết chưa gửi Google duyệt, không phải vì mã có virus hay lừa đảo. Ở đây <b>chính thầy cô vừa dán mã vào bảng tính của mình</b>, mã chạy bằng tài khoản của thầy cô, và toàn bộ mã nằm ở bước 3 cho ai cũng đọc được. Mã chỉ ghi điểm vào đúng bảng tính này (bản có email thì thêm gửi thư về Gmail của thầy cô và hẹn giờ gửi thư); mã không đọc được Gmail hay tệp nào khác.</p>
           <p>Để đi tiếp: bấm chữ nhỏ <kbd>Nâng cao</kbd> (Advanced) ở góc dưới bên trái, rồi bấm <kbd class="w">Đi tới Dự án không có tiêu đề (không an toàn)</kbd>.</p>
           <p class="rule"><b>Quy tắc an toàn:</b> chỉ bấm <q>Nâng cao</q> khi chính thầy cô vừa dán mã từ trang Xưởng đề Toán này. Nếu ai đó gửi đường dẫn lạ rồi bảo bấm <q>Nâng cao</q>, đừng làm.</p>
         </div>
