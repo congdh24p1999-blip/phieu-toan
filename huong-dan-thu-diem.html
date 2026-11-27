@@ -117,6 +117,14 @@ kbd{font:inherit;font-weight:600;background:var(--bg);border:1px solid var(--lin
 .cols b{display:block}
 
 /* ---- hướng dẫn từng bước cho người ít dùng máy tính ---- */
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:4px 0 14px}
+.pick .card{position:relative;display:flex;flex-direction:column;gap:3px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px 12px 44px;cursor:pointer;background:var(--paper)}
+.pick .card input{position:absolute;left:14px;top:15px;width:20px;height:20px;accent-color:var(--accent);margin:0}
+.pick .card span{font-size:.92rem;color:var(--muted);line-height:1.45}
+.pick .card:has(input:checked){border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.calm{background:var(--warn-bg);color:var(--ink);border-radius:12px;padding:12px 16px;margin:6px 0 12px}
+.calm p{margin:6px 0}
+.calm .rule{border-top:1px solid rgba(0,0,0,.12);padding-top:8px;color:var(--warn-ink)}
 body{font-size:17px}
 .need{background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:18px 0 0}
 .need p{margin:0 0 4px}.need ul{margin:0;padding-left:20px}.need li{margin:3px 0}
@@ -172,7 +180,7 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
 
   <main class="sheet">
     <h1>Nhận điểm học sinh về Google Sheet</h1>
-    <p class="lead">Làm một lần, khoảng 10 phút. Sau đó, mỗi khi học sinh nộp bài online, họ tên và điểm của các em tự ghi vào bảng tính của thầy cô, và mỗi tối thầy cô nhận một email tổng hợp điểm.</p>
+    <p class="lead">Làm một lần, khoảng 10 phút. Sau đó, mỗi khi học sinh nộp bài online, họ tên và điểm của các em tự ghi vào bảng tính của thầy cô. Muốn thì có thể nhận thêm email tổng hợp điểm mỗi tối.</p>
 
     <div class="need">
       <p><b>Cần chuẩn bị</b></p>
@@ -200,9 +208,95 @@ ul.plain{margin:0 0 12px;padding-left:22px}ul.plain li{margin:4px 0}
         <label class="done"><input type="checkbox" data-s="2"> Đã xong bước 2</label>
       </li>
       <li id="b3">
-        <h2>Dán mã có sẵn</h2>
+        <h2>Chọn bản mã và dán vào</h2>
+        <p>Có hai bản, thầy cô chọn một:</p>
+        <div class="pick" role="radiogroup" aria-label="Chọn bản mã">
+          <label class="card"><input type="radio" name="ban" value="cb" checked><b>Bản cơ bản (khuyên dùng)</b><span>Chỉ ghi điểm vào bảng tính. Xin ít quyền nhất: chỉ ghi vào đúng bảng tính này.</span></label>
+          <label class="card"><input type="radio" name="ban" value="em"><b>Bản có email</b><span>Như bản cơ bản, thêm email tổng hợp điểm mỗi tối. Google sẽ hiện màn hình cảnh báo ở bước 4.</span></label>
+        </div>
         <p>Bấm nút xanh <b>Chép mã</b> ngay dưới đây.</p>
-        <div class="code"><button type="button" id="copyCode">Chép mã</button><pre id="gsCode"><code>/**
+        <div class="code"><button type="button" id="copyCode">Chép mã</button><pre id="gsCodeBasic"><code>/**
+ * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này (bản cơ bản, không gửi email).
+ * Mã chỉ đọc và ghi đúng bảng tính chứa nó, không đọc Gmail, không đọc tệp nào khác.
+ * @OnlyCurrentDoc
+ */
+
+const HEAD = ['Thời điểm nộp', 'Họ và tên', 'Lớp', 'Điểm (thang 10)', 'Điểm đạt', 'Tổng điểm',
+  'Tự luận (HS tự chấm)', 'Số câu đúng', 'Số câu chấm tự động', 'Thời gian làm (phút)',
+  'Hết giờ tự nộp', 'Chế độ', 'Mã đề', 'Điểm từng phần', 'Bài làm', 'Mã lượt làm'];
+
+/* Ghi một kết quả vào trang tính của đề; trả về tên trang và có phải dòng mới không */
+function ghiKetQua_(d) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const tab = String(d.sheet || 'Kết quả').replace(/[\[\]\*\?\/\\:]/g, ' ').slice(0, 90);
+    const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
+    if (sh.getLastRow() === 0) {
+      sh.appendRow(HEAD);
+      sh.setFrozenRows(1);
+      sh.getRange(1, 1, 1, HEAD.length).setFontWeight('bold');
+    }
+    // chặn chuỗi bắt đầu bằng = + - @ để không bị hiểu thành công thức
+    const safe = v =&gt; (typeof v === 'string' &amp;&amp; /^[=+\-@]/.test(v)) ? "'" + v : v;
+    const row = [new Date(), d.name, d.cls, d.score10, d.got, d.tot, d.tlSelf, d.nOK, d.n,
+      d.minutes, d.autoSubmit ? 'có' : '', d.mode, d.code, d.parts, d.answers, String(d.id)]
+      .map(v =&gt; safe(v == null ? '' : v));
+    // cùng một lượt làm gửi lại (ví dụ sau khi tự chấm tự luận) thì ghi đè dòng cũ
+    const n = sh.getLastRow() - 1;
+    const hit = n &gt; 0 ? sh.getRange(2, HEAD.length, n, 1).createTextFinder(String(d.id))
+      .matchEntireCell(true).findNext() : null;
+    if (hit) { sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); return { tab, isNew: false }; }
+    sh.appendRow(row);
+    return { tab, isNew: true };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* Học sinh nộp bài: trang làm bài gửi kết quả tới đây */
+function doPost(e) {
+  try {
+    ghiKetQua_(JSON.parse(e.postData.contents));
+  } catch (err) {
+    return ContentService.createTextOutput('loi: ' + err);
+  }
+  return ContentService.createTextOutput('ok');
+}
+
+/* Mở địa chỉ trong trình duyệt để xem web app có chạy không.
+   Trang hướng dẫn gọi kèm ?thu=1&amp;cb=… để ghi một dòng thử và nhận lại kết quả. */
+function doGet(e) {
+  const p = (e &amp;&amp; e.parameter) || {};
+  const out = { ok: true, ban: 2 };
+  if (p.thu === '1') {
+    try {
+      ghiKetQua_({ id: 'thu-' + Date.now(), sheet: 'Thử kết nối', name: 'Học sinh thử', cls: 'Thử', code: '000',
+        mode: 'Thử kết nối', score10: 10, got: 10, tot: 10, answers: 'Dòng này do trang hướng dẫn gửi thử' });
+      out.ghi = true;
+      out.bang = SpreadsheetApp.getActiveSpreadsheet().getName();
+    } catch (err) {
+      out.ok = false;
+      out.loi = String(err);
+    }
+  }
+  if (p.cb &amp;&amp; /^[A-Za-z_$][\w$]{0,40}$/.test(p.cb)) {
+    return ContentService.createTextOutput(p.cb + '(' + JSON.stringify(out) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput('Xưởng đề Toán: web app thu điểm đang chạy.');
+}
+
+/* Chạy hàm này một lần sau khi dán mã để Google hỏi quyền ghi vào bảng tính này. */
+function caiDat() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  console.log('Đã cài đặt. Bảng tính "' + ss.getName() + '" sẵn sàng nhận điểm.');
+}
+
+/* Giữ chỗ: nếu trước đây đã cài bản có email thì lịch gửi cũ gọi vào đây và không làm gì. */
+function guiEmailTongHop() {}
+</code></pre><pre id="gsCode" hidden><code>/**
  * Xưởng đề Toán – nhận kết quả làm bài online vào bảng tính này và báo qua email.
  * @OnlyCurrentDoc
  */
@@ -397,17 +491,21 @@ function esc_(s) {
       <li id="b4">
         <h2>Bấm Chạy và cho phép</h2>
         <p>Phía trên khung chữ có một ô chọn tên (cạnh nút <kbd>Gỡ lỗi</kbd>). Bấm vào ô đó, chọn <b>caiDat</b>. Sau đó bấm nút <kbd>▷ Chạy</kbd>.</p>
-        <p>Google sẽ hỏi quyền. Bấm lần lượt:</p>
+        <p>Google sẽ hỏi quyền cho đoạn mã vừa dán. Bấm lần lượt:</p>
         <ol class="sub">
           <li><kbd>Xem lại quyền</kbd> (Review permissions)</li>
           <li>chọn tài khoản Gmail của thầy cô</li>
-          <li>nếu hiện dòng <q>Google chưa xác minh ứng dụng này</q>: bấm chữ nhỏ <kbd>Nâng cao</kbd> (Advanced) ở góc dưới bên trái, rồi bấm <kbd class="w">Đi tới Dự án không có tiêu đề (không an toàn)</kbd></li>
+          <li>nếu hiện màn hình <q>Google chưa xác minh ứng dụng này</q>: đọc khung vàng ngay dưới đây</li>
           <li>nếu có ô <q>Chọn tất cả</q> thì đánh dấu ô đó</li>
           <li><kbd>Cho phép</kbd> hoặc <kbd>Tiếp tục</kbd> (Allow / Continue)</li>
         </ol>
-        <p class="see">Phía dưới khung chữ hiện <q>Đã cài đặt…</q>. Vài giây sau, hộp thư Gmail nhận được thư <q>Xưởng đề Toán: đã cài đặt thu điểm</q>.</p>
-        <details class="why"><summary>Vì sao Google ghi “không an toàn”?</summary>
-          <p>Google hiện cảnh báo này với mọi đoạn mã tự viết chưa gửi Google duyệt, không phải vì mã có hại. Mã ở bước 3 chỉ làm ba việc: ghi điểm vào đúng bảng tính này (không đọc được tệp nào khác trong Google Drive), gửi email báo điểm về Gmail của thầy cô, và hẹn giờ gửi email mỗi ngày. Toàn bộ mã nằm trong khung ở bước 3, ai cũng đọc được.</p></details>
+        <div class="calm">
+          <p><b>Về màn hình “Google chưa xác minh ứng dụng này”</b></p>
+          <p>Bản có email chắc chắn gặp màn hình này; bản cơ bản có thể không gặp. Google hiện cảnh báo này với mọi đoạn mã tự viết chưa gửi Google duyệt, không phải vì mã có virus hay lừa đảo. Ở đây <b>chính thầy cô vừa dán mã vào bảng tính của mình</b>, mã chạy bằng tài khoản của thầy cô, và toàn bộ mã nằm ở bước 3 cho ai cũng đọc được. Mã chỉ ghi điểm vào đúng bảng tính này (bản có email thì thêm gửi thư về Gmail của thầy cô và hẹn giờ gửi thư); mã không đọc được Gmail hay tệp nào khác.</p>
+          <p>Để đi tiếp: bấm chữ nhỏ <kbd>Nâng cao</kbd> (Advanced) ở góc dưới bên trái, rồi bấm <kbd class="w">Đi tới Dự án không có tiêu đề (không an toàn)</kbd>.</p>
+          <p class="rule"><b>Quy tắc an toàn:</b> chỉ bấm <q>Nâng cao</q> khi chính thầy cô vừa dán mã từ trang Xưởng đề Toán này. Nếu ai đó gửi đường dẫn lạ rồi bảo bấm <q>Nâng cao</q>, đừng làm.</p>
+        </div>
+        <p class="see">Phía dưới khung chữ hiện <q>Đã cài đặt…</q>. Bản có email: vài giây sau, hộp thư nhận được thư <q>Xưởng đề Toán: đã cài đặt thu điểm</q>.</p>
         <label class="done"><input type="checkbox" data-s="4"> Đã xong bước 4</label>
       </li>
       <li id="b5">
@@ -459,7 +557,7 @@ function esc_(s) {
             <li><b>Máy tính:</b> vào <a href="https://sheets.google.com" target="_blank" rel="noopener">sheets.google.com</a>, bảng tính nằm đầu danh sách. Nên đánh dấu trang (<kbd>Ctrl</kbd> + <kbd>D</kbd>) để lần sau mở nhanh.</li>
             <li><b>Điện thoại:</b> cài ứng dụng <b>Google Trang tính</b> (Google Sheets), đăng nhập đúng Gmail đã cài.</li>
             <li>Nhìn <b>hàng thẻ dưới cùng</b> của bảng tính: mỗi đề có một thẻ riêng, tên là tên đề và mã đề, ví dụ <q>Đề kiểm tra giữa học kì I – mã 101</q>. Kết quả không nằm ở thẻ <q>Trang tính1</q>.</li>
-            <li>Học sinh nộp xong vài giây là có dòng mới; bảng đang mở thì dòng mới tự hiện. Mỗi tối khoảng 20 giờ còn có email tổng hợp.</li>
+            <li>Học sinh nộp xong vài giây là có dòng mới; bảng đang mở thì dòng mới tự hiện. Dùng bản có email thì mỗi tối khoảng 20 giờ còn có email tổng hợp.</li>
           </ul>
         </li>
         <li>
@@ -513,7 +611,7 @@ function esc_(s) {
             <li>Màn hình kết quả của học sinh có dòng <q>Đã gửi kết quả cho thầy cô</q> không? Không có, và lúc bắt đầu cũng không bắt gõ họ tên: mã QR được tạo khi chưa có địa chỉ thu điểm. Tạo lại mã QR như mục <q>Sau khi cài xong</q> ở trên.</li>
           </ol>
         </dd>
-        <dt>Không nhận được email.</dt>
+        <dt>Không nhận được email (bản có email).</dt>
         <dd>Xem thư mục <b>Thư rác</b> (Spam) và <b>Quảng cáo</b>. Email tổng hợp gửi khoảng 20 giờ mỗi ngày, ngày nào không có bài nộp thì không gửi.</dd>
         <dt>Muốn thôi nhận điểm.</dt>
         <dd>Trong hộp <b>Cho học sinh làm online</b>, xoá trống ô Thu điểm về Google Sheet. Đường dẫn gửi học sinh sau đó sẽ không gửi điểm đi nữa.</dd>
@@ -522,7 +620,7 @@ function esc_(s) {
     </section>
 
     <section id="email" aria-labelledby="h-email">
-      <h2 id="h-email">Đổi cách nhận email (không bắt buộc)</h2>
+      <h2 id="h-email">Bản có email: đổi cách nhận email</h2>
       <details class="why"><summary>Xem cách đổi giờ gửi, nhận email từng bài, hoặc tắt email</summary>
         <p>Ở đầu mã (trong Apps Script) có ba dòng cài đặt:</p>
         <ul class="plain">
@@ -532,7 +630,7 @@ function esc_(s) {
         </ul>
         <p>Sửa chữ trong dấu nháy, nhấn <kbd>Ctrl</kbd> + <kbd>S</kbd>, rồi chọn <b>caiDat</b> và bấm <kbd>▷ Chạy</kbd> như bước 4. Riêng khi chuyển sang hoặc thôi kiểu <code>'moi-bai'</code>, làm thêm như mục “bảng tính không có dòng mới” ở trên (chọn <b>Phiên bản mới</b> rồi triển khai).</p>
         <p>Kiểu mỗi bài một email tiện khi lớp ít học sinh. Gmail thường chỉ gửi được khoảng 100 email mỗi ngày; quá số đó thì thôi gửi email, điểm vẫn ghi đủ vào bảng tính.</p>
-        <p><b>Đã cài bản cũ (chưa có email)?</b> Làm lại bước 3 và bước 4, rồi chọn <b>Phiên bản mới</b> như trên. Địa chỉ nhận điểm giữ nguyên.</p>
+        <p><b>Đang dùng bản cơ bản, muốn thêm email?</b> Làm lại bước 3 (chọn bản có email) và bước 4, rồi trong Apps Script bấm <kbd>Triển khai</kbd> → <kbd>Quản lý các bản triển khai</kbd> → hình bút chì ✎ → <b>Phiên bản mới</b> → <kbd>Triển khai</kbd>. Địa chỉ nhận điểm giữ nguyên. Đổi ngược từ bản có email về bản cơ bản cũng làm y như vậy.</p>
       </details>
     </section>
 
@@ -550,10 +648,15 @@ function esc_(s) {
 <script>
 (function(){
   const $=s=>document.querySelector(s),LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+  /* chọn bản mã: cơ bản hay có email */
+  const ban=()=>(document.querySelector('input[name=ban]:checked')||{}).value||'cb';
+  const showBan=()=>{$('#gsCodeBasic').hidden=ban()!=='cb';$('#gsCode').hidden=ban()!=='em'};
+  {const v=LS.get('xdt-gs-ban');if(v==='em'){document.querySelector('input[name=ban][value=em]').checked=true}}
+  document.querySelectorAll('input[name=ban]').forEach(r=>r.addEventListener('change',()=>{LS.set('xdt-gs-ban',ban());showBan()}));showBan();
   /* chép mã */
-  $('#copyCode').addEventListener('click',e=>{const b=e.currentTarget,t=$('#gsCode').innerText;
+  $('#copyCode').addEventListener('click',e=>{const b=e.currentTarget,t=(ban()==='em'?$('#gsCode'):$('#gsCodeBasic')).innerText;
     const ok=()=>{b.textContent='Đã chép ✓';setTimeout(()=>b.textContent='Chép mã',2500)};
-    const fb=()=>{const r=document.createRange();r.selectNodeContents($('#gsCode'));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok()}catch(_){}};
+    const fb=()=>{const r=document.createRange();r.selectNodeContents(ban()==='em'?$('#gsCode'):$('#gsCodeBasic'));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok()}catch(_){}};
     if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()});
   /* đánh dấu đã xong từng bước */
   const boxes=[...document.querySelectorAll('.done input')];let st={};try{st=JSON.parse(LS.get('xdt-gs-buoc')||'{}')||{}}catch(e){}

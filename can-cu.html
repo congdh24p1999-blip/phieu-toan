@@ -286,7 +286,7 @@ ul.plain li{max-width:66ch}
       </ul>
       <p style="margin-top:12px">Câu tự luận có hai cách. Mặc định, mỗi câu tự luận được thay bằng một câu trả lời ngắn cùng chương, mức độ gần nhất, giữ nguyên số điểm; nộp xong học sinh vẫn xem được đề tự luận gốc kèm hướng dẫn chấm. Cách thứ hai giữ nguyên câu tự luận: học sinh làm ra giấy, nộp xong mở hướng dẫn chấm và đánh dấu từng bước mình làm đúng, điểm tự cộng vào bài. Nếu thầy cô không cho xem lời giải, phần tự luận để thầy cô chấm trên bài giấy.</p>
       <p>Học sinh cũng tự luyện được mà không cần đường dẫn của thầy cô: trang <a href="./?tuluyen=1">Tự luyện</a> (đường dẫn ngắn <a href="tu-luyen.html">tu-luyen.html</a>) cho các em chọn lớp, bài học hoặc đề kiểm tra, đề ôn thi vào 10, ôn thi tốt nghiệp, chọn mức độ và cách làm rồi luyện ngay. Trang ghi lại các bài em đã làm gần đây cùng điểm, chỉ trên máy của em.</p>
-      <p>Muốn nhận điểm, thầy cô tạo một bảng Google Sheet nhận kết quả theo <a href="huong-dan-thu-diem.html">hướng dẫn thu điểm</a> (khoảng 5 phút, miễn phí) rồi dán địa chỉ vào hộp chia sẻ. Mỗi lần học sinh nộp, một dòng gồm họ tên, lớp, điểm và bài làm từng câu được ghi thẳng vào bảng của thầy cô, và thầy cô nhận email báo kết quả (mặc định mỗi ngày một email tổng hợp, có thể chọn mỗi bài một email). Xưởng đề Toán không lưu bản nào.</p>
+      <p>Muốn nhận điểm, thầy cô tạo một bảng Google Sheet nhận kết quả theo <a href="huong-dan-thu-diem.html">hướng dẫn thu điểm</a> (khoảng 5 phút, miễn phí) rồi dán địa chỉ vào hộp chia sẻ. Mỗi lần học sinh nộp, một dòng gồm họ tên, lớp, điểm và bài làm từng câu được ghi thẳng vào bảng của thầy cô, và nếu dùng bản mã có email thì thầy cô nhận thêm email tổng hợp điểm. Xưởng đề Toán không lưu bản nào.</p>
       <div class="warn">
         <p>Đáp án được tính ngay trên trình duyệt nên học sinh rành máy tính có thể dò ra, và ai có đường dẫn cũng gửi được kết quả vào bảng điểm. Điểm tự luận là học sinh tự chấm. Phần này hợp với tự ôn, luyện tập, chưa thay được bài kiểm tra có giám sát.</p>
       </div>
@@ -310,6 +310,7 @@ ul.plain li{max-width:66ch}
       <h2 id="h-nhat-ky">Nhật ký cập nhật</h2>
       <div class="log">
         <div class="day"><time datetime="2026-11-27">27/11/2026</time><ul>
+          <li>Thu điểm Google Sheet có hai bản mã: bản cơ bản (khuyên dùng, chỉ ghi điểm, xin ít quyền nhất) và bản có email. Hướng dẫn giải thích ngay cạnh màn hình cảnh báo của Google, kèm quy tắc an toàn: chỉ bấm “Nâng cao” khi chính mình vừa dán mã từ Xưởng đề Toán.</li>
           <li>Hướng dẫn thu điểm: sửa tên menu thành “Tiện ích” theo giao diện Google Sheets hiện nay; thêm phần “Sau khi cài xong” (tạo mã QR mới, làm thử, xem điểm ở đâu, đọc cột bài làm, xử lý bài tự luận viết tay) và các lỗi hay gặp khi làm thử.</li>
           <li>Nút “Lưu và gửi thử” trong hướng dẫn thu điểm giờ hỏi thẳng bảng tính và báo rõ thành công hay chưa, kèm cách sửa (mã Apps Script mới có hàm tự kiểm tra; bản cũ cần dán lại mã và triển khai phiên bản mới).</li>
           <li>Viết lại trang hướng dẫn thu điểm Google Sheet cho người ít dùng máy tính: 6 bước, mỗi bước ghi rõ bấm vào đâu và sẽ thấy gì, có ô đánh dấu đã xong, ô dán địa chỉ kèm nút gửi thử để biết đã chạy được, và mục “Nếu gặp khó”.</li>
