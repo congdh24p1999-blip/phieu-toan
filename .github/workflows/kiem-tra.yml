@@ -1,8 +1,8 @@
 name: Kiểm tra trước khi xuất bản
 # Mỗi lần đẩy mã lên nhánh main: dựng lại trang từ src/ và chạy toàn bộ bộ kiểm tra.
 # Nếu có lỗi, lần chạy báo "failed" (GitHub gửi email cho chủ kho mã).
-# Khi biến kho XUAT_BAN_QUA_ACTIONS = true (và GitHub Pages đặt nguồn là "GitHub Actions"),
-# trang chỉ được xuất bản khi mọi kiểm tra đều đạt.
+# Khi GitHub Pages đặt nguồn là "GitHub Actions" (Settings → Pages → Source), trang chỉ được
+# xuất bản khi mọi kiểm tra đều đạt; workflow tự nhận ra cài đặt này, không cần chỉnh gì thêm.
 on:
   push:
     branches: [main]
@@ -16,6 +16,8 @@ jobs:
   kiem-tra:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -34,17 +36,21 @@ jobs:
         run: cd src && node exttest.js
       - name: Kiểm tra từng dạng câu
         run: node tools/kiem-tra-mau.js 120
+      - name: Xem GitHub Pages đang xuất bản theo cách nào
+        id: mode
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: echo "mode=$(gh api repos/${{ github.repository }}/pages --jq .build_type 2>/dev/null || echo none)" >> "$GITHUB_OUTPUT"
       - name: Gom các file của trang
-        if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+        if: steps.mode.outputs.mode == 'workflow'
         run: |
           mkdir -p _site
           cp *.html *.png *.svg *.xml _site/ 2>/dev/null || true
       - uses: actions/upload-pages-artifact@v4
-        if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+        if: steps.mode.outputs.mode == 'workflow'
         with: { path: _site }
   xuat-ban:
     needs: kiem-tra
-    if: vars.XUAT_BAN_QUA_ACTIONS == 'true'
+    if: needs.kiem-tra.outputs.mode == 'workflow'
     runs-on: ubuntu-latest
     environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
     steps:
